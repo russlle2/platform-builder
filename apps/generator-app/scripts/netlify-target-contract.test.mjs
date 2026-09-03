@@ -2,6 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
   PRODUCTION_NETLIFY_SITE_ID,
+  assertNetlifyRuntimeEnvironment,
   assertNetlifyTarget,
 } from './netlify-target-contract.mjs'
 
@@ -67,4 +68,68 @@ test('rejects site, hostname, and account mismatches', () => {
     default_domain: 'staging.example.netlify.app',
     account_slug: 'another-account',
   }, base), /account/)
+})
+
+const runtimeEnvironment = [
+  {
+    key: 'NEXT_PUBLIC_SUPABASE_URL',
+    scopes: ['builds', 'functions'],
+    values: [{ context: 'all', value: 'https://stagingref.supabase.co/' }],
+    is_secret: false,
+  },
+  {
+    key: 'DAILYCLARITY_SUPABASE_PROJECT_REF',
+    scopes: ['builds', 'functions'],
+    values: [
+      { context: 'all', value: 'wrong' },
+      { context: 'production', value: 'stagingref' },
+    ],
+    is_secret: false,
+  },
+  {
+    key: 'SUPABASE_SERVICE_ROLE_KEY',
+    scopes: ['functions'],
+    values: [{ context: 'production', value: '' }],
+    is_secret: true,
+  },
+]
+
+test('binds Netlify build and function scopes to the schema-gated database', () => {
+  assert.doesNotThrow(() => assertNetlifyRuntimeEnvironment(runtimeEnvironment, {
+    context: 'production',
+    expectedSupabaseUrl: 'https://stagingref.supabase.co',
+    expectedSupabaseProjectRef: 'stagingref',
+  }))
+})
+
+test('rejects crossed, hidden, under-scoped, or unprotected Netlify database values', () => {
+  const config = {
+    context: 'production',
+    expectedSupabaseUrl: 'https://stagingref.supabase.co',
+    expectedSupabaseProjectRef: 'stagingref',
+  }
+  assert.throws(() => assertNetlifyRuntimeEnvironment(
+    runtimeEnvironment.map((entry) => entry.key === 'NEXT_PUBLIC_SUPABASE_URL'
+      ? { ...entry, values: [{ context: 'all', value: 'https://production.supabase.co' }] }
+      : entry),
+    config,
+  ), /does not match/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment(
+    runtimeEnvironment.map((entry) => entry.key === 'NEXT_PUBLIC_SUPABASE_URL'
+      ? { ...entry, is_secret: true }
+      : entry),
+    config,
+  ), /non-secret deployment identity/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment(
+    runtimeEnvironment.map((entry) => entry.key === 'DAILYCLARITY_SUPABASE_PROJECT_REF'
+      ? { ...entry, scopes: ['functions'] }
+      : entry),
+    config,
+  ), /builds and functions/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment(
+    runtimeEnvironment.map((entry) => entry.key === 'SUPABASE_SERVICE_ROLE_KEY'
+      ? { ...entry, is_secret: false }
+      : entry),
+    config,
+  ), /must exist and be marked secret/)
 })

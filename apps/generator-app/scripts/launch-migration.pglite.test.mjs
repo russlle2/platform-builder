@@ -13,11 +13,19 @@ const migrationPath = path.resolve(
   'migrations',
   '20260903000000_launch_transaction_hardening.sql',
 )
+const grantMigrationPath = path.resolve(
+  here,
+  '..',
+  'supabase',
+  'migrations',
+  '20260903230900_harden_service_role_data_api_grants.sql',
+)
 
 const baseline = `
   create role anon;
   create role authenticated;
-  create role service_role;
+  create role service_role bypassrls;
+  revoke create, usage on schema public from public;
   create schema auth;
   create function auth.uid() returns uuid language sql stable as $$ select null::uuid $$;
   create table auth.users (id uuid primary key, email text);
@@ -55,6 +63,7 @@ const baseline = `
   );
   create table public.lead_captures (
     id uuid primary key default gen_random_uuid(),
+    legacy_sequence_id bigserial unique,
     email text,
     created_at timestamptz default now()
   );
@@ -72,6 +81,11 @@ const baseline = `
   create table public.booking_inquiries (
     id uuid primary key default gen_random_uuid(),
     slug text references public.site_slugs(slug),
+    created_at timestamptz not null default now()
+  );
+  create table public.newsletter_subscribers (
+    id uuid primary key default gen_random_uuid(),
+    email text not null unique,
     created_at timestamptz not null default now()
   );
   create table public.manual_service_tasks (
@@ -109,11 +123,170 @@ test('launch migration parses and billing/checkout RPCs converge under retries',
     await db.waitReady
     await db.exec(baseline)
     const migration = await readFile(migrationPath, 'utf8')
+    const grantMigration = await readFile(grantMigrationPath, 'utf8')
     await db.exec(migration)
     await db.exec(migration)
+    await db.exec(grantMigration)
+    await db.exec(grantMigration)
 
     const readiness = await scalar(db, 'select public.launch_schema_readiness()')
-    assert.deepEqual(readiness, { ready: true, schemaVersion: '20260903.2' })
+    assert.deepEqual(readiness, { ready: true, schemaVersion: '20260903.3' })
+    assert.equal(
+      await scalar(db, "select has_schema_privilege('service_role', 'public', 'USAGE')"),
+      true,
+    )
+
+    const expectedPrivileges = {
+      site_slugs: ['SELECT', 'INSERT', 'UPDATE', 'DELETE'],
+      portal_sites: ['SELECT', 'INSERT', 'UPDATE', 'DELETE'],
+      lead_captures: ['SELECT', 'INSERT'],
+      contact_messages: ['SELECT', 'INSERT', 'UPDATE', 'DELETE'],
+      draft_profiles: ['SELECT', 'INSERT', 'UPDATE'],
+      manual_service_tasks: ['SELECT', 'INSERT', 'UPDATE', 'DELETE'],
+      accounts: [],
+      intake_contacts: ['SELECT', 'INSERT', 'DELETE'],
+      orders: ['SELECT', 'DELETE'],
+      booking_inquiries: ['DELETE'],
+      newsletter_subscribers: [],
+      custom_build_requests: ['SELECT', 'INSERT', 'UPDATE'],
+      checkout_intents: ['SELECT', 'INSERT', 'UPDATE'],
+      stripe_webhook_events: ['SELECT', 'INSERT', 'UPDATE'],
+    }
+    for (const [table, expected] of Object.entries(expectedPrivileges)) {
+      for (const privilege of [
+        'SELECT',
+        'INSERT',
+        'UPDATE',
+        'DELETE',
+        'TRUNCATE',
+        'REFERENCES',
+        'TRIGGER',
+      ]) {
+        assert.equal(
+          await scalar(
+            db,
+            'select has_table_privilege(\'service_role\', $1, $2)',
+            [`public.${table}`, privilege],
+          ),
+          expected.includes(privilege),
+          `${table} ${privilege}`,
+        )
+      }
+    }
+
+    assert.equal(
+      await scalar(
+        db,
+        "select has_sequence_privilege('service_role', 'public.lead_captures_legacy_sequence_id_seq', 'USAGE')",
+      ),
+      true,
+    )
+    assert.equal(
+      await scalar(
+        db,
+        "select has_sequence_privilege('service_role', 'public.lead_captures_legacy_sequence_id_seq', 'SELECT')",
+      ),
+      true,
+    )
+    assert.equal(
+      await scalar(
+        db,
+        "select has_sequence_privilege('service_role', 'public.lead_captures_legacy_sequence_id_seq', 'UPDATE')",
+      ),
+      false,
+    )
+
+    await db.exec('revoke update on public.checkout_intents from service_role')
+    assert.deepEqual(
+      await scalar(db, 'select public.launch_schema_readiness()'),
+      { ready: false, schemaVersion: '20260903.3' },
+    )
+    await db.exec(grantMigration)
+
+    await db.exec('revoke usage on schema public from service_role')
+    assert.deepEqual(
+      await scalar(db, 'select public.launch_schema_readiness()'),
+      { ready: false, schemaVersion: '20260903.3' },
+    )
+    await db.exec(grantMigration)
+
+    for (const driftStatement of [
+      'grant create on schema public to service_role',
+      'grant delete on public.lead_captures to service_role',
+      'grant delete on public.lead_captures to public',
+      'grant truncate on public.lead_captures to service_role',
+      'grant references on public.lead_captures to service_role',
+      'grant trigger on public.lead_captures to service_role',
+    ]) {
+      await db.exec(driftStatement)
+      assert.deepEqual(
+        await scalar(db, 'select public.launch_schema_readiness()'),
+        { ready: false, schemaVersion: '20260903.3' },
+      )
+      await db.exec(grantMigration)
+    }
+
+    await db.exec(
+      'revoke usage on sequence public.lead_captures_legacy_sequence_id_seq from service_role',
+    )
+    assert.deepEqual(
+      await scalar(db, 'select public.launch_schema_readiness()'),
+      { ready: false, schemaVersion: '20260903.3' },
+    )
+    await db.exec(grantMigration)
+
+    await db.exec(
+      'grant update on sequence public.lead_captures_legacy_sequence_id_seq to service_role',
+    )
+    assert.deepEqual(
+      await scalar(db, 'select public.launch_schema_readiness()'),
+      { ready: false, schemaVersion: '20260903.3' },
+    )
+    await db.exec(grantMigration)
+
+    await db.exec('alter table public.newsletter_subscribers rename to newsletter_subscribers_missing')
+    assert.deepEqual(
+      await scalar(db, 'select public.launch_schema_readiness()'),
+      { ready: false, schemaVersion: '20260903.3' },
+    )
+    await db.exec('alter table public.newsletter_subscribers_missing rename to newsletter_subscribers')
+
+    await db.exec(
+      'revoke execute on function public.merge_portal_site_data(text, jsonb, jsonb) from service_role',
+    )
+    assert.deepEqual(
+      await scalar(db, 'select public.launch_schema_readiness()'),
+      { ready: false, schemaVersion: '20260903.3' },
+    )
+    await db.exec(grantMigration)
+
+    await db.exec(
+      'grant execute on function public.merge_portal_site_data(text, jsonb, jsonb) to public',
+    )
+    assert.deepEqual(
+      await scalar(db, 'select public.launch_schema_readiness()'),
+      { ready: false, schemaVersion: '20260903.3' },
+    )
+    await db.exec(grantMigration)
+
+    await db.exec('set role service_role')
+    try {
+      const roleReadiness = await scalar(db, 'select public.launch_schema_readiness()')
+      assert.deepEqual(roleReadiness, { ready: true, schemaVersion: '20260903.3' })
+      await db.exec(`
+        insert into public.manual_service_tasks (slug) values ('grant-probe');
+        update public.manual_service_tasks set status = 'done' where slug = 'grant-probe';
+        select id from public.manual_service_tasks where slug = 'grant-probe';
+        delete from public.manual_service_tasks where slug = 'grant-probe';
+        insert into public.lead_captures (email) values ('grant-probe@example.test');
+      `)
+      await assert.rejects(
+        db.exec("delete from public.lead_captures where email = 'grant-probe@example.test'"),
+        /permission denied/i,
+      )
+    } finally {
+      await db.exec('reset role')
+    }
 
     await db.exec(`
       insert into public.site_slugs (slug, status) values ('calm-co', 'provisioned');

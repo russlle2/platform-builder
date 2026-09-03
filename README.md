@@ -202,9 +202,25 @@ The app is deployed on Netlify (or any Next.js-compatible host).
 1. Keep connected-repository production auto-publishing **disabled**. Production publication is CLI-driven only through `.github/workflows/deploy.yml`; a normal push must never bypass its validation, database-schema, protected-environment, and site-identity gates.
 2. Create a completely separate staging Netlify site and bind the GitHub `staging` environment to its own token/site ID. Never reuse the production site ID.
 3. In each protected GitHub environment, set `NETLIFY_EXPECTED_SITE_ID`, `NETLIFY_EXPECTED_SITE_HOSTNAME`, and `NETLIFY_EXPECTED_ACCOUNT_SLUG` as environment variables. The authenticated Netlify API response must match all three before any app or Blob publication.
-4. Add the runtime environment variables in Netlify → Site settings → Environment variables. Set `DAILYCLARITY_ENVIRONMENT` to the matching environment name.
+4. Add the runtime environment variables in Netlify → Site settings → Environment variables. Set `DAILYCLARITY_ENVIRONMENT` to the matching environment name. Keep `NEXT_PUBLIC_SUPABASE_URL` and `DAILYCLARITY_SUPABASE_PROJECT_REF` readable, non-secret, and available to both builds and functions; mark `SUPABASE_SERVICE_ROLE_KEY` secret and expose it only to functions. The release gate compares the two public identities to the schema-gated GitHub environment and then proves the deployed runtime can execute the readiness RPC with its own secret.
 5. Apply and verify the matching Supabase migration before deploying the app. The workflow calls the value-free `launch_schema_readiness()` sentinel and refuses an old or partial schema.
 6. Publish to staging with `.github/workflows/deploy-staging.yml` (`STAGE` confirmation), complete the full-funnel test, then promote reviewed `main` with `.github/workflows/deploy.yml` (`DEPLOY` confirmation).
+
+The protected GitHub `staging` environment keeps public database identity separate
+from credentials: set `STAGING_SUPABASE_URL` and
+`STAGING_SUPABASE_PROJECT_REF` as environment variables, and set only
+`STAGING_SUPABASE_SERVICE_ROLE_KEY` as an environment secret. The deploy and
+full-funnel workflows map that single contract to the application's runtime names,
+compare it to the site-level Netlify environment, pin the published deploy to the
+reviewed commit, and live-probe schema `20260903.3`. Store the same independent
+`INTERNAL_ADMIN_TOKEN` in the protected GitHub environment and the matching
+Netlify site so that probe remains authenticated. The full-funnel workflow derives
+its URL from the attested hostname rather than accepting an unrelated URL secret,
+so staging cannot silently fall back to generic production-named credentials or a
+different deployment.
+Set the non-secret `DEPLOY_ENVIRONMENT` and `CATALOG_PUBLISH_ENVIRONMENT`
+environment variables to the environment's own name (`staging` or `production`);
+the workflows fail closed if either identity sentinel is crossed.
 
 ---
 

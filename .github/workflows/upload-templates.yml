@@ -80,12 +80,14 @@ jobs:
         if: ${{ inputs.publish }}
         run: node apps/generator-app/scripts/verify-netlify-target.mjs
         env:
-          DEPLOY_ENVIRONMENT: ${{ inputs.target_environment }}
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
           NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
           NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ inputs.target_environment == 'staging' && vars.STAGING_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ inputs.target_environment == 'staging' && vars.STAGING_SUPABASE_PROJECT_REF || secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
 
       - name: Publish the reviewed catalog
         if: ${{ inputs.publish }}
@@ -107,7 +109,7 @@ jobs:
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          CATALOG_PUBLISH_ENVIRONMENT: ${{ secrets.CATALOG_PUBLISH_ENVIRONMENT }}
+          CATALOG_PUBLISH_ENVIRONMENT: ${{ vars.CATALOG_PUBLISH_ENVIRONMENT }}
           TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
           PRODUCTION_CONFIRMATION: ${{ inputs.production_confirmation }}
           FORCE_UPLOAD: ${{ inputs.force }}

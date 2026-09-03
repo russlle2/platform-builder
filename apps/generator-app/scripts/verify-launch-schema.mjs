@@ -32,7 +32,7 @@ if (!response.ok) {
   throw new Error(`Launch schema sentinel failed (${response.status}). Apply and verify all migrations first.`)
 }
 const readiness = await response.json()
-if (readiness?.schemaVersion !== '20260903.2' || readiness?.ready !== true) {
+if (readiness?.schemaVersion !== '20260903.3' || readiness?.ready !== true) {
   throw new Error('Launch schema sentinel reported an incompatible or incomplete database.')
 }
 console.log(`[schema-gate] Supabase ${actualRef} is ready at schema ${readiness.schemaVersion}.`)

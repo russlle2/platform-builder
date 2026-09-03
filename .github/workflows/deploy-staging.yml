@@ -43,19 +43,21 @@ jobs:
       - name: Verify the matching staging database schema
         run: node apps/generator-app/scripts/verify-launch-schema.mjs
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-          DAILYCLARITY_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+          DAILYCLARITY_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
 
       - name: Verify the exact staging Netlify site
         run: node apps/generator-app/scripts/verify-netlify-target.mjs
         env:
-          DEPLOY_ENVIRONMENT: staging
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
           NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
           NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
 
       - name: Build and publish the separate staging site
         shell: bash
@@ -67,10 +69,33 @@ jobs:
           pnpm dlx netlify-cli@27.4.2 deploy \
             --build \
             --prod \
+            --context production \
             --site "$NETLIFY_SITE_ID" \
             --auth "$NETLIFY_AUTH_TOKEN" \
             --message "Validated staging publication $GITHUB_SHA"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          DEPLOY_ENVIRONMENT: ${{ secrets.DEPLOY_ENVIRONMENT }}
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NEXT_PUBLIC_RELEASE_SHA: ${{ github.sha }}
+
+      - name: Attest the published staging commit and database binding
+        run: node apps/generator-app/scripts/verify-netlify-target.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+
+      - name: Prove the deployed runtime can reach the gated staging schema
+        run: node apps/generator-app/scripts/verify-deployed-runtime.mjs
+        env:
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_RELEASE_SHA: ${{ github.sha }}

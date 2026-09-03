@@ -51,12 +51,14 @@ jobs:
       - name: Verify the exact production Netlify site
         run: node apps/generator-app/scripts/verify-netlify-target.mjs
         env:
-          DEPLOY_ENVIRONMENT: production
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
           NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
           NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
 
       - name: Build and deploy with the Netlify Next.js runtime
         shell: bash
@@ -68,13 +70,36 @@ jobs:
           pnpm dlx netlify-cli@27.4.2 deploy \
             --build \
             --prod \
+            --context production \
             --site "$NETLIFY_SITE_ID" \
             --auth "$NETLIFY_AUTH_TOKEN" \
             --message "Validated GitHub promotion $GITHUB_SHA"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-          DEPLOY_ENVIRONMENT: ${{ secrets.DEPLOY_ENVIRONMENT }}
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NEXT_PUBLIC_RELEASE_SHA: ${{ github.sha }}
+
+      - name: Attest the published production commit and database binding
+        run: node apps/generator-app/scripts/verify-netlify-target.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+
+      - name: Prove the deployed runtime can reach the gated production schema
+        run: node apps/generator-app/scripts/verify-deployed-runtime.mjs
+        env:
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_RELEASE_SHA: ${{ github.sha }}
 
 # Customer sites are provisioned and deployed by the fulfillment pipeline.
 # Do not publish the raw client-template .next directory as a static site.

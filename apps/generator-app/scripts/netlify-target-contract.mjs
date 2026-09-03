@@ -12,6 +12,24 @@ function hostnameFromUrl(value) {
   }
 }
 
+function normalizedUrl(value) {
+  try {
+    const url = new URL(value)
+    url.hash = ''
+    url.search = ''
+    return url.toString().replace(/\/$/, '').toLowerCase()
+  } catch {
+    return ''
+  }
+}
+
+function contextValue(variable, context) {
+  const values = Array.isArray(variable?.values) ? variable.values : []
+  const exact = values.find((entry) => normalized(entry?.context) === context)
+  const fallback = values.find((entry) => normalized(entry?.context) === 'all')
+  return (exact ?? fallback)?.value?.trim() || ''
+}
+
 /**
  * Fail closed unless the authenticated Netlify response is the exact site,
  * account, and hostname approved for this protected GitHub environment.
@@ -52,5 +70,59 @@ export function assertNetlifyTarget(site, config) {
   }
   if (normalized(site?.account_slug) !== expectedAccountSlug) {
     throw new Error('Netlify account does not match the protected environment identity.')
+  }
+
+}
+
+/**
+ * Prove that the exact Netlify site is configured for the same database that
+ * passed the GitHub schema gate. Identity values are deliberately non-secret;
+ * runtime credentials remain secret and are proved by the post-deploy probe.
+ */
+export function assertNetlifyRuntimeEnvironment(environmentVariables, config) {
+  if (!Array.isArray(environmentVariables)) {
+    throw new Error('Netlify environment response is invalid.')
+  }
+
+  const context = normalized(config.context) || 'production'
+  const expectedUrl = normalizedUrl(config.expectedSupabaseUrl)
+  const expectedRef = normalized(config.expectedSupabaseProjectRef)
+  if (!expectedUrl || !expectedRef) {
+    throw new Error('Expected Netlify Supabase identity is incomplete.')
+  }
+
+  const required = new Map([
+    ['NEXT_PUBLIC_SUPABASE_URL', expectedUrl],
+    ['DAILYCLARITY_SUPABASE_PROJECT_REF', expectedRef],
+  ])
+  for (const [key, expected] of required) {
+    const variable = environmentVariables.find((entry) => entry?.key === key)
+    if (!variable) throw new Error(`Netlify site is missing ${key}.`)
+    if (variable.is_secret) {
+      throw new Error(`${key} must remain readable as a non-secret deployment identity.`)
+    }
+    const scopes = new Set(Array.isArray(variable.scopes) ? variable.scopes : [])
+    if (!scopes.has('builds') || !scopes.has('functions')) {
+      throw new Error(`${key} must be available to Netlify builds and functions.`)
+    }
+    const actual = key === 'NEXT_PUBLIC_SUPABASE_URL'
+      ? normalizedUrl(contextValue(variable, context))
+      : normalized(contextValue(variable, context))
+    if (actual !== expected) {
+      throw new Error(`Netlify ${key} does not match the protected database identity.`)
+    }
+  }
+
+  const serviceRole = environmentVariables.find(
+    (entry) => entry?.key === 'SUPABASE_SERVICE_ROLE_KEY',
+  )
+  if (!serviceRole?.is_secret) {
+    throw new Error('Netlify SUPABASE_SERVICE_ROLE_KEY must exist and be marked secret.')
+  }
+  const serviceScopes = new Set(
+    Array.isArray(serviceRole.scopes) ? serviceRole.scopes : [],
+  )
+  if (!serviceScopes.has('functions')) {
+    throw new Error('Netlify SUPABASE_SERVICE_ROLE_KEY must be available to functions.')
   }
 }
