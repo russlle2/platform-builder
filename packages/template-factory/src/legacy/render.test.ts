@@ -76,10 +76,12 @@ test('every topology page uses the shared customer route while nested assets and
   const pageMarkup = (page: string, prefix: string, heading: string, link: string) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${heading}</title>
     <link rel="stylesheet" href="${prefix}assets/css/styles.css"><link rel="stylesheet" href="${prefix}assets/css/secondary.css"></head><body class="hero" data-dc-image-id="css_000000000000000001">
     <header><nav aria-label="Primary"><button type="button" aria-controls="site-menu" aria-expanded="false">Menu</button><div id="site-menu"><a href="${link}">Another page</a></div></nav></header>
-    <main><h1 data-dc-edit-id="txt_000000000000000001">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="txt_000000000000000002">${heading} gives visitors clear, practical information about the service, what to expect, and how to make a confident next-step decision.</p>
+    <main><h1 data-dc-edit-id="txt_000000000000000001">
+      {{BUSINESS_NAME}}
+    </h1><p data-dc-edit-id="txt_000000000000000002">${heading} gives visitors clear, practical information about the service, what to expect, and how to make a confident next-step decision.</p>
     <p data-dc-edit-id="txt_000000000000000003" data-dc-edit-attribute="title" title="Helpful context">Hover for more context about this page.</p>
     <label>Focus <select><option data-dc-edit-id="txt_000000000000000004">Calm</option></select></label>
-    <details><summary data-dc-edit-id="txt_000000000000000005">What should I expect?</summary><p data-dc-edit-id="txt_000000000000000006">A clear next step after opening this disclosure.</p></details>
+    <details><summary><strong data-dc-edit-id="txt_000000000000000005">What should I expect?</strong></summary><p data-dc-edit-id="txt_000000000000000006">A clear next step after opening this disclosure.</p></details>
     <a class="linked-image" href="${link}"><img data-dc-image-id="img_000000000000000001" src="${prefix}assets/img/hero.png" alt="Calm geometric landscape"></a>
     <picture><source data-dc-image-id="img_000000000000000002" media="(min-width: 700px)" srcset="${prefix}assets/img/hero.png 1x"><img data-dc-image-id="img_000000000000000003" src="${prefix}assets/img/hero.png" alt="Responsive calm geometric landscape"></picture>
     <form name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><label>Name <input name="name" autocomplete="name" required></label><label>Email <input type="email" name="email" autocomplete="email" required></label><label>Phone <input type="tel" name="phone" autocomplete="tel"></label><label>Message <textarea name="message" required></textarea></label><button type="submit">Send inquiry</button></form>

@@ -54,6 +54,55 @@ describe('deployed compiler theme CSS', () => {
     expect(html).toContain('--dc-theme-color_cta: #0EA5E9 !important')
   })
 
+  it('does not inject an unlinked base stylesheet into compiler-v3 pages', async () => {
+    const collidingCss = `${compiledCss}.pattern{position:absolute;inset:0;opacity:.12;pointer-events:none}`
+    const pageCss = 'body{min-height:100vh}.card{display:block}'
+    mocks.getTemplate.mockResolvedValue({
+      pages: ['index.html'],
+      files: ['index.html', 'assets/css/styles.css', 'assets/css/page.css'],
+      fields: [],
+      validation: { contractVersion: 3 },
+      designId: 'design_compiled_v3',
+      contentPresetId: 'content_compiled_v3',
+      themePresetId: 'theme_compiled_v3',
+      qualityReceipt: 'receipt_compiled_v3',
+      catalogHash: 'c'.repeat(64),
+      manifestHash: 'd'.repeat(64),
+    })
+    mocks.readTemplateFile.mockImplementation(async (
+      _niche: string,
+      _template: string,
+      file: string,
+    ) => file === 'index.html'
+      ? '<!doctype html><html data-dc-catalog-version="3"><head><link rel="stylesheet" href="assets/css/page.css"></head><body class="pattern"><main>Reachable page</main></body></html>'
+      : file === 'assets/css/styles.css'
+        ? collidingCss
+        : pageCss)
+    mocks.readTemplateFileBuffer.mockImplementation(async (
+      _niche: string,
+      _template: string,
+      file: string,
+    ) => Buffer.from(file === 'assets/css/styles.css' ? collidingCss : pageCss))
+
+    const files = await buildDeployFiles({
+      niche: 'wellness',
+      templateSlug: 'compiled-v3',
+      customerValues: {},
+      colorScheme: 'ocean-breeze',
+      fontVariation: 'original',
+      structureVariation: 'original',
+      slug: 'customer-site',
+      siteUrl: 'https://customer-site.example.com',
+    })
+    const html = String(files?.['index.html'])
+
+    expect(html).toContain('href="assets/css/page.css"')
+    expect(html).not.toContain('.pattern{position:absolute')
+    expect(html).toContain('--dc-theme-color_bg: #0B1628 !important')
+    expect(String(files?.['assets/css/styles.css'])).toBe(collidingCss)
+    expect(String(files?.['assets/css/page.css'])).toBe(pageCss)
+  })
+
   it('fails closed when an alias no longer resolves to its purchased preset receipt', async () => {
     mocks.getTemplate.mockResolvedValue({
       pages: ['index.html'],

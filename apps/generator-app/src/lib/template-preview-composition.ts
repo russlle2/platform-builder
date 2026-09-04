@@ -7,8 +7,10 @@ export interface TemplatePreviewCompositionInput {
   css?: string | null
   /**
    * All template stylesheets in stable path order. This is used only to map
-   * compiler-generated theme tokens; `css` remains the page's injectable base
-   * stylesheet so relative asset URLs keep their original directory context.
+   * compiler-generated theme tokens. For legacy documents, `css` remains the
+   * page's injectable base stylesheet so relative asset URLs keep their
+   * original directory context. Compiler-v3 documents instead preserve their
+   * authored stylesheet graph and never inject an unlinked global stylesheet.
    */
   themeStylesheet?: string | null
   page: string
@@ -25,11 +27,29 @@ export interface TemplatePreviewComposition {
   css: string | null
   /**
    * Complete, non-injected stylesheet surface used to discover compiler theme
-   * tokens during live customer edits. `css` remains the page stylesheet.
+   * tokens during live customer edits. `css` is retained only for legacy
+   * documents that depend on the historical global stylesheet injection.
    */
   themeStylesheet: string | null
   variationCSS: string | null
   page: string
+}
+
+const COMPILER_V3_DOCUMENT_RE = /<html\b[^>]*\bdata-dc-catalog-version\s*=\s*(?:"3"|'3'|3(?=\s|>))/i
+
+/**
+ * Compiler-v3 pages carry an explicit applicability graph through their LINK
+ * and STYLE/@import elements. Injecting assets/css/styles.css into every page
+ * can therefore apply an unrelated legacy selector (for example `.pattern`)
+ * to BODY and make an otherwise valid page invisible or non-interactive.
+ * Markerless v2 documents keep the historical injection for compatibility.
+ */
+export function selectInjectableTemplateCss(
+  html: string,
+  css: string | null | undefined,
+): string | null {
+  if (!css || COMPILER_V3_DOCUMENT_RE.test(html)) return null
+  return css
 }
 
 /** Build one deterministic token-discovery surface without changing CSS paths. */
@@ -51,8 +71,8 @@ export function combineTemplateThemeStylesheets(
 export function composeTemplatePreview(
   input: TemplatePreviewCompositionInput,
 ): TemplatePreviewComposition {
-  const css = input.css || ''
-  const themeStylesheet = input.themeStylesheet ?? css
+  const css = selectInjectableTemplateCss(input.html, input.css) || ''
+  const themeStylesheet = input.themeStylesheet ?? input.css ?? ''
   const variationCSS = [
     buildVariationCSS(
       input.colorScheme || 'original',

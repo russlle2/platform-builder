@@ -898,6 +898,29 @@ async function inspectTextSlotReachability(page: Page): Promise<CustomerEditorRu
       }
       return false;
     };
+    const hasDisclosureControlPoint = (summary: HTMLElement): boolean => {
+      if (hiddenByLayout(summary) || getComputedStyle(summary).pointerEvents === 'none') return false;
+      summary.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
+      for (const rect of [...summary.getClientRects()]) {
+        const left = Math.max(0, rect.left);
+        const right = Math.min(window.innerWidth, rect.right);
+        const top = Math.max(0, rect.top);
+        const bottom = Math.min(window.innerHeight, rect.bottom);
+        if (right - left < 1 || bottom - top < 1) continue;
+        for (const fraction of [0.5, 0.15, 0.85, 0.3, 0.7]) {
+          const physicalTarget = document.elementFromPoint(
+            left + (right - left) * fraction,
+            top + (bottom - top) * 0.5,
+          );
+          // A SUMMARY commonly wraps an independently editable STRONG. That
+          // child is still a valid physical path to the native disclosure;
+          // requiring the summary itself to be the nearest edit owner creates
+          // a false failure for every editable answer inside the closed panel.
+          if (physicalTarget && (physicalTarget === summary || summary.contains(physicalTarget))) return true;
+        }
+      }
+      return false;
+    };
     const throughReachableDisclosures = (target: HTMLElement, inspect: () => boolean): boolean => {
       const closedAncestors: HTMLDetailsElement[] = [];
       let cursor = target.parentElement;
@@ -914,7 +937,7 @@ async function inspectTextSlotReachability(page: Page): Promise<CustomerEditorRu
           // control is visible and physically reachable in the current
           // viewport. Opening it temporarily lets us hit-test the advertised
           // descendant without certifying dead modal/off-canvas content.
-          if (!summary || !hasPoint(summary, summary)) return false;
+          if (!summary || !hasDisclosureControlPoint(summary)) return false;
           details.open = true;
           opened.push(details);
         }
@@ -1049,9 +1072,14 @@ async function exerciseCustomerEditorRuntime(page: Page, currentPage: string): P
         const changed = await page.evaluate(({ attribute, id, sentinel }) => {
           const element = [...document.querySelectorAll<HTMLElement>(`[${attribute}]`)]
             .find((candidate) => candidate.getAttribute(attribute) === id);
-          return element?.textContent === sentinel;
+          // Direct-text wrappers preserve author formatting whitespace around
+          // inline runs. Chromium may leave that boundary whitespace selected
+          // outside the editable range even though the customer value and
+          // persistence event both changed successfully.
+          return element?.textContent?.trim() === sentinel;
         }, { attribute: leaf.attribute, id: leaf.id, sentinel: sentinelText });
-        leafText = changed && message?.nodeId === leaf.id && message.original === leaf.text && message.text === sentinelText
+        const persistedText = typeof message?.text === 'string' ? message.text.trim() : '';
+        leafText = changed && message?.nodeId === leaf.id && message.original === leaf.text && persistedText === sentinelText
           ? 'passed'
           : 'failed';
       } finally {
@@ -1068,7 +1096,7 @@ async function exerciseCustomerEditorRuntime(page: Page, currentPage: string): P
         else element.setAttribute(name, value);
       }
     }, leaf);
-    if (leafText === 'failed') details.push('leaf text did not complete a physical dblclick/keyboard/blur/textEdited round trip');
+    if (leafText === 'failed') details.push(`leaf text ${leaf.id} did not complete a physical dblclick/keyboard/blur/textEdited round trip`);
   }
 
   let editableAttribute: CheckStatus = 'missing';

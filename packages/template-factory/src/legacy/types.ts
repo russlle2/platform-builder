@@ -1,5 +1,5 @@
 export const LEGACY_SCHEMA_VERSION = 7;
-export const DEFAULT_LEGACY_RULE_VERSION = 'legacy-rehab-1.0.27';
+export const DEFAULT_LEGACY_RULE_VERSION = 'legacy-rehab-1.0.28';
 export const MAX_AI_DOLLAR_CAP_USD = 25;
 export const MAX_AI_TOKEN_CAP = 1_000_000;
 export const DEFAULT_AI_DOLLAR_CAP_USD = MAX_AI_DOLLAR_CAP_USD;

@@ -1159,14 +1159,16 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
     niche: 'aromatherapy',
     files: new Map<string, string | Uint8Array>([
       ['index.html', `<!doctype html><html lang="en"><head><title>Legacy</title><link rel="stylesheet" href="styles.css"></head><body>
+        <svg class="pattern" viewBox="0 0 10 10"><path d="M0 0h10v10H0z"></path></svg>
         <main><section class="hero"><div class="hero-bg"><img src="assets/img/pattern.svg" alt="Decorative pattern" aria-hidden="true"><div class="hero-gradient"></div></div>
         <div class="hero-inner"><h1>{{BUSINESS_NAME}}</h1><p>Visible customer introduction.</p></div></section>
+        <section class="booking-layout"><div><h2>Reserve a time</h2><p>Choose a practical next step and ask about current availability.</p></div><aside><h2>Before you book</h2><p>Review the service details and bring any questions to the conversation.</p></aside></section>
         <section id="content-row" style="margin-top:18px;display:flex;gap:12px"><div><h2>How it works</h2><p>Review the practical guidance and choose a next step that fits your current priorities and schedule.</p></div><div style="flex:1"><h2>Current workshops</h2><p>Ask which educational sessions are currently available and what to expect before reserving a place.</p></div></section>
         <section id="compact-row" style="display:flex"><a href="#details" style="flex:1">Details</a><a href="mailto:{{EMAIL}}">Contact</a></section>
         <div class="editorial-background"></div></main>
         <footer><nav aria-label="Footer"><a href="mailto:{{EMAIL}}">Contact</a></nav><nav class="footer-nav">Privacy Terms</nav></footer>
       </body></html>`],
-      ['styles.css', '.hero{position:relative}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-inner{position:relative}.editorial-background{width:10rem;height:10rem;background-image:url("assets/img/editorial.svg")}'],
+      ['styles.css', '.pattern{position:fixed;inset:0}.hero{position:relative}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-inner{position:relative}.booking-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1rem}.editorial-background{width:10rem;height:10rem;background-image:url("assets/img/editorial.svg")}'],
       ['assets/img/pattern.svg', '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>'],
       ['assets/img/editorial.svg', '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>'],
       ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
@@ -1177,6 +1179,7 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.match(html, /<html[^>]*data-dc-catalog-version="3"/);
   assert.match(html, /class="hero-bg"[^>]*data-dc-decoration="pointer-layer"[^>]*aria-hidden="true"/);
   assert.match(html, /class="hero-gradient"[^>]*data-dc-decoration="pointer-layer"[^>]*aria-hidden="true"/);
+  assert.match(html, /<svg class="pattern"[^>]*data-dc-decoration="pointer-layer"[^>]*aria-hidden="true"/);
   assert.match(html, /<img[^>]*pattern\.svg[^>]*data-dc-decoration="pointer-layer"/);
   assert.doesNotMatch(html, /<img[^>]*pattern\.svg[^>]*data-dc-image-id/);
   assert.match(html, /class="editorial-background"[^>]*data-dc-image-id="css_[a-f0-9]{18}"/);
@@ -1187,8 +1190,11 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.doesNotMatch(html, /id="compact-row"[^>]*data-dc-mobile-stack/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-decoration="pointer-layer"\]\{pointer-events:none!important\}/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-stack="true"\]\{flex-wrap:wrap!important\}/);
+  assert.match(String(result.files.get('styles.css')), /dc-repair-mobile-grid/);
+  assert.match(String(result.files.get('styles.css')), /@media \(max-width:600px\)[^{]*\{\.booking-layout\{grid-template-columns:minmax\(0,1fr\)\s*!important;grid-auto-flow:row\s*!important\}\}/);
   assert.ok(result.transformations.some((item) => item.rule === 'make-decorative-layers-pointer-transparent'));
   assert.ok(result.transformations.some((item) => item.rule === 'make-inline-flex-content-responsive'));
+  assert.ok(result.transformations.some((item) => item.rule === 'stack-fixed-grid-on-mobile'));
   assert.equal(result.qualityReceipt.status, 'passed', JSON.stringify(result.qualityReceipt.checks, null, 2));
 });
 

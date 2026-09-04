@@ -7,6 +7,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { LEGACY_CLI_HELP, parseLegacyArgs, runLegacyCli } from './cli.js';
+import { DEFAULT_LEGACY_RULE_VERSION } from './types.js';
 
 const execFileAsync = promisify(execFile);
 
@@ -40,9 +41,10 @@ test('operational entry points share the fresh Documents root and versioned runn
     readFile(join(repositoryRoot, 'scripts', 'install-legacy-rehab-task.ps1'), 'utf8'),
   ]);
   const workRoot = String.raw`C:\Users\chris\Documents\DailyClarity\template-rehab`;
+  const ruleVersionPattern = new RegExp(DEFAULT_LEGACY_RULE_VERSION.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   for (const script of [runner, installer]) {
     assert.match(script, new RegExp(`\\[string\\]\\$WorkRoot = '${workRoot.replace(/\\/g, '\\\\')}'`));
-    assert.match(script, /legacy-rehab-1\.0\.27/);
+    assert.match(script, ruleVersionPattern);
   }
   assert.match(runner, /attempt=\$attempt\/\$effectiveMaxAttempts rule=\$RuleVersion source=/);
   assert.match(

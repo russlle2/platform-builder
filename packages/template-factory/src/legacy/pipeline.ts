@@ -2478,6 +2478,36 @@ export function isDeterministicPrimaryRenderIssue(code: string): boolean {
     || code === 'horizontal_overflow';
 }
 
+const DETERMINISTIC_SECONDARY_RENDER_ISSUES = new Set([
+  'edit_smoke_failed',
+  'image_edit_smoke_failed',
+  'customer_editor_text_failed',
+  'customer_editor_attribute_failed',
+  'customer_editor_select_option_failed',
+  'customer_editor_standalone_image_failed',
+  'customer_editor_responsive_picture_failed',
+  'customer_editor_navigation_failed',
+  'customer_editor_image_path_missing',
+  'navigation_smoke_failed',
+  'form_smoke_failed',
+  'form_compatibility_missing',
+]);
+
+/**
+ * Browser interaction checks can fail as a consequence of a repairable
+ * contrast ancestor, hidden-opacity state, broken image, or overflow defect.
+ * Permit the deterministic pass when at least one primary repair has concrete
+ * evidence and every companion failure is an interaction check that can be
+ * reassessed afterward. An interaction-only failure still fails closed.
+ */
+export function shouldAttemptDeterministicRenderRemediation(codes: readonly string[]): boolean {
+  return codes.some(isDeterministicPrimaryRenderIssue)
+    && codes.every((code) => (
+      isDeterministicPrimaryRenderIssue(code)
+      || DETERMINISTIC_SECONDARY_RENDER_ISSUES.has(code)
+    ));
+}
+
 async function rematerializeRenderFallback(
   context: LegacyCommandContext,
   template: LeasedTemplate,
@@ -2831,14 +2861,15 @@ export async function renderPendingBatch(
 
     if (!passed && remediationDepth < 5) {
       const failedIssues = values.filter((item) => !item.passed).flatMap((item) => item.issues);
-      const onlyDeterministicPrimaryIssues = failedIssues.length > 0
-        && failedIssues.every((issue) => isDeterministicPrimaryRenderIssue(issue.code));
+      const shouldAttemptDeterministicRepair = shouldAttemptDeterministicRenderRemediation(
+        failedIssues.map((issue) => issue.code),
+      );
       let remediated = false;
       // Multiple bounded passes cover state that can change after ancestor
       // opacity correction and allow static semantic/image repairs discovered
       // only in a hydrated browser. The fifth and final remediation remains the
       // audited neutral fallback for genuinely irreparable pages.
-      if (remediationDepth < 4 && onlyDeterministicPrimaryIssues) {
+      if (remediationDepth < 4 && shouldAttemptDeterministicRepair) {
         remediated = await rematerializeRenderFallback(context, template, values, 'accessibility');
       }
       if (!remediated) {

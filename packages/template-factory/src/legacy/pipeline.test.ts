@@ -19,6 +19,7 @@ import {
   rehabStagingUploaderArgs,
   repairOne,
   renderPendingBatch,
+  shouldAttemptDeterministicRenderRemediation,
   validateFinalPageEvidenceMatrix,
   validatePromotionSourceState,
   validatePilotGateAuthorization,
@@ -103,6 +104,14 @@ test('browser remediation retries only defects covered by deterministic repair',
   assert.equal(isDeterministicPrimaryRenderIssue('broken_images'), true);
   assert.equal(isDeterministicPrimaryRenderIssue('axe_aria-prohibited-attr'), true);
   assert.equal(isDeterministicPrimaryRenderIssue('customer_editor_navigation_failed'), false);
+  assert.equal(shouldAttemptDeterministicRenderRemediation(['axe_color-contrast']), true);
+  assert.equal(shouldAttemptDeterministicRenderRemediation([
+    'axe_color-contrast',
+    'edit_smoke_failed',
+    'customer_editor_navigation_failed',
+  ]), true);
+  assert.equal(shouldAttemptDeterministicRenderRemediation(['customer_editor_navigation_failed']), false);
+  assert.equal(shouldAttemptDeterministicRenderRemediation(['axe_color-contrast', 'page_exception']), false);
 });
 
 test('promotion-grade final evidence requires the current protocol and exact page matrices', () => {

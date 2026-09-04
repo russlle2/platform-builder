@@ -213,6 +213,13 @@ describe('compiler-v3 customer route contract', () => {
       customTheme,
     })
 
+    // V3 pages load only the stylesheets they author. The complete stylesheet
+    // set remains available for theme-token discovery without being injected
+    // globally into every page.
+    expect(preview.css).toBeNull()
+    expect(preview.themeStylesheet).toContain(sourceCss)
+    expect(preview.themeStylesheet).toContain(secondaryCss)
+
     const assetBase = '/api/templates/wellness_coach/legacy-route-fixture/assets'
     const previewDocument = composeCustomerPreviewDocument({
       html: preview.html,
@@ -323,6 +330,7 @@ describe('compiler-v3 customer route contract', () => {
     expect(deployedHtml).not.toMatch(/<meta\b[^>]*name="viewport"[^>]*data-dc-edit-id/i)
     expect(deployedHtml).not.toMatch(/<(?:main|nav|a|form|label|button)\b[^>]*data-dc-edit-id="dc-edit-/)
     expect(deployedHtml).toContain(preview.variationCSS)
+    expect(deployedHtml).not.toContain(sourceCss)
     expect(deployedHtml).toContain('--dc-theme-color_secondary:')
     expect(deployedHtml).toContain('--dc-theme-font_secondary: Verdana, sans-serif !important')
     expect(deployedHtml).toContain('data-dailyclarity-contact')

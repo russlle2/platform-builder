@@ -20,7 +20,10 @@ import {
 } from '@/lib/templates/niche-registry'
 import { buildVariationCSS } from '@/lib/templates/variations'
 import { buildCustomThemeCss, type CustomTheme } from '@/lib/custom-theme'
-import { combineTemplateThemeStylesheets } from '@/lib/template-preview-composition'
+import {
+  combineTemplateThemeStylesheets,
+  selectInjectableTemplateCss,
+} from '@/lib/template-preview-composition'
 import {
   assertCatalogRevision,
   snapshotCatalogRevision,
@@ -378,7 +381,8 @@ export async function buildDeployFiles(
     )
 
     const injectedStyles: string[] = []
-    if (cssFile) injectedStyles.push(cssFile)
+    const injectableBaseCss = selectInjectableTemplateCss(rawHtml, cssFile)
+    if (injectableBaseCss) injectedStyles.push(injectableBaseCss)
     if (variationCSS) injectedStyles.push(variationCSS)
     if (injectedStyles.length > 0) {
       html = html.replace('</head>', `<style>${injectedStyles.join('\n')}</style></head>`)

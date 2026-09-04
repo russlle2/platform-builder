@@ -91,6 +91,31 @@ describe('template preview route', () => {
     )
   })
 
+  it('keeps the authored v3 stylesheet graph without injecting an unrelated base stylesheet', async () => {
+    registry.readTemplateFile.mockImplementation(async (
+      _niche: string,
+      _template: string,
+      file: string,
+    ) => file === 'index.html'
+      ? '<!doctype html><html data-dc-catalog-version="3"><head><link rel="stylesheet" href="assets/css/.dc-inline-component.css"></head><body class="pattern"><h1>{{BUSINESS_NAME}}</h1></body></html>'
+      : file === 'assets/css/styles.css'
+        ? `${compiledCss}.pattern{position:absolute;inset:0;opacity:.12;pointer-events:none}`
+        : componentCss)
+
+    const response = await POST(request(JSON.stringify({
+      values: { BUSINESS_NAME: 'Reachable Studio' },
+      colorScheme: 'ocean-breeze',
+    }), '198.51.100.17'), params)
+    const body = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(body.css).toBeNull()
+    expect(body.html).toContain('Reachable Studio')
+    expect(body.themeStylesheet).toContain('.pattern{position:absolute')
+    expect(body.themeStylesheet).toContain(componentCss)
+    expect(body.variationCSS).toContain('--dc-theme-color_bg: #0B1628 !important')
+  })
+
   it('sanitizes values and marks personalized output private', async () => {
     const response = await POST(request(JSON.stringify({
       values: {

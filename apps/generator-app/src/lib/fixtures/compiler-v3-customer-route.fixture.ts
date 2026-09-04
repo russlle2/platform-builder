@@ -37,7 +37,7 @@ export const COMPILER_V3_ROUTE_FIXTURE = {
   } satisfies TemplateMeta,
   files: {
     'index.html': [
-      '<!doctype html><html lang="en"><head><meta charset="utf-8">',
+      '<!doctype html><html lang="en" data-dc-catalog-version="3"><head><meta charset="utf-8">',
       '<meta name="viewport" content="width=device-width,initial-scale=1">',
       '<title data-dc-edit-id="txt_888888888888888888">Original page title</title>',
       '<meta name="description" content="Original description" data-dc-edit-id="txt_222222222222222222" data-dc-edit-attribute="content">',

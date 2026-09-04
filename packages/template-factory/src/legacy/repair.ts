@@ -929,7 +929,7 @@ const INTERACTIVE_DESCENDANT_TAGS = new Set(['a', 'button', 'details', 'input', 
 function markDecorativeHitLayers(document: HtmlNode): number {
   let count = 0;
   walk(document, (node) => {
-    if (!node.tagName || !['aside', 'div', 'img', 'section', 'span'].includes(node.tagName)) return;
+    if (!node.tagName || !['aside', 'div', 'img', 'section', 'span', 'svg'].includes(node.tagName)) return;
     const identity = `${getAttr(node, 'id') ?? ''} ${getAttr(node, 'class') ?? ''}`;
     const stronglyDecorative = DECORATIVE_HIT_LAYER_SIGNAL.test(identity);
     const backgroundNamed = BACKGROUND_HIT_LAYER_SIGNAL.test(identity);
@@ -2581,6 +2581,92 @@ export function detectFoundation(html: string): string | undefined {
   return marker?.replace(/\s+/g, ' ');
 }
 
+const MOBILE_GRID_REPAIR_MARKER = 'dc-repair-mobile-grid';
+
+function topLevelGridTracks(value: string): string[] {
+  const tracks: string[] = [];
+  let token = '';
+  let depth = 0;
+  let quote = '';
+  const flush = (): void => {
+    const next = token.trim();
+    token = '';
+    if (next && !/^\[[^\]]+\]$/.test(next)) tracks.push(next);
+  };
+  for (let index = 0; index < value.length; index += 1) {
+    const char = value[index]!;
+    if (quote) {
+      token += char;
+      if (char === quote && value[index - 1] !== '\\') quote = '';
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      token += char;
+      continue;
+    }
+    if (char === '(' || char === '[') depth += 1;
+    else if (char === ')' || char === ']') depth = Math.max(0, depth - 1);
+    if (/\s/.test(char) && depth === 0) flush();
+    else token += char;
+  }
+  flush();
+  return tracks;
+}
+
+function needsMobileSingleColumn(value: string): boolean {
+  const normalized = value.replace(/\/\*[\s\S]*?\*\//g, '').trim();
+  if (!normalized || /^(?:none|subgrid|masonry|inherit|initial|revert(?:-layer)?|unset)$/i.test(normalized)) return false;
+  if (/\brepeat\(\s*(?:[2-9]|[1-9]\d+)\s*,/i.test(normalized)) return true;
+  return topLevelGridTracks(normalized).length > 1;
+}
+
+/**
+ * Legacy fixed-track grids frequently omit their responsive breakpoint. The
+ * browser then preserves a fixed sidebar inside a 390px viewport and squeezes
+ * the editable content column down to one-character lines. Add an idempotent,
+ * stylesheet-local fallback only for rules that explicitly declare both a
+ * grid formatting context and more than one fixed track.
+ */
+function addMobileGridFallbacks(root: postcss.Root): number {
+  let alreadyRepaired = false;
+  root.walkComments((comment) => {
+    if (comment.text.trim() === MOBILE_GRID_REPAIR_MARKER) alreadyRepaired = true;
+  });
+  if (alreadyRepaired) return 0;
+
+  const selectors = new Set<string>();
+  root.walkRules((rule) => {
+    const declarations = (rule.nodes ?? []).filter((node): node is postcss.Declaration => node.type === 'decl');
+    const displayGrid = declarations.some((declaration) => (
+      decodeCssEscapes(declaration.prop).toLowerCase() === 'display'
+      && /^(?:inline-)?grid$/i.test(declaration.value.trim())
+    ));
+    const fixedMultiTrack = declarations.some((declaration) => (
+      decodeCssEscapes(declaration.prop).toLowerCase() === 'grid-template-columns'
+      && needsMobileSingleColumn(declaration.value)
+    ));
+    if (!displayGrid || !fixedMultiTrack) return;
+    for (const selector of splitSelectorList(rule.selector) ?? []) {
+      if (!/::(?:before|after|marker)\b/i.test(selector)) selectors.add(selector);
+    }
+  });
+  if (selectors.size === 0) return 0;
+
+  const media = postcss.atRule({ name: 'media', params: '(max-width:600px)' });
+  for (const selector of [...selectors].sort()) {
+    const rule = postcss.rule({ selector });
+    const columns = postcss.decl({ prop: 'grid-template-columns', value: 'minmax(0,1fr)' });
+    columns.important = true;
+    const flow = postcss.decl({ prop: 'grid-auto-flow', value: 'row' });
+    flow.important = true;
+    rule.append(columns, flow);
+    media.append(rule);
+  }
+  root.append(postcss.comment({ text: MOBILE_GRID_REPAIR_MARKER }), media);
+  return selectors.size;
+}
+
 export function repairStylesheet(css: string, file: string): StylesheetRepairResult {
   const issues: RepairIssue[] = [];
   const transformations: Transformation[] = [];
@@ -2829,6 +2915,10 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
     transformations.push({ rule: 'remove-unsafe-css-generated-content', file, count: unsafeGeneratedContent });
   }
   if (unsafe) transformations.push({ rule: 'strip-unsafe-css', file, count: unsafe });
+  const mobileGridFallbacks = addMobileGridFallbacks(root);
+  if (mobileGridFallbacks) {
+    transformations.push({ rule: 'stack-fixed-grid-on-mobile', file, count: mobileGridFallbacks });
+  }
   return { css: root.toString(), backgrounds, issues, transformations };
 }
 
