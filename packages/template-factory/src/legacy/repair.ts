@@ -1261,6 +1261,9 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
     .replace(/\bsuccess stor(?:y|ies)\b/gi, 'service information')
     .replace(/\bwhat (?:our )?(?:clients?|patients?) (?:say|share)\b/gi, 'what to expect')
     .replace(/\bvoices? from (?:the )?(?:cohort|community|clients?)\b/gi, 'practice perspectives')
+    .replace(/\b(?:real )?client note\b/gi, 'service note')
+    .replace(/\bfeatured in\b/gi, 'described in')
+    .replace(/\breal results\b/gi, 'practical progress')
     .replace(/\btrusted by\b/gi, 'designed for');
   walk(document, (node) => {
     if (node.nodeName === '#text' && typeof node.value === 'string') {

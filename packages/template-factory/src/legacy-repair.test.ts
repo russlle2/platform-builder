@@ -214,6 +214,25 @@ test('neutralizes residual proof navigation labels while preserving navigation',
   assert.equal(result.qualityReceipt.status, 'passed');
 });
 
+test('neutralizes proof vocabulary inside ordinary FAQ copy without replacing the FAQ', () => {
+  const result = repairLegacyTemplate({
+    slug: 'proof-vocabulary-faq',
+    niche: 'aromatherapy',
+    files: new Map([['index.html', `<!doctype html><html><head><title>Practice</title></head><body><main>
+      <h1>{{BUSINESS_NAME}}</h1><dl><dt>What commitment supports real results?</dt><dd>Start with a routine that fits your schedule.</dd></dl>
+      <p>Service questions can be discussed before booking.</p><a href="mailto:{{EMAIL}}">Contact</a>
+      </main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+
+  assert.match(html, /What commitment supports practical progress\?/);
+  assert.match(html, /Start with a routine that fits your schedule\./);
+  assert.match(html, /Service questions can be discussed before booking\./);
+  assert.doesNotMatch(html, /real results/i);
+  assert.ok(result.transformations.some((item) => item.rule === 'remove-proof-vocabulary'));
+  assert.equal(result.qualityReceipt.status, 'passed');
+});
+
 test('preserves a page wrapper while replacing nested proof and normalizing escaped tokens', () => {
   const result = repairLegacyTemplate({
     slug: 'irregular-proof-wrapper',

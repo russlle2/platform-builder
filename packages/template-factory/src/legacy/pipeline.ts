@@ -3673,6 +3673,13 @@ async function runCommand(context: LegacyCommandContext): Promise<LegacyCommandO
     throw new Error(`Pilot authorization is no longer backed by complete current evidence: ${detail}`);
   }
   const repair = await repairTemplates(context, inventory);
+  if (repair.neutralFallbacks > 0) {
+    const fallbackSlugs = await durablePilotFallbackSlugs(
+      context,
+      inventory.templates.map((template) => template.slug),
+    );
+    assertNoNeutralFallbacks('Full catalogue repair', fallbackSlugs);
+  }
   const render = await renderPendingTemplates(context);
   const failed = context.ledger.listTemplates({ stages: ['failed'] });
   if (failed.length > 0) {
