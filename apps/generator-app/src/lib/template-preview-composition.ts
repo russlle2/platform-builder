@@ -23,6 +23,11 @@ export interface TemplatePreviewCompositionInput {
 export interface TemplatePreviewComposition {
   html: string
   css: string | null
+  /**
+   * Complete, non-injected stylesheet surface used to discover compiler theme
+   * tokens during live customer edits. `css` remains the page stylesheet.
+   */
+  themeStylesheet: string | null
   variationCSS: string | null
   page: string
 }
@@ -61,6 +66,7 @@ export function composeTemplatePreview(
   return {
     html: hydrateTemplate(input.html, input.values || {}, input.fields),
     css: css || null,
+    themeStylesheet: themeStylesheet || null,
     variationCSS: variationCSS || null,
     page: input.page,
   }

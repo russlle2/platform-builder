@@ -10,7 +10,7 @@ import {
 const getStoreMock = vi.hoisted(() => vi.fn())
 vi.mock('@netlify/blobs', () => ({ getStore: getStoreMock }))
 
-function completeRuntimeFixture() {
+function completeRuntimeFixture(identitySuffix = '') {
   const manifest: Record<string, Array<Record<string, unknown>>> = {}
   const mappings: Array<Record<string, unknown>> = []
   const gallery: Record<string, string[]> = {}
@@ -22,10 +22,10 @@ function completeRuntimeFixture() {
       const mapping = {
         legacySlug: slug,
         niche,
-        designId: `design_${slug}`,
-        contentPresetId: `content_${slug}`,
-        themePresetId: `theme_${slug}`,
-        qualityReceipt: `receipt_${slug}`,
+        designId: `design_${slug}${identitySuffix}`,
+        contentPresetId: `content_${slug}${identitySuffix}`,
+        themePresetId: `theme_${slug}${identitySuffix}`,
+        qualityReceipt: `receipt_${slug}${identitySuffix}`,
         canonicalLegacySlug: slug,
         disposition: 'canonical',
       }
@@ -101,6 +101,8 @@ it('serves staging metadata and assets only from the active hash prefix in the i
   const registry = await import('./niche-registry')
   const template = await registry.getTemplate('aromatherapy', String(first.slug))
   expect(template?.legacySlug).toBe(first.legacySlug)
+  expect(template?.catalogHash).toBe(fixture.pointer.catalogHash)
+  expect(template?.manifestHash).toBe(fixture.pointer.manifestHash)
   await expect(registry.readTemplateFile('aromatherapy', String(first.slug), 'index.html'))
     .resolves.toContain('{{BUSINESS_NAME}}')
   const bytes = await registry.readTemplateFileBuffer('aromatherapy', String(first.slug), 'index.html')
@@ -112,4 +114,76 @@ it('serves staging metadata and assets only from the active hash prefix in the i
   expect(reads).toContain(assetKey)
   expect(reads).not.toContain('_manifest.json')
   expect(fetchMock).not.toHaveBeenCalled()
+})
+
+it('keeps a saved edit bound to its historical hash after the active pointer changes', async () => {
+  const active = completeRuntimeFixture('_active')
+  const historical = completeRuntimeFixture('_purchased')
+  const first = historical.manifest.aromatherapy![0]!
+  const activeFirst = active.manifest.aromatherapy![0]!
+  const historicalPrefix = `catalogs/${historical.pointer.catalogHash}`
+  const activePrefix = `catalogs/${active.pointer.catalogHash}`
+  const historicalAssetKey = `${historicalPrefix}/${first.dir}/index.html`
+  const activeAssetKey = `${activePrefix}/${activeFirst.dir}/index.html`
+  const values = new Map<string, unknown>([
+    [REHAB_STAGING_ACTIVE_KEY, active.pointer],
+    [active.pointer.catalogKey, active.catalogText],
+    [active.pointer.manifestKey, active.manifest],
+    [historical.pointer.catalogKey, historical.catalogText],
+    [historical.pointer.manifestKey, historical.manifest],
+    [activeAssetKey, '<main>active revision</main>'],
+    [historicalAssetKey, '<main>purchased revision</main>'],
+  ])
+  const reads: string[] = []
+  const store = {
+    async get(key: string, options?: { type?: 'json' | 'arrayBuffer' }) {
+      reads.push(key)
+      const value = values.get(key)
+      if (value === undefined) return null
+      if (options?.type === 'arrayBuffer') return new TextEncoder().encode(String(value)).buffer
+      return value
+    },
+  }
+  getStoreMock.mockReturnValue(store)
+  vi.stubGlobal('fetch', vi.fn())
+  vi.stubEnv('DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE', 'rehab-staging')
+  vi.stubEnv('CONTEXT', 'branch-deploy')
+
+  const registry = await import('./niche-registry')
+  const hashlessLegacyPin = {
+    contractVersion: 3 as const,
+    designId: String(first.designId),
+    contentPresetId: String(first.contentPresetId),
+    themePresetId: String(first.themePresetId),
+    qualityReceipt: String(first.qualityReceipt),
+  }
+  await expect(registry.getTemplateAtCatalogRevision(
+    'aromatherapy',
+    String(first.slug),
+    hashlessLegacyPin,
+  )).rejects.toThrow(/catalogue revision mismatch/i)
+
+  const pin = {
+    contractVersion: 3 as const,
+    designId: String(first.designId),
+    contentPresetId: String(first.contentPresetId),
+    themePresetId: String(first.themePresetId),
+    qualityReceipt: String(first.qualityReceipt),
+    catalogHash: historical.pointer.catalogHash,
+    manifestHash: historical.pointer.manifestHash,
+  }
+  const resolved = await registry.getTemplateAtCatalogRevision(
+    'aromatherapy',
+    String(first.slug),
+    pin,
+  )
+  expect(resolved?.qualityReceipt).toBe(first.qualityReceipt)
+  await expect(registry.readTemplateFile(
+    'aromatherapy',
+    String(first.slug),
+    'index.html',
+    pin,
+  )).resolves.toContain('purchased revision')
+  expect(reads).toContain(historicalAssetKey)
+  expect(reads).not.toContain(activeAssetKey)
 })

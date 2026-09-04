@@ -10,10 +10,12 @@ import {
   sanitizeCustomTheme,
   type CustomTheme,
 } from '@/lib/custom-theme'
+import { sanitizeCatalogRevisionPin } from '@/lib/catalog-revision'
 
 const pricingTiers = PLAN_LIST
 
 const CHECKOUT_CONTEXT_KEY = 'pb_checkout_context'
+const CHECKOUT_CATALOG_REVISION_KEY = 'pb_catalog_revision'
 
 type CheckoutContext = {
   slug: string | null
@@ -85,6 +87,14 @@ export default function PricingClient() {
       } catch { /* ignore */ }
 
       const ctx = readCheckoutContext()
+      let catalogRevision: ReturnType<typeof sanitizeCatalogRevisionPin> = null
+      try {
+        const rawRevision = sessionStorage.getItem(CHECKOUT_CATALOG_REVISION_KEY)
+        const savedRevision = rawRevision ? JSON.parse(rawRevision) as Record<string, unknown> : null
+        if (savedRevision?.niche === ctx.niche && savedRevision.template === ctx.template) {
+          catalogRevision = sanitizeCatalogRevisionPin(savedRevision.catalogRevision)
+        }
+      } catch { /* ignore malformed legacy state */ }
 
       // A paid order must include enough information to provision a real site.
       // Send direct pricing visitors into the preview flow instead of failing
@@ -123,12 +133,22 @@ export default function PricingClient() {
           imageSwaps,
           imageOwner,
           customTheme,
+          catalogRevision,
         }),
       })
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
         const failure = data as { error?: string; code?: string; recoveryUrl?: string }
-        if (failure.code?.startsWith('image_upload_')) {
+        if (
+          failure.code?.startsWith('image_upload_') ||
+          failure.code === 'catalog_revision_unavailable'
+        ) {
+          if (failure.code === 'catalog_revision_unavailable') {
+            // The recovery link intentionally starts a fresh preview. Without
+            // clearing this unavailable pin, that page would immediately ask
+            // for the same missing immutable snapshot and strand the customer.
+            try { sessionStorage.removeItem(CHECKOUT_CATALOG_REVISION_KEY) } catch { /* ignore */ }
+          }
           const base = failure.recoveryUrl || '/preview-your-business'
           setCheckoutRecoveryUrl(`${base}?plan=${encodeURIComponent(planKey)}`)
         }

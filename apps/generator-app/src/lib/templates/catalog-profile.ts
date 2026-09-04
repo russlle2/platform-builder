@@ -51,6 +51,14 @@ export interface LoadedRehabStagingCatalog {
   pointer: RehabStagingActivePointer
 }
 
+export interface LoadedRehabCatalogSnapshot {
+  prefix: string
+  manifest: Record<string, unknown[]>
+  catalog: Record<string, unknown>
+  catalogHash: string
+  manifestHash: string
+}
+
 export interface RehabCatalogValidation {
   pass: boolean
   errors: string[]
@@ -179,10 +187,10 @@ function safeMappingIdentity(value: unknown): value is Record<string, unknown> {
   )
 }
 
-/** Validate the complete immutable rehab snapshot and its runtime manifest. */
-export function validateRehabStagingCatalogDocuments(
+function validateRehabCatalogDocuments(
   manifestValue: unknown,
   catalogValue: unknown,
+  expectedByNiche?: Readonly<Record<string, number>>,
 ): RehabCatalogValidation {
   const errors: string[] = []
   const manifest = manifestValue && typeof manifestValue === 'object' && !Array.isArray(manifestValue)
@@ -197,15 +205,22 @@ export function validateRehabStagingCatalogDocuments(
   const countsByNiche: Record<string, number> = {}
   const manifestByKey = new Map<string, Record<string, unknown>>()
   if (manifest) {
-    for (const [niche, expected] of Object.entries(REHAB_STAGING_EXPECTED_BY_NICHE)) {
+    const manifestNiches = Object.keys(manifest)
+    const niches = expectedByNiche ? Object.keys(expectedByNiche) : manifestNiches
+    for (const niche of niches) {
+      const expected = expectedByNiche?.[niche]
       const entries = manifest[niche]
       const count = Array.isArray(entries) ? entries.length : 0
       countsByNiche[niche] = count
+      if (!SAFE_SEGMENT.test(niche)) {
+        errors.push(`${niche}: rehabilitation niche is unsafe`)
+        continue
+      }
       if (!Array.isArray(entries)) {
         errors.push(`${niche}: rehabilitation manifest entry is missing or malformed`)
         continue
       }
-      if (count !== expected) errors.push(`${niche}: expected ${expected}, found ${count}`)
+      if (expected !== undefined && count !== expected) errors.push(`${niche}: expected ${expected}, found ${count}`)
       for (const [index, raw] of entries.entries()) {
         if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
           errors.push(`${niche}[${index}]: malformed runtime template entry`)
@@ -225,6 +240,7 @@ export function validateRehabStagingCatalogDocuments(
         )).filter(Boolean))
         if (
           typeof slug !== 'string' || !SAFE_SEGMENT.test(slug)
+          || entry.legacySlug !== slug
           || entry.slug !== slug
           || entry.nicheSlug !== niche
           || entry.dir !== `${niche}/${slug}`
@@ -259,26 +275,38 @@ export function validateRehabStagingCatalogDocuments(
         else manifestByKey.set(key, entry)
       }
     }
-    for (const niche of Object.keys(manifest)) {
-      if (!Object.prototype.hasOwnProperty.call(REHAB_STAGING_EXPECTED_BY_NICHE, niche)) {
+    if (expectedByNiche) {
+      for (const niche of manifestNiches) {
+        if (!Object.prototype.hasOwnProperty.call(expectedByNiche, niche)) {
         errors.push(`${niche}: unexpected rehabilitation niche`)
         countsByNiche[niche] = Array.isArray(manifest[niche]) ? manifest[niche].length : 0
+        }
       }
     }
   }
 
   const totalTemplates = Object.values(countsByNiche).reduce((sum, count) => sum + count, 0)
-  if (totalTemplates !== REHAB_STAGING_EXPECTED_TOTAL) {
-    errors.push(`rehabilitation total: expected ${REHAB_STAGING_EXPECTED_TOTAL}, found ${totalTemplates}`)
+  if (totalTemplates < 1) errors.push('rehabilitation catalogue must contain at least one template')
+  const expectedTotal = expectedByNiche
+    ? Object.values(expectedByNiche).reduce((sum, count) => sum + count, 0)
+    : totalTemplates
+  if (totalTemplates !== expectedTotal) {
+    errors.push(`rehabilitation total: expected ${expectedTotal}, found ${totalTemplates}`)
   }
 
   const mappingsByKey = new Map<string, Record<string, unknown>>()
   if (catalog) {
     if (
       catalog.contractVersion !== 3
-      || catalog.sourceTemplates !== REHAB_STAGING_EXPECTED_TOTAL
+      || typeof catalog.ruleVersion !== 'string'
+      || !catalog.ruleVersion.trim()
+      || typeof catalog.generatedAt !== 'string'
+      || !Number.isFinite(Date.parse(catalog.generatedAt))
+      || !Number.isSafeInteger(catalog.sourceTemplates)
+      || (catalog.sourceTemplates as number) < 1
+      || catalog.sourceTemplates !== totalTemplates
       || !Array.isArray(catalog.templates)
-      || catalog.templates.length !== REHAB_STAGING_EXPECTED_TOTAL
+      || catalog.templates.length !== totalTemplates
       || !catalog.gallery || typeof catalog.gallery !== 'object' || Array.isArray(catalog.gallery)
     ) errors.push('rehabilitation catalogue document failed its v3/count contract')
     if (Array.isArray(catalog.templates)) {
@@ -317,9 +345,18 @@ export function validateRehabStagingCatalogDocuments(
   }
 
   const expectedGallery: Record<string, string[]> = {}
+  const canonicalKeyByDesign = new Map<string, string>()
   for (const mapping of mappingsByKey.values()) {
     if (mapping.disposition !== 'canonical') continue
     const niche = mapping.niche as string
+    const canonicalKey = `${niche}/${String(mapping.legacySlug)}`
+    const designId = mapping.designId as string
+    const existingCanonicalKey = canonicalKeyByDesign.get(designId)
+    if (existingCanonicalKey && existingCanonicalKey !== canonicalKey) {
+      errors.push(`rehabilitation design ${designId} has multiple canonical templates`)
+    } else {
+      canonicalKeyByDesign.set(designId, canonicalKey)
+    }
     const entries = expectedGallery[niche] ?? []
     entries.push(mapping.legacySlug as string)
     expectedGallery[niche] = entries
@@ -333,7 +370,7 @@ export function validateRehabStagingCatalogDocuments(
   }
   if (catalog?.gallery && typeof catalog.gallery === 'object' && !Array.isArray(catalog.gallery)) {
     const gallery = catalog.gallery as Record<string, unknown>
-    for (const niche of new Set([...Object.keys(REHAB_STAGING_EXPECTED_BY_NICHE), ...Object.keys(gallery)])) {
+    for (const niche of new Set([...Object.keys(expectedGallery), ...Object.keys(gallery)])) {
       const actual = gallery[niche]
       const expected = expectedGallery[niche] ?? []
       if (!Array.isArray(actual) || JSON.stringify(actual) !== JSON.stringify(expected)) {
@@ -343,6 +380,18 @@ export function validateRehabStagingCatalogDocuments(
   }
 
   return { pass: errors.length === 0, errors, totalTemplates, countsByNiche }
+}
+
+/** Validate the active staging snapshot against the currently approved source census. */
+export function validateRehabStagingCatalogDocuments(
+  manifestValue: unknown,
+  catalogValue: unknown,
+): RehabCatalogValidation {
+  return validateRehabCatalogDocuments(
+    manifestValue,
+    catalogValue,
+    REHAB_STAGING_EXPECTED_BY_NICHE,
+  )
 }
 
 async function getJson(store: RehabCatalogStore, key: string): Promise<unknown> {
@@ -356,6 +405,53 @@ async function getText(store: RehabCatalogStore, key: string): Promise<string> {
 }
 
 /**
+ * Load one content-addressed rehabilitation snapshot by its immutable hashes.
+ * The store is selected by trusted server configuration; callers can never
+ * use the locator to choose another store or escape the hash namespace.
+ */
+export async function loadRehabCatalogSnapshot(
+  store: RehabCatalogStore,
+  locator: { catalogHash: string; manifestHash: string },
+): Promise<LoadedRehabCatalogSnapshot> {
+  if (!SHA256.test(locator.catalogHash) || !SHA256.test(locator.manifestHash)) {
+    throw new Error('Historical rehabilitation catalogue locator is invalid')
+  }
+  const prefix = rehabCatalogPrefix(locator.catalogHash)
+  const catalogKey = `${prefix}/_catalog-v3.json`
+  const manifestKey = `${prefix}/_manifest.json`
+  const [catalogText, manifest] = await Promise.all([
+    getText(store, catalogKey),
+    getJson(store, manifestKey),
+  ])
+  if (catalogDocumentHash(catalogText) !== locator.catalogHash) {
+    throw new Error('Rehabilitation catalogue bytes do not match the requested historical hash')
+  }
+  if (catalogManifestHash(manifest) !== locator.manifestHash) {
+    throw new Error('Rehabilitation manifest does not match the requested historical hash')
+  }
+  let catalog: unknown
+  try {
+    catalog = JSON.parse(catalogText)
+  } catch {
+    throw new Error('Historical rehabilitation catalogue document is malformed JSON')
+  }
+  // Historical snapshots validate against the immutable counts declared by
+  // their own v3 document. They must not become unreadable merely because a
+  // later active catalogue legitimately adds or removes niches/templates.
+  const validation = validateRehabCatalogDocuments(manifest, catalog)
+  if (!validation.pass) {
+    throw new Error(`Historical rehabilitation catalogue failed validation: ${validation.errors.join('; ')}`)
+  }
+  return {
+    prefix,
+    manifest: manifest as Record<string, unknown[]>,
+    catalog: catalog as Record<string, unknown>,
+    catalogHash: locator.catalogHash,
+    manifestHash: locator.manifestHash,
+  }
+}
+
+/**
  * Load exactly one active, immutable rehab catalogue from its dedicated store.
  * The caller supplies only that store; there is deliberately no launch-store,
  * filesystem, or HTTP fallback in this code path.
@@ -364,32 +460,23 @@ export async function loadRehabStagingCatalog(
   store: RehabCatalogStore,
 ): Promise<LoadedRehabStagingCatalog> {
   const pointer = validateRehabStagingActivePointer(await getJson(store, REHAB_STAGING_ACTIVE_KEY))
-  const [catalogText, manifest] = await Promise.all([
-    getText(store, pointer.catalogKey),
-    getJson(store, pointer.manifestKey),
-  ])
-  if (catalogDocumentHash(catalogText) !== pointer.catalogHash) {
-    throw new Error('Active rehabilitation catalogue bytes do not match the pointer hash')
-  }
-  if (catalogManifestHash(manifest) !== pointer.manifestHash) {
-    throw new Error('Active rehabilitation manifest does not match the pointer hash')
-  }
-  let catalog: unknown
+  let snapshot: LoadedRehabCatalogSnapshot
   try {
-    catalog = JSON.parse(catalogText)
-  } catch {
-    throw new Error('Active rehabilitation catalogue document is malformed JSON')
+    snapshot = await loadRehabCatalogSnapshot(store, pointer)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error(`Active rehabilitation catalogue failed validation: ${message}`)
   }
-  const validation = validateRehabStagingCatalogDocuments(manifest, catalog)
-  if (!validation.pass) {
-    throw new Error(`Active rehabilitation catalogue failed validation: ${validation.errors.join('; ')}`)
+  const activeValidation = validateRehabStagingCatalogDocuments(snapshot.manifest, snapshot.catalog)
+  if (!activeValidation.pass) {
+    throw new Error(`Active rehabilitation catalogue failed validation: ${activeValidation.errors.join('; ')}`)
   }
   return {
     profile: 'rehab-staging',
     storeName: REHAB_STAGING_TEMPLATE_STORE,
-    prefix: rehabCatalogPrefix(pointer.catalogHash),
-    manifest: manifest as Record<string, unknown[]>,
-    catalog: catalog as Record<string, unknown>,
+    prefix: snapshot.prefix,
+    manifest: snapshot.manifest,
+    catalog: snapshot.catalog,
     pointer,
   }
 }

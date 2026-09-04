@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { lstat, readFile, readdir, realpath } from 'node:fs/promises'
 import { isAbsolute, relative, resolve, sep } from 'node:path'
+import { parse } from 'parse5'
 import {
   buildCheckoutTemplateState,
   mergePortalSiteData,
@@ -29,6 +30,8 @@ import { applyPageCustomizationsForDeploy } from './site-deploy'
 import { combineTemplateThemeStylesheets } from './template-preview-composition'
 import { isSafePreviewPage } from './template-preview-security'
 import { composeCustomerPreviewDocument } from './customer-preview-document'
+import { catalogDocumentHash, catalogManifestHash } from './templates/catalog-profile'
+import type { CatalogSnapshotLocator } from './catalog-revision'
 
 const SAFE_SEGMENT = /^(?!\.{1,2}$)[A-Za-z0-9._-]+$/
 const SAFE_RELATIVE_FILE = /^(?!\/)(?!.*\\)(?!.*(?:^|\/)\.{1,2}(?:\/|$))[A-Za-z0-9._/-]+$/
@@ -38,6 +41,10 @@ const VOID_HTML_ELEMENTS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 
 const INTERACTION_ELEMENTS = new Set(['a', 'button', 'form', 'input', 'label', 'nav', 'option', 'select', 'textarea'])
 const DEFAULT_MAX_DIAGNOSTICS = 100
 const DEFAULT_WORKERS = 8
+const PERMANENTLY_HIDDEN_STYLE = /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse)|content-visibility\s*:\s*hidden|opacity\s*:\s*0(?:\.0*)?)(?:\s*!important)?\s*(?:;|$)/i
+const POINTER_EVENTS_NONE_STYLE = /(?:^|;)\s*pointer-events\s*:\s*none(?:\s*!important)?\s*(?:;|$)/i
+const DECORATIVE_IMAGE_SIGNAL = /(?:^|[\s/_.-])(?:aura|decor(?:ation|ative)?|grain|noise|ornament|pattern|texture)(?=$|[\s/_.-])/i
+const PROTECTED_BACKGROUND_TAGS = new Set(['a', 'button', 'input', 'select', 'textarea', 'option', 'label', 'summary'])
 
 const SENTINEL_THEME: CustomTheme = {
   primary: '#7a315c',
@@ -109,6 +116,21 @@ interface ThemePreset {
   id: string
   legacySlug: string
   tokens: ThemeTokenEntry[]
+}
+
+interface ParsedHtmlNode {
+  nodeName: string
+  tagName?: string
+  attrs?: Array<{ name: string; value: string }>
+  childNodes?: ParsedHtmlNode[]
+}
+
+interface AdvertisedSlotState {
+  hidden: boolean
+  pointerless: boolean
+  decorative: boolean
+  protectedAction: boolean
+  identity: string
 }
 
 export interface RehabCustomizationDiagnostic {
@@ -239,6 +261,56 @@ function targetInnerHtml(html: string, attribute: string, value: string): string
   return undefined
 }
 
+function advertisedSlotStates(html: string): {
+  edits: Map<string, AdvertisedSlotState>
+  images: Map<string, AdvertisedSlotState>
+} {
+  const edits = new Map<string, AdvertisedSlotState>()
+  const images = new Map<string, AdvertisedSlotState>()
+  const root = parse(html) as unknown as ParsedHtmlNode
+  const attribute = (node: ParsedHtmlNode, name: string): string | undefined => (
+    node.attrs?.find((entry) => entry.name.toLowerCase() === name)?.value
+  )
+  const visit = (node: ParsedHtmlNode, hiddenAncestor = false, pointerlessAncestor = false): void => {
+    if (!node.tagName) {
+      for (const child of node.childNodes ?? []) visit(child, hiddenAncestor, pointerlessAncestor)
+      return
+    }
+    const style = attribute(node, 'style') ?? ''
+    const ariaHidden = (attribute(node, 'aria-hidden') ?? '').toLowerCase() === 'true'
+    const role = (attribute(node, 'role') ?? '').toLowerCase()
+    const hidden = hiddenAncestor
+      || attribute(node, 'hidden') !== undefined
+      || attribute(node, 'inert') !== undefined
+      || ariaHidden
+      || PERMANENTLY_HIDDEN_STYLE.test(style)
+    const pointerless = pointerlessAncestor || POINTER_EVENTS_NONE_STYLE.test(style)
+    const identity = [
+      attribute(node, 'id') ?? '',
+      attribute(node, 'class') ?? '',
+      attribute(node, 'src') ?? '',
+      attribute(node, 'srcset') ?? '',
+      style,
+    ].join(' ')
+    const state: AdvertisedSlotState = {
+      hidden,
+      pointerless,
+      decorative: ariaHidden || role === 'presentation' || role === 'none'
+        || DECORATIVE_IMAGE_SIGNAL.test(identity),
+      protectedAction: PROTECTED_BACKGROUND_TAGS.has(node.tagName)
+        || role === 'button' || role === 'link',
+      identity,
+    }
+    const editId = attribute(node, 'data-dc-edit-id') || attribute(node, 'data-pb-edit-id')
+    const imageId = attribute(node, 'data-dc-image-id') || attribute(node, 'data-pb-image-id')
+    if (editId) edits.set(editId, state)
+    if (imageId) images.set(imageId, state)
+    for (const child of node.childNodes ?? []) visit(child, hidden, pointerless)
+  }
+  visit(root)
+  return { edits, images }
+}
+
 function hasElementDescendant(innerHtml: string): boolean {
   return /<[A-Za-z][^>]*>/.test(innerHtml.replace(/<!--[\s\S]*?-->/g, ''))
 }
@@ -325,6 +397,7 @@ async function verifyTemplate(
   stagingRoot: string,
   catalogEntry: CatalogTemplateEntry,
   localDiagnosticLimit: number,
+  catalogLocator: CatalogSnapshotLocator,
 ): Promise<TemplateVerification> {
   const key = `${catalogEntry.niche}/${catalogEntry.legacySlug}`
   const templateRoot = resolve(stagingRoot, catalogEntry.niche, catalogEntry.legacySlug)
@@ -403,6 +476,7 @@ async function verifyTemplate(
 
     const pagePairs = await Promise.all(manifest.pages.map(async (page) => [page, await readSafeFile(templateRoot, page)] as const))
     const pages = new Map(pagePairs)
+    const slotStates = new Map(pagePairs.map(([page, html]) => [page, advertisedSlotStates(html)] as const))
     const inlineEdits: InlineEditMap = {}
     const imageSwaps: ImageSwapMap = {}
     const seenContentTargets = new Set<string>()
@@ -422,6 +496,11 @@ async function verifyTemplate(
       const count = targetCount(html, 'data-dc-edit-id', entry.nodeId) + targetCount(html, 'data-pb-edit-id', entry.nodeId)
       if (count !== 1) {
         add(count === 0 ? 'content_target_unmatched' : 'content_target_ambiguous', `Expected exactly one edit target; found ${count}`, entry.page, entry.nodeId)
+        continue
+      }
+      const state = slotStates.get(entry.page)?.edits.get(entry.nodeId)
+      if (state?.hidden || state?.pointerless) {
+        add('content_target_not_customer_visible', 'Content preset advertises a permanently hidden, inert, or pointerless target', entry.page, entry.nodeId)
         continue
       }
       const matchingTags = [
@@ -506,6 +585,20 @@ async function verifyTemplate(
         add(count === 0 ? 'image_target_unmatched' : 'image_target_ambiguous', `Expected exactly one image target; found ${count}`, image.page, image.slotId)
         continue
       }
+      const state = slotStates.get(image.page)?.images.get(image.slotId)
+      const imageIdentity = `${state?.identity ?? ''} ${image.source ?? ''} ${image.selector ?? ''}`
+      if (state?.hidden || state?.pointerless) {
+        add('image_target_not_customer_visible', 'Image preset advertises a permanently hidden, inert, or pointerless target', image.page, image.slotId)
+        continue
+      }
+      if (state?.decorative || (image.kind === 'background' && DECORATIVE_IMAGE_SIGNAL.test(imageIdentity))) {
+        add('decorative_image_slot_advertised', 'Decorative pattern/texture imagery must remain visual design CSS rather than a customer upload slot', image.page, image.slotId)
+        continue
+      }
+      if (image.kind === 'background' && state?.protectedAction) {
+        add('background_slot_steals_customer_action', 'A background image slot cannot own a link, control, or other protected customer action', image.page, image.slotId)
+        continue
+      }
       const updated = `https://images.example.test/dc-slot-${sha256(targetKey).slice(0, 16)}.webp`
       const pageSwaps = imageSwaps[image.page] ?? []
       pageSwaps.push({ slotId: image.slotId, updated })
@@ -550,7 +643,7 @@ async function verifyTemplate(
       const edited = applyInlineEditsToHtmlWithReport(html, edits, page)
       const customerPreview = composeCustomerPreviewDocument({
         html,
-        assetBase: `/api/templates/${catalogEntry.niche}/${catalogEntry.legacySlug}/assets`,
+        assetBase: `/api/templates/${catalogEntry.niche}/${catalogEntry.legacySlug}/assets/__catalog/${catalogLocator.catalogHash}/${catalogLocator.manifestHash}`,
         page,
         inlineEdits: edits,
         imageSwaps: swaps,
@@ -618,6 +711,8 @@ async function verifyTemplate(
           contentPresetId: catalogEntry.contentPresetId,
           themePresetId: catalogEntry.themePresetId,
           qualityReceipt: catalogEntry.qualityReceipt,
+          catalogHash: catalogLocator.catalogHash,
+          manifestHash: catalogLocator.manifestHash,
         },
         inlineEdits: sanitizedInline,
         imageSwaps: sanitizedImages,
@@ -756,9 +851,22 @@ export async function verifyRehabCustomizationStaging(
     throw new Error('Staging root must be a real directory, not a symbolic link')
   }
   const root = await realpath(requestedRoot)
-  const catalog = await readSafeJson<CatalogDocument>(root, '_catalog-v3.json')
+  const [catalogText, runtimeManifest] = await Promise.all([
+    readSafeFile(root, '_catalog-v3.json'),
+    readSafeJson<unknown>(root, '_manifest.json'),
+  ])
+  let catalog: CatalogDocument
+  try {
+    catalog = JSON.parse(catalogText) as CatalogDocument
+  } catch {
+    throw new Error('_catalog-v3.json is malformed JSON')
+  }
   if (catalog.contractVersion !== 3 || !Array.isArray(catalog.templates)) {
     throw new Error('_catalog-v3.json is not a catalogue v3 document')
+  }
+  const catalogLocator: CatalogSnapshotLocator = {
+    catalogHash: catalogDocumentHash(catalogText),
+    manifestHash: catalogManifestHash(runtimeManifest),
   }
 
   const globalDiagnostics: RehabCustomizationDiagnostic[] = []
@@ -796,7 +904,9 @@ export async function verifyRehabCustomizationStaging(
     if (!discovered.keys.includes(key)) addGlobal({ code: 'catalog_template_missing', detail: 'Catalogue v3 template directory is absent or malformed', template: key })
   }
 
-  const results = await mapConcurrent(entries, workers, (entry) => verifyTemplate(root, entry, maxDiagnostics))
+  const results = await mapConcurrent(entries, workers, (entry) => (
+    verifyTemplate(root, entry, maxDiagnostics, catalogLocator)
+  ))
   for (const result of results) {
     globalDiagnosticCount += result.diagnosticCount
     for (const diagnostic of result.diagnostics) {

@@ -30,6 +30,8 @@ export const COMPILER_V3_ROUTE_FIXTURE = {
     contentPresetId: 'content_route_fixture',
     themePresetId: 'theme_route_fixture',
     qualityReceipt: 'receipt_route_fixture',
+    catalogHash: 'a'.repeat(64),
+    manifestHash: 'b'.repeat(64),
     canonicalLegacySlug: 'legacy-route-fixture',
     disposition: 'canonical',
   } satisfies TemplateMeta,

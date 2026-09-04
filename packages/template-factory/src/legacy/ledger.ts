@@ -160,6 +160,27 @@ export interface ArtifactInput {
   relativePath: string;
   byteSize: number;
   metadata?: unknown;
+  /** Stable identity within one run/template; distinct lease cycles use distinct keys. */
+  occurrenceKey?: string;
+}
+
+export interface ArtifactRegistration {
+  artifactId: number;
+  occurrenceId: number;
+}
+
+export interface ArtifactOccurrenceRecord {
+  id: number;
+  artifactId: number;
+  runId: string | null;
+  templateId: number | null;
+  occurrenceKey: string;
+  kind: string;
+  contentHash: string;
+  relativePath: string;
+  byteSize: number;
+  metadata: unknown;
+  createdAt: string;
 }
 
 export interface ListTemplatesOptions {
@@ -186,6 +207,10 @@ export interface ListArtifactsOptions {
   kind?: string;
   limit?: number;
   offset?: number;
+}
+
+export interface ListArtifactOccurrencesOptions extends ListArtifactsOptions {
+  artifactId?: number;
 }
 
 type SqlRow = Record<string, SQLInputValue>;
@@ -367,6 +392,22 @@ function parseArtifact(row: SqlRow): LegacyArtifactRecord {
     byteSize: Number(row.byte_size),
     metadata: parsedJson(row.metadata_json),
     createdAt: String(row.created_at),
+  };
+}
+
+function parseArtifactOccurrence(row: SqlRow): ArtifactOccurrenceRecord {
+  return {
+    id: Number(row.occurrence_id),
+    artifactId: Number(row.artifact_id),
+    runId: row.occurrence_run_id === null ? null : String(row.occurrence_run_id),
+    templateId: row.occurrence_template_id === null ? null : Number(row.occurrence_template_id),
+    occurrenceKey: String(row.occurrence_key),
+    kind: String(row.kind),
+    contentHash: String(row.content_hash),
+    relativePath: String(row.relative_path),
+    byteSize: Number(row.byte_size),
+    metadata: parsedJson(row.occurrence_metadata_json),
+    createdAt: String(row.occurrence_created_at),
   };
 }
 
@@ -596,6 +637,22 @@ export class LegacyLedger {
           created_at TEXT NOT NULL,
           UNIQUE(kind, content_hash, relative_path)
         );
+
+        CREATE TABLE IF NOT EXISTS artifact_occurrences (
+          id INTEGER PRIMARY KEY,
+          artifact_id INTEGER NOT NULL REFERENCES artifacts(id) ON DELETE CASCADE,
+          run_id TEXT REFERENCES runs(id),
+          template_id INTEGER REFERENCES templates(id) ON DELETE CASCADE,
+          occurrence_key TEXT NOT NULL,
+          metadata_json TEXT NOT NULL DEFAULT 'null',
+          created_at TEXT NOT NULL
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS artifact_occurrences_identity_idx
+          ON artifact_occurrences(
+            artifact_id, IFNULL(run_id, ''), IFNULL(template_id, -1), occurrence_key
+          );
+        CREATE INDEX IF NOT EXISTS artifact_occurrences_run_template_idx
+          ON artifact_occurrences(run_id, template_id, artifact_id);
 
         CREATE TABLE IF NOT EXISTS model_usage (
           id INTEGER PRIMARY KEY,
@@ -839,6 +896,50 @@ export class LegacyLedger {
         COMMIT;
       `);
       currentVersion = 6;
+    }
+
+    if (currentVersion < 7) {
+      // Physical artifacts remain content-addressed and deduplicated, while
+      // every run/template observation receives its own immutable association.
+      // Older ledgers retain the best historical association their artifact
+      // row carried before occurrence-level lineage was introduced.
+      this.database.exec(`
+        BEGIN IMMEDIATE;
+        CREATE TABLE IF NOT EXISTS artifacts (
+          id INTEGER PRIMARY KEY,
+          run_id TEXT REFERENCES runs(id),
+          template_id INTEGER REFERENCES templates(id) ON DELETE CASCADE,
+          kind TEXT NOT NULL,
+          content_hash TEXT NOT NULL,
+          relative_path TEXT NOT NULL,
+          byte_size INTEGER NOT NULL,
+          metadata_json TEXT NOT NULL DEFAULT 'null',
+          created_at TEXT NOT NULL,
+          UNIQUE(kind, content_hash, relative_path)
+        );
+        CREATE TABLE IF NOT EXISTS artifact_occurrences (
+          id INTEGER PRIMARY KEY,
+          artifact_id INTEGER NOT NULL REFERENCES artifacts(id) ON DELETE CASCADE,
+          run_id TEXT REFERENCES runs(id),
+          template_id INTEGER REFERENCES templates(id) ON DELETE CASCADE,
+          occurrence_key TEXT NOT NULL,
+          metadata_json TEXT NOT NULL DEFAULT 'null',
+          created_at TEXT NOT NULL
+        );
+        CREATE UNIQUE INDEX IF NOT EXISTS artifact_occurrences_identity_idx
+          ON artifact_occurrences(
+            artifact_id, IFNULL(run_id, ''), IFNULL(template_id, -1), occurrence_key
+          );
+        CREATE INDEX IF NOT EXISTS artifact_occurrences_run_template_idx
+          ON artifact_occurrences(run_id, template_id, artifact_id);
+        INSERT OR IGNORE INTO artifact_occurrences (
+          artifact_id, run_id, template_id, occurrence_key, metadata_json, created_at
+        )
+        SELECT id, run_id, template_id, 'legacy', metadata_json, created_at FROM artifacts;
+        PRAGMA user_version = 7;
+        COMMIT;
+      `);
+      currentVersion = 7;
     }
 
     // The recipe cache is an additive cloud-lane extension. Keeping it behind
@@ -1228,21 +1329,49 @@ export class LegacyLedger {
   }
 
   listArtifacts(options: ListArtifactsOptions = {}): LegacyArtifactRecord[] {
-    const clauses: string[] = [];
     const parameters: SQLInputValue[] = [];
-    if (options.templateId !== undefined) {
-      clauses.push('template_id = ?');
-      parameters.push(options.templateId);
+    const scoped = options.templateId !== undefined || options.runId !== undefined;
+    let query: string;
+    if (scoped) {
+      const occurrenceClauses = ['candidate_occurrence.artifact_id = artifacts.id'];
+      if (options.templateId !== undefined) {
+        occurrenceClauses.push('candidate_occurrence.template_id = ?');
+        parameters.push(options.templateId);
+      }
+      if (options.runId !== undefined) {
+        occurrenceClauses.push('candidate_occurrence.run_id = ?');
+        parameters.push(options.runId);
+      }
+      query = `
+        SELECT
+          artifacts.id,
+          matched_occurrence.run_id,
+          matched_occurrence.template_id,
+          artifacts.kind,
+          artifacts.content_hash,
+          artifacts.relative_path,
+          artifacts.byte_size,
+          matched_occurrence.metadata_json,
+          matched_occurrence.created_at
+        FROM artifacts
+        JOIN artifact_occurrences AS matched_occurrence
+          ON matched_occurrence.id = (
+            SELECT MAX(candidate_occurrence.id)
+            FROM artifact_occurrences AS candidate_occurrence
+            WHERE ${occurrenceClauses.join(' AND ')}
+          )
+        ${options.kind === undefined ? '' : 'WHERE artifacts.kind = ?'}
+        ORDER BY artifacts.kind, artifacts.relative_path, artifacts.content_hash, artifacts.id
+      `;
+      if (options.kind !== undefined) parameters.push(options.kind);
+    } else {
+      query = `
+        SELECT artifacts.* FROM artifacts
+        ${options.kind === undefined ? '' : 'WHERE artifacts.kind = ?'}
+        ORDER BY artifacts.kind, artifacts.relative_path, artifacts.content_hash, artifacts.id
+      `;
+      if (options.kind !== undefined) parameters.push(options.kind);
     }
-    if (options.runId !== undefined) {
-      clauses.push('run_id = ?');
-      parameters.push(options.runId);
-    }
-    if (options.kind !== undefined) {
-      clauses.push('kind = ?');
-      parameters.push(options.kind);
-    }
-    let query = `SELECT * FROM artifacts${clauses.length > 0 ? ` WHERE ${clauses.join(' AND ')}` : ''} ORDER BY kind, relative_path, content_hash, id`;
     if (options.limit !== undefined) {
       if (!Number.isSafeInteger(options.limit) || options.limit <= 0) throw new Error('limit must be a positive integer');
       query += ' LIMIT ?';
@@ -1256,6 +1385,56 @@ export class LegacyLedger {
       parameters.push(options.offset);
     }
     return (this.database.prepare(query).all(...parameters) as SqlRow[]).map(parseArtifact);
+  }
+
+  listArtifactOccurrences(options: ListArtifactOccurrencesOptions = {}): ArtifactOccurrenceRecord[] {
+    const clauses: string[] = [];
+    const parameters: SQLInputValue[] = [];
+    if (options.artifactId !== undefined) {
+      clauses.push('artifact_occurrences.artifact_id = ?');
+      parameters.push(options.artifactId);
+    }
+    if (options.templateId !== undefined) {
+      clauses.push('artifact_occurrences.template_id = ?');
+      parameters.push(options.templateId);
+    }
+    if (options.runId !== undefined) {
+      clauses.push('artifact_occurrences.run_id = ?');
+      parameters.push(options.runId);
+    }
+    if (options.kind !== undefined) {
+      clauses.push('artifacts.kind = ?');
+      parameters.push(options.kind);
+    }
+    let query = `
+      SELECT
+        artifact_occurrences.id AS occurrence_id,
+        artifact_occurrences.artifact_id,
+        artifact_occurrences.run_id AS occurrence_run_id,
+        artifact_occurrences.template_id AS occurrence_template_id,
+        artifact_occurrences.occurrence_key,
+        artifact_occurrences.metadata_json AS occurrence_metadata_json,
+        artifact_occurrences.created_at AS occurrence_created_at,
+        artifacts.kind, artifacts.content_hash, artifacts.relative_path,
+        artifacts.byte_size
+      FROM artifact_occurrences
+      JOIN artifacts ON artifacts.id = artifact_occurrences.artifact_id
+      ${clauses.length > 0 ? `WHERE ${clauses.join(' AND ')}` : ''}
+      ORDER BY artifact_occurrences.created_at, artifact_occurrences.id
+    `;
+    if (options.limit !== undefined) {
+      if (!Number.isSafeInteger(options.limit) || options.limit <= 0) throw new Error('limit must be a positive integer');
+      query += ' LIMIT ?';
+      parameters.push(options.limit);
+    } else if (options.offset !== undefined) {
+      query += ' LIMIT -1';
+    }
+    if (options.offset !== undefined) {
+      if (!Number.isSafeInteger(options.offset) || options.offset < 0) throw new Error('offset must be a non-negative integer');
+      query += ' OFFSET ?';
+      parameters.push(options.offset);
+    }
+    return (this.database.prepare(query).all(...parameters) as SqlRow[]).map(parseArtifactOccurrence);
   }
 
   leaseTemplates(input: LeaseTemplatesInput): LeasedTemplate[] {
@@ -1809,27 +1988,72 @@ export class LegacyLedger {
   }
 
   addArtifact(input: ArtifactInput): number {
-    this.database.prepare(`
-      INSERT INTO artifacts (
-        run_id, template_id, kind, content_hash, relative_path, byte_size,
-        metadata_json, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(kind, content_hash, relative_path) DO UPDATE SET
-        run_id = excluded.run_id, template_id = excluded.template_id,
-        byte_size = excluded.byte_size, metadata_json = excluded.metadata_json
-    `).run(
-      input.runId ?? null,
-      input.templateId ?? null,
-      input.kind,
-      input.contentHash,
-      input.relativePath.replace(/\\/g, '/'),
-      input.byteSize,
-      json(input.metadata),
-      nowIso(),
-    );
-    return Number((this.database.prepare(`
-      SELECT id FROM artifacts WHERE kind = ? AND content_hash = ? AND relative_path = ?
-    `).get(input.kind, input.contentHash, input.relativePath.replace(/\\/g, '/')) as SqlRow).id);
+    return this.addArtifactOccurrence(input).artifactId;
+  }
+
+  addArtifactOccurrence(input: ArtifactInput): ArtifactRegistration {
+    return this.transaction(() => {
+      const relativePath = input.relativePath.replace(/\\/g, '/');
+      const occurrenceKey = input.occurrenceKey ?? 'default';
+      if (!/^[A-Za-z0-9][A-Za-z0-9._:-]{0,199}$/.test(occurrenceKey)) {
+        throw new Error('Artifact occurrence key must be 1-200 safe characters');
+      }
+      const metadataJson = json(input.metadata);
+      const timestamp = nowIso();
+      this.database.prepare(`
+        INSERT INTO artifacts (
+          run_id, template_id, kind, content_hash, relative_path, byte_size,
+          metadata_json, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(kind, content_hash, relative_path) DO NOTHING
+      `).run(
+        input.runId ?? null,
+        input.templateId ?? null,
+        input.kind,
+        input.contentHash,
+        relativePath,
+        input.byteSize,
+        metadataJson,
+        timestamp,
+      );
+      const artifact = this.database.prepare(`
+        SELECT id, byte_size FROM artifacts
+        WHERE kind = ? AND content_hash = ? AND relative_path = ?
+      `).get(input.kind, input.contentHash, relativePath) as SqlRow | undefined;
+      if (!artifact) throw new Error(`Could not register artifact ${input.kind}`);
+      if (Number(artifact.byte_size) !== input.byteSize) {
+        throw new Error(`Artifact ${input.kind} has conflicting byte-size evidence`);
+      }
+      const artifactId = Number(artifact.id);
+      this.database.prepare(`
+        INSERT INTO artifact_occurrences (
+          artifact_id, run_id, template_id, occurrence_key, metadata_json, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?)
+        ON CONFLICT DO NOTHING
+      `).run(
+        artifactId,
+        input.runId ?? null,
+        input.templateId ?? null,
+        occurrenceKey,
+        metadataJson,
+        timestamp,
+      );
+      const occurrence = this.database.prepare(`
+        SELECT id, metadata_json FROM artifact_occurrences
+        WHERE artifact_id = ? AND run_id IS ? AND template_id IS ?
+          AND occurrence_key = ?
+      `).get(
+        artifactId,
+        input.runId ?? null,
+        input.templateId ?? null,
+        occurrenceKey,
+      ) as SqlRow | undefined;
+      if (!occurrence) throw new Error(`Could not record artifact occurrence ${input.kind}`);
+      if (canonicalJson(parsedJson(occurrence.metadata_json)) !== canonicalJson(parsedJson(metadataJson))) {
+        throw new Error(`Artifact occurrence ${input.kind}/${occurrenceKey} was replayed with conflicting metadata`);
+      }
+      return { artifactId, occurrenceId: Number(occurrence.id) };
+    });
   }
 
   getCloudRepairRecipe(key: CloudRepairRecipeKey): CloudRepairRecipeRecord | null {
@@ -2188,7 +2412,19 @@ export class LegacyLedger {
   }
 
   reportData(): LedgerStatus & {
-    totals: { templates: number; pages: number; issues: number; transformations: number; renders: number; renderHistory: number; aliases: number; artifacts: number };
+    totals: {
+      templates: number;
+      pages: number;
+      issues: number;
+      transformations: number;
+      renders: number;
+      renderHistory: number;
+      aliases: number;
+      artifacts: number;
+      artifactOccurrences: number;
+      failedPrimaryArtifacts: number;
+      failedPrimaryOccurrences: number;
+    };
   } {
     const row = this.database.prepare(`
       SELECT
@@ -2202,7 +2438,12 @@ export class LegacyLedger {
             AND renders.rule_version = templates.rule_version) AS renders,
         (SELECT COUNT(*) FROM renders) AS render_history,
         (SELECT COUNT(*) FROM aliases) AS aliases,
-        (SELECT COUNT(*) FROM artifacts) AS artifacts
+        (SELECT COUNT(*) FROM artifacts) AS artifacts,
+        (SELECT COUNT(*) FROM artifact_occurrences) AS artifact_occurrences,
+        (SELECT COUNT(*) FROM artifacts WHERE kind = 'failed-primary-template') AS failed_primary_artifacts,
+        (SELECT COUNT(*) FROM artifact_occurrences
+          JOIN artifacts ON artifacts.id = artifact_occurrences.artifact_id
+          WHERE artifacts.kind = 'failed-primary-template') AS failed_primary_occurrences
     `).get() as SqlRow;
     return {
       ...this.status(),
@@ -2215,6 +2456,9 @@ export class LegacyLedger {
         renderHistory: Number(row.render_history),
         aliases: Number(row.aliases),
         artifacts: Number(row.artifacts),
+        artifactOccurrences: Number(row.artifact_occurrences),
+        failedPrimaryArtifacts: Number(row.failed_primary_artifacts),
+        failedPrimaryOccurrences: Number(row.failed_primary_occurrences),
       },
     };
   }

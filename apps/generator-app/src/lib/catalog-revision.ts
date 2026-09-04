@@ -5,6 +5,13 @@ export interface CatalogRevisionPin {
   contentPresetId: string
   themePresetId: string
   qualityReceipt: string
+  /**
+   * Immutable catalogue coordinates. New v3 purchases always receive both;
+   * hashless pins are retained only for records written before this field was
+   * introduced and can resolve against the active catalogue only.
+   */
+  catalogHash?: string
+  manifestHash?: string
 }
 
 export interface CatalogRevisionSource {
@@ -13,12 +20,30 @@ export interface CatalogRevisionSource {
   contentPresetId?: unknown
   themePresetId?: unknown
   qualityReceipt?: unknown
+  catalogHash?: unknown
+  manifestHash?: unknown
 }
 
 const DESIGN_ID_RE = /^design_[A-Za-z0-9_-]+$/
 const CONTENT_ID_RE = /^content_[A-Za-z0-9_-]+$/
 const THEME_ID_RE = /^theme_[A-Za-z0-9_-]+$/
 const RECEIPT_ID_RE = /^receipt_[A-Za-z0-9_-]+$/
+const SHA256_RE = /^[a-f0-9]{64}$/
+
+export interface CatalogSnapshotLocator {
+  catalogHash: string
+  manifestHash: string
+}
+
+export function sanitizeCatalogSnapshotLocator(value: unknown): CatalogSnapshotLocator | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const candidate = value as Partial<CatalogSnapshotLocator>
+  if (
+    typeof candidate.catalogHash !== 'string' || !SHA256_RE.test(candidate.catalogHash) ||
+    typeof candidate.manifestHash !== 'string' || !SHA256_RE.test(candidate.manifestHash)
+  ) return null
+  return { catalogHash: candidate.catalogHash, manifestHash: candidate.manifestHash }
+}
 
 /** Validate an untrusted pin loaded from checkout or portal JSON. */
 export function sanitizeCatalogRevisionPin(value: unknown): CatalogRevisionPin | null {
@@ -33,13 +58,32 @@ export function sanitizeCatalogRevisionPin(value: unknown): CatalogRevisionPin |
   ) {
     return null
   }
+  const hasCatalogHash = candidate.catalogHash !== undefined
+  const hasManifestHash = candidate.manifestHash !== undefined
+  if (hasCatalogHash !== hasManifestHash) return null
+  if (
+    hasCatalogHash && (
+      typeof candidate.catalogHash !== 'string' || !SHA256_RE.test(candidate.catalogHash) ||
+      typeof candidate.manifestHash !== 'string' || !SHA256_RE.test(candidate.manifestHash)
+    )
+  ) return null
   return {
     contractVersion: 3,
     designId: candidate.designId,
     contentPresetId: candidate.contentPresetId,
     themePresetId: candidate.themePresetId,
     qualityReceipt: candidate.qualityReceipt,
+    ...(hasCatalogHash ? {
+      catalogHash: candidate.catalogHash as string,
+      manifestHash: candidate.manifestHash as string,
+    } : {}),
   }
+}
+
+/** Return a validated immutable locator only when a complete hash pair exists. */
+export function catalogSnapshotLocator(value: unknown): CatalogSnapshotLocator | null {
+  const pin = sanitizeCatalogRevisionPin(value)
+  return pin ? sanitizeCatalogSnapshotLocator(pin) : null
 }
 
 /** Snapshot a publishable v3 template; v2 catalogue entries remain unpinned. */
@@ -51,6 +95,8 @@ export function snapshotCatalogRevision(source: CatalogRevisionSource): CatalogR
     contentPresetId: source.contentPresetId,
     themePresetId: source.themePresetId,
     qualityReceipt: source.qualityReceipt,
+    catalogHash: source.catalogHash,
+    manifestHash: source.manifestHash,
   })
   if (!pin) throw new Error('Published v3 template has invalid catalogue revision metadata.')
   return pin
@@ -61,10 +107,17 @@ export function catalogRevisionMatches(
   expected: CatalogRevisionPin,
 ): boolean {
   const current = snapshotCatalogRevision(source)
-  return Boolean(current && catalogRevisionPinsEqual(current, expected))
+  if (!current || !catalogRevisionIdentityMatches(current, expected)) return false
+  // A legacy hashless pin is intentionally identity-only. Callers must resolve
+  // it against the active catalogue; it cannot select a historical snapshot.
+  if (!expected.catalogHash || !expected.manifestHash) return true
+  return (
+    current.catalogHash === expected.catalogHash &&
+    current.manifestHash === expected.manifestHash
+  )
 }
 
-export function catalogRevisionPinsEqual(
+function catalogRevisionIdentityMatches(
   left: CatalogRevisionPin,
   right: CatalogRevisionPin,
 ): boolean {
@@ -73,6 +126,17 @@ export function catalogRevisionPinsEqual(
     left.contentPresetId === right.contentPresetId &&
     left.themePresetId === right.themePresetId &&
     left.qualityReceipt === right.qualityReceipt
+  )
+}
+
+export function catalogRevisionPinsEqual(
+  left: CatalogRevisionPin,
+  right: CatalogRevisionPin,
+): boolean {
+  return (
+    catalogRevisionIdentityMatches(left, right) &&
+    left.catalogHash === right.catalogHash &&
+    left.manifestHash === right.manifestHash
   )
 }
 

@@ -10,6 +10,8 @@ describe('customer preview editor wiring', () => {
   const guided = clientSource('src/app/preview-your-business/PreviewYourBusinessClient.tsx')
   const portal = clientSource('src/app/templates/[niche]/[slug]/page.tsx')
   const runtime = clientSource('src/lib/customer-preview-editor-runtime.ts')
+  const pricing = clientSource('src/app/pricing/PricingClient.tsx')
+  const checkout = clientSource('src/app/api/stripe/checkout/route.ts')
 
   it('routes both customer experiences through the sole app-owned iframe runtime', () => {
     for (const source of [guided, portal]) {
@@ -48,5 +50,19 @@ describe('customer preview editor wiring', () => {
       expect(source).toContain('imageUploadQueueRef.current.then(upload, upload)')
       expect(source).toContain('const coordinatedSlotIds = [...pendingImageSwapSlotIds.current]')
     }
+  })
+
+  it('binds preview, assets, and checkout to the same immutable catalogue revision', () => {
+    for (const source of [guided, portal, pricing]) {
+      expect(source).toContain("'pb_catalog_revision'")
+    }
+    for (const source of [guided, portal]) {
+      expect(source).toContain('catalogRevision:')
+      expect(source).toContain('/assets/__catalog/${')
+    }
+    expect(pricing).toContain('catalogRevision,')
+    expect(checkout).toContain('getTemplateAtCatalogRevision')
+    expect(checkout).toContain("code: 'catalog_revision_unavailable'")
+    expect(pricing).toContain('sessionStorage.removeItem(CHECKOUT_CATALOG_REVISION_KEY)')
   })
 })

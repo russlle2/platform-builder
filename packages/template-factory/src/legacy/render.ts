@@ -615,252 +615,695 @@ interface CustomerEditorRuntimeCheck {
   installed: boolean;
   leafText: 'passed' | 'missing' | 'failed';
   editableAttribute: 'passed' | 'missing' | 'failed';
+  selectOption: 'passed' | 'missing' | 'failed';
   standaloneImage: 'passed' | 'missing' | 'failed';
   responsivePicture: 'passed' | 'missing' | 'failed';
   navigation: 'passed' | 'missing' | 'failed';
+  editReachability: { checked: number; passed: number; external: number; failedIds: string[] };
+  imageReachability: { checked: number; passed: number; failedIds: string[] };
   details: string[];
 }
 
-/** Exercise the exact app-owned iframe runtime through its public events. */
-async function exerciseCustomerEditorRuntime(page: Page, currentPage: string): Promise<CustomerEditorRuntimeCheck> {
-  return page.evaluate(async ({ manifestPage, expectedRuntime }) => {
-    type PreviewMessage = Record<string, unknown> & { type?: string };
-    type CheckStatus = 'passed' | 'missing' | 'failed';
-    const details: string[] = [];
-    const sentinelText = 'SENTINEL EDIT PERSISTED';
-    const sentinelImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
-    const nativeSetTimeout = window.setTimeout.bind(window);
+type PreviewMessage = Record<string, unknown> & { type?: string };
+type CheckStatus = 'passed' | 'missing' | 'failed';
+type PhysicalHitMode = 'text' | 'image' | 'background' | 'option' | 'navigation';
 
-    const nextMessage = (
-      type: string,
-      trigger: () => void,
-      timeoutMs = 750,
-    ): Promise<PreviewMessage | null> => new Promise((resolvePromise) => {
-      let settled = false;
-      const finish = (value: PreviewMessage | null) => {
-        if (settled) return;
-        settled = true;
-        window.removeEventListener('message', onMessage);
-        resolvePromise(value);
-      };
-      const onMessage = (event: MessageEvent) => {
-        if (event.source !== window || !event.data || typeof event.data !== 'object') return;
-        const message = event.data as PreviewMessage;
-        if (message.type === type) finish(message);
-      };
-      window.addEventListener('message', onMessage);
-      nativeSetTimeout(() => finish(null), timeoutMs);
-      trigger();
+interface PhysicalHitPoint {
+  x: number;
+  y: number;
+  disclosureIds: string[];
+}
+
+interface ImageInteractionGroup {
+  kind: 'standalone' | 'picture';
+  primarySlotId: string;
+  slotIds: string[];
+  mode: 'image' | 'background';
+}
+
+async function installEditorQaRecorder(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const scope = window as typeof window & { __dcEditorQaMessages?: PreviewMessage[] };
+    if (scope.__dcEditorQaMessages) return;
+    scope.__dcEditorQaMessages = [];
+    window.addEventListener('message', (event) => {
+      if (event.source !== window || !event.data || typeof event.data !== 'object') return;
+      scope.__dcEditorQaMessages!.push(event.data as PreviewMessage);
     });
+  });
+}
 
-    const restoreAttribute = (element: Element, attribute: string, value: string | null) => {
-      if (value === null) element.removeAttribute(attribute);
-      else element.setAttribute(attribute, value);
-    };
+async function physicalMessage(
+  page: Page,
+  type: string,
+  trigger: () => Promise<void>,
+  timeoutMs = 1_000,
+): Promise<PreviewMessage | null> {
+  const start = await page.evaluate(() => (
+    (window as typeof window & { __dcEditorQaMessages?: PreviewMessage[] }).__dcEditorQaMessages?.length ?? 0
+  ));
+  try {
+    await trigger();
+    await page.waitForFunction(({ expectedType, offset }) => {
+      const messages = (window as typeof window & { __dcEditorQaMessages?: PreviewMessage[] }).__dcEditorQaMessages ?? [];
+      return messages.slice(offset).some((message) => message.type === expectedType);
+    }, { expectedType: type, offset: start }, { timeout: timeoutMs });
+    return await page.evaluate(({ expectedType, offset }) => {
+      const messages = (window as typeof window & { __dcEditorQaMessages?: PreviewMessage[] }).__dcEditorQaMessages ?? [];
+      return messages.slice(offset).find((message) => message.type === expectedType) ?? null;
+    }, { expectedType: type, offset: start });
+  } catch {
+    return null;
+  }
+}
 
-    let leafText: CheckStatus = 'missing';
-    const leaf = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id],[data-pb-edit-id]')]
-      .find((element) => document.body.contains(element)
-        && !element.hasAttribute('data-dc-edit-attribute')
-        && !element.hasAttribute('data-pb-edit-attribute')
-        && element.children.length === 0);
-    if (leaf) {
-      const originalHtml = leaf.innerHTML;
-      const originalStyle = leaf.getAttribute('style');
-      const originalEditable = leaf.getAttribute('contenteditable');
-      const nodeId = leaf.getAttribute('data-dc-edit-id') || leaf.getAttribute('data-pb-edit-id') || '';
-      const originalText = leaf.textContent || '';
-      const message = await nextMessage('textEdited', () => {
-        leaf.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-        if (leaf.isContentEditable) {
-          leaf.textContent = sentinelText;
-          leaf.dispatchEvent(new FocusEvent('blur'));
-        }
-      });
-      leafText = leaf.textContent === sentinelText
-        && message?.nodeId === nodeId
-        && message.original === originalText
-        && message.text === sentinelText
-        ? 'passed'
-        : 'failed';
-      if (leafText === 'failed') details.push('leaf text did not complete the dblclick/contenteditable/textEdited round trip');
-      leaf.innerHTML = originalHtml;
-      restoreAttribute(leaf, 'style', originalStyle);
-      restoreAttribute(leaf, 'contenteditable', originalEditable);
+/**
+ * Resolve a real coordinate accepted by the same event path as the customer
+ * editor. This deliberately starts with elementFromPoint and is followed by a
+ * Playwright mouse action; dispatchEvent on the advertised node would bypass
+ * overlays, pointer-events, clipping, and covered background owners.
+ */
+async function physicalHitPoint(
+  page: Page,
+  attribute: 'data-dc-edit-id' | 'data-pb-edit-id' | 'data-dc-image-id' | 'data-pb-image-id' | 'data-dc-qa-navigation',
+  id: string,
+  mode: PhysicalHitMode,
+): Promise<PhysicalHitPoint | null> {
+  const disclosurePath = await page.evaluate(({ targetAttribute, targetId }) => {
+    const targets = [...document.querySelectorAll<HTMLElement>(`[${targetAttribute}]`)]
+      .filter((candidate) => candidate.getAttribute(targetAttribute) === targetId);
+    if (targets.length !== 1) return null;
+    const target = targets[0]!;
+    const ancestors: HTMLDetailsElement[] = [];
+    let cursor = target.parentElement;
+    while (cursor) {
+      if (cursor instanceof HTMLDetailsElement && !cursor.open) ancestors.unshift(cursor);
+      cursor = cursor.parentElement;
     }
+    return ancestors.map((details, index) => {
+      const summary = [...details.children].find((child): child is HTMLElement => child instanceof HTMLElement && child.tagName === 'SUMMARY');
+      const id = `details-${index}`;
+      if (!summary) return { id, summaryId: '' };
+      details.setAttribute('data-dc-qa-disclosure', id);
+      summary.setAttribute('data-dc-qa-disclosure-summary', id);
+      return { id, summaryId: id };
+    });
+  }, { targetAttribute: attribute, targetId: id });
+  if (!disclosurePath) return null;
 
-    let editableAttribute: CheckStatus = 'missing';
-    const attributeTarget = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-attribute],[data-pb-edit-attribute]')]
-      .find((element) => document.body.contains(element));
-    if (attributeTarget) {
-      const attribute = attributeTarget.getAttribute('data-dc-edit-attribute')
-        || attributeTarget.getAttribute('data-pb-edit-attribute')
-        || '';
-      const nodeId = attributeTarget.getAttribute('data-dc-edit-id')
-        || attributeTarget.getAttribute('data-pb-edit-id')
-        || '';
-      const original = attributeTarget.getAttribute(attribute);
-      let promptCalls = 0;
-      const nativePrompt = window.prompt;
-      window.prompt = () => {
-        promptCalls += 1;
-        return sentinelText;
-      };
-      const request = await nextMessage('editValueRequest', () => {
-        attributeTarget.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-      });
-      if (request) {
-        const prompted = window.prompt('Edit value', String(request.original ?? ''));
-        if (prompted !== null) {
-          window.postMessage({
-            type: 'editValueResponse',
-            nodeId: request.nodeId,
-            attribute: request.attribute,
-            text: prompted,
-          }, '*');
-          await new Promise<void>((resolvePromise) => nativeSetTimeout(resolvePromise, 0));
-        }
-      }
-      window.prompt = nativePrompt;
-      editableAttribute = request?.nodeId === nodeId
-        && request.attribute === attribute
-        && request.original === (original || '')
-        && promptCalls === 1
-        && attributeTarget.getAttribute(attribute) === sentinelText
-        ? 'passed'
-        : 'failed';
-      if (editableAttribute === 'failed') details.push('editable attribute did not complete the request/prompt/response round trip');
-      restoreAttribute(attributeTarget, attribute, original);
-    }
-
-    const dispatchImageClick = async (target: HTMLElement): Promise<PreviewMessage | null> => {
-      const nativeWindowSetTimeout = window.setTimeout;
-      // Preserve the real callback path without adding 280 ms to every one of
-      // tens of thousands of catalogue page/viewport checks.
-      window.setTimeout = ((handler: TimerHandler) => {
-        if (typeof handler === 'function') handler();
-        return 0;
-      }) as typeof window.setTimeout;
-      try {
-        return await nextMessage('imageSwapRequest', () => {
-          target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  const openedDisclosureIds: string[] = [];
+  for (const disclosure of disclosurePath) {
+    if (!disclosure.summaryId) {
+      await page.evaluate(() => {
+        document.querySelectorAll('[data-dc-qa-disclosure],[data-dc-qa-disclosure-summary]').forEach((element) => {
+          element.removeAttribute('data-dc-qa-disclosure');
+          element.removeAttribute('data-dc-qa-disclosure-summary');
         });
+      });
+      return null;
+    }
+    try {
+      await page.locator(`[data-dc-qa-disclosure-summary="${disclosure.summaryId}"]`).click({ timeout: 750 });
+      await page.waitForFunction((disclosureId) => (
+        document.querySelector<HTMLDetailsElement>(`details[data-dc-qa-disclosure="${disclosureId}"]`)?.open === true
+      ), disclosure.id, { timeout: 750 });
+      openedDisclosureIds.push(disclosure.id);
+    } catch {
+      await page.evaluate((ids) => {
+        for (const disclosureId of ids) {
+          const details = document.querySelector<HTMLDetailsElement>(`details[data-dc-qa-disclosure="${CSS.escape(disclosureId)}"]`);
+          if (details) details.open = false;
+        }
+        document.querySelectorAll('[data-dc-qa-disclosure],[data-dc-qa-disclosure-summary]').forEach((element) => {
+          element.removeAttribute('data-dc-qa-disclosure');
+          element.removeAttribute('data-dc-qa-disclosure-summary');
+        });
+      }, openedDisclosureIds);
+      return null;
+    }
+  }
+
+  const point = await page.evaluate(({ targetAttribute, targetId, hitMode }) => {
+    const targets = [...document.querySelectorAll<HTMLElement>(`[${targetAttribute}]`)]
+      .filter((candidate) => candidate.getAttribute(targetAttribute) === targetId);
+    if (targets.length !== 1) return null;
+    const declaredTarget = targets[0]!;
+    let hitTarget = declaredTarget;
+    if (hitMode === 'option') {
+      const select = declaredTarget.closest('select');
+      if (!(select instanceof HTMLSelectElement)) return null;
+      const optionIndex = [...select.options].indexOf(declaredTarget as HTMLOptionElement);
+      if (optionIndex < 0 || declaredTarget.hidden || (declaredTarget as HTMLOptionElement).disabled) return null;
+      select.selectedIndex = optionIndex;
+      hitTarget = select;
+    }
+    const hiddenByLayout = (element: HTMLElement): boolean => {
+      let opacity = 1;
+      let cursor: HTMLElement | null = element;
+      while (cursor) {
+        const style = getComputedStyle(cursor);
+        if (
+          cursor.hidden || cursor.inert || style.display === 'none'
+          || style.visibility === 'hidden' || style.visibility === 'collapse'
+          || style.contentVisibility === 'hidden'
+        ) return true;
+        const ownOpacity = Number.parseFloat(style.opacity);
+        if (Number.isFinite(ownOpacity)) opacity *= ownOpacity;
+        cursor = cursor.parentElement;
+      }
+      return opacity < 0.01;
+    };
+    if (hiddenByLayout(hitTarget)) return null;
+    if ((hitMode === 'image' || hitMode === 'background') && getComputedStyle(hitTarget).pointerEvents === 'none') return null;
+    hitTarget.scrollIntoView({ block: 'center', inline: 'center' });
+    const protectedSelector = 'a[href],button,input,select,textarea,option,label,summary,[role="button"],[role="link"]';
+    const editId = (element: Element) => element.getAttribute('data-dc-edit-id') || element.getAttribute('data-pb-edit-id') || '';
+    const imageId = (element: Element) => element.getAttribute('data-dc-image-id') || element.getAttribute('data-pb-image-id') || '';
+    const accepts = (top: Element): boolean => {
+      if (hitMode === 'image') {
+        return top.closest('img[data-dc-image-id],img[data-pb-image-id]') === declaredTarget;
+      }
+      if (hitMode === 'background') {
+        if (declaredTarget.matches(protectedSelector)) return false;
+        const owner = top.closest('[data-dc-image-id],[data-pb-image-id]');
+        if (owner !== declaredTarget) return false;
+        let cursor: Element | null = top;
+        while (cursor && cursor !== declaredTarget) {
+          if (cursor.matches(protectedSelector) || editId(cursor) || imageId(cursor)) return false;
+          cursor = cursor.parentElement;
+        }
+        return cursor === declaredTarget;
+      }
+      if (hitMode === 'option') return top === hitTarget || hitTarget.contains(top);
+      if (hitMode === 'navigation') {
+        return top.closest('a[href]') === declaredTarget
+          && !top.closest('img[data-dc-image-id],img[data-pb-image-id]');
+      }
+      return top.closest('[data-dc-edit-id],[data-pb-edit-id]') === declaredTarget;
+    };
+    const points: Array<{ x: number; y: number }> = [];
+    for (const rect of [...hitTarget.getClientRects()]) {
+      const left = Math.max(0, rect.left);
+      const right = Math.min(window.innerWidth, rect.right);
+      const top = Math.max(0, rect.top);
+      const bottom = Math.min(window.innerHeight, rect.bottom);
+      if (right - left < 1 || bottom - top < 1) continue;
+      const fractions = [0.5, 0.12, 0.88, 0.28, 0.72];
+      for (const yFraction of fractions) {
+        for (const xFraction of fractions) {
+          points.push({
+            x: left + (right - left) * xFraction,
+            y: top + (bottom - top) * yFraction,
+          });
+        }
+      }
+    }
+    for (const point of points) {
+      const top = document.elementFromPoint(point.x, point.y);
+      if (top && accepts(top)) return point;
+    }
+    return null;
+  }, { targetAttribute: attribute, targetId: id, hitMode: mode });
+  if (!point) {
+    await restorePhysicalDisclosurePath(page, openedDisclosureIds);
+    return null;
+  }
+  return { ...point, disclosureIds: openedDisclosureIds };
+}
+
+async function restorePhysicalDisclosurePath(page: Page, disclosureIds: readonly string[]): Promise<void> {
+  await page.evaluate((ids) => {
+    for (const disclosureId of [...ids].reverse()) {
+      const details = document.querySelector<HTMLDetailsElement>(`details[data-dc-qa-disclosure="${CSS.escape(disclosureId)}"]`);
+      if (details) details.open = false;
+    }
+    document.querySelectorAll('[data-dc-qa-disclosure],[data-dc-qa-disclosure-summary]').forEach((element) => {
+      element.removeAttribute('data-dc-qa-disclosure');
+      element.removeAttribute('data-dc-qa-disclosure-summary');
+    });
+  }, disclosureIds);
+}
+
+async function inspectTextSlotReachability(page: Page): Promise<CustomerEditorRuntimeCheck['editReachability']> {
+  return page.evaluate(() => {
+    const selector = '[data-dc-edit-id],[data-pb-edit-id]';
+    const elements = [...document.querySelectorAll<HTMLElement>(selector)];
+    let passed = 0;
+    let external = 0;
+    const failedIds: string[] = [];
+    const idFor = (element: Element) => element.getAttribute('data-dc-edit-id') || element.getAttribute('data-pb-edit-id') || '';
+    const hiddenByLayout = (element: HTMLElement): boolean => {
+      let opacity = 1;
+      let cursor: HTMLElement | null = element;
+      while (cursor) {
+        const style = getComputedStyle(cursor);
+        if (
+          cursor.hidden || cursor.inert || style.display === 'none'
+          || style.visibility === 'hidden' || style.visibility === 'collapse'
+          || style.contentVisibility === 'hidden'
+        ) return true;
+        const ownOpacity = Number.parseFloat(style.opacity);
+        if (Number.isFinite(ownOpacity)) opacity *= ownOpacity;
+        cursor = cursor.parentElement;
+      }
+      return opacity < 0.01;
+    };
+    const hasPoint = (declaredTarget: HTMLElement, hitTarget: HTMLElement, option = false): boolean => {
+      if (hiddenByLayout(hitTarget) || getComputedStyle(hitTarget).pointerEvents === 'none') return false;
+      hitTarget.scrollIntoView({ block: 'center', inline: 'center' });
+      for (const rect of [...hitTarget.getClientRects()]) {
+        const left = Math.max(0, rect.left);
+        const right = Math.min(window.innerWidth, rect.right);
+        const top = Math.max(0, rect.top);
+        const bottom = Math.min(window.innerHeight, rect.bottom);
+        if (right - left < 1 || bottom - top < 1) continue;
+        for (const fraction of [0.5, 0.15, 0.85, 0.3, 0.7]) {
+          const points = [
+            { x: left + (right - left) * fraction, y: top + (bottom - top) * 0.5 },
+            { x: left + (right - left) * 0.5, y: top + (bottom - top) * fraction },
+          ];
+          for (const point of points) {
+            const physicalTarget = document.elementFromPoint(point.x, point.y);
+            if (!physicalTarget) continue;
+            if (option) {
+              if (physicalTarget === hitTarget || hitTarget.contains(physicalTarget)) return true;
+            } else if (physicalTarget.closest(selector) === declaredTarget) {
+              return true;
+            }
+          }
+        }
+      }
+      return false;
+    };
+    const throughReachableDisclosures = (target: HTMLElement, inspect: () => boolean): boolean => {
+      const closedAncestors: HTMLDetailsElement[] = [];
+      let cursor = target.parentElement;
+      while (cursor) {
+        if (cursor instanceof HTMLDetailsElement && !cursor.open) closedAncestors.unshift(cursor);
+        cursor = cursor.parentElement;
+      }
+      const opened: HTMLDetailsElement[] = [];
+      try {
+        for (const details of closedAncestors) {
+          const summary = [...details.children]
+            .find((child): child is HTMLElement => child instanceof HTMLElement && child.tagName === 'SUMMARY');
+          // A native disclosure is a real customer path only when its own
+          // control is visible and physically reachable in the current
+          // viewport. Opening it temporarily lets us hit-test the advertised
+          // descendant without certifying dead modal/off-canvas content.
+          if (!summary || !hasPoint(summary, summary)) return false;
+          details.open = true;
+          opened.push(details);
+        }
+        return inspect();
       } finally {
-        window.setTimeout = nativeWindowSetTimeout;
+        for (const details of opened.reverse()) details.open = false;
       }
     };
+    for (const element of elements) {
+      const id = idFor(element);
+      if (!id) {
+        failedIds.push('(empty)');
+        continue;
+      }
+      if (element.closest('head')) {
+        const isSeoSlot = element.tagName === 'TITLE'
+          || (element.tagName === 'META' && (element.getAttribute('name') || '').toLowerCase() === 'description');
+        if (isSeoSlot) {
+          external += 1;
+          passed += 1;
+        } else failedIds.push(id);
+        continue;
+      }
+      if (element.tagName === 'OPTION') {
+        const select = element.closest('select');
+        if (!(select instanceof HTMLSelectElement) || element.hidden || (element as HTMLOptionElement).disabled) {
+          failedIds.push(id);
+          continue;
+        }
+        const index = [...select.options].indexOf(element as HTMLOptionElement);
+        const previous = select.selectedIndex;
+        select.selectedIndex = index;
+        const reachable = throughReachableDisclosures(element, () => hasPoint(element, select, true));
+        select.selectedIndex = previous;
+        if (reachable) passed += 1;
+        else failedIds.push(id);
+        continue;
+      }
+      if (throughReachableDisclosures(element, () => hasPoint(element, element))) passed += 1;
+      else failedIds.push(id);
+    }
+    return { checked: elements.length, passed, external, failedIds };
+  });
+}
 
-    const snapshotImageAttributes = (elements: readonly HTMLElement[]) => elements.map((element) => ({
-      element,
-      src: element.getAttribute('src'),
-      srcset: element.getAttribute('srcset'),
+async function imageInteractionGroups(page: Page): Promise<ImageInteractionGroup[]> {
+  return page.evaluate(() => {
+    const selector = '[data-dc-image-id],[data-pb-image-id]';
+    const idFor = (element: Element) => element.getAttribute('data-dc-image-id') || element.getAttribute('data-pb-image-id') || '';
+    const groups: ImageInteractionGroup[] = [];
+    const assigned = new Set<Element>();
+    for (const picture of [...document.querySelectorAll('picture')]) {
+      const responsive = [...picture.children].filter((child) => child.tagName === 'SOURCE' || child.tagName === 'IMG');
+      const advertised = responsive.filter((child) => idFor(child));
+      if (advertised.length === 0) continue;
+      for (const element of advertised) assigned.add(element);
+      const image = responsive.find((child) => child.tagName === 'IMG');
+      const primarySlotId = image ? idFor(image) : '';
+      groups.push({
+        kind: 'picture',
+        primarySlotId,
+        slotIds: advertised.map(idFor),
+        mode: 'image',
+      });
+    }
+    for (const element of [...document.querySelectorAll<HTMLElement>(selector)]) {
+      if (assigned.has(element)) continue;
+      const slotId = idFor(element);
+      groups.push({
+        kind: 'standalone',
+        primarySlotId: slotId,
+        slotIds: [slotId],
+        mode: element.tagName === 'IMG' ? 'image' : 'background',
+      });
+    }
+    return groups;
+  });
+}
+
+/** Exercise the exact app-owned iframe runtime through physically hit-tested browser actions. */
+async function exerciseCustomerEditorRuntime(page: Page, currentPage: string): Promise<CustomerEditorRuntimeCheck> {
+  const details: string[] = [];
+  const sentinelText = 'SENTINEL EDIT PERSISTED';
+  const sentinelImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+  await installEditorQaRecorder(page);
+  const installed = await page.evaluate((expectedRuntime) => (
+    (window as typeof window & { __dailyClarityCustomerPreviewEditorRuntime?: string })
+      .__dailyClarityCustomerPreviewEditorRuntime === expectedRuntime
+      && document.querySelectorAll(`script[data-dc-runtime="${expectedRuntime}"]`).length === 1
+  ), 'customer-preview-editor-v1');
+  const editReachability = await inspectTextSlotReachability(page);
+  if (editReachability.failedIds.length > 0) {
+    details.push(`unreachable text IDs: ${editReachability.failedIds.slice(0, 12).join(', ')}`);
+  }
+
+  let leafText: CheckStatus = 'missing';
+  const leaf = await page.evaluate(() => {
+    const candidates = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id],[data-pb-edit-id]')];
+    const element = candidates.find((candidate) => document.body.contains(candidate)
+      && !candidate.hasAttribute('data-dc-edit-attribute')
+      && !candidate.hasAttribute('data-pb-edit-attribute')
+      && candidate.tagName !== 'OPTION'
+      && !candidate.matches('a,button,label,summary')
+      && candidate.children.length === 0);
+    if (!element) return null;
+    return {
+      attribute: element.hasAttribute('data-dc-edit-id') ? 'data-dc-edit-id' as const : 'data-pb-edit-id' as const,
+      id: element.getAttribute('data-dc-edit-id') || element.getAttribute('data-pb-edit-id') || '',
+      html: element.innerHTML,
       style: element.getAttribute('style'),
-    }));
-    const restoreImages = (snapshots: ReturnType<typeof snapshotImageAttributes>) => {
-      for (const snapshot of snapshots) {
-        restoreAttribute(snapshot.element, 'src', snapshot.src);
-        restoreAttribute(snapshot.element, 'srcset', snapshot.srcset);
-        restoreAttribute(snapshot.element, 'style', snapshot.style);
+      contenteditable: element.getAttribute('contenteditable'),
+      text: element.textContent || '',
+    };
+  });
+  if (leaf) {
+    const point = await physicalHitPoint(page, leaf.attribute, leaf.id, 'text');
+    if (point) {
+      try {
+        const message = await physicalMessage(page, 'textEdited', async () => {
+          await page.mouse.dblclick(point.x, point.y);
+          const editing = await page.evaluate(({ attribute, id }) => {
+            const element = [...document.querySelectorAll<HTMLElement>(`[${attribute}]`)]
+              .find((candidate) => candidate.getAttribute(attribute) === id);
+            return Boolean(element?.isContentEditable);
+          }, { attribute: leaf.attribute, id: leaf.id });
+          if (editing) {
+            await page.keyboard.press('Control+A');
+            await page.keyboard.type(sentinelText);
+            await page.keyboard.press('Tab');
+          }
+        });
+        const changed = await page.evaluate(({ attribute, id, sentinel }) => {
+          const element = [...document.querySelectorAll<HTMLElement>(`[${attribute}]`)]
+            .find((candidate) => candidate.getAttribute(attribute) === id);
+          return element?.textContent === sentinel;
+        }, { attribute: leaf.attribute, id: leaf.id, sentinel: sentinelText });
+        leafText = changed && message?.nodeId === leaf.id && message.original === leaf.text && message.text === sentinelText
+          ? 'passed'
+          : 'failed';
+      } finally {
+        await restorePhysicalDisclosurePath(page, point.disclosureIds);
       }
+    } else leafText = 'failed';
+    await page.evaluate((snapshot) => {
+      const element = [...document.querySelectorAll<HTMLElement>(`[${snapshot.attribute}]`)]
+        .find((candidate) => candidate.getAttribute(snapshot.attribute) === snapshot.id);
+      if (!element) return;
+      element.innerHTML = snapshot.html;
+      for (const [name, value] of [['style', snapshot.style], ['contenteditable', snapshot.contenteditable]] as const) {
+        if (value === null) element.removeAttribute(name);
+        else element.setAttribute(name, value);
+      }
+    }, leaf);
+    if (leafText === 'failed') details.push('leaf text did not complete a physical dblclick/keyboard/blur/textEdited round trip');
+  }
+
+  let editableAttribute: CheckStatus = 'missing';
+  const attributeTarget = await page.evaluate(() => {
+    const element = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-attribute],[data-pb-edit-attribute]')]
+      .find((candidate) => document.body.contains(candidate));
+    if (!element) return null;
+    const attribute = element.getAttribute('data-dc-edit-attribute') || element.getAttribute('data-pb-edit-attribute') || '';
+    return {
+      idAttribute: element.hasAttribute('data-dc-edit-id') ? 'data-dc-edit-id' as const : 'data-pb-edit-id' as const,
+      id: element.getAttribute('data-dc-edit-id') || element.getAttribute('data-pb-edit-id') || '',
+      attribute,
+      original: element.getAttribute(attribute),
     };
-    const imageChanged = (target: HTMLElement) => target instanceof HTMLImageElement
-      ? target.getAttribute('src') === sentinelImage && !target.hasAttribute('srcset')
-      : target instanceof HTMLSourceElement
-        ? (target.getAttribute('srcset') ?? target.getAttribute('src')) === sentinelImage
-        : target.style.backgroundImage.includes('data:image/png;base64');
-    const replyToImageRequest = async (request: PreviewMessage, slotIds: string[]) => {
-      window.postMessage({
-        type: 'imageSwapResponse',
-        imageUrl: sentinelImage,
-        slotId: request.slotId,
-        slotIds,
-      }, '*');
-      await new Promise<void>((resolvePromise) => nativeSetTimeout(resolvePromise, 0));
+  });
+  if (attributeTarget) {
+    const point = await physicalHitPoint(page, attributeTarget.idAttribute, attributeTarget.id, 'text');
+    const request = point
+      ? await physicalMessage(page, 'editValueRequest', () => page.mouse.dblclick(point.x, point.y))
+          .finally(() => restorePhysicalDisclosurePath(page, point.disclosureIds))
+      : null;
+    if (request) {
+      await page.evaluate(({ nodeId, attribute, text }) => {
+        window.postMessage({ type: 'editValueResponse', nodeId, attribute, text }, '*');
+      }, { nodeId: request.nodeId, attribute: request.attribute, text: sentinelText });
+      await page.waitForFunction(({ id, attribute, sentinel }) => {
+        const element = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id],[data-pb-edit-id]')]
+          .find((candidate) => (candidate.getAttribute('data-dc-edit-id') || candidate.getAttribute('data-pb-edit-id')) === id);
+        return element?.getAttribute(attribute) === sentinel;
+      }, { id: attributeTarget.id, attribute: attributeTarget.attribute, sentinel: sentinelText }, { timeout: 750 }).catch(() => undefined);
+    }
+    const changed = await page.evaluate(({ id, attribute, sentinel }) => {
+      const element = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id],[data-pb-edit-id]')]
+        .find((candidate) => (candidate.getAttribute('data-dc-edit-id') || candidate.getAttribute('data-pb-edit-id')) === id);
+      return element?.getAttribute(attribute) === sentinel;
+    }, { id: attributeTarget.id, attribute: attributeTarget.attribute, sentinel: sentinelText });
+    editableAttribute = request?.nodeId === attributeTarget.id
+      && request.attribute === attributeTarget.attribute
+      && request.original === (attributeTarget.original || '')
+      && changed
+      ? 'passed'
+      : 'failed';
+    await page.evaluate((snapshot) => {
+      const element = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id],[data-pb-edit-id]')]
+        .find((candidate) => (candidate.getAttribute('data-dc-edit-id') || candidate.getAttribute('data-pb-edit-id')) === snapshot.id);
+      if (!element) return;
+      if (snapshot.original === null) element.removeAttribute(snapshot.attribute);
+      else element.setAttribute(snapshot.attribute, snapshot.original);
+    }, attributeTarget);
+    if (editableAttribute === 'failed') details.push('editable attribute did not complete a physical dblclick/request/response round trip');
+  }
+
+  let selectOption: CheckStatus = 'missing';
+  const optionTarget = await page.evaluate(() => {
+    const option = [...document.querySelectorAll<HTMLOptionElement>('option[data-dc-edit-id],option[data-pb-edit-id]')]
+      .find((candidate) => candidate.closest('select'));
+    if (!option) return null;
+    const select = option.closest('select')!;
+    return {
+      idAttribute: option.hasAttribute('data-dc-edit-id') ? 'data-dc-edit-id' as const : 'data-pb-edit-id' as const,
+      id: option.getAttribute('data-dc-edit-id') || option.getAttribute('data-pb-edit-id') || '',
+      original: option.textContent || '',
+      selectedIndex: select.selectedIndex,
     };
-
-    let standaloneImage: CheckStatus = 'missing';
-    const standalone = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
-      .find((element) => element.tagName !== 'SOURCE' && !element.closest('picture'));
-    if (standalone) {
-      const snapshots = snapshotImageAttributes([standalone]);
-      const slotId = standalone.getAttribute('data-dc-image-id') || standalone.getAttribute('data-pb-image-id') || '';
-      const request = await dispatchImageClick(standalone);
-      if (request) await replyToImageRequest(request, [slotId]);
-      standaloneImage = request?.slotId === slotId
-        && Array.isArray(request.pictureSlotIds)
-        && request.pictureSlotIds.length === 1
-        && request.pictureSlotIds[0] === slotId
-        && imageChanged(standalone)
-        ? 'passed'
-        : 'failed';
-      if (standaloneImage === 'failed') details.push('standalone image did not complete the click/request/response round trip');
-      restoreImages(snapshots);
+  });
+  if (optionTarget) {
+    const point = await physicalHitPoint(page, optionTarget.idAttribute, optionTarget.id, 'option');
+    const request = point
+      ? await physicalMessage(page, 'editValueRequest', () => page.mouse.dblclick(point.x, point.y))
+          .finally(() => restorePhysicalDisclosurePath(page, point.disclosureIds))
+      : null;
+    if (request) {
+      await page.evaluate(({ nodeId, text }) => {
+        window.postMessage({ type: 'editValueResponse', nodeId, attribute: '', text }, '*');
+      }, { nodeId: request.nodeId, text: sentinelText });
+      await page.waitForFunction(({ id, sentinel }) => {
+        const option = [...document.querySelectorAll<HTMLOptionElement>('option[data-dc-edit-id],option[data-pb-edit-id]')]
+          .find((candidate) => (candidate.getAttribute('data-dc-edit-id') || candidate.getAttribute('data-pb-edit-id')) === id);
+        return option?.textContent === sentinel;
+      }, { id: optionTarget.id, sentinel: sentinelText }, { timeout: 750 }).catch(() => undefined);
     }
+    const changed = await page.evaluate(({ id, sentinel }) => {
+      const option = [...document.querySelectorAll<HTMLOptionElement>('option[data-dc-edit-id],option[data-pb-edit-id]')]
+        .find((candidate) => (candidate.getAttribute('data-dc-edit-id') || candidate.getAttribute('data-pb-edit-id')) === id);
+      return option?.textContent === sentinel;
+    }, { id: optionTarget.id, sentinel: sentinelText });
+    selectOption = request?.nodeId === optionTarget.id && request.attribute === '' && changed ? 'passed' : 'failed';
+    await page.evaluate((snapshot) => {
+      const option = [...document.querySelectorAll<HTMLOptionElement>('option[data-dc-edit-id],option[data-pb-edit-id]')]
+        .find((candidate) => (candidate.getAttribute('data-dc-edit-id') || candidate.getAttribute('data-pb-edit-id')) === snapshot.id);
+      if (!option) return;
+      option.textContent = snapshot.original;
+      const select = option.closest('select');
+      if (select) select.selectedIndex = snapshot.selectedIndex;
+    }, optionTarget);
+    if (selectOption === 'failed') details.push('selected option did not complete a physical select/dblclick/request/response round trip');
+  }
 
-    let responsivePicture: CheckStatus = 'missing';
-    const picture = [...document.querySelectorAll<HTMLPictureElement>('picture')].find((candidate) => {
-      const responsive = [...candidate.children].filter((child) => child.tagName === 'SOURCE' || child.tagName === 'IMG');
-      const ids = responsive.map((child) => child.getAttribute('data-dc-image-id') || child.getAttribute('data-pb-image-id') || '');
-      return responsive.some((child) => child.tagName === 'IMG') && responsive.length > 1
-        && ids.every(Boolean) && new Set(ids).size === ids.length;
-    });
-    if (picture) {
-      const responsive = [...picture.children]
-        .filter((child): child is HTMLElement => child instanceof HTMLElement && (child.tagName === 'SOURCE' || child.tagName === 'IMG'));
-      const image = responsive.find((child): child is HTMLImageElement => child instanceof HTMLImageElement)!;
-      const domSlotIds = responsive.map((child) => child.getAttribute('data-dc-image-id') || child.getAttribute('data-pb-image-id') || '');
-      const primarySlotId = image.getAttribute('data-dc-image-id') || image.getAttribute('data-pb-image-id') || '';
-      const responseSlotIds = [primarySlotId, ...domSlotIds.filter((slotId) => slotId !== primarySlotId)];
-      const snapshots = snapshotImageAttributes(responsive);
-      const request = await dispatchImageClick(image);
-      if (request) await replyToImageRequest(request, responseSlotIds);
-      const requestedPictureSlotIds = Array.isArray(request?.pictureSlotIds)
-        ? request.pictureSlotIds as unknown[]
-        : [];
-      responsivePicture = request?.slotId === primarySlotId
-        && requestedPictureSlotIds.length === domSlotIds.length
-        && domSlotIds.every((slotId) => requestedPictureSlotIds.includes(slotId))
-        && responsive.every(imageChanged)
-        ? 'passed'
-        : 'failed';
-      if (responsivePicture === 'failed') details.push('responsive picture did not require and update its complete stable-ID group');
-      restoreImages(snapshots);
+  const groups = await imageInteractionGroups(page);
+  let standaloneChecks = 0;
+  let standalonePasses = 0;
+  let responsiveChecks = 0;
+  let responsivePasses = 0;
+  const failedImageIds: string[] = [];
+  for (const group of groups) {
+    if (group.kind === 'picture') responsiveChecks += 1;
+    else standaloneChecks += 1;
+    const point = group.primarySlotId
+      ? await physicalHitPoint(
+          page,
+          'data-dc-image-id',
+          group.primarySlotId,
+          group.mode,
+        ) ?? await physicalHitPoint(page, 'data-pb-image-id', group.primarySlotId, group.mode)
+      : null;
+    const snapshot = await page.evaluate((slotIds) => slotIds.map((slotId) => {
+      const element = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
+        .find((candidate) => (candidate.getAttribute('data-dc-image-id') || candidate.getAttribute('data-pb-image-id')) === slotId);
+      return element ? {
+        slotId,
+        src: element.getAttribute('src'),
+        srcset: element.getAttribute('srcset'),
+        style: element.getAttribute('style'),
+      } : null;
+    }), group.slotIds);
+    const request = point
+      ? await physicalMessage(page, 'imageSwapRequest', () => page.mouse.click(point.x, point.y), 1_200)
+          .finally(() => restorePhysicalDisclosurePath(page, point.disclosureIds))
+      : null;
+    const requestedSlots = Array.isArray(request?.pictureSlotIds)
+      ? request.pictureSlotIds.filter((slot): slot is string => typeof slot === 'string')
+      : [];
+    const requestMatches = request?.slotId === group.primarySlotId
+      && requestedSlots.length === group.slotIds.length
+      && group.slotIds.every((slotId) => requestedSlots.includes(slotId));
+    if (requestMatches) {
+      const responseSlots = [group.primarySlotId, ...group.slotIds.filter((slotId) => slotId !== group.primarySlotId)];
+      await page.evaluate(({ slotId, slotIds, imageUrl }) => {
+        window.postMessage({ type: 'imageSwapResponse', slotId, slotIds, imageUrl }, '*');
+      }, { slotId: group.primarySlotId, slotIds: responseSlots, imageUrl: sentinelImage });
+      await page.waitForFunction(({ slotIds, sentinel }) => slotIds.every((slotId) => {
+        const element = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
+          .find((candidate) => (candidate.getAttribute('data-dc-image-id') || candidate.getAttribute('data-pb-image-id')) === slotId);
+        if (!element) return false;
+        if (element instanceof HTMLImageElement) return element.getAttribute('src') === sentinel && !element.hasAttribute('srcset');
+        if (element instanceof HTMLSourceElement) return (element.getAttribute('srcset') || element.getAttribute('src')) === sentinel;
+        return element.style.backgroundImage.includes('data:image/png;base64');
+      }), { slotIds: group.slotIds, sentinel: sentinelImage }, { timeout: 750 }).catch(() => undefined);
     }
+    const changed = requestMatches && await page.evaluate(({ slotIds, sentinel }) => slotIds.every((slotId) => {
+      const element = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
+        .find((candidate) => (candidate.getAttribute('data-dc-image-id') || candidate.getAttribute('data-pb-image-id')) === slotId);
+      if (!element) return false;
+      if (element instanceof HTMLImageElement) return element.getAttribute('src') === sentinel && !element.hasAttribute('srcset');
+      if (element instanceof HTMLSourceElement) return (element.getAttribute('srcset') || element.getAttribute('src')) === sentinel;
+      return element.style.backgroundImage.includes('data:image/png;base64');
+    }), { slotIds: group.slotIds, sentinel: sentinelImage });
+    if (changed) {
+      if (group.kind === 'picture') responsivePasses += 1;
+      else standalonePasses += 1;
+    } else {
+      failedImageIds.push(...group.slotIds);
+      details.push(`${group.kind} image slots ${group.slotIds.join(', ')} failed physical hit/request/response`);
+    }
+    await page.evaluate((snapshots) => {
+      for (const snapshot of snapshots) {
+        if (!snapshot) continue;
+        const element = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
+          .find((candidate) => (candidate.getAttribute('data-dc-image-id') || candidate.getAttribute('data-pb-image-id')) === snapshot.slotId);
+        if (!element) continue;
+        for (const [name, value] of [['src', snapshot.src], ['srcset', snapshot.srcset], ['style', snapshot.style]] as const) {
+          if (value === null) element.removeAttribute(name);
+          else element.setAttribute(name, value);
+        }
+      }
+    }, snapshot);
+  }
+  const standaloneImage: CheckStatus = standaloneChecks === 0 ? 'missing' : standalonePasses === standaloneChecks ? 'passed' : 'failed';
+  const responsivePicture: CheckStatus = responsiveChecks === 0 ? 'missing' : responsivePasses === responsiveChecks ? 'passed' : 'failed';
+  const imageReachability = {
+    checked: groups.reduce((sum, group) => sum + group.slotIds.length, 0),
+    passed: groups.reduce((sum, group) => sum + (failedImageIds.some((id) => group.slotIds.includes(id)) ? 0 : group.slotIds.length), 0),
+    failedIds: [...new Set(failedImageIds)],
+  };
 
-    let navigation: CheckStatus = 'missing';
-    const navigationLink = [...document.querySelectorAll<HTMLAnchorElement>('a[href]')].find((link) => {
+  let navigation: CheckStatus = 'missing';
+  const navigationTargets = await page.evaluate(({ manifestPage }) => {
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('a[href]')];
+    const targets: Array<{ id: string; expectedPage: string }> = [];
+    for (let index = 0; index < links.length; index += 1) {
+      const link = links[index]!;
       const href = link.getAttribute('href') || '';
-      return href === '/' || href === './' || (!/^(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/|#)/.test(href) && /\.html(?:[?#].*)?$/i.test(href));
-    });
-    if (navigationLink) {
-      const href = navigationLink.getAttribute('href') || '';
+      if (!(href === '/' || href === './' || (!/^(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/|#)/.test(href) && /\.html(?:[?#].*)?$/i.test(href)))) continue;
+      if (link.querySelector('img[data-dc-image-id],img[data-pb-image-id]')) continue;
+      const id = `nav-${index}`;
+      link.setAttribute('data-dc-qa-navigation', id);
       const expectedPage = href === '/' || href === './'
         ? 'index.html'
         : new URL(href, `https://preview.invalid/${manifestPage}`).pathname.replace(/^\/+/, '');
-      const request = await nextMessage('navigatePage', () => {
-        navigationLink.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-      });
-      navigation = typeof request?.page === 'string'
+      targets.push({ id, expectedPage });
+    }
+    return targets;
+  }, { manifestPage: currentPage });
+  if (navigationTargets.length > 0) {
+    navigation = 'failed';
+    for (const navigationTarget of navigationTargets) {
+      const point = await physicalHitPoint(page, 'data-dc-qa-navigation', navigationTarget.id, 'navigation');
+      if (!point) continue;
+      const request = await physicalMessage(page, 'navigatePage', () => page.mouse.click(point.x, point.y))
+        .finally(() => restorePhysicalDisclosurePath(page, point.disclosureIds));
+      if (
+        typeof request?.page === 'string'
         && /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.html$/.test(request.page)
         && request.page.length <= 160
-        && request.page === expectedPage
-        ? 'passed'
-        : 'failed';
-      if (navigation === 'failed') details.push(`nested navigation did not emit a safe page from ${manifestPage}`);
+        && request.page === navigationTarget.expectedPage
+      ) {
+        navigation = 'passed';
+        break;
+      }
     }
+    await page.evaluate(() => {
+      document.querySelectorAll('[data-dc-qa-navigation]').forEach((element) => element.removeAttribute('data-dc-qa-navigation'));
+    });
+    if (navigation === 'failed') details.push(`no internal navigation target survived a physical click from ${currentPage}`);
+  }
 
-    return {
-      installed: (window as typeof window & { __dailyClarityCustomerPreviewEditorRuntime?: string })
-        .__dailyClarityCustomerPreviewEditorRuntime === expectedRuntime
-        && document.querySelectorAll(`script[data-dc-runtime="${expectedRuntime}"]`).length === 1,
-      leafText,
-      editableAttribute,
-      standaloneImage,
-      responsivePicture,
-      navigation,
-      details,
-    };
-  }, { manifestPage: currentPage, expectedRuntime: 'customer-preview-editor-v1' });
+  return {
+    installed,
+    leafText,
+    editableAttribute,
+    selectOption,
+    standaloneImage,
+    responsivePicture,
+    navigation,
+    editReachability,
+    imageReachability,
+    details,
+  };
 }
 
 export function isAllowedTemplateRenderRequest(origin: string, url: string, resourceType: string): boolean {
@@ -922,10 +1365,10 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
   const state = await page.evaluate(() => {
     const text = document.body?.innerText?.replace(/\s+/g, ' ').trim() ?? '';
     const root = document.documentElement;
-    const editIds = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id]')]
-      .map((element) => element.dataset.dcEditId ?? '');
-    const imageIds = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id]')]
-      .map((element) => element.dataset.dcImageId ?? '');
+    const editIds = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id],[data-pb-edit-id]')]
+      .map((element) => element.getAttribute('data-dc-edit-id') || element.getAttribute('data-pb-edit-id') || '');
+    const imageIds = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
+      .map((element) => element.getAttribute('data-dc-image-id') || element.getAttribute('data-pb-image-id') || '');
     const brokenImages = [...document.images]
       .filter((image) => image.complete && image.naturalWidth === 0)
       .map((image) => image.currentSrc || image.src);
@@ -1081,65 +1524,31 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
     }
   }
 
+  const editorRuntime = await exerciseCustomerEditorRuntime(page, currentPage);
   if (state.editSlotCount > 0) {
-    const edits = await page.evaluate(() => {
-      const targets = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id]')];
-      let passed = 0;
-      for (const target of targets) {
-        const attribute = target.dataset.dcEditAttribute;
-        if (attribute) {
-          const hadAttribute = target.hasAttribute(attribute);
-          const original = target.getAttribute(attribute);
-          target.setAttribute(attribute, 'SENTINEL EDIT PERSISTED');
-          if (target.getAttribute(attribute) === 'SENTINEL EDIT PERSISTED' && Boolean(target.dataset.dcEditId)) passed += 1;
-          if (hadAttribute) target.setAttribute(attribute, original ?? '');
-          else target.removeAttribute(attribute);
-        } else {
-          const original = target.innerHTML;
-          target.textContent = 'SENTINEL EDIT PERSISTED';
-          if (target.textContent === 'SENTINEL EDIT PERSISTED' && Boolean(target.dataset.dcEditId)) passed += 1;
-          target.innerHTML = original;
-        }
-      }
-      return { checked: targets.length, passed };
-    });
-    if (edits.checked !== state.editSlotCount || edits.passed !== edits.checked) {
-      issues.push({ code: 'edit_smoke_failed', severity: 'critical', detail: `${edits.passed}/${state.editSlotCount} ID-targeted text/attribute edits applied and restored` });
+    if (
+      editorRuntime.editReachability.checked !== state.editSlotCount
+      || editorRuntime.editReachability.passed !== editorRuntime.editReachability.checked
+    ) {
+      issues.push({
+        code: 'edit_smoke_failed',
+        severity: 'critical',
+        detail: `${editorRuntime.editReachability.passed}/${state.editSlotCount} advertised text/attribute slots have a visible, physically hit-tested customer path; failures=${editorRuntime.editReachability.failedIds.slice(0, 12).join(', ')}`,
+      });
     }
   } else {
     issues.push({ code: 'no_edit_slots', severity: 'critical', detail: 'Page contains no stable editable text IDs' });
   }
-
-  if (state.imageSlotCount > 0) {
-    const images = await page.evaluate(() => {
-      const targets = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id]')];
-      const sentinel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
-      let passed = 0;
-      for (const target of targets) {
-        const originals = new Map<string, string | null>();
-        for (const attribute of ['src', 'srcset', 'style']) originals.set(attribute, target.getAttribute(attribute));
-        if (target instanceof HTMLImageElement) target.setAttribute('src', sentinel);
-        else if (target instanceof HTMLSourceElement) target.setAttribute('srcset', `${sentinel} 1x`);
-        else target.style.setProperty('background-image', `url("${sentinel}")`, 'important');
-        const changed = target instanceof HTMLImageElement
-          ? target.getAttribute('src') === sentinel
-          : target instanceof HTMLSourceElement
-            ? target.getAttribute('srcset') === `${sentinel} 1x`
-            : target.style.backgroundImage.includes('data:image/png;base64');
-        if (changed && Boolean(target.dataset.dcImageId)) passed += 1;
-        for (const [attribute, value] of originals) {
-          if (value === null) target.removeAttribute(attribute);
-          else target.setAttribute(attribute, value);
-        }
-      }
-      return { checked: targets.length, passed };
+  if (
+    editorRuntime.imageReachability.checked !== state.imageSlotCount
+    || editorRuntime.imageReachability.passed !== editorRuntime.imageReachability.checked
+  ) {
+    issues.push({
+      code: 'image_edit_smoke_failed',
+      severity: 'critical',
+      detail: `${editorRuntime.imageReachability.passed}/${state.imageSlotCount} advertised image slots completed a physical hit/request/response/mutation round trip; failures=${editorRuntime.imageReachability.failedIds.slice(0, 12).join(', ')}`,
     });
-    if (images.checked !== state.imageSlotCount || images.passed !== images.checked) {
-      issues.push({ code: 'image_edit_smoke_failed', severity: 'critical', detail: `${images.passed}/${state.imageSlotCount} ID-targeted image edits applied and restored` });
-    }
   }
-
-  const editorRuntime = await exerciseCustomerEditorRuntime(page, currentPage);
   if (!editorRuntime.installed) {
     issues.push({
       code: 'customer_editor_runtime_missing',
@@ -1158,6 +1567,7 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
   }
   for (const [path, status] of [
     ['attribute', editorRuntime.editableAttribute],
+    ['select_option', editorRuntime.selectOption],
     ['standalone_image', editorRuntime.standaloneImage],
     ['responsive_picture', editorRuntime.responsivePicture],
     ['navigation', editorRuntime.navigation],
@@ -1288,6 +1698,37 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
 
     let formPassed = true;
     let formChecks = 0;
+    const hasRenderedContent = (element: HTMLElement): boolean => {
+      let cumulativeOpacity = 1;
+      for (let current: Element | null = element; current; current = current.parentElement) {
+        if (current.hasAttribute('hidden') || current.hasAttribute('inert') || current.getAttribute('aria-hidden') === 'true') {
+          return false;
+        }
+        const style = getComputedStyle(current);
+        const opacity = Number.parseFloat(style.opacity || '1');
+        if (Number.isFinite(opacity)) cumulativeOpacity *= opacity;
+        if (
+          style.display === 'none'
+          || style.visibility === 'hidden'
+          || style.visibility === 'collapse'
+          || style.contentVisibility === 'hidden'
+          || style.pointerEvents === 'none'
+          || cumulativeOpacity < 0.01
+        ) {
+          return false;
+        }
+      }
+
+      if ([...element.getClientRects()].some((rect) => rect.width > 0 && rect.height > 0)) return true;
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return [...range.getClientRects()].some((rect) => rect.width > 0 && rect.height > 0);
+    };
+    const isUsableControl = (control: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLButtonElement): boolean => {
+      if (!hasRenderedContent(control) || control.matches(':disabled')) return false;
+      if ((control instanceof HTMLInputElement || control instanceof HTMLTextAreaElement) && control.readOnly) return false;
+      return getComputedStyle(control).pointerEvents !== 'none';
+    };
     const simplePatternWitness = (pattern: string): string | undefined => {
       let source = pattern.replace(/^\^/, '').replace(/\$$/, '');
       let output = '';
@@ -1386,6 +1827,28 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
       ].filter((value): value is string => value !== undefined);
     };
     for (const form of [...document.querySelectorAll<HTMLFormElement>('form[data-dc-standard-form]')]) {
+      formChecks += 1;
+      const dataControls = [...form.elements].filter((field): field is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement =>
+        (field instanceof HTMLInputElement && !['button', 'submit', 'reset', 'image'].includes(field.type))
+        || field instanceof HTMLSelectElement
+        || field instanceof HTMLTextAreaElement,
+      );
+      const submitters = [...form.querySelectorAll<HTMLButtonElement | HTMLInputElement>('button, input')]
+        .filter((control) => (control instanceof HTMLButtonElement && (control.type || 'submit') === 'submit')
+          || (control instanceof HTMLInputElement && ['submit', 'image'].includes(control.type)));
+      const labels = [...new Set(dataControls.flatMap((control) => [...control.labels ?? []]))];
+      const usable = hasRenderedContent(form)
+        && dataControls.length === 4
+        && dataControls.every(isUsableControl)
+        && labels.length === 4
+        && labels.every((label) => hasRenderedContent(label))
+        && submitters.length === 1
+        && isUsableControl(submitters[0]!);
+      if (!usable) {
+        formPassed = false;
+        continue;
+      }
+
       const originalValues = new Map<Element, { value: string; checked?: boolean; selectedIndex?: number }>();
       for (const field of [...form.elements]) {
         if (field instanceof HTMLInputElement) {
@@ -1433,11 +1896,6 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
           }
         }
       }
-      const dataControls = [...form.elements].filter((field): field is HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement =>
-        (field instanceof HTMLInputElement && !['button', 'submit', 'reset', 'image'].includes(field.type))
-        || field instanceof HTMLSelectElement
-        || field instanceof HTMLTextAreaElement,
-      );
       const namesPassed = dataControls.every((field) => Boolean(field.name.trim()));
       let compatibilityEvent = false;
       const observeCompatibility = () => { compatibilityEvent = true; };
@@ -1447,7 +1905,6 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
       try {
         form.requestSubmit();
         await Promise.resolve();
-        formChecks += 1;
         const submitted = new FormData(form);
         const successfulControlsPassed = dataControls.every((field) => {
           if (field.disabled) return true;
@@ -1456,6 +1913,8 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
           return submitted.has(field.name);
         });
         formPassed = formPassed && namesPassed && successfulControlsPassed && compatibilityEvent;
+      } catch {
+        formPassed = false;
       } finally {
         form.removeEventListener('dc:form-submit', observeCompatibility);
         form.removeEventListener('submit', preventNavigation, true);
@@ -1474,7 +1933,7 @@ async function inspectPage(page: Page, origin: string, url: string, currentPage:
     issues.push({ code: 'navigation_smoke_failed', severity: 'critical', detail: `${interactions.navigationChecks} navigation controls were exercised but did not restore cleanly` });
   }
   if (!interactions.formPassed) {
-    issues.push({ code: 'form_smoke_failed', severity: 'critical', detail: `${interactions.formChecks} standardized forms did not dispatch the compatibility event` });
+    issues.push({ code: 'form_smoke_failed', severity: 'critical', detail: `${interactions.formChecks} standardized forms were not all visible, usable, and compatible` });
   }
   if (interactions.formChecks !== state.forms.length) {
     issues.push({

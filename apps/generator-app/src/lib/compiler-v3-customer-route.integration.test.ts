@@ -12,6 +12,7 @@ vi.mock('@/lib/templates/niche-registry', async () => {
   )
   return {
     ...registry,
+    getTemplateAtCatalogRevision: registry.getTemplate,
     hydrateTemplate: hydration.hydrateTemplate,
   }
 })
@@ -266,6 +267,8 @@ describe('compiler-v3 customer route contract', () => {
       contentPresetId: 'content_route_fixture',
       themePresetId: 'theme_route_fixture',
       qualityReceipt: 'receipt_route_fixture',
+      catalogHash: 'a'.repeat(64),
+      manifestHash: 'b'.repeat(64),
     })
 
     const revisionMetadata = chunkJsonToMetadata('catalogRevision', checkoutState.catalogRevision, 2)

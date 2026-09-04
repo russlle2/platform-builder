@@ -41,6 +41,13 @@ async function createStaging(overrides?: {
     sourceTemplates: 1,
     templates: [catalogueEntry],
   })
+  await writeJson(join(root, '_manifest.json'), {
+    [catalogueEntry.niche]: [{
+      ...catalogueEntry,
+      slug: catalogueEntry.legacySlug,
+      nicheSlug: catalogueEntry.niche,
+    }],
+  })
   await writeJson(join(templateRoot, 'template.json'), {
     contractVersion: 3,
     legacySlug: catalogueEntry.legacySlug,
@@ -198,6 +205,38 @@ describe('verifyRehabCustomizationStaging', () => {
     expect(codes).toContain('content_target_ambiguous')
     expect(codes).toContain('image_page_not_customer_editable')
     expect(codes).not.toContain('theme_token_not_overridden')
+  })
+
+  it('rejects hidden text and decorative or action-stealing background slots', async () => {
+    const root = await createStaging({
+      html: [
+        '<html><body><h1 data-dc-edit-id="txt_visible">Visible heading</h1>',
+        '<section hidden><p data-dc-edit-id="txt_hidden">Hidden legacy modal copy</p></section>',
+        '<section style="pointer-events:none"><p data-dc-edit-id="txt_pointerless">Pointerless copy</p><img data-dc-image-id="img_pointerless" src="/img/pointerless.webp" alt=""></section>',
+        '<div class="pattern" data-dc-image-id="css_pattern"></div>',
+        '<img hidden data-dc-image-id="img_hidden" src="/img/hidden.webp" alt="">',
+        '<a href="contact.html" data-dc-image-id="css_link">Contact</a></body></html>',
+      ].join(''),
+      entries: [
+        { nodeId: 'txt_visible', page: 'index.html', html: 'Visible heading', text: 'Visible heading' },
+        { nodeId: 'txt_hidden', page: 'index.html', html: 'Hidden legacy modal copy', text: 'Hidden legacy modal copy' },
+        { nodeId: 'txt_pointerless', page: 'index.html', html: 'Pointerless copy', text: 'Pointerless copy' },
+      ],
+      images: [
+        { slotId: 'css_pattern', page: 'index.html', kind: 'background', source: '/img/pattern.svg', selector: '.pattern', attribute: 'css-url' },
+        { slotId: 'img_hidden', page: 'index.html', kind: 'image', source: '/img/hidden.webp', attribute: 'src' },
+        { slotId: 'img_pointerless', page: 'index.html', kind: 'image', source: '/img/pointerless.webp', attribute: 'src' },
+        { slotId: 'css_link', page: 'index.html', kind: 'background', source: '/img/hero.webp', selector: 'a', attribute: 'css-url' },
+      ],
+    })
+    const result = await verifyRehabCustomizationStaging({ root, maxDiagnostics: 100 })
+    const codes = result.diagnostics.map((diagnostic) => diagnostic.code)
+
+    expect(result.pass).toBe(false)
+    expect(codes).toContain('content_target_not_customer_visible')
+    expect(codes).toContain('image_target_not_customer_visible')
+    expect(codes).toContain('decorative_image_slot_advertised')
+    expect(codes).toContain('background_slot_steals_customer_action')
   })
 
   it('rejects manifest pages that the customer preview and persistence routes cannot address', async () => {

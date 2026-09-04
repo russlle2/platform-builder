@@ -16,7 +16,7 @@ vi.mock('@/lib/stripe-client', () => ({
 }))
 
 vi.mock('@/lib/templates/niche-registry', () => ({
-  getTemplate: mocks.getTemplate,
+  getTemplateAtCatalogRevision: mocks.getTemplate,
 }))
 
 vi.mock('@/lib/stripe-runtime', () => ({
@@ -29,7 +29,7 @@ const OWNER_B = 'draft-123e4567-e89b-42d3-b456-426614174001'
 
 let checkoutPost: typeof import('./route').POST
 
-function requestWithImages(owners: string[]): NextRequest {
+function requestWithImages(owners: string[], overrides: Record<string, unknown> = {}): NextRequest {
   return new NextRequest('https://dailyclarity.org/api/stripe/checkout', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -48,6 +48,7 @@ function requestWithImages(owners: string[]): NextRequest {
           updated: `https://project.supabase.co/storage/v1/object/public/customer-images/${owner}/image-${index}.webp`,
         })),
       },
+      ...overrides,
     }),
   })
 }
@@ -98,6 +99,15 @@ describe('template checkout draft-image gate', () => {
   })
 
   it('snapshots the server-side v3 catalogue revision into the checkout intent', async () => {
+    const catalogRevision = {
+      contractVersion: 3,
+      designId: 'design_shared',
+      contentPresetId: 'content_serene',
+      themePresetId: 'theme_serene',
+      qualityReceipt: 'receipt_abc123',
+      catalogHash: 'a'.repeat(64),
+      manifestHash: 'b'.repeat(64),
+    }
     const insertIntent = vi.fn().mockResolvedValue({ error: null })
     const insertSlug = vi.fn().mockResolvedValue({ error: null })
     const updateIntentEq = vi.fn().mockResolvedValue({ error: null })
@@ -134,9 +144,11 @@ describe('template checkout draft-image gate', () => {
       contentPresetId: 'content_serene',
       themePresetId: 'theme_serene',
       qualityReceipt: 'receipt_abc123',
+      catalogHash: catalogRevision.catalogHash,
+      manifestHash: catalogRevision.manifestHash,
     })
 
-    const response = await checkoutPost(requestWithImages([]))
+    const response = await checkoutPost(requestWithImages([], { catalogRevision }))
     expect(response.status).toBe(200)
     expect(insertIntent).toHaveBeenCalledWith(expect.objectContaining({
       payload: expect.objectContaining({
@@ -146,6 +158,8 @@ describe('template checkout draft-image gate', () => {
           contentPresetId: 'content_serene',
           themePresetId: 'theme_serene',
           qualityReceipt: 'receipt_abc123',
+          catalogHash: catalogRevision.catalogHash,
+          manifestHash: catalogRevision.manifestHash,
         },
       }),
     }))
@@ -156,6 +170,31 @@ describe('template checkout draft-image gate', () => {
       contentPresetId: 'content_serene',
       themePresetId: 'theme_serene',
       qualityReceipt: 'receipt_abc123',
+      catalogHash: catalogRevision.catalogHash,
+      manifestHash: catalogRevision.manifestHash,
     })
+    expect(mocks.getTemplate).toHaveBeenCalledWith('wellness', 'serene', catalogRevision)
+  })
+
+  it('fails before payment when the approved preview revision cannot be resolved', async () => {
+    mocks.getTemplate.mockRejectedValue(new Error('historical snapshot is missing'))
+    const response = await checkoutPost(requestWithImages([], {
+      catalogRevision: {
+        contractVersion: 3,
+        designId: 'design_old',
+        contentPresetId: 'content_old',
+        themePresetId: 'theme_old',
+        qualityReceipt: 'receipt_old',
+        catalogHash: 'c'.repeat(64),
+        manifestHash: 'd'.repeat(64),
+      },
+    }))
+    expect(response.status).toBe(409)
+    await expect(response.json()).resolves.toMatchObject({
+      code: 'catalog_revision_unavailable',
+      recoveryUrl: '/preview-your-business',
+    })
+    expect(mocks.createStripeClient).not.toHaveBeenCalled()
+    expect(mocks.supabaseFrom).not.toHaveBeenCalled()
   })
 })

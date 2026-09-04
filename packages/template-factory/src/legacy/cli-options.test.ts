@@ -42,7 +42,7 @@ test('operational entry points share the fresh Documents root and versioned runn
   const workRoot = String.raw`C:\Users\chris\Documents\DailyClarity\template-rehab`;
   for (const script of [runner, installer]) {
     assert.match(script, new RegExp(`\\[string\\]\\$WorkRoot = '${workRoot.replace(/\\/g, '\\\\')}'`));
-    assert.match(script, /legacy-rehab-1\.0\.22/);
+    assert.match(script, /legacy-rehab-1\.0\.23/);
   }
   assert.match(runner, /attempt=\$attempt\/\$effectiveMaxAttempts rule=\$RuleVersion source=/);
   assert.match(

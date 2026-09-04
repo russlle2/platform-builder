@@ -8,6 +8,7 @@ import {
   catalogDocumentHash,
   catalogManifestHash,
   createRehabStagingActivePointer,
+  loadRehabCatalogSnapshot,
   loadRehabStagingCatalog,
   rehabCatalogPrefix,
   resolveTemplateCatalogProfile,
@@ -64,6 +65,49 @@ function completeRehabDocuments(): {
       canonicalDesigns: REHAB_STAGING_EXPECTED_TOTAL,
       templates: mappings,
       gallery,
+    },
+  }
+}
+
+function futureHistoricalDocuments(): {
+  manifest: Record<string, Array<Record<string, unknown>>>
+  catalog: Record<string, unknown>
+} {
+  const niche = 'future-niche'
+  const slug = 'future-template'
+  const mapping = {
+    legacySlug: slug,
+    niche,
+    designId: 'design_future-template',
+    contentPresetId: 'content_future-template',
+    themePresetId: 'theme_future-template',
+    qualityReceipt: 'receipt_future-template',
+    canonicalLegacySlug: slug,
+    disposition: 'canonical',
+  }
+  return {
+    manifest: {
+      [niche]: [{
+        ...mapping,
+        slug,
+        nicheSlug: niche,
+        dir: `${niche}/${slug}`,
+        name: slug,
+        pages: ['index.html'],
+        files: ['index.html'],
+        fields: [{ name: 'BUSINESS_NAME', label: 'Business name', type: 'text' }],
+        editable: true,
+        validation: { status: 'passed', contractVersion: 3, tokens: ['BUSINESS_NAME'] },
+      }],
+    },
+    catalog: {
+      contractVersion: 3,
+      ruleVersion: 'future-rule',
+      generatedAt: '2027-01-01T00:00:00.000Z',
+      sourceTemplates: 1,
+      canonicalDesigns: 1,
+      templates: [mapping],
+      gallery: { [niche]: [slug] },
     },
   }
 }
@@ -135,6 +179,149 @@ describe('rehabilitation staging loader', () => {
       pointer.catalogKey,
       pointer.manifestKey,
     ])
+  })
+
+  it('loads a historical snapshot directly without consulting the mutable active pointer', async () => {
+    const { manifest, catalog } = futureHistoricalDocuments()
+    const catalogText = `${JSON.stringify(catalog)}\n`
+    const locator = {
+      catalogHash: catalogDocumentHash(catalogText),
+      manifestHash: catalogManifestHash(manifest),
+    }
+    const prefix = rehabCatalogPrefix(locator.catalogHash)
+    const store = new MemoryReadStore(new Map<string, unknown>([
+      [`${prefix}/_catalog-v3.json`, catalogText],
+      [`${prefix}/_manifest.json`, manifest],
+    ]))
+
+    const loaded = await loadRehabCatalogSnapshot(store, locator)
+    expect(loaded.catalogHash).toBe(locator.catalogHash)
+    expect(loaded.manifestHash).toBe(locator.manifestHash)
+    expect(store.reads).toEqual([
+      `${prefix}/_catalog-v3.json`,
+      `${prefix}/_manifest.json`,
+    ])
+    expect(store.reads).not.toContain(REHAB_STAGING_ACTIVE_KEY)
+  })
+
+  it('keeps current staging cardinality checks separate from intrinsic historical validation', async () => {
+    const { manifest, catalog } = futureHistoricalDocuments()
+    const activeValidation = validateRehabStagingCatalogDocuments(manifest, catalog)
+    expect(activeValidation.pass).toBe(false)
+    expect(activeValidation.errors.join('\n')).toMatch(/unexpected rehabilitation niche/i)
+
+    const catalogText = `${JSON.stringify(catalog)}\n`
+    const locator = {
+      catalogHash: catalogDocumentHash(catalogText),
+      manifestHash: catalogManifestHash(manifest),
+    }
+    const prefix = rehabCatalogPrefix(locator.catalogHash)
+    const store = new MemoryReadStore(new Map<string, unknown>([
+      [`${prefix}/_catalog-v3.json`, catalogText],
+      [`${prefix}/_manifest.json`, manifest],
+    ]))
+
+    await expect(loadRehabCatalogSnapshot(store, locator)).resolves.toMatchObject(locator)
+  })
+
+  it('rejects an empty hash-valid historical snapshot', async () => {
+    const manifest = {}
+    const catalog = {
+      contractVersion: 3,
+      ruleVersion: 'empty-rule',
+      generatedAt: '2027-01-01T00:00:00.000Z',
+      sourceTemplates: 0,
+      canonicalDesigns: 0,
+      templates: [],
+      gallery: {},
+    }
+    const catalogText = JSON.stringify(catalog)
+    const locator = {
+      catalogHash: catalogDocumentHash(catalogText),
+      manifestHash: catalogManifestHash(manifest),
+    }
+    const prefix = rehabCatalogPrefix(locator.catalogHash)
+    const store = new MemoryReadStore(new Map<string, unknown>([
+      [`${prefix}/_catalog-v3.json`, catalogText],
+      [`${prefix}/_manifest.json`, manifest],
+    ]))
+
+    await expect(loadRehabCatalogSnapshot(store, locator)).rejects.toThrow(/at least one template/i)
+  })
+
+  it('rejects multiple historical canonical templates for one design', async () => {
+    const { manifest, catalog } = futureHistoricalDocuments()
+    const originalEntry = manifest['future-niche']![0]!
+    const duplicateSlug = 'future-template-copy'
+    const duplicateMapping = {
+      legacySlug: duplicateSlug,
+      niche: 'future-niche',
+      designId: originalEntry.designId,
+      contentPresetId: 'content_future-template-copy',
+      themePresetId: 'theme_future-template-copy',
+      qualityReceipt: 'receipt_future-template-copy',
+      canonicalLegacySlug: duplicateSlug,
+      disposition: 'canonical',
+    }
+    manifest['future-niche']!.push({
+      ...duplicateMapping,
+      slug: duplicateSlug,
+      nicheSlug: 'future-niche',
+      dir: `future-niche/${duplicateSlug}`,
+      name: duplicateSlug,
+      pages: ['index.html'],
+      files: ['index.html'],
+      fields: [{ name: 'BUSINESS_NAME', label: 'Business name', type: 'text' }],
+      editable: true,
+      validation: { status: 'passed', contractVersion: 3, tokens: ['BUSINESS_NAME'] },
+    })
+    ;(catalog.templates as Array<Record<string, unknown>>).push(duplicateMapping)
+    catalog.sourceTemplates = 2
+    catalog.canonicalDesigns = 1
+    ;(catalog.gallery as Record<string, string[]>)['future-niche']!.push(duplicateSlug)
+
+    const catalogText = JSON.stringify(catalog)
+    const locator = {
+      catalogHash: catalogDocumentHash(catalogText),
+      manifestHash: catalogManifestHash(manifest),
+    }
+    const prefix = rehabCatalogPrefix(locator.catalogHash)
+    const store = new MemoryReadStore(new Map<string, unknown>([
+      [`${prefix}/_catalog-v3.json`, catalogText],
+      [`${prefix}/_manifest.json`, manifest],
+    ]))
+
+    await expect(loadRehabCatalogSnapshot(store, locator)).rejects.toThrow(/multiple canonical templates/i)
+  })
+
+  it('rejects hash-valid historical documents with malformed provenance or runtime lineage', async () => {
+    const malformedProvenance = futureHistoricalDocuments()
+    malformedProvenance.catalog.generatedAt = 'not-a-date'
+    let catalogText = JSON.stringify(malformedProvenance.catalog)
+    let locator = {
+      catalogHash: catalogDocumentHash(catalogText),
+      manifestHash: catalogManifestHash(malformedProvenance.manifest),
+    }
+    let prefix = rehabCatalogPrefix(locator.catalogHash)
+    let store = new MemoryReadStore(new Map<string, unknown>([
+      [`${prefix}/_catalog-v3.json`, catalogText],
+      [`${prefix}/_manifest.json`, malformedProvenance.manifest],
+    ]))
+    await expect(loadRehabCatalogSnapshot(store, locator)).rejects.toThrow(/v3\/count contract/i)
+
+    const malformedLineage = futureHistoricalDocuments()
+    malformedLineage.manifest['future-niche']![0]!.legacySlug = 'different-slug'
+    catalogText = JSON.stringify(malformedLineage.catalog)
+    locator = {
+      catalogHash: catalogDocumentHash(catalogText),
+      manifestHash: catalogManifestHash(malformedLineage.manifest),
+    }
+    prefix = rehabCatalogPrefix(locator.catalogHash)
+    store = new MemoryReadStore(new Map<string, unknown>([
+      [`${prefix}/_catalog-v3.json`, catalogText],
+      [`${prefix}/_manifest.json`, malformedLineage.manifest],
+    ]))
+    await expect(loadRehabCatalogSnapshot(store, locator)).rejects.toThrow(/runtime template contract/i)
   })
 
   it('fails closed on undersized, tampered, or unpointed data without a launch fallback', async () => {

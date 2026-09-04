@@ -30,6 +30,7 @@ export function getCustomerPreviewEditorScript(page: string): string {
   var safeEditableAttributes = { content: true, alt: true, title: true, placeholder: true, 'aria-label': true };
   var supportsHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
   var pendingImageClick = null;
+  var protectedBackgroundSelector = 'a[href],button,input,select,textarea,option,label,summary,[role="button"],[role="link"]';
 
   function editIdFor(el) {
     return el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '';
@@ -37,6 +38,58 @@ export function getCustomerPreviewEditorScript(page: string): string {
 
   function imageIdFor(el) {
     return el.getAttribute('data-dc-image-id') || el.getAttribute('data-pb-image-id') || '';
+  }
+
+  function selectedEditableOption(el) {
+    if (!el || el.tagName !== 'SELECT') return null;
+    var selected = el.options && el.options[el.selectedIndex];
+    return selected && editIdFor(selected) ? selected : null;
+  }
+
+  function editableInteractionTarget(target) {
+    if (!target) return null;
+    var direct = target.closest(editableSelectors);
+    if (direct) return direct;
+    return selectedEditableOption(target) ? target : null;
+  }
+
+  function safeBackgroundOwner(event, clickTarget) {
+    var path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+    if (!path.length) {
+      var cursor = clickTarget;
+      while (cursor) {
+        path.push(cursor);
+        cursor = cursor.parentElement;
+      }
+    }
+    // Element.closest stops at a shadow boundary. Resolve the nearest advertised
+    // owner from the composed path so an app-owned web component covering a
+    // hero/BODY background does not make that meaningful image unreachable.
+    var owner = null;
+    for (var ownerIndex = 0; ownerIndex < path.length; ownerIndex++) {
+      var ownerCandidate = path[ownerIndex];
+      if (ownerCandidate instanceof Element && imageIdFor(ownerCandidate)) {
+        owner = ownerCandidate;
+        break;
+      }
+    }
+    if (!owner) owner = clickTarget.closest('[data-dc-image-id],[data-pb-image-id]');
+    if (!owner || owner.tagName === 'IMG' || owner.tagName === 'SOURCE') return null;
+    if (owner.matches(protectedBackgroundSelector)) return null;
+    var reachedOwner = false;
+    for (var pathIndex = 0; pathIndex < path.length; pathIndex++) {
+      var item = path[pathIndex];
+      if (item === owner) {
+        reachedOwner = true;
+        break;
+      }
+      if (!(item instanceof Element)) continue;
+      // A covered page/hero background is selectable from safe blank layout
+      // descendants, but never by stealing a link, form, text edit, or nearer
+      // image action from the customer.
+      if (item.matches(protectedBackgroundSelector) || editIdFor(item) || imageIdFor(item)) return null;
+    }
+    return reachedOwner ? owner : null;
   }
 
   function isSafeReplacementImageUrl(value) {
@@ -94,12 +147,13 @@ export function getCustomerPreviewEditorScript(page: string): string {
   }
 
   function startEditing(el) {
-    if (!el || el.isContentEditable || !editIdFor(el)) return;
+    if (!el || el.isContentEditable) return;
     if (el.tagName === 'SELECT') {
-      var selectedOption = el.options && el.options[el.selectedIndex];
+      var selectedOption = selectedEditableOption(el);
       if (selectedOption) requestPromptEdit(selectedOption, '');
       return;
     }
+    if (!editIdFor(el)) return;
     var editableAttribute = el.getAttribute('data-dc-edit-attribute') || el.getAttribute('data-pb-edit-attribute') || '';
     if (editableAttribute) {
       requestPromptEdit(el, editableAttribute);
@@ -129,7 +183,11 @@ export function getCustomerPreviewEditorScript(page: string): string {
   }
 
   document.addEventListener('dblclick', function(event) {
-    var el = event.target instanceof Element ? event.target.closest(editableSelectors) : null;
+    if (pendingImageClick) {
+      clearTimeout(pendingImageClick);
+      pendingImageClick = null;
+    }
+    var el = event.target instanceof Element ? editableInteractionTarget(event.target) : null;
     if (!el) return;
     startEditing(el);
     event.preventDefault();
@@ -138,7 +196,7 @@ export function getCustomerPreviewEditorScript(page: string): string {
 
   var lastTap = 0;
   document.addEventListener('touchend', function(event) {
-    var el = event.target instanceof Element ? event.target.closest(editableSelectors) : null;
+    var el = event.target instanceof Element ? editableInteractionTarget(event.target) : null;
     if (!el) return;
     var now = Date.now();
     if (now - lastTap < 400) {
@@ -174,16 +232,11 @@ export function getCustomerPreviewEditorScript(page: string): string {
   document.addEventListener('click', function(event) {
     var clickTarget = event.target instanceof Element ? event.target : null;
     if (!clickTarget) return;
-    // A background-image slot can contain the whole header, navigation, or
-    // content region. Only treat a background slot as selected when the user
-    // clicks that element's own surface; walking up from a descendant would
-    // turn every nested link or control into an image-upload trigger. Raster
-    // images remain selectable when nested inside a link, as intended.
+    // Raster images remain selectable inside links. Meaningful CSS backgrounds
+    // may sit behind an entirely covered BODY/DIV, so walk the composed path to
+    // the nearest owner only when no nested customer action would be stolen.
     var image = clickTarget.closest('img[data-dc-image-id],img[data-pb-image-id]');
-    if (!image && clickTarget.matches('[data-dc-image-id],[data-pb-image-id]')
-        && !clickTarget.closest('a[href],button,input,select,textarea,option,label,summary,[role="button"],[role="link"]')) {
-      image = clickTarget;
-    }
+    if (!image) image = safeBackgroundOwner(event, clickTarget);
     if (!image) return;
     event.preventDefault();
     // An image can live inside a page link. Stop sibling document listeners
@@ -216,7 +269,8 @@ export function getCustomerPreviewEditorScript(page: string): string {
       }
       window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: primarySlotId, pictureSlotIds: pictureSlotIds }, '*');
     };
-    if (image.hasAttribute('data-dc-edit-attribute') || image.hasAttribute('data-pb-edit-attribute')) {
+    if (image.tagName !== 'IMG' || image !== clickTarget
+        || image.hasAttribute('data-dc-edit-attribute') || image.hasAttribute('data-pb-edit-attribute')) {
       if (pendingImageClick) clearTimeout(pendingImageClick);
       pendingImageClick = setTimeout(requestImageSwap, 280);
     } else {

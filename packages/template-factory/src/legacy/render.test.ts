@@ -77,10 +77,12 @@ test('every topology page uses the shared customer route while nested assets and
     <header><nav aria-label="Primary"><button type="button" aria-controls="site-menu" aria-expanded="false">Menu</button><div id="site-menu"><a href="${link}">Another page</a></div></nav></header>
     <main><h1 data-dc-edit-id="txt_000000000000000001">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="txt_000000000000000002">${heading} gives visitors clear, practical information about the service, what to expect, and how to make a confident next-step decision.</p>
     <p data-dc-edit-id="txt_000000000000000003" data-dc-edit-attribute="title" title="Helpful context">Hover for more context about this page.</p>
+    <label>Focus <select><option data-dc-edit-id="txt_000000000000000004">Calm</option></select></label>
+    <details><summary data-dc-edit-id="txt_000000000000000005">What should I expect?</summary><p data-dc-edit-id="txt_000000000000000006">A clear next step after opening this disclosure.</p></details>
     <a class="linked-image" href="${link}"><img data-dc-image-id="img_000000000000000001" src="${prefix}assets/img/hero.png" alt="Calm geometric landscape"></a>
     <picture><source data-dc-image-id="img_000000000000000002" media="(min-width: 700px)" srcset="${prefix}assets/img/hero.png 1x"><img data-dc-image-id="img_000000000000000003" src="${prefix}assets/img/hero.png" alt="Responsive calm geometric landscape"></picture>
     <form name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><label>Name <input name="name" autocomplete="name" required></label><label>Email <input type="email" name="email" autocomplete="email" required></label><label>Phone <input type="tel" name="phone" autocomplete="tel"></label><label>Message <textarea name="message" required></textarea></label><button type="submit">Send inquiry</button></form>
-    <a href="mailto:{{EMAIL}}">Email the studio</a></main><script defer src="assets/js/dc-compat.js" data-dc-runtime="compatibility-v1"></script></body></html>`;
+    <a href="mailto:{{EMAIL}}">Email the studio</a><a class="mobile-navigation-fallback" href="${link}">Continue</a></main><div class="background-hit-surface" style="height:24px"></div><script defer src="assets/js/dc-compat.js" data-dc-runtime="compatibility-v1"></script></body></html>`;
   const tasks = pages.map((page) => ({
     key: 'customer-route-topology',
     niche: 'wellness_coach',
@@ -108,7 +110,7 @@ test('every topology page uses the shared customer route while nested assets and
       ['index.html', pageMarkup('index.html', '', 'Home overview', 'pages/services.html')],
       ['pages/services.html', pageMarkup('pages/services.html', '../', 'Services overview', '../index.html')],
       ['pages/contact/form.html', pageMarkup('pages/contact/form.html', '../../', 'Contact and booking', '../../index.html')],
-      ['assets/css/styles.css', ':root{--dc-theme-color_bg:#fff;--dc-theme-color_text:#111;--dc-theme-font_body:Arial,sans-serif}*{box-sizing:border-box}body{background:var(--dc-theme-color_bg);color:var(--dc-theme-color_text);font-family:var(--dc-theme-font_body)}main{max-width:60rem;margin:auto;padding:2rem}.hero{background-image:url("../img/pattern.png")}'],
+      ['assets/css/styles.css', ':root{--dc-theme-color_bg:#fff;--dc-theme-color_text:#111;--dc-theme-font_body:Arial,sans-serif}*{box-sizing:border-box}body{background:var(--dc-theme-color_bg);color:var(--dc-theme-color_text);font-family:var(--dc-theme-font_body)}main{max-width:60rem;margin:auto;padding:2rem}.hero{background-image:url("../img/pattern.png")}@media(max-width:600px){header nav a{display:none}}'],
       ['assets/css/secondary.css', ':root{--dc-theme-color_secondary:#24513f}.secondary{color:var(--dc-theme-color_secondary)}'],
       ['assets/js/dc-compat.js', LEGACY_COMPATIBILITY_SCRIPT],
       ['assets/img/hero.png', await sharp({ create: { width: 32, height: 20, channels: 3, background: '#8aa899' } }).png().toBuffer()],
@@ -200,22 +202,27 @@ test('every topology page uses the shared customer route while nested assets and
           && (window as typeof window & { __dailyClarityCompatibilityInstalled?: boolean })
             .__dailyClarityCompatibilityInstalled === true
         ));
+        const leaf = frame.locator('[data-dc-edit-id="txt_000000000000000002"]');
+        await leaf.dblclick();
+        await leaf.press('Control+A');
+        await leaf.fill('SENTINEL LEAF EDIT');
+        await leaf.press('Tab');
+        await frame.locator('[data-dc-edit-id="txt_000000000000000003"]').dblclick();
+        await frame.waitForFunction(() => (
+          document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000003"]')?.title === 'SENTINEL ATTRIBUTE EDIT'
+        ));
+        await frame.locator('[data-dc-image-id="img_000000000000000001"]').click();
+        await frame.waitForFunction(() => document.querySelector<HTMLImageElement>('[data-dc-image-id="img_000000000000000001"]')?.src.startsWith('data:image/png;base64,'));
+        await frame.locator('[data-dc-image-id="img_000000000000000003"]').click();
+        await frame.waitForFunction(() => document.querySelector<HTMLSourceElement>('[data-dc-image-id="img_000000000000000002"]')?.srcset.startsWith('data:image/png;base64,'));
+        // The BODY owns the meaningful background, but the physical hit lands
+        // on a safe descendant. The runtime must walk the composed path while
+        // leaving the nested navigation link untouched.
+        await frame.locator('.background-hit-surface').click();
+        await frame.waitForFunction(() => document.body.style.backgroundImage.startsWith('url("data:image/png;base64,'));
+        await frame.locator('a.mobile-navigation-fallback[href="../../index.html"]').click();
+
         const frameState = await frame.evaluate(async () => {
-          const leaf = document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000002"]')!;
-          leaf.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-          leaf.textContent = 'SENTINEL LEAF EDIT';
-          leaf.dispatchEvent(new FocusEvent('blur'));
-
-          document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000003"]')!
-            .dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
-          document.querySelector<HTMLElement>('[data-dc-image-id="img_000000000000000001"]')!
-            .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-          document.querySelector<HTMLElement>('[data-dc-image-id="img_000000000000000003"]')!
-            .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-          document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-          document.querySelector<HTMLAnchorElement>('a[href="../../index.html"]')!
-            .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
-
           const form = document.querySelector<HTMLFormElement>('form[data-dc-standard-form]')!;
           (form.elements.namedItem('name') as HTMLInputElement).value = 'Sentinel Visitor';
           (form.elements.namedItem('email') as HTMLInputElement).value = 'sentinel@example.test';
@@ -226,7 +233,7 @@ test('every topology page uses the shared customer route while nested assets and
           form.requestSubmit();
           await new Promise((resolvePromise) => setTimeout(resolvePromise, 100));
           return {
-            leaf: leaf.textContent,
+            leaf: document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000002"]')!.textContent,
             title: document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000003"]')!.title,
             standalone: document.querySelector<HTMLImageElement>('[data-dc-image-id="img_000000000000000001"]')!.getAttribute('src'),
             pictureSource: document.querySelector<HTMLSourceElement>('[data-dc-image-id="img_000000000000000002"]')!.getAttribute('srcset'),
@@ -282,6 +289,51 @@ test('every topology page uses the shared customer route while nested assets and
     assert.equal(evidence.length, pages.length * 2);
     assert.ok(evidence.every((item) => item.passed), JSON.stringify(evidence, null, 2));
     assert.deepEqual([...new Set(evidence.map((item) => item.page))].sort(), [...pages].sort());
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('browser QA rejects advertised slots that cannot be physically hit', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-unreachable-slots-'));
+  const templateDir = join(root, 'niche', 'unreachable-slots');
+  const evidenceRoot = join(root, 'evidence');
+  try {
+    const files = new Map<string, string | Uint8Array>([
+      ['template.json', `${JSON.stringify({
+        contractVersion: 3,
+        legacySlug: 'unreachable-slots',
+        slug: 'unreachable-slots',
+        niche: 'wellness_coach',
+        pages: ['index.html'],
+      })}\n`],
+      ['fields.json', `${JSON.stringify({ contractVersion: 3, fields: [] })}\n`],
+      ['index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Unreachable slot gate</title><link rel="stylesheet" href="assets/css/styles.css"></head><body><main><h1 data-dc-edit-id="txt_visible">Visible editor control</h1><p data-dc-edit-id="txt_copy">This deliberately substantial visible paragraph keeps the page valid while the browser proves that every advertised customer slot has a real pointer path at both required viewports.</p><p hidden data-dc-edit-id="txt_hidden">This slot can never receive a customer double click.</p><div class="blocked-pattern" aria-hidden="true" data-dc-image-id="img_blocked"></div><a href="mailto:contact@example.test">Contact the practice</a></main><script defer src="assets/js/dc-compat.js" data-dc-runtime="compatibility-v1"></script></body></html>`],
+      ['assets/css/styles.css', ':root{--dc-theme-color_bg:#fff;--dc-theme-color_text:#111;--dc-theme-font_body:Arial,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--dc-theme-color_bg);color:var(--dc-theme-color_text);font-family:var(--dc-theme-font_body)}main{padding:2rem}.blocked-pattern{width:120px;height:80px;pointer-events:none;background-image:url("../img/pattern.png")}'],
+      ['assets/js/dc-compat.js', LEGACY_COMPATIBILITY_SCRIPT],
+      ['assets/img/pattern.png', await sharp({ create: { width: 8, height: 8, channels: 3, background: '#dce8e1' } }).png().toBuffer()],
+    ]);
+    for (const [relativePath, contents] of files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+
+    const evidence = await renderTemplateTasks(root, [{
+      key: 'unreachable-slots',
+      niche: 'wellness_coach',
+      slug: 'unreachable-slots',
+      page: 'index.html',
+      templateDir,
+    }], { evidenceRoot, workers: 1, retries: 0 });
+
+    assert.equal(evidence.length, 2);
+    for (const viewport of evidence) {
+      assert.equal(viewport.passed, false);
+      const byCode = new Map(viewport.issues.map((issue) => [issue.code, issue.detail]));
+      assert.match(byCode.get('edit_smoke_failed') ?? '', /txt_hidden/);
+      assert.match(byCode.get('image_edit_smoke_failed') ?? '', /img_blocked/);
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -726,6 +778,50 @@ test('browser QA exercises constrained forms, static ARIA repairs, and every sup
 
     assert.equal(evidence.length, 2);
     assert.ok(evidence.every((viewport) => viewport.passed), JSON.stringify(evidence, null, 2));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('browser QA rejects standardized forms hidden by a computed ancestor style', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-hidden-form-'));
+  const templateDir = join(root, 'niche', 'hidden-form');
+  const evidenceRoot = join(root, 'evidence');
+  try {
+    const repaired = repairLegacyTemplate({
+      slug: 'hidden-form-fixture',
+      niche: 'wellness_coach',
+      files: new Map([['index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Hidden form coverage</title></head><body><main>
+        <h1>Hidden form browser fixture</h1><p>This page has enough ordinary visitor guidance to isolate the computed form availability check from unrelated rendering requirements.</p>
+        <form><label>Name <input name="name"></label><label>Email <input name="email"></label><button>Send</button></form>
+        <a href="mailto:{{EMAIL}}">Email the studio</a></main></body></html>`]]),
+    });
+    const repairedHtml = String(repaired.files.get('index.html'));
+    const tamperedHtml = repairedHtml
+      .replace('</head>', '<style>.dc-hidden-form-parent{display:none!important}</style></head>')
+      .replace(/(<form\b[^>]*data-dc-standard-form="contact"[^>]*>)/i, '<div class="dc-hidden-form-parent">$1')
+      .replace('</form>', '</form></div>');
+    assert.notEqual(tamperedHtml, repairedHtml);
+    const files = new Map(repaired.files);
+    files.set('index.html', tamperedHtml);
+    for (const [relativePath, contents] of files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+
+    const evidence = await renderTemplateTasks(root, [{
+      key: 'hidden-form-fixture',
+      niche: 'wellness_coach',
+      slug: 'hidden-form-fixture',
+      page: 'index.html',
+      templateDir,
+    }], { evidenceRoot, workers: 1, retries: 0 });
+
+    assert.equal(evidence.length, 2);
+    assert.ok(evidence.every((viewport) => !viewport.passed));
+    assert.ok(evidence.every((viewport) => viewport.issues.some((issue) => issue.code === 'form_smoke_failed')),
+      JSON.stringify(evidence, null, 2));
   } finally {
     await rm(root, { recursive: true, force: true });
   }

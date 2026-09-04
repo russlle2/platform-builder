@@ -51,6 +51,7 @@ import {
   buildPageSeoInlineEdit,
   type PageSeoField,
 } from '@/lib/page-seo-settings'
+import { sanitizeCatalogRevisionPin } from '@/lib/catalog-revision'
 
 import { getNicheOptions } from '@/lib/templates/niche-meta'
 import {
@@ -64,6 +65,7 @@ import {
 /* ================================================================== */
 
 const NICHE_OPTIONS = getNicheOptions()
+const CHECKOUT_CATALOG_REVISION_KEY = 'pb_catalog_revision'
 
 type NicheExample = {
   businessName: string
@@ -502,8 +504,14 @@ export default function PreviewYourBusinessClient() {
       const timeoutId = setTimeout(() => controller.abort(), 20000)
 
       try {
+        let requestedCatalogRevision: ReturnType<typeof sanitizeCatalogRevisionPin> = null
         try {
           sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
+          const rawRevision = sessionStorage.getItem(CHECKOUT_CATALOG_REVISION_KEY)
+          const savedRevision = rawRevision ? JSON.parse(rawRevision) as Record<string, unknown> : null
+          if (savedRevision?.niche === ns && savedRevision.template === ts) {
+            requestedCatalogRevision = sanitizeCatalogRevisionPin(savedRevision.catalogRevision)
+          }
         } catch { /* ignore */ }
 
         const res = await fetch(`/api/templates/${ns}/${ts}/preview`, {
@@ -525,6 +533,7 @@ export default function PreviewYourBusinessClient() {
                   fontImportUrl: customFonts.importUrl,
                 })
               : null,
+            catalogRevision: requestedCatalogRevision,
           }),
           signal: controller.signal,
         })
@@ -536,9 +545,30 @@ export default function PreviewYourBusinessClient() {
         }
         const data = await res.json()
         if (requestId !== previewRequestIdRef.current) return
-        previewStylesheetRef.current = typeof data.css === 'string' ? data.css : ''
+        const catalogRevision = sanitizeCatalogRevisionPin(data.catalogRevision)
+        try {
+          if (catalogRevision) {
+            sessionStorage.setItem(CHECKOUT_CATALOG_REVISION_KEY, JSON.stringify({
+              niche: ns,
+              template: ts,
+              catalogRevision,
+            }))
+          } else {
+            sessionStorage.removeItem(CHECKOUT_CATALOG_REVISION_KEY)
+          }
+        } catch { /* quota exceeded — checkout will resolve the active revision */ }
+        // Live palette/font changes must discover tokens from every emitted
+        // stylesheet, including compiler-extracted inline/component CSS. Keep
+        // `data.css` as a compatibility fallback for older preview responses.
+        previewStylesheetRef.current = typeof data.themeStylesheet === 'string'
+          ? data.themeStylesheet
+          : typeof data.css === 'string'
+            ? data.css
+            : ''
 
-        const assetBase = `/api/templates/${ns}/${ts}/assets`
+        const assetBase = catalogRevision?.catalogHash && catalogRevision.manifestHash
+          ? `/api/templates/${ns}/${ts}/assets/__catalog/${catalogRevision.catalogHash}/${catalogRevision.manifestHash}`
+          : `/api/templates/${ns}/${ts}/assets`
         const html = composeCustomerPreviewDocument({
           html: data.html as string,
           css: typeof data.css === 'string' ? data.css : null,

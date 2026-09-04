@@ -7,10 +7,19 @@ import {
   LAUNCH_TEMPLATE_STORE,
   REHAB_STAGING_EXPECTED_BY_NICHE,
   REHAB_STAGING_EXPECTED_TOTAL,
+  loadRehabCatalogSnapshot,
   loadRehabStagingCatalog,
   resolveTemplateCatalogProfile,
   type TemplateCatalogProfile,
 } from './catalog-profile'
+import {
+  assertCatalogRevision,
+  catalogSnapshotLocator,
+  sanitizeCatalogSnapshotLocator,
+  sanitizeCatalogRevisionPin,
+  type CatalogSnapshotLocator,
+  type CatalogRevisionPin,
+} from '../catalog-revision'
 export { hydrateTemplate } from './template-hydration'
 
 export { NICHE_META, NICHE_SLUGS, getNicheSlugs }
@@ -68,6 +77,10 @@ export interface TemplateMeta {
   qualityReceipt?: string
   canonicalLegacySlug?: string
   disposition?: 'canonical' | 'alias'
+  /** Runtime-only immutable snapshot coordinates; never embedded in the manifest. */
+  catalogHash?: string
+  /** Runtime-only immutable snapshot coordinates; never embedded in the manifest. */
+  manifestHash?: string
 }
 export interface NicheInfo {
   slug: string
@@ -143,6 +156,8 @@ interface CatalogState {
   storeName: string
   prefix: string
   manifest: ManifestShape
+  catalogHash?: string
+  manifestHash?: string
 }
 
 let _catalogStatePromise: Promise<CatalogState> | null = null
@@ -173,6 +188,8 @@ function loadCatalogState(): Promise<CatalogState> {
           storeName: loaded.storeName,
           prefix: loaded.prefix,
           manifest: loaded.manifest as ManifestShape,
+          catalogHash: loaded.pointer.catalogHash,
+          manifestHash: loaded.pointer.manifestHash,
         }
       } catch (error) {
         console.error('[niche-registry] rehabilitation staging catalogue failed closed:', error)
@@ -247,6 +264,81 @@ function loadCatalogState(): Promise<CatalogState> {
   return request
 }
 
+const historicalCatalogStatePromises = new Map<string, Promise<CatalogState>>()
+const MAX_HISTORICAL_CATALOG_CACHE = 4
+
+/**
+ * Resolve an immutable catalogue snapshot inside the one server-selected
+ * store. Hashless legacy pins deliberately stay on the active catalogue.
+ */
+async function loadCatalogStateAtSnapshot(locator: CatalogSnapshotLocator): Promise<CatalogState> {
+  const active = await loadCatalogState()
+  if (
+    active.catalogHash === locator.catalogHash &&
+    active.manifestHash === locator.manifestHash
+  ) return active
+
+  const key = `${active.profile}:${active.storeName}:${locator.catalogHash}:${locator.manifestHash}`
+  const cached = historicalCatalogStatePromises.get(key)
+  if (cached) {
+    // Refresh insertion order so the small cache behaves as an LRU.
+    historicalCatalogStatePromises.delete(key)
+    historicalCatalogStatePromises.set(key, cached)
+    return cached
+  }
+
+  const request = (async (): Promise<CatalogState> => {
+    const store = getBlobsStore(active.storeName)
+    if (!store) throw new Error('Historical template catalogue store is unavailable')
+    const loaded = await loadRehabCatalogSnapshot(store, locator)
+    return {
+      profile: active.profile,
+      storeName: active.storeName,
+      prefix: loaded.prefix,
+      manifest: loaded.manifest as ManifestShape,
+      catalogHash: loaded.catalogHash,
+      manifestHash: loaded.manifestHash,
+    }
+  })()
+  while (historicalCatalogStatePromises.size >= MAX_HISTORICAL_CATALOG_CACHE) {
+    const oldest = historicalCatalogStatePromises.keys().next().value as string | undefined
+    if (!oldest) break
+    historicalCatalogStatePromises.delete(oldest)
+  }
+  historicalCatalogStatePromises.set(key, request)
+  request.catch(() => {
+    if (historicalCatalogStatePromises.get(key) === request) {
+      historicalCatalogStatePromises.delete(key)
+    }
+  })
+  return request
+}
+
+async function loadCatalogStateAtRevision(expected: CatalogRevisionPin): Promise<CatalogState> {
+  const locator = catalogSnapshotLocator(expected)
+  return locator ? loadCatalogStateAtSnapshot(locator) : loadCatalogState()
+}
+
+function templateFromCatalogState(
+  state: CatalogState,
+  nicheSlug: string,
+  templateSlug: string,
+): TemplateMeta | null {
+  const value = (state.manifest[nicheSlug] || []).find((template) => template.slug === templateSlug)
+  if (!isPublishableTemplateMeta(value)) return null
+  if (
+    value.validation?.contractVersion === 3 &&
+    state.catalogHash && state.manifestHash
+  ) {
+    return {
+      ...value,
+      catalogHash: state.catalogHash,
+      manifestHash: state.manifestHash,
+    }
+  }
+  return value
+}
+
 interface TemplateCaches {
   all: Map<string, TemplateMeta[]>
   gallery: Map<string, TemplateMeta[]>
@@ -269,7 +361,13 @@ async function getCaches(): Promise<TemplateCaches> {
   const all = new Map<string, TemplateMeta[]>()
   for (const nicheSlug of Object.keys(NICHE_META)) {
     const templates = manifest[nicheSlug] || []
-    const publishable = templates.filter(isPublishableTemplateMeta)
+    const publishable = templates
+      .filter(isPublishableTemplateMeta)
+      .map((template) => (
+        template.validation?.contractVersion === 3 && state.catalogHash && state.manifestHash
+          ? { ...template, catalogHash: state.catalogHash, manifestHash: state.manifestHash }
+          : template
+      ))
     if (publishable.length !== templates.length) {
       console.warn(
         `[niche-registry] quarantined ${templates.length - publishable.length} ` +
@@ -408,6 +506,45 @@ export async function getTemplate(nicheSlug: string, templateSlug: string): Prom
   return templates.find((t) => t.slug === templateSlug) || null
 }
 
+/** Resolve and verify the exact catalogue revision captured for a customer. */
+export async function getTemplateAtCatalogRevision(
+  nicheSlug: string,
+  templateSlug: string,
+  expectedValue: unknown,
+): Promise<TemplateMeta | null> {
+  if (expectedValue === undefined || expectedValue === null) {
+    return getTemplate(nicheSlug, templateSlug)
+  }
+  const expected = sanitizeCatalogRevisionPin(expectedValue)
+  if (!expected) throw new Error('Saved catalogue revision pin is invalid.')
+  const locator = catalogSnapshotLocator(expected)
+  const template = locator
+    ? templateFromCatalogState(
+        await loadCatalogStateAtSnapshot(locator),
+        nicheSlug,
+        templateSlug,
+      )
+    : await getTemplate(nicheSlug, templateSlug)
+  if (!template) return null
+  assertCatalogRevision(template, expected)
+  return template
+}
+
+/** Resolve a public template from one verified content-addressed snapshot. */
+export async function getTemplateAtCatalogSnapshot(
+  nicheSlug: string,
+  templateSlug: string,
+  locatorValue: unknown,
+): Promise<TemplateMeta | null> {
+  const locator = sanitizeCatalogSnapshotLocator(locatorValue)
+  if (!locator) throw new Error('Catalogue snapshot locator is invalid.')
+  return templateFromCatalogState(
+    await loadCatalogStateAtSnapshot(locator),
+    nicheSlug,
+    templateSlug,
+  )
+}
+
 /* ------------------------------------------------------------------ */
 /* Body-content reads                                                  */
 /* ------------------------------------------------------------------ */
@@ -440,14 +577,21 @@ export async function readTemplateFile(
   nicheSlug: string,
   templateSlug: string,
   filePath: string,
+  catalogRevision?: unknown,
 ): Promise<string | null> {
-  const template = await getTemplate(nicheSlug, templateSlug)
+  const template = await getTemplateAtCatalogRevision(nicheSlug, templateSlug, catalogRevision)
   if (!template) return null
   const templateKey = safeTemplateKey(template.dir, filePath)
   if (!templateKey) return null
 
-  const catalog = await loadCatalogState()
-  if (catalog.profile === 'rehab-staging') {
+  const revision = catalogRevision === undefined || catalogRevision === null
+    ? null
+    : sanitizeCatalogRevisionPin(catalogRevision)
+  if (catalogRevision !== undefined && catalogRevision !== null && !revision) {
+    throw new Error('Saved catalogue revision pin is invalid.')
+  }
+  const catalog = revision ? await loadCatalogStateAtRevision(revision) : await loadCatalogState()
+  if (catalog.prefix) {
     const key = safeTemplateKey(catalog.prefix, templateKey)
     if (!key) return null
     try {
@@ -502,14 +646,21 @@ export async function readTemplateFileBuffer(
   nicheSlug: string,
   templateSlug: string,
   filePath: string,
+  catalogRevision?: unknown,
 ): Promise<Buffer | null> {
-  const template = await getTemplate(nicheSlug, templateSlug)
+  const template = await getTemplateAtCatalogRevision(nicheSlug, templateSlug, catalogRevision)
   if (!template) return null
   const templateKey = safeTemplateKey(template.dir, filePath)
   if (!templateKey) return null
 
-  const catalog = await loadCatalogState()
-  if (catalog.profile === 'rehab-staging') {
+  const revision = catalogRevision === undefined || catalogRevision === null
+    ? null
+    : sanitizeCatalogRevisionPin(catalogRevision)
+  if (catalogRevision !== undefined && catalogRevision !== null && !revision) {
+    throw new Error('Saved catalogue revision pin is invalid.')
+  }
+  const catalog = revision ? await loadCatalogStateAtRevision(revision) : await loadCatalogState()
+  if (catalog.prefix) {
     const key = safeTemplateKey(catalog.prefix, templateKey)
     if (!key) return null
     try {

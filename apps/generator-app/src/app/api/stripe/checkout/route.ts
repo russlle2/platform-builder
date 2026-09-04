@@ -12,7 +12,7 @@ import {
   chunkJsonToMetadata,
   sanitizeCustomerValues,
 } from '@/lib/site-deploy'
-import { getTemplate } from '@/lib/templates/niche-registry'
+import { getTemplateAtCatalogRevision } from '@/lib/templates/niche-registry'
 import { buildCheckoutTemplateState } from '@/lib/customer-site-state'
 import { createStripeClient } from '@/lib/stripe-client'
 import {
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
     if (!body || typeof body !== 'object' || JSON.stringify(body).length > MAX_CHECKOUT_PAYLOAD_BYTES) {
       return NextResponse.json({ error: 'Checkout details are invalid or too large.' }, { status: 413 })
     }
-    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customTheme, customerValues, inlineEdits, imageSwaps } = body
+    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customTheme, customerValues, inlineEdits, imageSwaps, catalogRevision: requestedCatalogRevision } = body
 
     const canonicalPlan = normalizePlanKey(planKey)
     if (!canonicalPlan) {
@@ -103,12 +103,32 @@ export async function POST(req: NextRequest) {
     if (!templateSlug || !nicheSlug) {
       return NextResponse.json({ error: 'Choose a valid template before checkout.' }, { status: 400 })
     }
-    const selectedTemplate = await getTemplate(nicheSlug, templateSlug)
-    if (!selectedTemplate) {
-      return NextResponse.json(
-        { error: 'That template is not currently available for purchase.' },
-        { status: 400 },
+    let selectedTemplate
+    try {
+      selectedTemplate = await getTemplateAtCatalogRevision(
+        nicheSlug,
+        templateSlug,
+        requestedCatalogRevision,
       )
+    } catch (error) {
+      console.warn('[stripe/checkout] requested catalogue revision is unavailable:', error)
+      return NextResponse.json({
+        error: 'This preview revision is no longer available. Reload the preview before checkout.',
+        code: 'catalog_revision_unavailable',
+        recoveryUrl: '/preview-your-business',
+      }, { status: 409 })
+    }
+    if (!selectedTemplate) {
+      return requestedCatalogRevision
+        ? NextResponse.json({
+            error: 'This preview revision is no longer available. Reload the preview before checkout.',
+            code: 'catalog_revision_unavailable',
+            recoveryUrl: '/preview-your-business',
+          }, { status: 409 })
+        : NextResponse.json(
+            { error: 'That template is not currently available for purchase.' },
+            { status: 400 },
+          )
     }
     const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
     const cookieImageOwner = verifyUploadSessionValue(
@@ -168,8 +188,9 @@ export async function POST(req: NextRequest) {
     }
 
     checkoutIntentId = randomUUID()
-    // Never trust a client-provided catalogue identity. The durable checkout
-    // state snapshots the audited server-side v3 design + per-slug presets.
+    // The optional preview pin has already been resolved through a hash-checked
+    // server catalogue. Snapshot only that verified server entry; never copy
+    // client-provided design/preset identities into durable checkout state.
     const checkoutPayload = buildCheckoutTemplateState({
       template: templateSlug,
       niche: nicheSlug,

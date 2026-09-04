@@ -219,7 +219,24 @@ export async function POST(req: NextRequest) {
       portal_token_hash: local?.portal_token_hash ?? null,
       portal_token_expires_at: local?.portal_token_expires_at ?? null,
     })
-    return NextResponse.json({ ok: true, fallback: 'local-cache', republished: false })
+    let republished = false
+    let publishError: string | null = null
+    try {
+      republished = await republishSite(slug, mergedData)
+    } catch (err) {
+      console.error('[portal/customer] local-cache republish failed:', err)
+      publishError = err instanceof Error ? err.message : 'Publish failed'
+    }
+    if (mergedData.netlify_site_id && !republished) {
+      return NextResponse.json({
+        error: 'Your changes were saved, but the live publish failed. Please retry.',
+        saved: true,
+        republished: false,
+        code: 'publish_failed',
+        ...(process.env.NODE_ENV === 'development' && publishError ? { detail: publishError } : {}),
+      }, { status: 502 })
+    }
+    return NextResponse.json({ ok: true, fallback: 'local-cache', republished })
   }
 
   const { data: existingRow, error: existingError } = await supabase

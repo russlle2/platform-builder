@@ -74,6 +74,7 @@ import {
 import {
   assertWorkPath,
   atomicWriteFile,
+  canonicalizeProspectivePath,
 } from './config.js';
 import {
   EXPECTED_LEGACY_TEMPLATE_TOTAL,
@@ -402,6 +403,59 @@ function isWithin(root: string, target: string): boolean {
   return difference === '' || (difference !== '..' && !difference.startsWith(`..${sep}`) && !difference.includes(`:${sep}`));
 }
 
+async function assertSafeProspectiveArtifactDirectory(
+  context: Pick<LegacyCommandContext, 'config'>,
+  targetPath: string,
+  containmentPath: string,
+  label: string,
+): Promise<void> {
+  const workRoot = resolve(context.config.workRoot);
+  const containmentRoot = assertWorkPath(context.config, containmentPath);
+  const target = assertWorkPath(context.config, targetPath);
+  if (!isWithin(containmentRoot, target)) {
+    throw new Error(`Refusing to materialize ${label} outside its storage root: ${target}`);
+  }
+
+  const relativeTarget = relative(workRoot, target);
+  if (!relativeTarget || relativeTarget === '..' || relativeTarget.startsWith(`..${sep}`)) {
+    throw new Error(`Refusing to materialize ${label} outside the lexical work root: ${target}`);
+  }
+
+  // A lexical containment check cannot see Windows junctions or POSIX
+  // symlinks. Inspect every existing component before mkdir/rename can follow
+  // one, then independently prove where the prospective path resolves.
+  let cursor = workRoot;
+  for (const segment of ['', ...relativeTarget.split(/[\\/]/).filter(Boolean)]) {
+    if (segment) cursor = resolve(cursor, segment);
+    let details;
+    try {
+      details = await lstat(cursor);
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code === 'ENOENT' || code === 'ENOTDIR') break;
+      throw error;
+    }
+    if (!details.isDirectory() || details.isSymbolicLink()) {
+      throw new Error(
+        `Refusing to materialize ${label}: directory chain contains a link, reparse point, or non-directory: ${cursor}`,
+      );
+    }
+  }
+
+  const [canonicalWorkRoot, canonicalContainmentRoot, canonicalTarget] = await Promise.all([
+    realpath(workRoot),
+    canonicalizeProspectivePath(containmentRoot),
+    canonicalizeProspectivePath(target),
+  ]);
+  if (
+    !isWithin(canonicalWorkRoot, canonicalContainmentRoot)
+    || !isWithin(canonicalWorkRoot, canonicalTarget)
+    || !isWithin(canonicalContainmentRoot, canonicalTarget)
+  ) {
+    throw new Error(`Refusing to materialize ${label}: canonical path escapes rehabilitation storage: ${canonicalTarget}`);
+  }
+}
+
 function artifactTree(files: ReadonlyMap<string, string | Uint8Array>): {
   hash: string;
   files: Array<{ path: string; sha256: string; bytes: number }>;
@@ -527,17 +581,67 @@ export async function materializeArtifact(
   template: LegacyTemplateRecord,
   files: ReadonlyMap<string, string | Uint8Array>,
 ): Promise<{ directory: string; treeHash: string; bytes: number }> {
+  const materialized = await materializeContentAddressedTree(context, template, files, 'candidates');
+  context.ledger.addArtifact({
+    runId: context.runId,
+    templateId: template.id,
+    kind: 'candidate-template',
+    contentHash: materialized.treeHash,
+    relativePath: relative(context.config.workRoot, materialized.directory),
+    byteSize: materialized.bytes,
+    metadata: { fileCount: materialized.fileCount },
+  });
+  const currentPointerPath = join(
+    context.config.artifactRoot,
+    'candidates',
+    template.niche,
+    template.legacySlug,
+    'current.json',
+  );
+  await assertSafeProspectiveArtifactDirectory(
+    context,
+    dirname(currentPointerPath),
+    resolve(context.config.artifactRoot, 'candidates'),
+    'candidate pointer directory',
+  );
+  await atomicWriteFile(
+    context.config,
+    currentPointerPath,
+    `${JSON.stringify({
+      treeHash: materialized.treeHash,
+      relativePath: relative(context.config.workRoot, materialized.directory).replace(/\\/g, '/'),
+    }, null, 2)}\n`,
+  );
+  return materialized;
+}
+
+async function materializeContentAddressedTree(
+  context: LegacyCommandContext,
+  template: LegacyTemplateRecord,
+  files: ReadonlyMap<string, string | Uint8Array>,
+  collection: 'candidates' | 'failed-primary',
+): Promise<{ directory: string; treeHash: string; bytes: number; fileCount: number; created: boolean }> {
   const tree = artifactTree(files);
+  const collectionRoot = resolve(context.config.artifactRoot, collection);
   const target = assertWorkPath(
     context.config,
-    join(context.config.artifactRoot, 'candidates', template.niche, template.legacySlug, tree.hash),
+    join(collectionRoot, template.niche, template.legacySlug, tree.hash),
   );
+  const collectionLabel = collection === 'failed-primary' ? 'failed-primary evidence' : 'candidate artifact';
+  await assertSafeProspectiveArtifactDirectory(context, target, collectionRoot, collectionLabel);
+  let created = false;
   if ((await stat(target).catch(() => null))?.isDirectory()) {
     await validateMaterializedArtifact(target, tree);
   } else {
     const staging = assertWorkPath(
       context.config,
-      join(context.config.artifactRoot, '.staging', `${template.niche}-${template.legacySlug}-${randomUUID()}`),
+      join(context.config.artifactRoot, '.staging', `${collection}-${template.niche}-${template.legacySlug}-${randomUUID()}`),
+    );
+    await assertSafeProspectiveArtifactDirectory(
+      context,
+      staging,
+      context.config.artifactRoot,
+      `${collectionLabel} staging directory`,
     );
     await mkdir(staging, { recursive: true });
     try {
@@ -550,6 +654,12 @@ export async function materializeArtifact(
         );
         let validBlob = await blobMatches(blob, record.bytes, record.sha256);
         if (!validBlob) {
+          await assertSafeProspectiveArtifactDirectory(
+            context,
+            dirname(blob),
+            context.config.blobRoot,
+            `${collectionLabel} blob directory`,
+          );
           try {
             await atomicWriteFile(context.config, blob, content);
           } catch (error) {
@@ -573,13 +683,17 @@ export async function materializeArtifact(
         join(staging, '.dailyclarity', 'artifact-tree.json'),
         `${JSON.stringify({ version: 1, treeHash: tree.hash, files: tree.files }, null, 2)}\n`,
       );
+      await assertSafeProspectiveArtifactDirectory(context, target, collectionRoot, collectionLabel);
       await mkdir(dirname(target), { recursive: true });
+      await assertSafeProspectiveArtifactDirectory(context, target, collectionRoot, collectionLabel);
       try {
         await rename(staging, target);
+        created = true;
       } catch (error) {
         if (!(await stat(target).catch(() => null))?.isDirectory()) throw error;
         await rm(staging, { recursive: true, force: true });
       }
+      await assertSafeProspectiveArtifactDirectory(context, target, collectionRoot, collectionLabel);
     } catch (error) {
       if (isWithin(context.config.artifactRoot, staging)) {
         await rm(staging, { recursive: true, force: true });
@@ -590,21 +704,160 @@ export async function materializeArtifact(
   }
 
   const bytes = tree.files.reduce((sum, file) => sum + file.bytes, 0);
-  context.ledger.addArtifact({
-    runId: context.runId,
-    templateId: template.id,
-    kind: 'candidate-template',
-    contentHash: tree.hash,
-    relativePath: relative(context.config.workRoot, target),
-    byteSize: bytes,
-    metadata: { fileCount: tree.files.length },
-  });
-  await atomicWriteFile(
-    context.config,
-    join(context.config.artifactRoot, 'candidates', template.niche, template.legacySlug, 'current.json'),
-    `${JSON.stringify({ treeHash: tree.hash, relativePath: relative(context.config.workRoot, target).replace(/\\/g, '/') }, null, 2)}\n`,
+  return { directory: target, treeHash: tree.hash, bytes, fileCount: tree.files.length, created };
+}
+
+interface FailedPrimaryArtifact {
+  artifactId: number;
+  directory: string;
+  relativePath: string;
+  treeHash: string;
+  bytes: number;
+  fileCount: number;
+  candidateOrigin: 'primary' | 'cloud_fragment_attempt';
+  occurrenceId: number;
+}
+
+async function removeUnregisteredFailedPrimaryTree(
+  context: LegacyCommandContext,
+  template: LeasedTemplate,
+  directory: string,
+  treeHash: string,
+  registrationError: unknown,
+): Promise<void> {
+  const workRoot = resolve(context.config.workRoot);
+  const artifactRoot = resolve(context.config.artifactRoot);
+  const collectionRoot = resolve(artifactRoot, 'failed-primary');
+  const evidenceRoot = resolve(collectionRoot, template.niche, template.legacySlug);
+  const expectedTarget = resolve(evidenceRoot, treeHash);
+  const target = resolve(directory);
+  const originalDetail = registrationError instanceof Error
+    ? registrationError.message
+    : String(registrationError);
+  const refuse = (detail: string): Error => new Error(
+    `Refusing to clean failed-primary evidence: ${detail}; original registration error: ${originalDetail}`,
   );
-  return { directory: target, treeHash: tree.hash, bytes };
+
+  if (target !== expectedTarget || !isWithin(evidenceRoot, target)) {
+    throw refuse(`target is not its exact content-addressed path: ${target}`);
+  }
+
+  // Recursive removal must never follow a junction/symlink introduced after
+  // startup validation. Inspect every existing component from the configured
+  // work root through the leaf before resolving the canonical containment set.
+  const relativeTarget = relative(workRoot, target);
+  if (!relativeTarget || relativeTarget === '..' || relativeTarget.startsWith(`..${sep}`)) {
+    throw refuse(`target is outside the lexical work root: ${target}`);
+  }
+  let cursor = workRoot;
+  for (const segment of ['', ...relativeTarget.split(/[\\/]/).filter(Boolean)]) {
+    if (segment) cursor = resolve(cursor, segment);
+    const details = await lstat(cursor).catch(() => null);
+    if (!details) throw refuse(`directory chain is missing: ${cursor}`);
+    if (!details.isDirectory() || details.isSymbolicLink()) {
+      throw refuse(`directory chain contains a link, reparse point, or non-directory: ${cursor}`);
+    }
+  }
+
+  let canonicalRoots: string[];
+  try {
+    canonicalRoots = await Promise.all([
+      realpath(workRoot),
+      realpath(artifactRoot),
+      realpath(collectionRoot),
+      realpath(evidenceRoot),
+      realpath(target),
+    ]);
+  } catch (error) {
+    throw refuse(`canonical path resolution failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  const [canonicalWorkRoot, canonicalArtifactRoot, canonicalCollectionRoot, canonicalEvidenceRoot, canonicalTarget] = canonicalRoots;
+  for (const [label, root] of [
+    ['work', canonicalWorkRoot],
+    ['artifact', canonicalArtifactRoot],
+    ['failed-primary', canonicalCollectionRoot],
+    ['template evidence', canonicalEvidenceRoot],
+  ] as const) {
+    if (!isWithin(root, canonicalTarget)) {
+      throw refuse(`canonical target escapes the ${label} root: ${canonicalTarget}`);
+    }
+  }
+
+  try {
+    await rm(canonicalTarget, { recursive: true, force: false });
+  } catch (error) {
+    throw new Error(
+      `Failed to safely clean unregistered failed-primary evidence: ${error instanceof Error ? error.message : String(error)}; `
+      + `original registration error: ${originalDetail}`,
+    );
+  }
+}
+
+async function preserveFailedPrimaryArtifact(
+  context: LegacyCommandContext,
+  template: LeasedTemplate,
+  files: ReadonlyMap<string, string | Uint8Array>,
+  verification: StaticVerification,
+  candidateReceiptHash: string,
+  candidateOrigin: FailedPrimaryArtifact['candidateOrigin'],
+): Promise<FailedPrimaryArtifact> {
+  const materialized = await materializeContentAddressedTree(context, template, files, 'failed-primary');
+  const relativePath = relative(context.config.workRoot, materialized.directory).replace(/\\/g, '/');
+  try {
+    const registration = context.ledger.addArtifactOccurrence({
+      runId: context.runId,
+      templateId: template.id,
+      kind: 'failed-primary-template',
+      contentHash: materialized.treeHash,
+      relativePath,
+      byteSize: materialized.bytes,
+      occurrenceKey: `repair-lease:${template.leaseToken}`,
+      metadata: {
+        version: 2,
+        purpose: 'static-candidate-before-neutral-fallback',
+        niche: template.niche,
+        legacySlug: template.legacySlug,
+        relativePath,
+        contentHash: materialized.treeHash,
+        byteSize: materialized.bytes,
+        sourceHash: template.sourceHash,
+        ruleVersion: context.config.ruleVersion,
+        candidateReceiptHash,
+        candidateOrigin,
+        repairAttempt: template.attempts,
+        fileCount: materialized.fileCount,
+        verificationErrors: verification.errors.map((error) => ({
+          code: error.code,
+          ...(error.page ? { page: error.page } : {}),
+          detail: error.detail,
+        })),
+      },
+    });
+    return {
+      artifactId: registration.artifactId,
+      occurrenceId: registration.occurrenceId,
+      ...materialized,
+      relativePath,
+      candidateOrigin,
+    };
+  } catch (error) {
+    if (materialized.created) {
+      const registered = context.ledger.listArtifacts({ kind: 'failed-primary-template' }).some((artifact) => (
+        artifact.contentHash === materialized.treeHash
+        && artifact.relativePath === relativePath
+      ));
+      if (!registered) {
+        await removeUnregisteredFailedPrimaryTree(
+          context,
+          template,
+          materialized.directory,
+          materialized.treeHash,
+          error,
+        );
+      }
+    }
+    throw error;
+  }
 }
 
 async function readSourceFiles(inventory: LegacyTemplateInventory): Promise<Map<string, string | Uint8Array>> {
@@ -1099,6 +1352,16 @@ export function verifyStaticArtifact(
   })));
   const contract = validateTemplateContract(pages, fields, {
     requireStandardInquiryForms: true,
+    styles: new Map(
+      [...files]
+        .filter(([path, value]) => /\.css$/i.test(path) && typeof value === 'string')
+        .map(([path, value]) => [path, value as string]),
+    ),
+    svgAssets: new Map(
+      [...files]
+        .filter(([path, value]) => /\.svg$/i.test(path) && typeof value === 'string')
+        .map(([path, value]) => [path, value as string]),
+    ),
   });
   errors.push(...contract.errors.map((detail) => ({ code: 'publication_contract', detail })));
   return {
@@ -1257,7 +1520,8 @@ export async function repairOne(
     let usedNeutralFallback = false;
     let usedCloudRepair = false;
     let cloudRepairAttempts = 0;
-    const cloudLaneIds: string[] = [];
+    let failedPrimaryArtifact: FailedPrimaryArtifact | undefined;
+    let failedPreFallbackVerification: StaticVerification | undefined;
 
     if (!verification.passed && context.config.cloudRepair && context.cloudRepairClient) {
       for (const attempt of [1, 2] as const) {
@@ -1281,7 +1545,6 @@ export async function repairOne(
 
         cloudRepairAttempts = attempt;
         const laneId = `repair-${lease.id}-${digest(`${context.runId}\0${lease.sourceHash}\0${context.config.ruleVersion}`).slice(0, 20)}-a${attempt}`;
-        cloudLaneIds.push(laneId);
         const outcomes = await executeCloudRepairLane({
           config: context.config,
           ledger: context.ledger,
@@ -1363,6 +1626,22 @@ export async function repairOne(
       const fallbackReason = verification.errors
         .map((error) => `${error.code}${error.page ? ` (${error.page})` : ''}: ${error.detail}`)
         .join('; ');
+      failedPreFallbackVerification = {
+        passed: verification.passed,
+        errors: verification.errors.map((error) => ({ ...error })),
+        tokens: [...verification.tokens],
+      };
+      // The fallback must never erase the bytes that failed the primary static
+      // gate. Persist that exact vended tree first; a storage or ledger failure
+      // aborts this attempt before neutral content can become the candidate.
+      failedPrimaryArtifact = await preserveFailedPrimaryArtifact(
+        context,
+        lease,
+        vended.files,
+        failedPreFallbackVerification,
+        fallbackBeforeHash,
+        repaired === primaryRepair ? 'primary' : 'cloud_fragment_attempt',
+      );
       const fallbackRepair = repairLegacyTemplate({
         slug: lease.legacySlug,
         niche: lease.niche,
@@ -1394,6 +1673,15 @@ export async function repairOne(
           reason: fallbackReason,
           sourcePreserved: true,
           fallbackPassed: fallbackVerification.passed,
+          failedPrimaryArtifact: {
+            artifactId: failedPrimaryArtifact.artifactId,
+            occurrenceId: failedPrimaryArtifact.occurrenceId,
+            kind: 'failed-primary-template',
+            contentHash: failedPrimaryArtifact.treeHash,
+            relativePath: failedPrimaryArtifact.relativePath,
+            byteSize: failedPrimaryArtifact.bytes,
+            candidateOrigin: failedPrimaryArtifact.candidateOrigin,
+          },
         },
       });
     }
@@ -1405,14 +1693,12 @@ export async function repairOne(
       repairMode: usedNeutralFallback ? 'neutral_fallback' : usedCloudRepair ? 'cloud_fragment' : 'primary',
       primaryRepairPassed: primaryVerification.passed,
       primaryFailureCodes: [...new Set(primaryVerification.errors.map((error) => error.code))].sort(),
-      cloudRepair: {
-        enabled: context.config.cloudRepair,
-        attempted: cloudRepairAttempts > 0,
-        attempts: cloudRepairAttempts,
-        laneIds: cloudLaneIds,
-        passed: usedCloudRepair,
-      },
       sourcePreserved: true,
+      failedPrimaryArtifact: failedPrimaryArtifact ? {
+        contentHash: failedPrimaryArtifact.treeHash,
+        relativePath: failedPrimaryArtifact.relativePath,
+        candidateOrigin: failedPrimaryArtifact.candidateOrigin,
+      } : null,
       foundationAlignment: alignmentMetadata ?? null,
       homepageDonor: homepageDonor ? {
         legacySlug: homepageDonor.legacySlug,
@@ -1472,9 +1758,20 @@ export async function repairOne(
         code: error.code,
         severity: 'critical',
         message: error.detail,
-        fingerprint: digest(`${error.code}\0${error.page ?? ''}\0${error.detail.replace(/\d+/g, '#')}`),
+        fingerprint: digest(`${failedPrimaryArtifact?.candidateOrigin === 'primary'
+          ? `primary_candidate:${failedPrimaryArtifact.occurrenceId}`
+          : 'primary_repair'}\0${error.code}\0${error.page ?? ''}\0${error.detail.replace(/\d+/g, '#')}`),
+        artifactHash: failedPrimaryArtifact?.candidateOrigin === 'primary'
+          ? failedPrimaryArtifact.treeHash
+          : undefined,
         details: {
           page: error.page,
+          failedPrimaryArtifactId: failedPrimaryArtifact?.candidateOrigin === 'primary'
+            ? failedPrimaryArtifact.artifactId
+            : undefined,
+          failedPrimaryOccurrenceId: failedPrimaryArtifact?.candidateOrigin === 'primary'
+            ? failedPrimaryArtifact.occurrenceId
+            : undefined,
           resolution: usedNeutralFallback
             ? 'neutral_fallback'
             : usedCloudRepair
@@ -1483,6 +1780,29 @@ export async function repairOne(
         },
         resolved: usedNeutralFallback || usedCloudRepair,
       });
+    }
+
+    if (failedPrimaryArtifact?.candidateOrigin === 'cloud_fragment_attempt' && failedPreFallbackVerification) {
+      for (const error of failedPreFallbackVerification.errors) {
+        context.ledger.addIssue({
+          templateId: lease.id,
+          runId: context.runId,
+          code: error.code,
+          severity: 'critical',
+          message: error.detail,
+          fingerprint: digest(`pre_fallback_candidate:${failedPrimaryArtifact.occurrenceId}\0${error.code}\0${error.page ?? ''}\0${error.detail.replace(/\d+/g, '#')}`),
+          artifactHash: failedPrimaryArtifact.treeHash,
+          details: {
+            page: error.page,
+            phase: 'pre_neutral_fallback',
+            candidateOrigin: failedPrimaryArtifact.candidateOrigin,
+            failedPrimaryArtifactId: failedPrimaryArtifact.artifactId,
+            failedPrimaryOccurrenceId: failedPrimaryArtifact.occurrenceId,
+            resolution: usedNeutralFallback ? 'neutral_fallback' : undefined,
+          },
+          resolved: usedNeutralFallback,
+        });
+      }
     }
 
     if (repaired !== primaryRepair) {
@@ -4657,11 +4977,212 @@ function htmlEscape(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
+interface FailedPrimaryIntegritySummary {
+  recordedTrees: number;
+  recordedOccurrences: number;
+  valid: number;
+  missing: number;
+  corrupt: number;
+  failures: Array<{
+    artifactId: number;
+    contentHash: string;
+    status: 'missing' | 'corrupt';
+    detail: string;
+  }>;
+}
+
+async function auditFailedPrimaryArtifacts(
+  context: Pick<LegacyCommandContext, 'config' | 'ledger'>,
+): Promise<FailedPrimaryIntegritySummary> {
+  const artifacts = context.ledger.listArtifacts({ kind: 'failed-primary-template' });
+  const occurrences = context.ledger.listArtifactOccurrences({ kind: 'failed-primary-template' });
+  const occurrencesByArtifact = new Map<number, typeof occurrences>();
+  for (const occurrence of occurrences) {
+    const retained = occurrencesByArtifact.get(occurrence.artifactId) ?? [];
+    retained.push(occurrence);
+    occurrencesByArtifact.set(occurrence.artifactId, retained);
+  }
+  const summary: FailedPrimaryIntegritySummary = {
+    recordedTrees: artifacts.length,
+    recordedOccurrences: occurrences.length,
+    valid: 0,
+    missing: 0,
+    corrupt: 0,
+    failures: [],
+  };
+  const collectionRoot = resolve(context.config.artifactRoot, 'failed-primary');
+  const collectionRelativePath = normalizeRelativePath(relative(context.config.workRoot, collectionRoot));
+
+  const recordFailure = (
+    artifact: LegacyArtifactRecord,
+    status: 'missing' | 'corrupt',
+    detail: string,
+  ): void => {
+    summary[status] += 1;
+    summary.failures.push({
+      artifactId: artifact.id,
+      contentHash: artifact.contentHash,
+      status,
+      detail: detail.slice(0, 1_000),
+    });
+  };
+
+  for (const artifact of artifacts) {
+    const retainedOccurrences = occurrencesByArtifact.get(artifact.id) ?? [];
+    if (artifact.templateId === null || retainedOccurrences.length === 0) {
+      recordFailure(artifact, 'corrupt', 'Artifact has no retained template identity');
+      continue;
+    }
+    const directory = resolve(context.config.workRoot, artifact.relativePath);
+    try {
+      const artifactRelativePath = normalizeRelativePath(artifact.relativePath);
+      const pathSegments = artifactRelativePath.split('/');
+      const collectionSegments = collectionRelativePath.split('/');
+      if (
+        pathSegments.length !== collectionSegments.length + 3
+        || collectionSegments.some((segment, index) => pathSegments[index] !== segment)
+        || pathSegments.at(-1) !== artifact.contentHash
+      ) {
+        throw new Error(`Artifact path does not match its immutable content-addressed identity: ${artifact.relativePath}`);
+      }
+
+      let occurrenceIdentity: string | null = null;
+      for (const occurrence of retainedOccurrences) {
+        if (occurrence.templateId === null || occurrence.templateId !== artifact.templateId) {
+          throw new Error(`Artifact occurrence ${occurrence.id} does not retain the physical artifact's template identity`);
+        }
+        const metadata = occurrence.metadata;
+        const metadataRecord = metadata && typeof metadata === 'object' && !Array.isArray(metadata)
+          ? metadata as Record<string, unknown>
+          : null;
+        if (metadataRecord?.version === 2) {
+          const identity = metadataRecord;
+          if (
+            typeof identity.niche !== 'string'
+            || typeof identity.legacySlug !== 'string'
+            || typeof identity.relativePath !== 'string'
+            || typeof identity.contentHash !== 'string'
+            || typeof identity.byteSize !== 'number'
+            || !Number.isSafeInteger(identity.byteSize)
+            || identity.byteSize < 0
+          ) {
+            throw new Error(`Artifact occurrence ${occurrence.id} has malformed immutable identity metadata`);
+          }
+          const expectedRelativePath = normalizeRelativePath(
+            `${collectionRelativePath}/${identity.niche}/${identity.legacySlug}/${identity.contentHash}`,
+          );
+          if (
+            normalizeRelativePath(identity.relativePath) !== artifactRelativePath
+            || expectedRelativePath !== artifactRelativePath
+            || identity.contentHash !== artifact.contentHash
+            || identity.byteSize !== artifact.byteSize
+          ) {
+            throw new Error(`Artifact occurrence ${occurrence.id} does not bind the retained physical path and hash`);
+          }
+          const currentIdentity = stableStringify({
+            niche: identity.niche,
+            legacySlug: identity.legacySlug,
+            relativePath: artifactRelativePath,
+            contentHash: identity.contentHash,
+            byteSize: identity.byteSize,
+          });
+          if (occurrenceIdentity !== null && occurrenceIdentity !== currentIdentity) {
+            throw new Error('Artifact occurrences disagree about immutable template/path identity');
+          }
+          occurrenceIdentity = currentIdentity;
+        } else if (metadataRecord && 'version' in metadataRecord && metadataRecord.version !== 1) {
+          throw new Error(`Artifact occurrence ${occurrence.id} has an unsupported identity metadata version`);
+        }
+        // Schema-v7 backfill occurrences and metadata-v1 evidence predate the
+        // identity snapshot. Their immutable artifact row remains the fallback;
+        // importantly, the current mutable template niche is never consulted.
+      }
+
+      const directoryDetails = await lstat(directory).catch(() => null);
+      if (!directoryDetails) {
+        recordFailure(artifact, 'missing', `Artifact directory is missing: ${artifact.relativePath}`);
+        continue;
+      }
+      if (!directoryDetails.isDirectory() || directoryDetails.isSymbolicLink()) {
+        throw new Error(`Artifact path is not a safe directory: ${artifact.relativePath}`);
+      }
+      const treePath = resolve(directory, '.dailyclarity', 'artifact-tree.json');
+      const treeDetails = await lstat(treePath).catch(() => null);
+      if (!treeDetails) {
+        recordFailure(artifact, 'missing', `Artifact tree manifest is missing: ${artifact.relativePath}`);
+        continue;
+      }
+      if (!treeDetails.isFile() || treeDetails.isSymbolicLink()) {
+        throw new Error(`Artifact tree manifest is not a safe file: ${artifact.relativePath}`);
+      }
+      const artifactRoot = resolve(context.config.artifactRoot);
+      const relativeDirectory = relative(artifactRoot, directory);
+      let cursor = artifactRoot;
+      const artifactRootDetails = await lstat(cursor);
+      if (!artifactRootDetails.isDirectory() || artifactRootDetails.isSymbolicLink()) {
+        throw new Error(`Artifact root is not a safe directory: ${relative(context.config.workRoot, cursor)}`);
+      }
+      for (const segment of relativeDirectory.split(/[\\/]/).filter(Boolean)) {
+        cursor = resolve(cursor, segment);
+        const details = await lstat(cursor);
+        if (!details.isDirectory() || details.isSymbolicLink()) {
+          throw new Error(`Artifact directory chain contains an unsafe entry: ${relative(context.config.workRoot, cursor)}`);
+        }
+      }
+      const [realWorkRoot, realArtifactRoot, realCollectionRoot, realDirectory] = await Promise.all([
+        realpath(context.config.workRoot),
+        realpath(artifactRoot),
+        realpath(collectionRoot),
+        realpath(directory),
+      ]);
+      if (
+        !isWithin(realWorkRoot, realDirectory)
+        || !isWithin(realArtifactRoot, realDirectory)
+        || !isWithin(realCollectionRoot, realDirectory)
+      ) {
+        throw new Error(`Artifact resolves outside failed-primary storage: ${artifact.relativePath}`);
+      }
+      const tree = await validateRecordedArtifact(directory, artifact.contentHash);
+      const recordedBytes = tree.files.reduce((sum, file) => sum + file.bytes, 0);
+      if (recordedBytes !== artifact.byteSize) {
+        throw new Error(
+          `Artifact byte-size evidence does not match its tree: ledger=${artifact.byteSize}, tree=${recordedBytes}`,
+        );
+      }
+      summary.valid += 1;
+    } catch (error) {
+      const code = error && typeof error === 'object' && 'code' in error
+        ? String((error as { code?: unknown }).code)
+        : '';
+      recordFailure(
+        artifact,
+        code === 'ENOENT' ? 'missing' : 'corrupt',
+        error instanceof Error ? error.message : String(error),
+      );
+    }
+  }
+  return summary;
+}
+
 async function reportCommand(
   context: Omit<LegacyCommandContext, 'runId'> & { runId?: string },
 ): Promise<LegacyCommandOutcome> {
   const generatedAt = new Date().toISOString();
   const status = context.ledger.reportData();
+  const failedPrimaryIntegrity = await auditFailedPrimaryArtifacts(context);
+  const failedPrimaryIntegrityPath = join(context.config.reportRoot, 'failed-primary-integrity.json');
+  await atomicWriteFile(
+    context.config,
+    failedPrimaryIntegrityPath,
+    `${JSON.stringify({ version: 1, generatedAt, ...failedPrimaryIntegrity }, null, 2)}\n`,
+  );
+  if (failedPrimaryIntegrity.missing > 0 || failedPrimaryIntegrity.corrupt > 0) {
+    throw new Error(
+      `Audit report blocked by failed-primary evidence integrity: `
+      + `valid=${failedPrimaryIntegrity.valid}, missing=${failedPrimaryIntegrity.missing}, `
+      + `corrupt=${failedPrimaryIntegrity.corrupt}. Evidence: ${failedPrimaryIntegrityPath}`,
+    );
+  }
   const templates = context.ledger.listTemplates();
   const aliases = context.ledger.listAliases();
   const issues = context.ledger.listIssues({ unresolved: true, current: true });
@@ -4710,7 +5231,7 @@ async function reportCommand(
   const quarantined = templates.filter((template) => template.terminalDisposition === 'quarantined'
     || template.terminalDisposition === 'failed').length;
   const primaryPassing = Math.max(0, completed - currentNeutralFallbacks.length);
-  const markdown = `# Legacy Catalogue Rehabilitation Report\n\nGenerated: ${generatedAt}\n\n## Coverage\n\n- Source templates recorded: ${templates.length.toLocaleString()} / ${EXPECTED_LEGACY_TEMPLATE_TOTAL.toLocaleString()}\n- Terminal passing mappings: ${completed.toLocaleString()}\n- Primary repaired passing mappings: ${primaryPassing.toLocaleString()}\n- Current neutral-fallback mappings: ${currentNeutralFallbacks.length.toLocaleString()}\n- Quarantined or failed mappings: ${quarantined.toLocaleString()}\n- Canonical designs: ${canonical.toLocaleString()}\n- Passing aliases: ${passingAliases.toLocaleString()}\n- Current browser-final quality receipts (ledger/catalogue): ${currentReceiptCount.toLocaleString()}\n- Historical quality receipts retained: ${receipts.length.toLocaleString()}\n- Browser renders: ${renders.length.toLocaleString()}\n- Failed browser renders: ${renders.filter((render) => render.status === 'failed').length.toLocaleString()}\n- Cloud model tokens accounted: ${status.modelBudget.accountedTokens.toLocaleString()} / ${status.modelBudget.tokenCap.toLocaleString()}\n- Cloud model spend accounted: $${status.modelBudget.accountedCostUsd.toFixed(4)} / $${status.modelBudget.dollarCapUsd.toFixed(2)}\n\n## Current neutral fallbacks\n\n${currentNeutralFallbacks.length ? currentNeutralFallbacks.map((slug) => `- ${slug}`).join('\n') : '- None'}\n${unreadableFallbackMetadata.length ? `\nUnreadable current rehabilitation metadata (${unreadableFallbackMetadata.length}): ${unreadableFallbackMetadata.join(', ')}` : ''}\n\n## Safety state\n\n- Source catalogue was read only; all generated work is under: ${context.config.workRoot}\n- Production publication performed: no\n- Promotion remains gated behind \`templates:legacy promote --dry-run\`.\n- Every public candidate requires a matching browser-backed quality receipt.\n- Candidate-local \`template.json\` and \`.dailyclarity/quality-receipt.json\` identify the deterministic static preflight. The ledger, root catalogue, and promoted \`final-quality-receipt.json\` carry the authoritative browser-final receipt.\n\n## Remaining unresolved issues\n\nOnly issues scoped to each template's current source hash, repair rule, and candidate artifact are shown. Superseded issue history remains in SQLite.\n\n${topIssues.length ? topIssues.map(([code, count]) => `- ${code}: ${count.toLocaleString()}`).join('\n') : '- None'}\n\n## Ledger snapshot\n\n\`\`\`json\n${JSON.stringify(status, null, 2)}\n\`\`\`\n`;
+  const markdown = `# Legacy Catalogue Rehabilitation Report\n\nGenerated: ${generatedAt}\n\n## Coverage\n\n- Source templates recorded: ${templates.length.toLocaleString()} / ${EXPECTED_LEGACY_TEMPLATE_TOTAL.toLocaleString()}\n- Terminal passing mappings: ${completed.toLocaleString()}\n- Primary repaired passing mappings: ${primaryPassing.toLocaleString()}\n- Current neutral-fallback mappings: ${currentNeutralFallbacks.length.toLocaleString()}\n- Quarantined or failed mappings: ${quarantined.toLocaleString()}\n- Canonical designs: ${canonical.toLocaleString()}\n- Passing aliases: ${passingAliases.toLocaleString()}\n- Current browser-final quality receipts (ledger/catalogue): ${currentReceiptCount.toLocaleString()}\n- Historical quality receipts retained: ${receipts.length.toLocaleString()}\n- Failed-primary forensic integrity (valid/missing/corrupt; occurrences): ${failedPrimaryIntegrity.valid.toLocaleString()} / ${failedPrimaryIntegrity.missing.toLocaleString()} / ${failedPrimaryIntegrity.corrupt.toLocaleString()}; ${failedPrimaryIntegrity.recordedOccurrences.toLocaleString()}\n- Browser renders: ${renders.length.toLocaleString()}\n- Failed browser renders: ${renders.filter((render) => render.status === 'failed').length.toLocaleString()}\n- Cloud model tokens accounted: ${status.modelBudget.accountedTokens.toLocaleString()} / ${status.modelBudget.tokenCap.toLocaleString()}\n- Cloud model spend accounted: $${status.modelBudget.accountedCostUsd.toFixed(4)} / $${status.modelBudget.dollarCapUsd.toFixed(2)}\n\n## Current neutral fallbacks\n\n${currentNeutralFallbacks.length ? currentNeutralFallbacks.map((slug) => `- ${slug}`).join('\n') : '- None'}\n${unreadableFallbackMetadata.length ? `\nUnreadable current rehabilitation metadata (${unreadableFallbackMetadata.length}): ${unreadableFallbackMetadata.join(', ')}` : ''}\n\n## Safety state\n\n- Source catalogue was read only; all generated work is under: ${context.config.workRoot}\n- Production publication performed: no\n- Promotion remains gated behind \`templates:legacy promote --dry-run\`.\n- Every public candidate requires a matching browser-backed quality receipt.\n- Candidate-local \`template.json\` and \`.dailyclarity/quality-receipt.json\` identify the deterministic static preflight. The ledger, root catalogue, and promoted \`final-quality-receipt.json\` carry the authoritative browser-final receipt.\n\n## Remaining unresolved issues\n\nOnly issues scoped to each template's current source hash, repair rule, and candidate artifact are shown. Superseded issue history remains in SQLite.\n\n${topIssues.length ? topIssues.map(([code, count]) => `- ${code}: ${count.toLocaleString()}`).join('\n') : '- None'}\n\n## Ledger snapshot\n\n\`\`\`json\n${JSON.stringify({ ...status, failedPrimaryIntegrity }, null, 2)}\n\`\`\`\n`;
   const markdownPath = join(context.config.reportRoot, 'legacy-rehab-report.md');
   await atomicWriteFile(context.config, markdownPath, markdown);
 
@@ -4806,6 +5327,8 @@ async function reportCommand(
       unreadableFallbackMetadata,
       currentReceiptCount,
       unresolvedIssues: issues.length,
+      failedPrimaryIntegrity,
+      failedPrimaryIntegrityPath,
     },
   };
 }

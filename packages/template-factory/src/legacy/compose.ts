@@ -32,12 +32,17 @@ import {
   detectFoundation,
   inlineStylesheetPath,
   repairPage,
+  repairSvgAsset,
   repairStylesheet,
   resolveStaticSelectorTargets,
   type BackgroundSelector,
   type HtmlNode,
 } from './repair.js';
-import { extractTemplateTokens, validateTemplateContract } from '../template-contract.js';
+import {
+  cssGeneratedContentAttributeNames,
+  extractTemplateTokens,
+  validateTemplateContract,
+} from '../template-contract.js';
 import {
   containsUnsafeCssReferences,
   containsUnsafeSrcset,
@@ -77,9 +82,10 @@ const REPAIR_STYLESHEET = [
   '.dc-role-actions{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.5rem}',
   '.dc-role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,16rem),1fr));gap:1rem;margin-top:2rem}',
   '.dc-role-card{padding:1.25rem;border:1px solid currentColor;border-radius:.75rem}',
-  '.dc-contact-form{display:grid;gap:1rem;max-width:42rem;margin-top:2rem}',
+  '.dc-contact-form{display:grid!important;visibility:visible!important;content-visibility:visible!important;opacity:1!important;gap:1rem;max-width:42rem;margin-top:2rem}',
   '.dc-contact-form label{display:grid;gap:.35rem}',
   '.dc-contact-form input,.dc-contact-form textarea{width:100%;padding:.75rem;border:1px solid currentColor;border-radius:.4rem;font:inherit}',
+  'svg[aria-hidden="true"]{pointer-events:none!important}',
   ':is(p,blockquote,figcaption,dd,td)>a{text-decoration-line:underline;text-underline-offset:.12em}',
   '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}',
   'body :is(nav,header,[class*="nav"],[class*="row"],[class*="flex"]){flex-wrap:wrap!important}',
@@ -979,6 +985,189 @@ interface CssBackgroundBindingResult {
   multipleMatchSlots: number;
   conflictingSlots: number;
   unmatchedSlots: number;
+  suppressedDecorativeSlots: number;
+  suppressedHiddenSlots: number;
+  suppressedPointerSlots: number;
+  suppressedProtectedActionSlots: number;
+}
+
+type StaticSlotPolicyRule = { selector: string; hidden: boolean; pointerless: boolean };
+type StaticSlotPolicyRules = ReadonlyMap<string, readonly StaticSlotPolicyRule[]>;
+type StaticSlotPolicyNodes = { hidden: ReadonlySet<HtmlNode>; pointerless: ReadonlySet<HtmlNode> };
+
+const PERMANENTLY_HIDDEN_STYLE = /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*(?:hidden|collapse)|content-visibility\s*:\s*hidden|opacity\s*:\s*0(?:\.0*)?)\s*(?:!important\s*)?(?:;|$)/i;
+const POINTER_EVENTS_NONE_STYLE = /(?:^|;)\s*pointer-events\s*:\s*none(?:\s*!important)?\s*(?:;|$)/i;
+const DECORATIVE_IMAGE_SIGNAL = /(?:^|[\s/_.-])(?:aura|decor(?:ation|ative)?|grain|noise|ornament|pattern|texture)(?=$|[\s/_.-])/i;
+const PROTECTED_BACKGROUND_TAGS = new Set(['a', 'button', 'input', 'select', 'textarea', 'option', 'label', 'summary']);
+
+function collectStaticSlotPolicyRules(styles: Readonly<Record<string, string>>): StaticSlotPolicyRules {
+  const byStylesheet = new Map<string, StaticSlotPolicyRule[]>();
+  for (const [stylesheet, css] of Object.entries(styles)) {
+    let root;
+    try { root = postcss.parse(css, { from: stylesheet }); } catch { continue; }
+    const rules: StaticSlotPolicyRule[] = [];
+    root.walkRules((rule) => {
+      let hidden = false;
+      let pointerless = false;
+      for (const node of rule.nodes ?? []) {
+        if (node.type !== 'decl') continue;
+        const property = node.prop.trim().toLowerCase();
+        const value = node.value.trim().toLowerCase();
+        if (
+          (property === 'display' && value === 'none')
+          || (property === 'visibility' && (value === 'hidden' || value === 'collapse'))
+          || (property === 'content-visibility' && value === 'hidden')
+          || (property === 'opacity' && /^0(?:\.0*)?$/.test(value))
+        ) hidden = true;
+        if (property === 'pointer-events' && value === 'none') pointerless = true;
+      }
+      if (!hidden && !pointerless) return;
+      try {
+        for (const selector of rule.selectors) rules.push({ selector, hidden, pointerless });
+      } catch {
+        // A selector that PostCSS cannot split is already ineligible for the
+        // deterministic binding subset and remains guarded by browser QA.
+      }
+    });
+    byStylesheet.set(stylesheet, rules);
+  }
+  return byStylesheet;
+}
+
+function resolveStaticSlotPolicyNodes(
+  document: HtmlNode,
+  stylesheets: ReadonlySet<string>,
+  rules: StaticSlotPolicyRules,
+): StaticSlotPolicyNodes {
+  const hidden = new Set<HtmlNode>();
+  const pointerless = new Set<HtmlNode>();
+  for (const stylesheet of stylesheets) {
+    for (const rule of rules.get(stylesheet) ?? []) {
+      const matches = resolveStaticSelectorTargets(document, rule.selector);
+      if (!matches) continue;
+      if (rule.hidden) for (const node of matches) hidden.add(node);
+      if (rule.pointerless) for (const node of matches) pointerless.add(node);
+    }
+  }
+  return { hidden, pointerless };
+}
+
+function staticUnavailabilityReason(
+  node: HtmlNode,
+  policy: StaticSlotPolicyNodes,
+): 'hidden' | 'pointerless' | undefined {
+  let cursor: HtmlNode | undefined = node;
+  while (cursor) {
+    const style = getAttr(cursor, 'style') ?? '';
+    if (
+      getAttr(cursor, 'hidden') !== undefined
+      || getAttr(cursor, 'inert') !== undefined
+      || getAttr(cursor, 'aria-hidden')?.trim().toLowerCase() === 'true'
+      || (cursor.tagName === 'input' && (getAttr(cursor, 'type') ?? '').trim().toLowerCase() === 'hidden')
+      || PERMANENTLY_HIDDEN_STYLE.test(style)
+      || policy.hidden.has(cursor)
+    ) return 'hidden';
+    if (POINTER_EVENTS_NONE_STYLE.test(style) || policy.pointerless.has(cursor)) return 'pointerless';
+    cursor = cursor.parentNode;
+  }
+  return undefined;
+}
+
+function decorativeImageTarget(node: HtmlNode, extraIdentity = ''): boolean {
+  const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+  const identity = [
+    extraIdentity,
+    getAttr(node, 'id') ?? '',
+    getAttr(node, 'class') ?? '',
+    getAttr(node, 'src') ?? '',
+    getAttr(node, 'srcset') ?? '',
+    getAttr(node, 'style') ?? '',
+  ].join(' ');
+  return getAttr(node, 'aria-hidden')?.trim().toLowerCase() === 'true'
+    || role === 'none' || role === 'presentation' || DECORATIVE_IMAGE_SIGNAL.test(identity);
+}
+
+function protectedBackgroundTarget(node: HtmlNode): boolean {
+  const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+  return PROTECTED_BACKGROUND_TAGS.has(node.tagName ?? '') || role === 'button' || role === 'link';
+}
+
+interface NativeSlotSuppressionResult {
+  hiddenEditIds: number;
+  pointerlessEditIds: number;
+  hiddenImageIds: number;
+  pointerlessImageIds: number;
+  decorativeImageIds: number;
+  protectedBackgroundIds: number;
+  incompletePictureIds: number;
+}
+
+function suppressStaticallyUnreachableNativeSlots(
+  pages: Record<string, string>,
+  styles: Readonly<Record<string, string>>,
+  policyRules: StaticSlotPolicyRules,
+): NativeSlotSuppressionResult {
+  const counts: NativeSlotSuppressionResult = {
+    hiddenEditIds: 0,
+    pointerlessEditIds: 0,
+    hiddenImageIds: 0,
+    pointerlessImageIds: 0,
+    decorativeImageIds: 0,
+    protectedBackgroundIds: 0,
+    incompletePictureIds: 0,
+  };
+  for (const [page, html] of Object.entries(pages)) {
+    const document = parse(html) as unknown as HtmlNode;
+    const policy = resolveStaticSlotPolicyNodes(document, linkedStylesheets(page, html, styles), policyRules);
+    let changed = false;
+    walk(document, (node) => {
+      const editId = getAttr(node, 'data-dc-edit-id');
+      const reason = staticUnavailabilityReason(node, policy);
+      if (editId && reason) {
+        removeAttr(node, 'data-dc-edit-id');
+        removeAttr(node, 'data-dc-edit-attribute');
+        if (reason === 'hidden') counts.hiddenEditIds += 1;
+        else counts.pointerlessEditIds += 1;
+        changed = true;
+      }
+
+      const imageId = getAttr(node, 'data-dc-image-id');
+      if (!imageId) return;
+      const inlineBackground = /background(?:-image)?\s*:[^;]*url\(/i.test(getAttr(node, 'style') ?? '');
+      const imageReason = decorativeImageTarget(node)
+        ? 'decorative'
+        : reason
+          ? reason
+          : inlineBackground && protectedBackgroundTarget(node)
+            ? 'protected'
+            : undefined;
+      if (!imageReason) return;
+      removeAttr(node, 'data-dc-image-id');
+      if (imageReason === 'decorative') counts.decorativeImageIds += 1;
+      else if (imageReason === 'hidden') counts.hiddenImageIds += 1;
+      else if (imageReason === 'pointerless') counts.pointerlessImageIds += 1;
+      else counts.protectedBackgroundIds += 1;
+      changed = true;
+    });
+
+    // The customer runtime intentionally swaps every SOURCE/IMG in one
+    // responsive picture as an atomic group. If static policy suppresses one
+    // member, suppress the remaining IDs too rather than advertise a group
+    // that can never satisfy the response topology check.
+    walk(document, (node) => {
+      if (node.tagName !== 'picture') return;
+      const visualChildren = (node.childNodes ?? []).filter((child) => ['source', 'img'].includes(child.tagName ?? ''));
+      const advertised = visualChildren.filter((child) => Boolean(getAttr(child, 'data-dc-image-id')));
+      if (advertised.length === 0 || advertised.length === visualChildren.length) return;
+      for (const child of advertised) {
+        removeAttr(child, 'data-dc-image-id');
+        counts.incompletePictureIds += 1;
+        changed = true;
+      }
+    });
+    if (changed) pages[page] = serialize(document as never);
+  }
+  return counts;
 }
 
 /**
@@ -992,9 +1181,11 @@ function bindCssBackgroundTargets(
   pages: Record<string, string>,
   styles: Readonly<Record<string, string>>,
   backgrounds: readonly BackgroundSelector[],
+  policyRules: StaticSlotPolicyRules,
 ): CssBackgroundBindingResult {
   const documents = new Map<string, HtmlNode>();
   const applicable = new Map<string, Set<string>>();
+  const policies = new Map<string, StaticSlotPolicyNodes>();
   for (const [page, html] of Object.entries(pages)) {
     const document = parse(html) as unknown as HtmlNode;
     // Remove IDs emitted by the former last-compound heuristic before proving
@@ -1008,7 +1199,9 @@ function bindCssBackgroundTargets(
       ) removeAttr(node, 'data-dc-image-id');
     });
     documents.set(page, document);
-    applicable.set(page, linkedStylesheets(page, serialize(document as never), styles));
+    const linked = linkedStylesheets(page, serialize(document as never), styles);
+    applicable.set(page, linked);
+    policies.set(page, resolveStaticSlotPolicyNodes(document, linked, policyRules));
   }
 
   const bySlot = new Map<string, BackgroundSelector[]>();
@@ -1022,6 +1215,10 @@ function bindCssBackgroundTargets(
   const unsupported = new Set<string>();
   const multiple = new Set<string>();
   const conflicts = new Set<string>();
+  const suppressedDecorative = new Set<string>();
+  const suppressedHidden = new Set<string>();
+  const suppressedPointer = new Set<string>();
+  const suppressedProtectedAction = new Set<string>();
   const targetsBySlot = new Map<string, Array<{ page: string; node: HtmlNode }>>();
   for (const [slotId, entries] of bySlot) {
     const stylesheet = entries[0]!.stylesheet;
@@ -1050,7 +1247,31 @@ function bindCssBackgroundTargets(
         break;
       }
       const target = [...pageTargets][0];
-      if (target) targets.push({ page, node: target });
+      if (target) {
+        const identity = entries.map((entry) => `${entry.selector} ${entry.source}`).join(' ');
+        const unavailable = staticUnavailabilityReason(target, policies.get(page)!);
+        if (decorativeImageTarget(target, identity)) {
+          unsafe.add(slotId);
+          suppressedDecorative.add(slotId);
+          break;
+        }
+        if (unavailable === 'hidden') {
+          unsafe.add(slotId);
+          suppressedHidden.add(slotId);
+          break;
+        }
+        if (unavailable === 'pointerless') {
+          unsafe.add(slotId);
+          suppressedPointer.add(slotId);
+          break;
+        }
+        if (protectedBackgroundTarget(target)) {
+          unsafe.add(slotId);
+          suppressedProtectedAction.add(slotId);
+          break;
+        }
+        targets.push({ page, node: target });
+      }
     }
     targetsBySlot.set(slotId, targets);
   }
@@ -1107,6 +1328,10 @@ function bindCssBackgroundTargets(
     multipleMatchSlots: multiple.size,
     conflictingSlots: conflicts.size,
     unmatchedSlots: [...bySlot.keys()].filter((slotId) => !unsafe.has(slotId) && (targetsBySlot.get(slotId)?.length ?? 0) === 0).length,
+    suppressedDecorativeSlots: suppressedDecorative.size,
+    suppressedHiddenSlots: suppressedHidden.size,
+    suppressedPointerSlots: suppressedPointer.size,
+    suppressedProtectedActionSlots: suppressedProtectedAction.size,
   };
 }
 
@@ -1386,10 +1611,74 @@ function countIssueSeverities(issues: readonly RepairIssue[]): QualityReceipt['i
   return counts;
 }
 
+/**
+ * Foundation variants frequently baked one generated brand/location into all
+ * page titles and descriptions while omitting it from fields.json. Repeated
+ * title fragments and City, ST pairs are strong site-level evidence and can
+ * be restored without guessing from a single prose occurrence.
+ */
+function inferFoundationLiteralTokens(pages: ReadonlyMap<string, string>): Record<string, string> {
+  const escape = (value: string): string => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const titleCandidates = new Set<string>();
+  for (const html of pages.values()) {
+    const document = parse(html) as unknown as HtmlNode;
+    walk(document, (node) => {
+      if (node.tagName !== 'title') return;
+      for (const part of textContent(node).split(/\s+(?:[|—–-])\s+|:\s+/u)) {
+        const candidate = part.replace(/\s+/g, ' ').trim();
+        const words = candidate.split(/\s+/).filter(Boolean);
+        if (
+          words.length >= 2
+          && words.length <= 8
+          && /^[A-Za-z][A-Za-z0-9 &'’.+-]*$/u.test(candidate)
+          && !/\{\{|\b(?:home|about|services?|contact|booking|pricing|faq)\b/i.test(candidate)
+        ) titleCandidates.add(candidate);
+      }
+    });
+  }
+  const score = (literal: string): { pages: number; occurrences: number } => {
+    const pattern = new RegExp(escape(literal), 'gi');
+    let pageCount = 0;
+    let occurrences = 0;
+    for (const html of pages.values()) {
+      const matches = html.match(pattern)?.length ?? 0;
+      if (matches > 0) pageCount += 1;
+      occurrences += matches;
+    }
+    return { pages: pageCount, occurrences };
+  };
+  const identity = [...titleCandidates]
+    .map((literal) => ({ literal, ...score(literal) }))
+    .filter((candidate) => candidate.pages >= 2 && candidate.occurrences > candidate.pages)
+    .sort((a, b) => b.occurrences - a.occurrences || b.pages - a.pages || b.literal.length - a.literal.length)[0];
+
+  const locations = new Set<string>();
+  for (const html of pages.values()) {
+    for (const match of html.matchAll(/\b([A-Z][A-Za-z .'-]{1,40}),\s*([A-Z]{2})\b/g)) {
+      const rawCity = match[1]!.trim();
+      const city = rawCity.split(/\b(?:at|in|near|serving|visit)\s+/i).at(-1)?.trim() ?? rawCity;
+      if (/^[A-Z][A-Za-z.'-]*(?:\s+[A-Z][A-Za-z.'-]*){0,3}$/u.test(city)) {
+        locations.add(`${city}, ${match[2]}`);
+      }
+    }
+  }
+  const location = [...locations]
+    .map((literal) => ({ literal, ...score(literal) }))
+    .filter((candidate) => candidate.pages >= 2)
+    .sort((a, b) => b.occurrences - a.occurrences || b.pages - a.pages)[0];
+
+  return {
+    ...(identity ? { [identity.literal]: 'BUSINESS_NAME' } : {}),
+    ...(location ? { [location.literal]: 'CITY_STATE' } : {}),
+  };
+}
+
 function buildReceipt(input: {
   slug: string;
   ruleVersion: string;
   pages: Readonly<Record<string, string>>;
+  styles: Readonly<Record<string, string>>;
+  svgAssets: Readonly<Record<string, string>>;
   fields: readonly CanonicalField[];
   issues: readonly RepairIssue[];
   editIds: readonly string[];
@@ -1400,6 +1689,8 @@ function buildReceipt(input: {
   const pageMap = new Map(Object.entries(input.pages));
   const contract = validateTemplateContract(pageMap, input.fields, {
     requireStandardInquiryForms: true,
+    styles: new Map(Object.entries(input.styles)),
+    svgAssets: new Map(Object.entries(input.svgAssets)),
   });
   const unsafeMarkup = Object.entries(input.pages).flatMap(([page, html]) => {
     const withoutRuntime = html.replace(new RegExp(`<script\\b[^>]*src=["']${COMPATIBILITY_SCRIPT_PATH.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>\\s*<\\/script>`, 'gi'), '');
@@ -1501,16 +1792,20 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
 
   const pageNames = [...htmlSources.keys()].sort();
   const foundation = [...htmlSources.values()].map(detectFoundation).find(Boolean);
+  const siteLiteralTokens = foundation ? inferFoundationLiteralTokens(htmlSources) : {};
   const manifest = canonicalizeManifest(rawManifest, { slug: input.slug, niche: input.niche, pages: pageNames, ...(foundation ? { foundation } : {}) });
 
   const repairedStyles: Record<string, string> = {};
   const backgroundSelectors: BackgroundSelector[] = [];
+  const cssContentAttributes = new Set<string>();
   for (const [path, value] of [...files.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     // Third-party CSS has already been safety-checked, rewritten offline, and
     // content-addressed by the vendor. Keep those licensed bytes immutable;
     // only first-party template styles participate in theme extraction.
     if (!/\.css$/i.test(path) || isVendedStylesheet(path)) continue;
-    const result = repairStylesheet(decode(value), path);
+    const sourceCss = decode(value);
+    for (const name of cssGeneratedContentAttributeNames(sourceCss)) cssContentAttributes.add(name);
+    const result = repairStylesheet(sourceCss, path);
     repairedStyles[path] = result.css;
     backgroundSelectors.push(...result.backgrounds);
     issues.push(...result.issues);
@@ -1518,10 +1813,17 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
   }
   repairedStyles[REPAIR_STYLESHEET_PATH] = REPAIR_STYLESHEET;
 
+  const repairedSvgAssets: Record<string, string> = {};
+  for (const [path, value] of [...files.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+    if (!/\.svg$/i.test(path)) continue;
+    const result = repairSvgAsset(decode(value), path, normalizedFields);
+    repairedSvgAssets[path] = result.svg;
+    issues.push(...result.issues);
+    transformations.push(...result.transformations);
+  }
+
   const repairedPages: Record<string, string> = {};
   const pageFields: CanonicalField[][] = [];
-  const editIds: string[] = [];
-  const imageIds: string[] = [];
   for (const [path, html] of [...htmlSources.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     const result = repairPage(html, {
       file: path,
@@ -1529,20 +1831,39 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
       niche: input.niche,
       fields: normalizedFields,
       pageNames,
+      cssContentAttributes: [...cssContentAttributes],
+      siteLiteralTokens,
       ...(foundation ? { foundation } : {}),
     });
     repairedPages[path] = result.html;
     pageFields.push(result.fields);
-    editIds.push(...result.editIds);
-    imageIds.push(...result.imageIds);
     backgroundSelectors.push(...result.backgroundSelectors);
     issues.push(...result.issues);
     transformations.push(...result.transformations);
   }
   externalizeInlineStyles(repairedPages, repairedStyles, transformations);
   repairLocalReferences(repairedPages, repairedStyles, [...files.keys()], issues, transformations);
-  const cssBackgroundBindings = bindCssBackgroundTargets(repairedPages, repairedStyles, backgroundSelectors);
-  imageIds.push(...cssBackgroundBindings.imageIds);
+  const staticSlotPolicyRules = collectStaticSlotPolicyRules(repairedStyles);
+  const nativeSlotSuppressions = suppressStaticallyUnreachableNativeSlots(
+    repairedPages,
+    repairedStyles,
+    staticSlotPolicyRules,
+  );
+  const nativeSuppressionCount = Object.values(nativeSlotSuppressions).reduce((sum, count) => sum + count, 0);
+  if (nativeSuppressionCount > 0) {
+    transformations.push({
+      rule: 'suppress-unreachable-customer-slots',
+      file: '*',
+      count: nativeSuppressionCount,
+      detail: Object.entries(nativeSlotSuppressions).map(([reason, count]) => `${reason}=${count}`).join(';'),
+    });
+  }
+  const cssBackgroundBindings = bindCssBackgroundTargets(
+    repairedPages,
+    repairedStyles,
+    backgroundSelectors,
+    staticSlotPolicyRules,
+  );
   if (backgroundSelectors.length > 0) {
     transformations.push({
       rule: 'bind-css-background-edit-slots',
@@ -1554,6 +1875,10 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
         `multiple=${cssBackgroundBindings.multipleMatchSlots}`,
         `conflicts=${cssBackgroundBindings.conflictingSlots}`,
         `unmatched=${cssBackgroundBindings.unmatchedSlots}`,
+        `suppressedDecorative=${cssBackgroundBindings.suppressedDecorativeSlots}`,
+        `suppressedHidden=${cssBackgroundBindings.suppressedHiddenSlots}`,
+        `suppressedPointer=${cssBackgroundBindings.suppressedPointerSlots}`,
+        `suppressedProtectedAction=${cssBackgroundBindings.suppressedProtectedActionSlots}`,
       ].join(';'),
     });
   }
@@ -1565,6 +1890,8 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
   transformations.push(...separatedTheme.corrections);
   const presetImages = [...separatedContent.images, ...separatedTheme.images]
     .sort((a, b) => `${a.page}:${a.slotId}`.localeCompare(`${b.page}:${b.slotId}`));
+  const advertisedEditIds = separatedContent.entries.map((entry) => entry.nodeId);
+  const advertisedImageIds = presetImages.map((image) => image.slotId);
   const contentBase = { entries: separatedContent.entries, images: presetImages };
   const contentHash = sha256(stableStringify(contentBase));
   const contentPreset: ContentPreset = {
@@ -1619,7 +1946,7 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
       || /(?:^|\/)fields\.json$/i.test(path)
       || /\.m?js$/i.test(path)
     ) continue;
-    emitted.set(path, value);
+    emitted.set(path, repairedSvgAssets[path] ?? value);
   }
   const composedPages = applyContentPreset(design.pages, contentPreset);
   const composedStyles = applyThemePreset(design.styles, themePreset, contentPreset.images);
@@ -1634,10 +1961,16 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
     slug: input.slug,
     ruleVersion: input.ruleVersion ?? LEGACY_REPAIR_RULE_VERSION,
     pages: composedPages,
+    styles: composedStyles,
+    svgAssets: Object.fromEntries(
+      [...emitted.entries()]
+        .filter(([path, value]) => /\.svg$/i.test(path) && typeof value === 'string')
+        .map(([path, value]) => [path, value as string]),
+    ),
     fields: canonicalFields,
     issues,
-    editIds,
-    imageIds,
+    editIds: advertisedEditIds,
+    imageIds: advertisedImageIds,
     sourceHash: sourceHash(input.files),
     artifactHash: baseArtifactHash,
   });
@@ -1669,8 +2002,8 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
     fingerprint: provisionalFingerprint,
     issues,
     transformations,
-    editIds: [...new Set(editIds)].sort(),
-    imageIds: [...new Set(imageIds)].sort(),
+    editIds: [...new Set(advertisedEditIds)].sort(),
+    imageIds: [...new Set(advertisedImageIds)].sort(),
   };
 }
 

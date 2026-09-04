@@ -25,8 +25,9 @@ export function containsUnsafeSrcset(value: string): boolean {
   return /(?:^|,)(?:data|blob|javascript|vbscript):/.test(normalized);
 }
 
-function decodeCssEscapes(value: string): string {
+export function decodeCssEscapes(value: string): string {
   return value
+    .replace(/\\(?:\r\n|[\n\r\f])/g, '')
     .replace(/\\([0-9a-f]{1,6})(?:\r\n|[\t\n\f\r ])?/gi, (_match, hex: string) => {
       const codePoint = Number.parseInt(hex, 16);
       return codePoint > 0 && codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : '\ufffd';
@@ -50,6 +51,14 @@ export function isUnsafeStaticUrl(tagName: string, attributeName: string, value:
   const imageContext = (tag === 'img' && attribute === 'src')
     || (tag === 'video' && attribute === 'poster');
   return !imageContext || !isSafeEmbeddedRasterDataUrl(value);
+}
+
+/** SVG image documents are self-contained artifacts; their references must remain local. */
+export function isNonLocalSvgReference(value: string): boolean {
+  const decoded = decodeCssEscapes(value);
+  const probe = normalizedUrlProbe(decoded);
+  if (!probe || probe.startsWith('#')) return false;
+  return probe.startsWith('//') || /^[a-z][a-z0-9+.-]*:/i.test(probe);
 }
 
 /** CSS may embed only the same base64 raster payload; imports never qualify. */
@@ -101,6 +110,16 @@ function cssUrlReferences(css: string): string[] {
     cursor = Math.min(searchable.length, index + 1);
   }
   return references;
+}
+
+/** Detect references an external SVG cannot rely on asset vendoring to localize. */
+export function containsNonLocalCssReferences(css: string): boolean {
+  const searchable = css.replace(/\/\*[\s\S]*?\*\//g, ' ');
+  if (cssUrlReferences(searchable).some(isNonLocalSvgReference)) return true;
+  for (const match of searchable.matchAll(/@import\s+(?!url\s*\()\s*(?:"([^"]*)"|'([^']*)'|([^\s;]+))/gi)) {
+    if (isNonLocalSvgReference(match[1] ?? match[2] ?? match[3] ?? '')) return true;
+  }
+  return false;
 }
 
 /** Detect unsafe embedded URLs in a declaration block or complete stylesheet. */

@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock('@/lib/templates/niche-registry', () => ({
   getTemplate: mocks.getTemplate,
+  getTemplateAtCatalogRevision: mocks.getTemplate,
   readTemplateFile: mocks.readTemplateFile,
   readTemplateFileBuffer: mocks.readTemplateFileBuffer,
   hydrateTemplate: (html: string) => html,
@@ -80,5 +81,47 @@ describe('deployed compiler theme CSS', () => {
       siteUrl: 'https://customer-site.example.com',
     })).rejects.toThrow('Catalogue revision mismatch')
     expect(mocks.readTemplateFile).not.toHaveBeenCalled()
+  })
+
+  it('reads every deploy page and asset from the purchased immutable snapshot', async () => {
+    const catalogRevision = {
+      contractVersion: 3 as const,
+      designId: 'design_purchased',
+      contentPresetId: 'content_purchased',
+      themePresetId: 'theme_purchased',
+      qualityReceipt: 'receipt_purchased',
+      catalogHash: 'a'.repeat(64),
+      manifestHash: 'b'.repeat(64),
+    }
+    mocks.getTemplate.mockResolvedValue({
+      pages: ['index.html'],
+      files: ['index.html', 'assets/css/styles.css'],
+      fields: [],
+      validation: { contractVersion: 3 },
+      ...catalogRevision,
+    })
+
+    const files = await buildDeployFiles({
+      niche: 'wellness',
+      templateSlug: 'historical',
+      catalogRevision,
+      customerValues: {},
+      slug: 'customer-site',
+      siteUrl: 'https://customer-site.example.com',
+    })
+    expect(files?.['index.html']).toBeTruthy()
+    expect(mocks.getTemplate).toHaveBeenCalledWith('wellness', 'historical', catalogRevision)
+    expect(mocks.readTemplateFile).toHaveBeenCalledWith(
+      'wellness',
+      'historical',
+      'index.html',
+      catalogRevision,
+    )
+    expect(mocks.readTemplateFileBuffer).toHaveBeenCalledWith(
+      'wellness',
+      'historical',
+      'assets/css/styles.css',
+      catalogRevision,
+    )
   })
 })

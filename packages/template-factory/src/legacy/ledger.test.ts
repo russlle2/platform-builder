@@ -196,6 +196,161 @@ test('WAL ledger leases work idempotently and produces aggregate status', async 
   }
 });
 
+test('content-addressed artifacts retain immutable occurrence lineage across retries and runs', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'legacy-artifact-occurrences-'));
+  const ledger = new LegacyLedger({ databasePath: join(scratch, 'ledger.sqlite') });
+  try {
+    const firstRun = ledger.createRun({
+      command: 'run',
+      ruleVersion: 'test-v1',
+      sourceRoot: join(scratch, 'source'),
+      workRoot: join(scratch, 'work'),
+    });
+    const template = ledger.upsertTemplate(firstRun.id, {
+      legacySlug: 'forensic-lineage',
+      niche: 'aromatherapy',
+      sourcePath: join(scratch, 'source', 'forensic-lineage'),
+      sourceHash: 'source-a',
+      stage: 'repair_pending',
+    }, 'test-v1');
+    const common = {
+      templateId: template.id,
+      kind: 'failed-primary-template',
+      contentHash: 'tree-a',
+      relativePath: 'artifacts/failed-primary/aromatherapy/forensic-lineage/tree-a',
+      byteSize: 42,
+    } as const;
+    const firstAttempt = ledger.addArtifactOccurrence({
+      ...common,
+      runId: firstRun.id,
+      occurrenceKey: 'repair-attempt:1',
+      metadata: { run: 'first', attempt: 1 },
+    });
+    const retry = ledger.addArtifactOccurrence({
+      ...common,
+      runId: firstRun.id,
+      occurrenceKey: 'repair-attempt:2',
+      metadata: { run: 'first', attempt: 2 },
+    });
+    const secondRun = ledger.createRun({
+      command: 'run',
+      ruleVersion: 'test-v1',
+      sourceRoot: join(scratch, 'source'),
+      workRoot: join(scratch, 'work'),
+    });
+    const repeatedRun = ledger.addArtifactOccurrence({
+      ...common,
+      runId: secondRun.id,
+      occurrenceKey: 'repair-attempt:1',
+      metadata: { run: 'second', attempt: 1 },
+    });
+    const replay = ledger.addArtifactOccurrence({
+      ...common,
+      runId: secondRun.id,
+      occurrenceKey: 'repair-attempt:1',
+      metadata: { attempt: 1, run: 'second' },
+    });
+    assert.throws(() => ledger.addArtifactOccurrence({
+      ...common,
+      runId: secondRun.id,
+      occurrenceKey: 'repair-attempt:1',
+      metadata: { run: 'second', attempt: 99 },
+    }), /replayed with conflicting metadata/);
+
+    assert.equal(firstAttempt.artifactId, retry.artifactId);
+    assert.equal(firstAttempt.artifactId, repeatedRun.artifactId);
+    assert.notEqual(firstAttempt.occurrenceId, retry.occurrenceId);
+    assert.notEqual(firstAttempt.occurrenceId, repeatedRun.occurrenceId);
+    assert.equal(replay.occurrenceId, repeatedRun.occurrenceId, 'an exact attempt replay is idempotent');
+    assert.equal(ledger.listArtifacts({ kind: common.kind }).length, 1, 'physical content stays deduplicated');
+    const secondRunView = ledger.listArtifacts({ runId: secondRun.id, kind: common.kind });
+    assert.equal(secondRunView.length, 1);
+    assert.equal(secondRunView[0]?.runId, secondRun.id);
+    assert.equal(secondRunView[0]?.templateId, template.id);
+    assert.deepEqual(secondRunView[0]?.metadata, { run: 'second', attempt: 1 });
+    assert.deepEqual(ledger.listArtifacts({ kind: common.kind })[0]?.metadata, {
+      run: 'first',
+      attempt: 1,
+    }, 'physical artifact metadata is first-write immutable');
+
+    const occurrences = ledger.listArtifactOccurrences({
+      templateId: template.id,
+      kind: common.kind,
+    });
+    assert.equal(occurrences.length, 3);
+    assert.deepEqual(occurrences.map((occurrence) => ({
+      runId: occurrence.runId,
+      occurrenceKey: occurrence.occurrenceKey,
+      metadata: occurrence.metadata,
+    })), [
+      { runId: firstRun.id, occurrenceKey: 'repair-attempt:1', metadata: { run: 'first', attempt: 1 } },
+      { runId: firstRun.id, occurrenceKey: 'repair-attempt:2', metadata: { run: 'first', attempt: 2 } },
+      { runId: secondRun.id, occurrenceKey: 'repair-attempt:1', metadata: { run: 'second', attempt: 1 } },
+    ]);
+    const totals = ledger.reportData().totals;
+    assert.equal(totals.artifacts, 1);
+    assert.equal(totals.artifactOccurrences, 3);
+    assert.equal(totals.failedPrimaryArtifacts, 1);
+    assert.equal(totals.failedPrimaryOccurrences, 3);
+  } finally {
+    ledger.close();
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('schema v7 backfills the retained association from a v6 physical artifact row', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'legacy-artifact-occurrence-migration-'));
+  const databasePath = join(scratch, 'ledger.sqlite');
+  let ledger: LegacyLedger | undefined;
+  try {
+    ledger = new LegacyLedger({ databasePath });
+    const run = ledger.createRun({
+      command: 'run',
+      ruleVersion: 'test-v1',
+      sourceRoot: join(scratch, 'source'),
+      workRoot: join(scratch, 'work'),
+    });
+    const template = ledger.upsertTemplate(run.id, {
+      legacySlug: 'migration-lineage',
+      niche: 'aromatherapy',
+      sourcePath: join(scratch, 'source', 'migration-lineage'),
+      sourceHash: 'source-a',
+      stage: 'repair_pending',
+    }, 'test-v1');
+    const artifactId = ledger.addArtifact({
+      runId: run.id,
+      templateId: template.id,
+      kind: 'failed-primary-template',
+      contentHash: 'tree-a',
+      relativePath: 'artifacts/failed-primary/aromatherapy/migration-lineage/tree-a',
+      byteSize: 42,
+      metadata: { retained: true },
+    });
+    ledger.close();
+    ledger = undefined;
+
+    const downgrade = new DatabaseSync(databasePath);
+    downgrade.exec('DROP TABLE artifact_occurrences; PRAGMA user_version = 6');
+    downgrade.close();
+
+    ledger = new LegacyLedger({ databasePath });
+    const occurrences = ledger.listArtifactOccurrences({ artifactId });
+    assert.equal(occurrences.length, 1);
+    assert.equal(occurrences[0]?.runId, run.id);
+    assert.equal(occurrences[0]?.templateId, template.id);
+    assert.equal(occurrences[0]?.occurrenceKey, 'legacy');
+    assert.deepEqual(occurrences[0]?.metadata, { retained: true });
+    const scopedArtifact = ledger.listArtifacts({ runId: run.id, kind: 'failed-primary-template' })[0];
+    assert.equal(scopedArtifact?.id, artifactId);
+    assert.equal(scopedArtifact?.runId, run.id);
+    assert.equal(scopedArtifact?.templateId, template.id);
+    assert.deepEqual(scopedArtifact?.metadata, { retained: true });
+  } finally {
+    ledger?.close();
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
 test('a passing lease resolves source issues in the same transaction', async () => {
   const scratch = await mkdtemp(join(tmpdir(), 'legacy-atomic-issue-resolution-'));
   const ledger = new LegacyLedger({ databasePath: join(scratch, 'ledger.sqlite') });
@@ -1106,6 +1261,9 @@ test('schema migrations retain v1 renders, deduplicate audit replays, and requeu
     const renderColumns = versionCheck.prepare('PRAGMA table_info(renders)').all() as Array<{ name: string }>;
     assert.ok(renderColumns.some((column) => column.name === 'thumbnail_hash'));
     assert.ok(renderColumns.some((column) => column.name === 'thumbnail_bytes'));
+    const occurrenceColumns = versionCheck.prepare('PRAGMA table_info(artifact_occurrences)').all() as Array<{ name: string }>;
+    assert.ok(occurrenceColumns.some((column) => column.name === 'artifact_id'));
+    assert.ok(occurrenceColumns.some((column) => column.name === 'occurrence_key'));
     assert.equal(Number((versionCheck.prepare('SELECT COUNT(*) AS count FROM transformations').get() as { count: number }).count), 1);
   } finally {
     versionCheck.close();

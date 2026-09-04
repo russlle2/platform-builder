@@ -11,6 +11,8 @@ import {
 } from './contracts.js';
 import {
   CORE_PERSONALIZATION_TOKENS,
+  HARD_CODED_OFFER_PRICE_RE,
+  PRICE_SEMANTIC_ATTRIBUTE_RE,
   SENSITIVE_FORM_TEXT_RE,
   UNSAFE_INQUIRY_FORM_TEXT_RE,
   UNSUPPORTED_ABSOLUTE_EFFICACY_RE,
@@ -21,13 +23,19 @@ import {
   UNSUPPORTED_PROOF_ATTRIBUTE_RE,
   UNSUPPORTED_PROOF_TEXT_RE,
   containsUnsupportedOutcomeClaim,
+  cssGeneratedContentAttributeNames,
+  expandCssGeneratedValue,
   extractTemplateTokens,
+  findUnsafeCssGeneratedText,
   isCorePersonalizationToken,
   isUnsupportedProofHeading,
 } from '../template-contract.js';
 import {
+  containsNonLocalCssReferences,
   containsUnsafeCssReferences,
   containsUnsafeSrcset,
+  decodeCssEscapes,
+  isNonLocalSvgReference,
   isUnsafeCssUrl,
   isUnsafeStaticUrl,
 } from './url-safety.js';
@@ -67,6 +75,12 @@ export interface PageRepairResult {
   transformations: Transformation[];
 }
 
+export interface SvgAssetRepairResult {
+  svg: string;
+  issues: RepairIssue[];
+  transformations: Transformation[];
+}
+
 export interface RepairPageOptions {
   file: string;
   slug: string;
@@ -74,6 +88,8 @@ export interface RepairPageOptions {
   fields: readonly CanonicalField[];
   pageNames: readonly string[];
   foundation?: string;
+  cssContentAttributes?: readonly string[];
+  siteLiteralTokens?: Readonly<Record<string, string>>;
 }
 
 const TEXT_TAGS = new Set([
@@ -83,6 +99,9 @@ const TEXT_TAGS = new Set([
 const FALLBACK_TEXT_TAGS = new Set(['address', 'article', 'aside', 'b', 'div', 'em', 'footer', 'header', 'i', 'main', 'nav', 'section', 'small', 'span', 'strong', 'time', 'u']);
 const NON_CONTENT_TEXT_ANCESTORS = new Set(['script', 'style', 'svg', 'template']);
 const NON_EDITABLE_ELEMENTS = new Set(['script', 'style', 'svg', 'template']);
+const SVG_SEMANTIC_ATTRIBUTE_NAMES = new Set([
+  'alt', 'aria-description', 'aria-label', 'data-tip', 'data-title', 'data-tooltip', 'title',
+]);
 const REMOVED_ELEMENTS = new Set(['frame', 'frameset', 'iframe', 'object', 'embed']);
 const URL_ATTRS = new Set(['action', 'formaction', 'href', 'poster', 'src', 'xlink:href']);
 const SENSITIVE_FORM = SENSITIVE_FORM_TEXT_RE;
@@ -91,17 +110,93 @@ const PROOF_TEXT = UNSUPPORTED_PROOF_TEXT_RE;
 const PROOF_ATTR = UNSUPPORTED_PROOF_ATTRIBUTE_RE;
 const SYNTHETIC_BADGE_SIGNAL = UNSUPPORTED_CREDENTIAL_PROOF_RE;
 const PERCENT_RESULT = UNSUPPORTED_PERCENT_RESULT_RE;
-const PRICE = /(?:[$£€]\s*\d[\d,.]*(?:\s*(?:USD|EUR|GBP))?|\b\d[\d,.]*\s*(?:USD|EUR|GBP)\b)/gi;
+const PRICE = new RegExp(HARD_CODED_OFFER_PRICE_RE.source, 'gi');
 const THEME_COLOR = /#[0-9a-f]{3,8}\b|rgba?\([^)]*\)|hsla?\([^)]*\)/i;
 const EMAIL = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
-const PHONE = /(?<![\w-])(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?:\s*(?:x|ext\.?)\s*\d+)?(?![\w-])/gi;
+const PHONE = /(?<![\w-])(?:\+?1[\s.-]?)?(?:\(\d{3}\)[\s.-]*|\d{3}[\s.-])\d{3}[\s.-]\d{4}(?:\s*(?:x|ext\.?)\s*\d+)?(?![\w-])/gi;
+const CONTEXTUAL_PHONE = /\b(?:call|phone|telephone|tel|fax|text)(?:\s+(?:us|me))?\s*(?::|at)?\s*(?:\+\s*)?\(?\d[\d().\s-]{7,}\d\b/gi;
 const MUSTACHE = /\{\{\s*([^{}]+?)\s*\}\}/g;
 const SAFE_PROTOCOL = /^(?:https?:|mailto:|tel:|#|\/|\.\.?\/)/i;
 const REMOTE_URL = /^(?:https?:)?\/\//i;
 
 const NEUTRAL_BLOCK = '<section class="dc-neutral-guidance" data-dc-safe-replacement="neutral-guidance"><h2>A clear, practical next step</h2><p>Ask about current services, availability, and what to expect before you decide.</p></section>';
 const NEUTRAL_CLAIM = 'Services and experiences vary. Ask the practice what is currently offered and what to expect.';
+const NEUTRAL_PRICE = 'Contact for current pricing';
+const ADDRESS_PLACEHOLDER = /^(?:(?:street )?address\s*:\s*)?(?:enter\s+)?(?:your (?:street )?address|123 Main (?:St(?:reet)?|Road|Rd\.?))\s*\.?$/i;
 const STANDARD_FORM = '<form class="dc-contact-form" name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><p><label>Your name <input name="name" autocomplete="name" required></label></p><p><label>Email <input type="email" name="email" autocomplete="email" required></label></p><p><label>Phone (optional) <input type="tel" name="phone" autocomplete="tel"></label></p><p><label>Message <textarea name="message" rows="5" required></textarea></label></p><button type="submit">Send inquiry</button><p class="dc-form-status" aria-live="polite"></p></form>';
+const STRUCTURAL_PROOF_TOKEN_SOURCE = String.raw`(^|[-_\s])(testimonials?|reviews?|quotes?|social[-_]?proof|success[-_]?stor(?:y|ies)|proof(?:[-_]?gallery)?|credibility)(?=$|[-_\s])`;
+
+function replaceStructuralProofTokens(value: string, replacement: string): string {
+  return value.replace(new RegExp(STRUCTURAL_PROOF_TOKEN_SOURCE, 'gi'), `$1${replacement}`);
+}
+
+function sanitizedProofId(value: string): string {
+  return replaceStructuralProofTokens(value, `dc-guidance-${sha256(value).slice(0, 10)}`);
+}
+
+function sanitizedProofStructuralValue(value: string): string {
+  return replaceStructuralProofTokens(value, 'dc-guidance');
+}
+
+function sanitizedProofClass(value: string): string {
+  return value.replace(
+    new RegExp(STRUCTURAL_PROOF_TOKEN_SOURCE, 'gi'),
+    (_match, prefix: string, token: string) => `${prefix}dc-guidance-${sha256(token.toLowerCase()).slice(0, 10)}`,
+  );
+}
+
+/**
+ * Keep stylesheet selectors aligned with proof-bearing IDs/classes repaired in
+ * HTML. This deliberately scans only CSS selector identifiers outside quoted
+ * strings and attribute selectors; declarations and customer prose are never
+ * rewritten as though they were selectors.
+ */
+function sanitizeProofSelector(selector: string): { selector: string; count: number } {
+  let output = '';
+  let count = 0;
+  let quote: '"' | "'" | undefined;
+  let bracketDepth = 0;
+  for (let index = 0; index < selector.length;) {
+    const character = selector[index]!;
+    if (character === '\\') {
+      output += selector.slice(index, index + 2);
+      index += 2;
+      continue;
+    }
+    if (quote) {
+      output += character;
+      if (character === quote) quote = undefined;
+      index += 1;
+      continue;
+    }
+    if (character === '"' || character === "'") {
+      quote = character;
+      output += character;
+      index += 1;
+      continue;
+    }
+    if (character === '[') bracketDepth += 1;
+    else if (character === ']' && bracketDepth > 0) bracketDepth -= 1;
+    if (bracketDepth === 0 && (character === '#' || character === '.')) {
+      const identifier = selector.slice(index + 1).match(/^[-_A-Za-z][-_A-Za-z0-9]*/)?.[0];
+      // Escaped identifiers (for example `#reviews\:panel`) are not equivalent
+      // to the plain HTML token `reviews`; leave the whole selector untouched
+      // unless we can prove the same deterministic rewrite applies to both.
+      if (identifier && selector[index + identifier.length + 1] !== '\\') {
+        const next = character === '#'
+          ? sanitizedProofId(identifier)
+          : sanitizedProofClass(identifier);
+        output += `${character}${next}`;
+        if (next !== identifier) count += 1;
+        index += identifier.length + 1;
+        continue;
+      }
+    }
+    output += character;
+    index += 1;
+  }
+  return { selector: output, count };
+}
 
 function containsUnsupportedClaim(value: string): boolean {
   return containsUnsupportedOutcomeClaim(value)
@@ -122,6 +217,19 @@ function neutralizeUnsupportedClaimSentences(value: string): { value: string; co
     },
   );
   return { value: repaired, count };
+}
+
+function neutralizeFixedPrices(value: string): string {
+  const repaired = value.replace(PRICE, NEUTRAL_PRICE);
+  const repeatedNeutralRange = new RegExp(
+    `${NEUTRAL_PRICE}(?:\\s*[–—-]\\s*${NEUTRAL_PRICE})+`,
+    'gi',
+  );
+  return repaired.replace(repeatedNeutralRange, NEUTRAL_PRICE);
+}
+
+function neutralizeFixedPriceAttribute(name: string, value: string): string {
+  return PRICE_SEMANTIC_ATTRIBUTE_RE.test(name) ? neutralizeFixedPrices(value) : value;
 }
 
 /** Audited, dependency-free behavior shared by every rehabilitated template. */
@@ -171,6 +279,210 @@ function removeAttr(node: HtmlNode, name: string): void {
 function textContent(node: HtmlNode): string {
   if (node.nodeName === '#text') return node.value ?? '';
   return (node.childNodes ?? []).map(textContent).join('');
+}
+
+function hasNonContentTextAncestor(node: HtmlNode): boolean {
+  let ancestor = node.parentNode;
+  while (ancestor) {
+    if (NON_CONTENT_TEXT_ANCESTORS.has(ancestor.tagName ?? '')) return true;
+    ancestor = ancestor.parentNode;
+  }
+  return false;
+}
+
+function isWithinSvgSemanticText(node: HtmlNode): boolean {
+  let cursor: HtmlNode | undefined = node;
+  let semanticContainer = false;
+  while (cursor) {
+    const tag = cursor.tagName?.toLowerCase() ?? '';
+    if (['desc', 'foreignobject', 'text', 'title'].includes(tag)) semanticContainer = true;
+    if (tag === 'svg') return semanticContainer;
+    if (['script', 'style', 'template'].includes(tag)) return false;
+    cursor = cursor.parentNode;
+  }
+  return false;
+}
+
+function isWithinSvg(node: HtmlNode): boolean {
+  let cursor: HtmlNode | undefined = node;
+  while (cursor) {
+    if (cursor.tagName?.toLowerCase() === 'svg') return true;
+    cursor = cursor.parentNode;
+  }
+  return false;
+}
+
+const PRICE_TEXT_BOUNDARIES = new Set([
+  'address', 'article', 'aside', 'blockquote', 'body', 'caption', 'dd', 'details', 'dialog', 'div', 'dt',
+  'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'header', 'legend', 'li', 'main', 'nav', 'ol', 'option', 'p', 'pre', 'section', 'summary', 'table', 'tbody',
+  'td', 'tfoot', 'th', 'thead', 'title', 'desc', 'text', 'foreignobject', 'tr', 'ul',
+]);
+
+type TextRun = { node: HtmlNode; start: number; end: number };
+
+function priceTextRuns(root: HtmlNode): { text: string; runs: TextRun[] } {
+  const runs: TextRun[] = [];
+  let text = '';
+  if (hasNonContentTextAncestor(root) && !isWithinSvgSemanticText(root)) return { text, runs };
+  const visit = (node: HtmlNode): void => {
+    if (node !== root && node.tagName && PRICE_TEXT_BOUNDARIES.has(node.tagName.toLowerCase())) return;
+    if (node.tagName && NON_CONTENT_TEXT_ANCESTORS.has(node.tagName)) return;
+    // Browsers render these as a text boundary. Keep a virtual separator in
+    // the match string while leaving the real element untouched in the DOM.
+    if (node.tagName === 'br') {
+      text += ' ';
+      return;
+    }
+    if (node.tagName === 'wbr') return;
+    if (node.nodeName === '#text') {
+      const value = node.value ?? '';
+      runs.push({ node, start: text.length, end: text.length + value.length });
+      text += value;
+      return;
+    }
+    for (const child of node.childNodes ?? []) visit(child);
+  };
+  visit(root);
+  return { text, runs };
+}
+
+function replaceTextRunRange(
+  runs: readonly TextRun[],
+  start: number,
+  end: number,
+  replacement: string,
+  minimumRuns = 2,
+): boolean {
+  const covered = runs.filter((run) => run.start < end && run.end > start);
+  if (covered.length < minimumRuns) return false;
+  const first = covered[0]!;
+  const last = covered.at(-1)!;
+  const firstValue = first.node.value ?? '';
+  const prefix = firstValue.slice(0, Math.max(0, start - first.start));
+  if (first === last) {
+    first.node.value = `${prefix}${replacement}${firstValue.slice(Math.max(0, end - first.start))}`;
+    return true;
+  }
+  first.node.value = `${prefix}${replacement}`;
+  for (const run of covered.slice(1, -1)) run.node.value = '';
+  const lastValue = last.node.value ?? '';
+  last.node.value = lastValue.slice(Math.max(0, end - last.start));
+  return true;
+}
+
+function restoreContextualAddressText(root: HtmlNode): number {
+  const { text, runs } = priceTextRuns(root);
+  if (!ADDRESS_PLACEHOLDER.test(text.trim())) return 0;
+  const start = text.search(/\S/u);
+  const trailing = text.match(/\s*$/u)?.[0].length ?? 0;
+  const end = text.length - trailing;
+  return start >= 0 && replaceTextRunRange(runs, start, end, '{{ADDRESS}}', 1) ? 1 : 0;
+}
+
+function isAddressField(node: HtmlNode): boolean {
+  const marker = /(?:^|[-_[\]])(?:(?:street[-_ ]?)?address|street)(?:$|[-_[\]])|^address-line[12]$/i;
+  return ['address', 'input', 'select', 'textarea'].includes(node.tagName ?? '')
+    || (node.attrs ?? []).some((attr) => ['autocomplete', 'id', 'name'].includes(attr.name) && marker.test(attr.value));
+}
+
+function containsAddressField(node: HtmlNode): boolean {
+  return isAddressField(node) || (node.childNodes ?? []).some(containsAddressField);
+}
+
+/** Rewrite only the text slices covered by a price, preserving inline DOM and controls. */
+function neutralizeSplitPriceRuns(root: HtmlNode): number {
+  const { text, runs } = priceTextRuns(root);
+  const matcher = new RegExp(PRICE.source, 'gi');
+  const matches = [...text.matchAll(matcher)];
+  let count = 0;
+  for (const match of matches.reverse()) {
+    const start = match.index ?? 0;
+    const end = start + match[0].length;
+    if (replaceTextRunRange(runs, start, end, NEUTRAL_PRICE, isWithinSvgSemanticText(root) ? 1 : 2)) count += 1;
+  }
+  return count;
+}
+
+/** Neutralize unsafe sentences assembled across inline nodes without flattening their DOM. */
+function neutralizeSplitRiskRuns(root: HtmlNode): number {
+  const { text, runs } = priceTextRuns(root);
+  const sentenceMatcher = /[^.!?\r\n]+(?:[.!?]+["'’”)*\]]*|(?=\r?\n)|$)/gu;
+  const ranges: Array<{ start: number; end: number }> = [];
+  for (const sentence of text.matchAll(sentenceMatcher)) {
+    const value = sentence[0];
+    if (
+      !containsUnsupportedClaim(value)
+      && !PERCENT_RESULT.test(value)
+      && !PROOF_TEXT.test(value)
+      && !UNSUPPORTED_FABRICATED_METRIC_RE.test(value)
+    ) continue;
+    const leading = value.match(/^\s*/u)?.[0].length ?? 0;
+    const trailing = value.match(/\s*$/u)?.[0].length ?? 0;
+    ranges.push({
+      start: (sentence.index ?? 0) + leading,
+      end: (sentence.index ?? 0) + value.length - trailing,
+    });
+  }
+  let count = 0;
+  for (const { start, end } of ranges.reverse()) {
+    if (replaceTextRunRange(runs, start, end, NEUTRAL_CLAIM, isWithinSvgSemanticText(root) ? 1 : 2)) count += 1;
+  }
+  return count;
+}
+
+/** Restore generated identity/contact literals even when inline markup split a word. */
+function restoreSplitPersonalizationRuns(root: HtmlNode, fields: readonly CanonicalField[]): number {
+  const replacements: Array<{ source: string; flags: string; replacement: string }> = [
+    { source: String.raw`\b(?:Dr\.\s+Morgan\s+Ellis|Jane\s+Doe|John\s+Doe)\b`, flags: 'gi', replacement: '{{PRACTITIONER_NAME}}' },
+    { source: String.raw`\b(?:Aromatherapy|Holistic Medicine|Private Practice Therapist|Sound Bath|Wellness Coach) Studio\b`, flags: 'gi', replacement: '{{BUSINESS_NAME}}' },
+    { source: String.raw`\bAnytown\s*,\s*[A-Z]{2}\b`, flags: 'gi', replacement: '{{CITY}}, {{STATE}}' },
+    { source: String.raw`\b(?:Anytown|Your City)\b`, flags: 'gi', replacement: '{{CITY}}' },
+    { source: String.raw`\bYour State\b`, flags: 'gi', replacement: '{{STATE}}' },
+    { source: EMAIL.source, flags: 'gi', replacement: '{{EMAIL}}' },
+    { source: CONTEXTUAL_PHONE.source, flags: 'gi', replacement: '{{PHONE}}' },
+    { source: PHONE.source, flags: 'gi', replacement: '{{PHONE}}' },
+  ];
+  for (const field of fields) {
+    const canonical = normalizeFieldName(field.name);
+    const value = field.default;
+    // Token-shaped defaults describe the binding itself, not legacy literal
+    // copy. Replacing `{{TOKEN}}` with the same `{{TOKEN}}` would make this
+    // structure-preserving loop report progress forever on older field maps.
+    if (!value || !concreteDefault(value) || !isCorePersonalizationToken(canonical)) continue;
+    if (!/EMAIL|PHONE/.test(canonical) && value.length < 5) continue;
+    const startsWithWord = /^[A-Za-z0-9]/.test(value);
+    const endsWithWord = /[A-Za-z0-9]$/.test(value);
+    replacements.unshift({
+      source: `${startsWithWord ? '(?<![A-Za-z0-9])' : ''}${escapeRegExp(value)}${endsWithWord ? '(?![A-Za-z0-9])' : ''}`,
+      flags: 'gi',
+      replacement: `{{${canonical}}}`,
+    });
+  }
+
+  let count = 0;
+  for (const replacement of replacements) {
+    while (true) {
+      const { text, runs } = priceTextRuns(root);
+      let changed = false;
+      for (const match of [...text.matchAll(new RegExp(replacement.source, replacement.flags))].reverse()) {
+        if (match[0] === replacement.replacement) continue;
+        const start = match.index ?? 0;
+        if (!replaceTextRunRange(
+          runs,
+          start,
+          start + match[0].length,
+          replacement.replacement,
+          isWithinSvgSemanticText(root) ? 1 : 2,
+        )) continue;
+        count += 1;
+        changed = true;
+        break;
+      }
+      if (!changed) break;
+    }
+  }
+  return count;
 }
 
 function nodeMarkup(node: HtmlNode): string {
@@ -606,28 +918,108 @@ function neutralizeSensitiveFormMarker(value: string): string {
   return value.replace(new RegExp(UNSAFE_FORM_MARKER.source, 'gi'), 'contact');
 }
 
+function inlineStyleSuppressesInteraction(value: string): boolean {
+  return /(?:^|;)\s*(?:display\s*:\s*none|visibility\s*:\s*hidden|content-visibility\s*:\s*hidden|opacity\s*:\s*0(?:\.0*)?)\s*(?:!important\s*)?(?:;|$)/i.test(value);
+}
+
+function sanitizeFormInlineStyle(value: string): string {
+  let root: postcss.Root;
+  try {
+    root = postcss.parse(`.dc-form-shell{${value}}`);
+  } catch {
+    return value.replace(/(?:^|;)\s*(?:display|visibility|content-visibility|opacity)\s*:[^;]*(?=;|$)/gi, '');
+  }
+  root.walkDecls((declaration) => {
+    const property = decodeCssEscapes(declaration.prop).toLowerCase();
+    if (['display', 'visibility', 'content-visibility', 'opacity'].includes(property)) declaration.remove();
+  });
+  const rule = root.first;
+  return rule && 'nodes' in rule
+    ? (rule.nodes ?? []).map((node) => node.toString()).join(';')
+    : '';
+}
+
 function hasStandardInquiryControls(node: HtmlNode): boolean {
+  if (
+    getAttr(node, 'hidden') !== undefined
+    || getAttr(node, 'inert') !== undefined
+    || getAttr(node, 'novalidate') !== undefined
+    || getAttr(node, 'target') !== undefined
+    || getAttr(node, 'enctype') !== undefined
+    || getAttr(node, 'aria-hidden')?.toLowerCase() === 'true'
+    || inlineStyleSuppressesInteraction(getAttr(node, 'style') ?? '')
+    || ['aria-description', 'aria-describedby', 'aria-details', 'aria-errormessage', 'aria-label', 'aria-labelledby', 'role', 'title']
+      .some((attribute) => getAttr(node, attribute) !== undefined)
+  ) return false;
   const controls: HtmlNode[] = [];
+  const buttons: HtmlNode[] = [];
   const collect = (candidate: HtmlNode): void => {
     if (['input', 'select', 'textarea'].includes(candidate.tagName ?? '')) controls.push(candidate);
+    if (candidate.tagName === 'button') buttons.push(candidate);
     for (const child of candidate.childNodes ?? []) collect(child);
   };
   for (const child of node.childNodes ?? []) collect(child);
-  if (controls.length !== 4) return false;
+  if (controls.length !== 4 || buttons.length !== 1) return false;
+  const unavailable = (candidate: HtmlNode, readonly = false): boolean => {
+    if (
+      getAttr(candidate, 'disabled') !== undefined
+      || (readonly && getAttr(candidate, 'readonly') !== undefined)
+      || getAttr(candidate, 'hidden') !== undefined
+      || getAttr(candidate, 'inert') !== undefined
+      || getAttr(candidate, 'aria-hidden')?.toLowerCase() === 'true'
+      || getAttr(candidate, 'aria-disabled')?.toLowerCase() === 'true'
+      || inlineStyleSuppressesInteraction(getAttr(candidate, 'style') ?? '')
+    ) return true;
+    let ancestor = candidate.parentNode;
+    while (ancestor && ancestor !== node) {
+      if (
+        getAttr(ancestor, 'hidden') !== undefined
+        || getAttr(ancestor, 'inert') !== undefined
+        || getAttr(ancestor, 'aria-hidden')?.toLowerCase() === 'true'
+        || (ancestor.tagName === 'fieldset' && getAttr(ancestor, 'disabled') !== undefined)
+        || inlineStyleSuppressesInteraction(getAttr(ancestor, 'style') ?? '')
+      ) return true;
+      ancestor = ancestor.parentNode;
+    }
+    return false;
+  };
+  const submit = buttons[0]!;
+  if ((getAttr(submit, 'type') ?? 'submit').toLowerCase() !== 'submit') return false;
+  if (unavailable(submit)) return false;
+  if (['form', 'formaction', 'formenctype', 'formmethod', 'formnovalidate', 'formtarget'].some((name) => getAttr(submit, name) !== undefined)) return false;
+  if (getAttr(submit, 'name') !== undefined || getAttr(submit, 'value') !== undefined) return false;
+  if ((textContent(submit)).replace(/\s+/g, ' ').trim() !== 'Send inquiry') return false;
+  if (['aria-description', 'aria-describedby', 'aria-details', 'aria-disabled', 'aria-errormessage', 'aria-label', 'aria-labelledby', 'role', 'title']
+    .some((attribute) => getAttr(submit, attribute) !== undefined)) return false;
 
-  const expected = new Map<string, { tag: string; type?: string; required: boolean }>([
-    ['name', { tag: 'input', type: 'text', required: true }],
-    ['email', { tag: 'input', type: 'email', required: true }],
-    ['phone', { tag: 'input', type: 'tel', required: false }],
-    ['message', { tag: 'textarea', required: true }],
+  const expected = new Map<string, { tag: string; type?: string; required: boolean; autocomplete?: string; label: string; rows?: string }>([
+    ['name', { tag: 'input', type: 'text', required: true, autocomplete: 'name', label: 'Your name' }],
+    ['email', { tag: 'input', type: 'email', required: true, autocomplete: 'email', label: 'Email' }],
+    ['phone', { tag: 'input', type: 'tel', required: false, autocomplete: 'tel', label: 'Phone (optional)' }],
+    ['message', { tag: 'textarea', required: true, label: 'Message', rows: '5' }],
   ]);
   const seen = new Set<string>();
   for (const control of controls) {
-    const name = (getAttr(control, 'name') ?? '').trim().toLowerCase();
+    const name = getAttr(control, 'name') ?? '';
     const rule = expected.get(name);
     if (!rule || seen.has(name) || control.tagName !== rule.tag) return false;
     if (rule.type && (getAttr(control, 'type') ?? 'text').toLowerCase() !== rule.type) return false;
     if ((getAttr(control, 'required') !== undefined) !== rule.required) return false;
+    if (getAttr(control, 'autocomplete') !== rule.autocomplete) return false;
+    if (rule.rows !== undefined && getAttr(control, 'rows') !== rule.rows) return false;
+    if (['accept', 'capture', 'list', 'max', 'maxlength', 'min', 'minlength', 'multiple', 'pattern', 'step'].some((attribute) => getAttr(control, attribute) !== undefined)) return false;
+    if (['aria-description', 'aria-describedby', 'aria-details', 'aria-disabled', 'aria-errormessage', 'aria-label', 'aria-labelledby', 'aria-placeholder', 'id', 'placeholder', 'title'].some((attribute) => getAttr(control, attribute) !== undefined)) return false;
+    if (getAttr(control, 'form') !== undefined || unavailable(control, true)) return false;
+    let label = control.parentNode;
+    while (label && label.tagName !== 'label' && label !== node) label = label.parentNode;
+    if (label?.tagName !== 'label') return false;
+    const labelText = (candidate: HtmlNode): string => {
+      if (['button', 'input', 'select', 'textarea'].includes(candidate.tagName ?? '')) return '';
+      return [candidate.value ?? '', ...(candidate.childNodes ?? []).map(labelText)].join('');
+    };
+    if (['aria-description', 'aria-describedby', 'aria-details', 'aria-errormessage', 'aria-label', 'aria-labelledby', 'for', 'hidden', 'id', 'inert', 'role', 'title']
+      .some((attribute) => getAttr(label, attribute) !== undefined)) return false;
+    if (labelText(label).replace(/\s+/g, ' ').trim() !== rule.label) return false;
     seen.add(name);
   }
   return seen.size === expected.size;
@@ -638,7 +1030,7 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
   const standard = fragment.childNodes?.find((candidate) => candidate.tagName === 'form');
   if (!standard) return { changedWrapper: false };
   const preserved = new Map((node.attrs ?? [])
-    .filter((attr) => ['class', 'id', 'style', 'aria-label', 'aria-labelledby'].includes(attr.name))
+    .filter((attr) => ['class', 'id', 'style'].includes(attr.name))
     .map((attr) => [attr.name, attr.value]));
   const originalId = preserved.get('id');
   let changedWrapper = false;
@@ -649,13 +1041,13 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
       changedWrapper = true;
       continue;
     }
-    const safeValue = name === 'style' ? value : neutralizeSensitiveFormMarker(value);
+    const safeValue = name === 'style' ? sanitizeFormInlineStyle(value) : value;
     if (safeValue !== value) changedWrapper = true;
     if (name === 'class') {
       const merged = new Set(`${safeValue} ${getAttr(node, 'class') ?? ''}`.split(/\s+/).filter(Boolean));
       setAttr(node, 'class', [...merged].join(' '));
     } else {
-      setAttr(node, name, name === 'aria-label' && UNSAFE_FORM_MARKER.test(value) ? 'Contact form' : safeValue);
+      setAttr(node, name, safeValue);
     }
   }
   node.childNodes = standard.childNodes ?? [];
@@ -665,6 +1057,112 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
     changedWrapper,
     ...(originalId && repairedId && originalId !== repairedId ? { renamedId: [originalId, repairedId] as const } : {}),
   };
+}
+
+/** Reveal only ancestors that directly suppress an audited form. */
+function makeStandardFormAvailable(form: HtmlNode): number {
+  let count = 0;
+  let cursor: HtmlNode | undefined = form;
+  while (cursor) {
+    for (const attribute of ['hidden', 'inert']) {
+      if (getAttr(cursor, attribute) !== undefined) {
+        removeAttr(cursor, attribute);
+        count += 1;
+      }
+    }
+    if (getAttr(cursor, 'aria-hidden')?.toLowerCase() === 'true') {
+      removeAttr(cursor, 'aria-hidden');
+      count += 1;
+    }
+    if (cursor.tagName === 'fieldset' && getAttr(cursor, 'disabled') !== undefined) {
+      removeAttr(cursor, 'disabled');
+      count += 1;
+    }
+    const style = getAttr(cursor, 'style');
+    if (style && inlineStyleSuppressesInteraction(style)) {
+      const repaired = sanitizeFormInlineStyle(style);
+      if (repaired.trim()) setAttr(cursor, 'style', repaired);
+      else removeAttr(cursor, 'style');
+      count += 1;
+    }
+    cursor = cursor.parentNode;
+  }
+  const existingStyle = sanitizeFormInlineStyle(getAttr(form, 'style') ?? '').trim().replace(/;+$/u, '');
+  const visibilityStyle = 'display:grid!important;visibility:visible!important;content-visibility:visible!important;opacity:1!important';
+  const normalizedStyle = existingStyle ? `${existingStyle};${visibilityStyle}` : visibilityStyle;
+  if (getAttr(form, 'style') !== normalizedStyle) {
+    setAttr(form, 'style', normalizedStyle);
+    count += 1;
+  }
+  return count;
+}
+
+/**
+ * Legacy modal/reveal forms depended on scripts that rehabilitation removes.
+ * Move only the audited form out of a likely toggle container so unrelated
+ * hidden UI stays hidden and the contact path is reachable without JavaScript.
+ */
+function relocateToggleHiddenStandardForms(document: HtmlNode): number {
+  const forms: HtmlNode[] = [];
+  walk(document, (node) => {
+    if (node.tagName === 'form' && getAttr(node, 'data-dc-standard-form') === 'contact') forms.push(node);
+  });
+  const toggleContainer = /(?:^|[\s_-])(?:collapsed|drawer|hidden|modal|overlay|popup|reveal-hidden)(?:$|[\s_-])/i;
+  let count = 0;
+  for (const form of forms) {
+    let ancestor = form.parentNode;
+    let suppressed: HtmlNode | undefined;
+    while (ancestor && !['body', 'main'].includes(ancestor.tagName ?? '')) {
+      const marker = `${getAttr(ancestor, 'class') ?? ''} ${getAttr(ancestor, 'id') ?? ''}`;
+      if (toggleContainer.test(marker) || inlineStyleSuppressesInteraction(getAttr(ancestor, 'style') ?? '')) {
+        suppressed = ancestor;
+        break;
+      }
+      ancestor = ancestor.parentNode;
+    }
+    if (!suppressed) continue;
+    const target = findElement(document, 'main') ?? findElement(document, 'body');
+    if (!target || target === form.parentNode) continue;
+    removeNode(form);
+    target.childNodes ??= [];
+    form.parentNode = target;
+    target.childNodes.push(form);
+    count += 1;
+  }
+  return count;
+}
+
+/**
+ * HTML ID lookups are first-match/ambiguous when legacy markup repeats an ID.
+ * Preserve the first (and therefore existing IDREF/CSS target) and give every
+ * later occurrence a stable, source-position-derived identity. References to
+ * an already-ambiguous source ID intentionally continue to resolve to the
+ * first node instead of being guessed onto a different duplicate.
+ */
+function ensureUniqueDomIds(document: HtmlNode, file: string): number {
+  const used = new Set<string>();
+  const ordinals = new Map<string, number>();
+  let count = 0;
+  walk(document, (node) => {
+    const id = getAttr(node, 'id');
+    if (!id) return;
+    const ordinal = (ordinals.get(id) ?? 0) + 1;
+    ordinals.set(id, ordinal);
+    if (!used.has(id)) {
+      used.add(id);
+      return;
+    }
+    let suffix = 0;
+    let replacement: string;
+    do {
+      replacement = `${id}-dc-${sha256(`${file}:${id}:${ordinal}:${suffix}`).slice(0, 10)}`;
+      suffix += 1;
+    } while (used.has(replacement));
+    setAttr(node, 'id', replacement);
+    used.add(replacement);
+    count += 1;
+  });
+  return count;
 }
 
 /**
@@ -679,35 +1177,184 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
  */
 function normalizeStandardFormAccessibleNames(document: HtmlNode): number {
   const nodesById = new Map<string, HtmlNode[]>();
+  const labels: HtmlNode[] = [];
   walk(document, (node) => {
     const id = getAttr(node, 'id');
-    if (!id) return;
-    const nodes = nodesById.get(id) ?? [];
-    nodes.push(node);
-    nodesById.set(id, nodes);
+    if (id) {
+      const nodes = nodesById.get(id) ?? [];
+      nodes.push(node);
+      nodesById.set(id, nodes);
+    }
+    if (node.tagName === 'label') labels.push(node);
   });
 
+  const safeLabels = new Map([
+    ['name', 'Your name'],
+    ['email', 'Email'],
+    ['phone', 'Phone (optional)'],
+    ['message', 'Message'],
+  ]);
+  const rewriteLabel = (label: HtmlNode, safe: string): void => {
+    const textNodes: HtmlNode[] = [];
+    const collect = (node: HtmlNode): void => {
+      if (['input', 'select', 'textarea', 'button'].includes(node.tagName ?? '')) return;
+      if (node.nodeName === '#text') textNodes.push(node);
+      for (const child of node.childNodes ?? []) collect(child);
+    };
+    collect(label);
+    for (const text of textNodes) text.value = '';
+    label.childNodes ??= [];
+    label.childNodes.unshift({ nodeName: '#text', value: `${safe} `, parentNode: label });
+    if (UNSAFE_FORM_MARKER.test(getAttr(label, 'aria-label') ?? '')) setAttr(label, 'aria-label', safe);
+    if (UNSAFE_FORM_MARKER.test(getAttr(label, 'title') ?? '')) setAttr(label, 'title', safe);
+  };
+  const isHiddenLabel = (label: HtmlNode): boolean => {
+    let cursor: HtmlNode | undefined = label;
+    while (cursor) {
+      if (
+        getAttr(cursor, 'hidden') !== undefined
+        || getAttr(cursor, 'inert') !== undefined
+        || getAttr(cursor, 'aria-hidden')?.toLowerCase() === 'true'
+      ) return true;
+      cursor = cursor.parentNode;
+    }
+    return false;
+  };
+  const unsafePrompt = (value: string): boolean => (
+    UNSAFE_FORM_MARKER.test(value)
+    || containsUnsupportedClaim(value)
+    || PERCENT_RESULT.test(value)
+    || PROOF_TEXT.test(value)
+    || UNSUPPORTED_FABRICATED_METRIC_RE.test(value)
+  );
+
   let count = 0;
+  // A rebuilt canonical form intentionally drops legacy control IDs. Remove
+  // now-dangling labels instead of leaving misleading or sensitive visible
+  // prompts behind as inert prose.
+  for (const label of labels) {
+    const target = getAttr(label, 'for');
+    if (target === undefined) continue;
+    const matches = nodesById.get(target) ?? [];
+    if (matches.length === 1 && ['input', 'select', 'textarea'].includes(matches[0]!.tagName ?? '')) continue;
+    removeNode(label);
+    count += 1;
+  }
   walk(document, (node) => {
     if (node.tagName !== 'form' || getAttr(node, 'data-dc-standard-form') !== 'contact') return;
     const reference = getAttr(node, 'aria-labelledby');
-    if (reference === undefined) return;
-    const ids = reference.split(/\s+/).filter(Boolean);
-    const targets = ids.map((id) => nodesById.get(id) ?? []);
-    const invalidReference = ids.length === 0 || targets.some((matches) => matches.length !== 1);
-    const referencedName = targets
-      .flatMap((matches) => matches)
-      .map((target) => [
-        textContent(target),
-        getAttr(target, 'aria-label') ?? '',
-        getAttr(target, 'title') ?? '',
-      ].join(' '))
-      .join(' ');
-    if (!invalidReference && !UNSAFE_FORM_MARKER.test(referencedName)) return;
+    if (reference !== undefined) {
+      const ids = reference.split(/\s+/).filter(Boolean);
+      const targets = ids.map((id) => nodesById.get(id) ?? []);
+      const invalidReference = ids.length === 0 || targets.some((matches) => matches.length !== 1);
+      const referencedName = targets
+        .flatMap((matches) => matches)
+        .map((target) => [
+          textContent(target),
+          getAttr(target, 'aria-label') ?? '',
+          getAttr(target, 'title') ?? '',
+        ].join(' '))
+        .join(' ');
+      if (invalidReference || UNSAFE_FORM_MARKER.test(referencedName)) {
+        removeAttr(node, 'aria-labelledby');
+        setAttr(node, 'aria-label', 'Contact form');
+        count += 1;
+      }
+    }
 
-    removeAttr(node, 'aria-labelledby');
-    setAttr(node, 'aria-label', 'Contact form');
-    count += 1;
+    const controls: HtmlNode[] = [];
+    const collectControls = (candidate: HtmlNode): void => {
+      if (['input', 'select', 'textarea'].includes(candidate.tagName ?? '')) controls.push(candidate);
+      for (const child of candidate.childNodes ?? []) collectControls(child);
+    };
+    for (const child of node.childNodes ?? []) collectControls(child);
+    for (const control of controls) {
+      const name = (getAttr(control, 'name') ?? '').toLowerCase();
+      const safe = safeLabels.get(name);
+      if (!safe) continue;
+      const associatedLabels = new Set<HtmlNode>();
+      let ancestor = control.parentNode;
+      while (ancestor) {
+        if (ancestor.tagName === 'label' && !isHiddenLabel(ancestor)) associatedLabels.add(ancestor);
+        ancestor = ancestor.parentNode;
+      }
+      const id = getAttr(control, 'id');
+      if (id) {
+        for (const label of labels) {
+          if (getAttr(label, 'for') === id && !isHiddenLabel(label)) associatedLabels.add(label);
+        }
+      }
+
+      let invalidReference = false;
+      const labelledBy = getAttr(control, 'aria-labelledby');
+      const referenced: HtmlNode[] = [];
+      if (labelledBy !== undefined) {
+        const ids = labelledBy.split(/\s+/).filter(Boolean);
+        invalidReference = ids.length === 0;
+        for (const labelledId of ids) {
+          const matches = nodesById.get(labelledId) ?? [];
+          if (matches.length !== 1) invalidReference = true;
+          else referenced.push(matches[0]!);
+        }
+      }
+      const described: HtmlNode[] = [];
+      for (const attribute of ['aria-describedby', 'aria-details', 'aria-errormessage']) {
+        const value = getAttr(control, attribute);
+        if (value === undefined) continue;
+        const ids = value.split(/\s+/).filter(Boolean);
+        let invalidDescription = ids.length === 0;
+        const resolved: HtmlNode[] = [];
+        for (const describedId of ids) {
+          const matches = nodesById.get(describedId) ?? [];
+          if (matches.length !== 1) invalidDescription = true;
+          else resolved.push(matches[0]!);
+        }
+        const descriptionText = resolved.map((source) => [
+          textContent(source),
+          getAttr(source, 'aria-label') ?? '',
+          getAttr(source, 'title') ?? '',
+        ].join(' ')).join(' ');
+        if (invalidDescription || unsafePrompt(descriptionText)) {
+          removeAttr(control, attribute);
+          count += 1;
+        } else {
+          described.push(...resolved);
+        }
+      }
+      const sourceText = [
+        getAttr(control, 'aria-label') ?? '',
+        getAttr(control, 'aria-description') ?? '',
+        getAttr(control, 'aria-placeholder') ?? '',
+        getAttr(control, 'placeholder') ?? '',
+        getAttr(control, 'title') ?? '',
+        ...[...associatedLabels, ...referenced, ...described].map((source) => [
+          textContent(source),
+          getAttr(source, 'aria-label') ?? '',
+          getAttr(source, 'title') ?? '',
+        ].join(' ')),
+      ].join(' ');
+      const unsafe = unsafePrompt(sourceText);
+      if (unsafe) {
+        for (const label of associatedLabels) {
+          const labelSignal = `${textContent(label)} ${getAttr(label, 'aria-label') ?? ''} ${getAttr(label, 'title') ?? ''}`;
+          if (unsafePrompt(labelSignal)) rewriteLabel(label, safe);
+        }
+      }
+      if (invalidReference || referenced.some((source) => unsafePrompt(textContent(source)))) {
+        removeAttr(control, 'aria-labelledby');
+      }
+      for (const attribute of ['aria-description', 'aria-placeholder', 'placeholder', 'title']) {
+        if (unsafePrompt(getAttr(control, attribute) ?? '')) removeAttr(control, attribute);
+      }
+      if (
+        invalidReference
+        || unsafe
+        || (![...associatedLabels].length && referenced.length === 0 && !(getAttr(control, 'aria-label') ?? '').trim())
+      ) {
+        setAttr(control, 'aria-label', safe);
+        count += 1;
+      }
+    }
   });
   return count;
 }
@@ -1316,13 +1963,26 @@ function replaceLiteralWithToken(segment: string, literal: string, token: string
   return segment.replace(new RegExp(pattern, 'gi'), token);
 }
 
-function restoreKnownLiterals(document: HtmlNode, fields: readonly CanonicalField[], file: string): Transformation[] {
+function restoreKnownLiterals(
+  document: HtmlNode,
+  fields: readonly CanonicalField[],
+  file: string,
+  siteLiteralTokens: Readonly<Record<string, string>> = {},
+): Transformation[] {
   const defaults = fieldDefaultMap(fields);
   const replacements = new Map<string, string>();
   for (const [name, value] of defaults) {
     const canonical = normalizeFieldName(name);
     const safelySpecific = /EMAIL|PHONE/.test(canonical) || value.length >= 5;
     if (isCorePersonalizationToken(canonical) && safelySpecific) replacements.set(value, `{{${canonical}}}`);
+  }
+  for (const [literal, token] of Object.entries(siteLiteralTokens)) {
+    if (literal.trim().length < 3) continue;
+    if (token === 'CITY_STATE') {
+      replacements.set(literal, '{{CITY}}, {{STATE}}');
+    } else if (isCorePersonalizationToken(token)) {
+      replacements.set(literal, `{{${normalizeFieldName(token)}}}`);
+    }
   }
   let count = 0;
   const replaceKnownPlaceholders = (segment: string): string => segment
@@ -1339,7 +1999,10 @@ function restoreKnownLiterals(document: HtmlNode, fields: readonly CanonicalFiel
         if (NON_CONTENT_TEXT_ANCESTORS.has(parent.tagName ?? '')) return;
         parent = parent.parentNode;
       }
-      let value = outsideMustache(node.value, (segment) => replaceKnownPlaceholders(segment).replace(EMAIL, '{{EMAIL}}').replace(PHONE, '{{PHONE}}'));
+      let value = outsideMustache(node.value, (segment) => replaceKnownPlaceholders(segment)
+        .replace(EMAIL, '{{EMAIL}}')
+        .replace(CONTEXTUAL_PHONE, '{{PHONE}}')
+        .replace(PHONE, '{{PHONE}}'));
       for (const [literal, token] of replacements) value = outsideMustache(value, (segment) => {
         const next = replaceLiteralWithToken(segment, literal, token);
         if (next !== segment) count += 1;
@@ -1358,9 +2021,13 @@ function restoreKnownLiterals(document: HtmlNode, fields: readonly CanonicalFiel
           ? segment
             .replace(/\b(?:Jane|John)\s+Doe\b/gi, 'Your name')
             .replace(EMAIL, 'Email address')
+            .replace(CONTEXTUAL_PHONE, 'Phone number')
             .replace(PHONE, 'Phone number')
           : segment;
-        return replaceKnownPlaceholders(visitorSafe).replace(EMAIL, '{{EMAIL}}').replace(PHONE, '{{PHONE}}');
+        return replaceKnownPlaceholders(visitorSafe)
+          .replace(EMAIL, '{{EMAIL}}')
+          .replace(CONTEXTUAL_PHONE, '{{PHONE}}')
+          .replace(PHONE, '{{PHONE}}');
       });
       const ctaish = /(?:btn|button|cta|book|schedule)/i.test(`${getAttr(node, 'class') ?? ''} ${textContent(node)}`);
       for (const [literal, token] of replacements) {
@@ -1438,6 +2105,7 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
     .replace(/\btrusted by\b/gi, 'designed for');
   walk(document, (node) => {
     if (node.nodeName === '#text' && typeof node.value === 'string') {
+      if (hasNonContentTextAncestor(node)) return;
       const parentTag = node.parentNode?.tagName ?? '';
       const next = UNSUPPORTED_FABRICATED_METRIC_RE.test(node.value)
         ? ` ${NEUTRAL_CLAIM} `
@@ -1449,10 +2117,21 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
     }
     for (const attr of node.attrs ?? []) {
       let next = attr.value;
-      if (attr.name === 'class' || attr.name === 'id' || attr.name === 'data-section' || attr.name === 'data-role') {
-        next = next.replace(/(?:testimonials?|reviews?|quotes?|social[-_]?proof|success[-_]?stor(?:y|ies)|proof(?:[-_]?gallery)?|credibility)/gi, 'dc-guidance');
-      } else if ((attr.name === 'href' || attr.name === 'action') && /testimonial|review|success[-_]?stor/i.test(next)) {
+      if (['class', 'id', 'data-block', 'data-component', 'data-kind', 'data-role', 'data-section', 'data-type'].includes(attr.name)) {
+        next = attr.name === 'id'
+          ? sanitizedProofId(next)
+          : attr.name === 'class'
+            ? sanitizedProofClass(next)
+            : sanitizedProofStructuralValue(next);
+      } else if (
+        (attr.name === 'href' || attr.name === 'action')
+        && !next.startsWith('#')
+        && /(?:^|[\/_.-])(?:testimonials?|reviews?|success[-_]?stor(?:y|ies))(?:[\/_.?#-]|$)/i.test(next)
+      ) {
         next = fallbackPage;
+      } else if (['data-bs-target', 'data-target'].includes(attr.name) && next.startsWith('#')) {
+        // Rewritten after every target ID is known; do not treat a fragment
+        // reference as customer-visible proof copy.
       } else if (
         attr.name === 'content'
         || attr.name === 'title'
@@ -1463,7 +2142,6 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
         next = PROOF_TEXT.test(next)
           || UNSUPPORTED_FABRICATED_METRIC_RE.test(next)
           || containsUnsupportedClaim(next)
-          || SYNTHETIC_BADGE_SIGNAL.test(next)
           ? 'Practice information'
           : sanitizeText(next);
       }
@@ -1475,7 +2153,8 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
     }
   });
 
-  const idReferenceAttributes = new Set(['aria-labelledby', 'aria-describedby', 'aria-controls', 'headers', 'for', 'list']);
+  const idReferenceAttributes = new Set(['aria-labelledby', 'aria-describedby', 'aria-controls', 'form', 'headers', 'for', 'list']);
+  const fragmentReferenceAttributes = new Set(['data-bs-target', 'data-target', 'href']);
   const existingIds = new Set<string>();
   walk(document, (node) => {
     const id = getAttr(node, 'id');
@@ -1484,6 +2163,14 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
   walk(document, (node) => {
     const nextAttrs: Attr[] = [];
     for (const attr of node.attrs ?? []) {
+      if (fragmentReferenceAttributes.has(attr.name) && attr.value.startsWith('#')) {
+        const renamed = renamedIds.get(attr.value.slice(1));
+        if (renamed) {
+          nextAttrs.push({ ...attr, value: `#${renamed}` });
+          count += 1;
+          continue;
+        }
+      }
       if (!idReferenceAttributes.has(attr.name)) {
         nextAttrs.push(attr);
         continue;
@@ -1504,10 +2191,34 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
 function annotateEditableNodes(
   document: HtmlNode,
   file: string,
-): { editIds: string[]; imageIds: string[]; wrappedTextNodes: number } {
+): {
+  editIds: string[];
+  imageIds: string[];
+  wrappedTextNodes: number;
+  suppressions: {
+    hiddenEditSlots: number;
+    pointerlessEditSlots: number;
+    decorativeEditSlots: number;
+    hiddenImageSlots: number;
+    pointerlessImageSlots: number;
+    decorativeImageSlots: number;
+    protectedBackgroundSlots: number;
+    incompletePictureSlots: number;
+  };
+} {
   const editIds: string[] = [];
   const imageIds: string[] = [];
   let wrappedTextNodes = 0;
+  const suppressions = {
+    hiddenEditSlots: 0,
+    pointerlessEditSlots: 0,
+    decorativeEditSlots: 0,
+    hiddenImageSlots: 0,
+    pointerlessImageSlots: 0,
+    decorativeImageSlots: 0,
+    protectedBackgroundSlots: 0,
+    incompletePictureSlots: 0,
+  };
 
   const mark = (node: HtmlNode, kind: 'edit' | 'image'): string => {
     const id = `${kind === 'edit' ? 'txt' : 'img'}_${sha256(`${file}:${structuralPath(node)}:${kind}`).slice(0, 18)}`;
@@ -1515,12 +2226,60 @@ function annotateEditableNodes(
     return id;
   };
 
-  const visit = (node: HtmlNode, editableAncestor: boolean, hiddenAncestor = false): void => {
+  const pointerEventsNone = (node: HtmlNode): boolean => (
+    /(?:^|;)\s*pointer-events\s*:\s*none(?:\s*!important)?\s*(?:;|$)/i.test(getAttr(node, 'style') ?? '')
+  );
+  const decorativeImage = (node: HtmlNode): boolean => {
+    const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    const identity = [
+      getAttr(node, 'id') ?? '',
+      getAttr(node, 'class') ?? '',
+      getAttr(node, 'src') ?? '',
+      getAttr(node, 'srcset') ?? '',
+      getAttr(node, 'style') ?? '',
+    ].join(' ');
+    return role === 'none' || role === 'presentation'
+      || /(?:^|[\s/_.-])(?:aura|decor(?:ation|ative)?|grain|noise|ornament|pattern|texture)(?=$|[\s/_.-])/i.test(identity);
+  };
+  type Unavailability = 'hidden' | 'pointerless' | 'excluded';
+  const directlyUnavailable = (node: HtmlNode): Unavailability | undefined => {
+    if (NON_EDITABLE_ELEMENTS.has(node.tagName ?? '')) return 'excluded';
+    if (
+      getAttr(node, 'hidden') !== undefined
+    || getAttr(node, 'inert') !== undefined
+    || getAttr(node, 'aria-hidden')?.trim().toLowerCase() === 'true'
+    || (node.tagName === 'input' && (getAttr(node, 'type') ?? '').trim().toLowerCase() === 'hidden')
+    || inlineStyleSuppressesInteraction(getAttr(node, 'style') ?? '')
+    ) return 'hidden';
+    if (pointerEventsNone(node)) return 'pointerless';
+    return undefined;
+  };
+  const protectedBackground = (node: HtmlNode): boolean => {
+    const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    return ['a', 'button', 'input', 'select', 'textarea', 'option', 'label', 'summary'].includes(node.tagName ?? '')
+      || role === 'button' || role === 'link';
+  };
+
+  // Compiler IDs are derived output, never immutable source content. Clear
+  // both current and v2 namespaces before rebuilding them so a second pass
+  // cannot keep advertising a slot that has since become hidden/decorative.
+  walk(document, (node) => {
+    for (const attribute of [
+      'data-dc-edit-id',
+      'data-dc-edit-attribute',
+      'data-dc-image-id',
+      'data-pb-edit-id',
+      'data-pb-edit-attribute',
+      'data-pb-image-id',
+    ]) removeAttr(node, attribute);
+  });
+
+  const visit = (node: HtmlNode, editableAncestor: boolean, unavailableAncestor?: Unavailability): void => {
     if (!node.tagName) {
-      for (const child of node.childNodes ?? []) visit(child, editableAncestor, hiddenAncestor);
+      for (const child of node.childNodes ?? []) visit(child, editableAncestor, unavailableAncestor);
       return;
     }
-    const hidden = hiddenAncestor || getAttr(node, 'aria-hidden') === 'true' || NON_EDITABLE_ELEMENTS.has(node.tagName);
+    const unavailable = unavailableAncestor ?? directlyUnavailable(node);
     const elementChildren = (node.childNodes ?? []).filter((child) => Boolean(child.tagName));
 
     // An ID-targeted text edit replaces the target's complete inner HTML. A
@@ -1528,7 +2287,7 @@ function annotateEditableNodes(
     // other element structure. Preserve mixed-content markup by wrapping only
     // its meaningful direct text nodes, then annotate those leaf wrappers and
     // the existing descendants independently.
-    if (!hidden && elementChildren.length > 0 && (TEXT_TAGS.has(node.tagName) || FALLBACK_TEXT_TAGS.has(node.tagName))) {
+    if (!unavailable && elementChildren.length > 0 && (TEXT_TAGS.has(node.tagName) || FALLBACK_TEXT_TAGS.has(node.tagName))) {
       for (const child of [...(node.childNodes ?? [])]) {
         if (child.nodeName !== '#text' || !child.value?.trim()) continue;
         const fragment = parseFragment('<span data-dc-edit-wrapper="direct-text"></span>') as unknown as HtmlNode;
@@ -1547,13 +2306,14 @@ function annotateEditableNodes(
     const text = textContent(node).replace(/\s+/g, ' ').trim();
     const directText = (node.childNodes ?? []).some((child) => child.nodeName === '#text' && Boolean(child.value?.trim()));
     const hasElementChildren = (node.childNodes ?? []).some((child) => Boolean(child.tagName));
-    const shouldEdit = !hidden && !editableAncestor && !hasElementChildren && Boolean(text) && (
+    const textCandidate = !editableAncestor && !hasElementChildren && Boolean(text) && (
       TEXT_TAGS.has(node.tagName) || (FALLBACK_TEXT_TAGS.has(node.tagName) && directText)
     );
+    const shouldEdit = !unavailable && textCandidate;
     // Attribute content is independent from ancestor inner HTML. Keep useful
     // alt/label/title metadata editable even when an enclosing link or figure
     // already owns the visible-text slot.
-    const editableAttribute = !shouldEdit
+    const attributeCandidate = !textCandidate
       ? node.tagName === 'meta'
           && (getAttr(node, 'name') ?? '').trim().toLowerCase() === 'description'
           && getAttr(node, 'content')?.trim()
@@ -1568,23 +2328,57 @@ function annotateEditableNodes(
               ? 'title'
               : undefined
       : undefined;
+    const nodeDecorative = decorativeImage(node);
+    const editableAttribute = !unavailable && !(node.tagName === 'img' && nodeDecorative)
+      ? attributeCandidate
+      : undefined;
+    if ((textCandidate || attributeCandidate) && unavailable && unavailable !== 'excluded') {
+      if (unavailable === 'hidden') suppressions.hiddenEditSlots += 1;
+      else suppressions.pointerlessEditSlots += 1;
+    } else if (attributeCandidate && node.tagName === 'img' && nodeDecorative) {
+      suppressions.decorativeEditSlots += 1;
+    }
     if (shouldEdit || editableAttribute) {
       editIds.push(mark(node, 'edit'));
       if (editableAttribute) setAttr(node, 'data-dc-edit-attribute', editableAttribute);
       else removeAttr(node, 'data-dc-edit-attribute');
     }
 
-    const inlineBackground = /background(?:-image)?\s*:[^;]*url\(/i.test(getAttr(node, 'style') ?? '');
-    if (node.tagName === 'img' || node.tagName === 'source' || inlineBackground) {
+    const style = getAttr(node, 'style') ?? '';
+    const inlineBackground = /background(?:-image)?\s*:[^;]*url\(/i.test(style);
+    const inlineBackgroundCount = (style.match(/url\(/gi) ?? []).length;
+    const picture = ['img', 'source'].includes(node.tagName) && node.parentNode?.tagName === 'picture'
+      ? node.parentNode
+      : undefined;
+    const pictureChildren = picture
+      ? (picture.childNodes ?? []).filter((child) => ['img', 'source'].includes(child.tagName ?? ''))
+      : [];
+    const usablePicture = !picture || (
+      pictureChildren.some((child) => child.tagName === 'img')
+      && !decorativeImage(picture)
+      && pictureChildren.every((child) => !directlyUnavailable(child) && !decorativeImage(child))
+    );
+    const nativeImage = node.tagName === 'img' || (node.tagName === 'source' && Boolean(picture));
+    const editableBackground = inlineBackground && inlineBackgroundCount === 1 && !protectedBackground(node);
+    const imageCandidate = nativeImage || (inlineBackground && inlineBackgroundCount === 1);
+    const imageDecorative = nodeDecorative || Boolean(picture && decorativeImage(picture));
+    if (!unavailable && !imageDecorative && usablePicture && (nativeImage || editableBackground)) {
       imageIds.push(mark(node, 'image'));
+    } else if (imageCandidate) {
+      if (imageDecorative) suppressions.decorativeImageSlots += 1;
+      else if (unavailable === 'hidden') suppressions.hiddenImageSlots += 1;
+      else if (unavailable === 'pointerless') suppressions.pointerlessImageSlots += 1;
+      else if (!usablePicture) suppressions.incompletePictureSlots += 1;
+      else if (inlineBackground && protectedBackground(node)) suppressions.protectedBackgroundSlots += 1;
     }
-    for (const child of node.childNodes ?? []) visit(child, editableAncestor || shouldEdit, hidden);
+    for (const child of node.childNodes ?? []) visit(child, editableAncestor || shouldEdit, unavailable);
   };
   visit(document, false);
   return {
     editIds: [...new Set(editIds)].sort(),
     imageIds: [...new Set(imageIds)].sort(),
     wrappedTextNodes,
+    suppressions,
   };
 }
 
@@ -1602,17 +2396,56 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
     root = postcss.parse(css, { from: file });
   } catch (error) {
     // A small legacy cohort contains CSS serialized with literal "\\n" or
-    // "\\r\\n" separators, plus one observed declaration where the intended
-    // `background-color` property was accidentally prefixed with `margin:`.
+    // "\\r\\n" separators, or one of a bounded set of observed declaration
+    // typos (missing separators/parentheses and accidental property prefixes).
     // Recover only after the original parse fails so valid author CSS remains
-    // byte-stable and the mapping stays explicit and auditable.
+    // byte-stable and every legacy correction stays explicit and auditable.
     const escapedLinebreakCount = (css.match(/\\r\\n|\\n|\\r/g) ?? []).length;
     let malformedDeclarationCount = 0;
     const recovered = css
       .replace(/\\r\\n|\\n|\\r/g, '\n')
-      .replace(/\bmargin\s*:\s*background-color\s*:/gi, () => {
+      .replace(/\b(?:margin|border)\s*:\s*(background-color|box-shadow)\s*:/gi, (_match, property: string) => {
         malformedDeclarationCount += 1;
-        return 'background-color:';
+        return `${property.toLowerCase()}:`;
+      })
+      .replace(/\bdisplay\s*:\s*grid\s*:\s*grid-template-columns\s*:/gi, () => {
+        malformedDeclarationCount += 1;
+        return 'display:grid;grid-template-columns:';
+      })
+      .replace(/\bsubtle\s*:\s*color\s*:/gi, () => {
+        malformedDeclarationCount += 1;
+        return 'color:';
+      })
+      .replace(/\bgap\s*:\s*([^;{}]+?)\s*,\s*list-style\s*:/gi, (_match, gap: string) => {
+        malformedDeclarationCount += 1;
+        return `gap:${gap.trim()};list-style:`;
+      })
+      .replace(/\bgap\s*:\s*([^;{}]+?)\s+list-style\s*:/gi, (_match, gap: string) => {
+        malformedDeclarationCount += 1;
+        return `gap:${gap.trim()};list-style:`;
+      })
+      .replace(/(\bfont-family\s*:[^;{}]+),\s*(color\s*:)/gi, (_match, family: string, nextProperty: string) => {
+        malformedDeclarationCount += 1;
+        return `${family};${nextProperty}`;
+      })
+      .replace(/\bvar\(\s*(--[-_A-Za-z0-9]+)\s*(?=[;}])/g, (_match, property: string) => {
+        malformedDeclarationCount += 1;
+        return `var(${property})`;
+      })
+      // PostCSS cannot reach its normal URL sanitizer when malformed legacy
+      // CSS also contains a quoted data URL. Consume through the matching
+      // outer quote (rather than the first nested `url(...)` inside an SVG)
+      // so the rest of the declaration remains syntactically intact.
+      .replace(/url\(\s*(['"])\s*(?:javascript|vbscript|data|blob)\s*:(?:(?!\1)[\s\S])*?\1\s*\)/gi, () => {
+        malformedDeclarationCount += 1;
+        return 'none';
+      })
+      // Two generated pages end an otherwise valid filter value with an
+      // orphaned quote. This recovery only runs after the original parse has
+      // failed and is deliberately scoped to a declaration ending at `}`.
+      .replace(/(\bfilter\s*:\s*[^;{}]+?)['"]\s*(?=})/gi, (_match, value: string) => {
+        malformedDeclarationCount += 1;
+        return value;
       });
     if (recovered !== css) {
       try {
@@ -1633,7 +2466,7 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
             code: 'malformed-css-declaration-recovered',
             severity: 'warning',
             file,
-            message: 'Recovered a known malformed margin/background-color declaration before theme extraction.',
+            message: 'Recovered a known malformed legacy declaration before theme extraction.',
             resolved: true,
           });
         }
@@ -1652,9 +2485,118 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
     }
   }
 
+  let proofSelectorReferences = 0;
+  root.walkRules((rule) => {
+    const repaired = sanitizeProofSelector(rule.selector);
+    if (repaired.count > 0) {
+      rule.selector = repaired.selector;
+      proofSelectorReferences += repaired.count;
+    }
+  });
+
+  const customValues = new Map<string, string[]>();
+  const quoteValues: string[] = [];
+  root.walkDecls((declaration) => {
+    const property = decodeCssEscapes(declaration.prop);
+    if (property.toLowerCase() === 'quotes') quoteValues.push(declaration.value);
+    if (property.startsWith('--')) {
+      const values = customValues.get(property) ?? [];
+      values.push(declaration.value);
+      customValues.set(property, values);
+    }
+  });
+  let unsafeGeneratedContent = 0;
+  const unsafeGeneratedCustomProperties = new Set<string>();
+  root.walkDecls((declaration) => {
+    const property = decodeCssEscapes(declaration.prop);
+    if (property.toLowerCase() !== 'content') return;
+    const resolved = expandCssGeneratedValue(declaration.value, customValues);
+    const values = [...resolved.values];
+    let unresolved = resolved.unresolved;
+    if (values.some((value) => /\b(?:open|close)-quote\b/i.test(value))) {
+      for (const quoteValue of quoteValues) {
+        const expandedQuote = expandCssGeneratedValue(quoteValue, customValues);
+        values.push(...expandedQuote.values);
+        unresolved ||= expandedQuote.unresolved;
+        for (const reference of expandedQuote.references) resolved.references.add(reference);
+      }
+    }
+    const labels = new Set<string>();
+    if (unresolved) labels.add('unresolved CSS generated-content variable');
+    if (values.some((value) => /\{\{\s*[A-Za-z_][^{}]*(?:\}\}|$)/u.test(value))) labels.add('unsupported CSS template expression');
+    for (const value of values) {
+      for (const label of findUnsafeCssGeneratedText(value)) labels.add(label);
+    }
+    if (labels.size === 0) return;
+    for (const reference of resolved.references) unsafeGeneratedCustomProperties.add(reference);
+    issues.push({
+      code: 'unsafe-css-generated-content',
+      severity: 'warning',
+      file,
+      message: `Removed unsafe browser-generated text from ${declaration.prop}: ${[...labels].join(', ')}.`,
+      resolved: true,
+    });
+    declaration.remove();
+    unsafeGeneratedContent += 1;
+  });
+  if (unsafeGeneratedCustomProperties.size > 0) {
+    root.walkDecls((declaration) => {
+      if (!unsafeGeneratedCustomProperties.has(decodeCssEscapes(declaration.prop))) return;
+      declaration.remove();
+      unsafeGeneratedContent += 1;
+    });
+  }
+  root.walkDecls((declaration) => {
+    if (decodeCssEscapes(declaration.prop).toLowerCase() !== 'quotes') return;
+    const expanded = expandCssGeneratedValue(declaration.value, customValues);
+    const unsafeQuote = expanded.unresolved
+      || expanded.values.some((value) => findUnsafeCssGeneratedText(value).length > 0);
+    if (!unsafeQuote) return;
+    declaration.remove();
+    unsafeGeneratedContent += 1;
+    for (const reference of expanded.references) unsafeGeneratedCustomProperties.add(reference);
+  });
+  if (unsafeGeneratedCustomProperties.size > 0) {
+    root.walkDecls((declaration) => {
+      if (!unsafeGeneratedCustomProperties.has(decodeCssEscapes(declaration.prop))) return;
+      declaration.remove();
+    });
+  }
+
   let unsafe = 0;
   let backgroundImageIndex = 0;
+  root.walkComments((comment) => {
+    if (/\{\{\s*[A-Za-z_]/u.test(comment.text)) {
+      comment.remove();
+      unsafe += 1;
+    }
+  });
+  const cssTemplateExpression = /\{\{\s*[A-Za-z_][^{}]*(?:\}\}|$)/u;
+  root.walkRules((rule) => {
+    if (!cssTemplateExpression.test(rule.selector)) return;
+    rule.remove();
+    unsafe += 1;
+  });
+  root.walkAtRules((rule) => {
+    if (!cssTemplateExpression.test(`${rule.name} ${rule.params}`)) return;
+    rule.remove();
+    unsafe += 1;
+  });
   root.walkDecls((declaration) => {
+    if (cssTemplateExpression.test(`${declaration.prop}:${declaration.value}`)) {
+      declaration.remove();
+      unsafe += 1;
+      return;
+    }
+    declaration.value = declaration.value.replace(
+      /url\(\s*(['"]?)#([-_A-Za-z][-_A-Za-z0-9]*)\1\s*\)/g,
+      (reference, quote: string, identifier: string) => {
+        const next = sanitizedProofId(identifier);
+        if (next === identifier) return reference;
+        proofSelectorReferences += 1;
+        return `url(${quote}#${next}${quote})`;
+      },
+    );
     if (/expression\s*\(/i.test(declaration.value) || containsUnsafeCssReferences(declaration.value)) {
       declaration.remove();
       unsafe += 1;
@@ -1686,8 +2628,172 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
       unsafe += 1;
     }
   });
+  if (proofSelectorReferences) {
+    transformations.push({ rule: 'align-proof-selectors', file, count: proofSelectorReferences });
+  }
+  if (unsafeGeneratedContent) {
+    transformations.push({ rule: 'remove-unsafe-css-generated-content', file, count: unsafeGeneratedContent });
+  }
   if (unsafe) transformations.push({ rule: 'strip-unsafe-css', file, count: unsafe });
   return { css: root.toString(), backgrounds, issues, transformations };
+}
+
+function stripNonLocalSvgCssReferences(css: string, file: string): { css: string; removed: number } {
+  let root;
+  try {
+    root = postcss.parse(css, { from: file });
+  } catch {
+    return { css: '', removed: css.trim() ? 1 : 0 };
+  }
+  let removed = 0;
+  root.walkDecls((declaration) => {
+    if (!containsNonLocalCssReferences(`${declaration.prop}:${declaration.value}`)) return;
+    declaration.remove();
+    removed += 1;
+  });
+  root.walkAtRules('import', (rule) => {
+    if (!containsNonLocalCssReferences(`@import ${rule.params};`)) return;
+    rule.remove();
+    removed += 1;
+  });
+  return { css: root.toString(), removed };
+}
+
+/**
+ * Sanitize the browser-visible and accessible copy in a local SVG asset while
+ * preserving its geometry. External SVG documents do not participate in HTML
+ * token hydration, so unsafe literals are replaced with vetted neutral copy.
+ */
+export function repairSvgAsset(
+  svg: string,
+  file: string,
+  fields: readonly CanonicalField[] = [],
+): SvgAssetRepairResult {
+  const document = parseFragment(svg) as unknown as HtmlNode;
+  const issues: RepairIssue[] = [];
+  const transformations: Transformation[] = [];
+  const removals = new Set<HtmlNode>();
+  let active = 0;
+  let semantic = 0;
+  let styles = 0;
+
+  const personalReplacements: Array<{ pattern: RegExp; replacement: string }> = [
+    { pattern: /\{\{[^{}]*\}\}|\{\{|\}\}/gu, replacement: 'Practice information' },
+    { pattern: /\b(?:Dr\.\s+Morgan\s+Ellis|Jane\s+Doe|John\s+Doe)\b/gi, replacement: 'Practitioner' },
+    { pattern: /\b(?:Aromatherapy|Holistic Medicine|Private Practice Therapist|Sound Bath|Wellness Coach) Studio\b/gi, replacement: 'Practice' },
+    { pattern: /\bAnytown\s*,\s*[A-Z]{2}\b/gi, replacement: 'Local area' },
+    { pattern: /\b(?:Anytown|Your City|Your State)\b/gi, replacement: 'Local area' },
+    { pattern: new RegExp(EMAIL.source, 'gi'), replacement: 'Contact the practice' },
+    { pattern: new RegExp(CONTEXTUAL_PHONE.source, 'gi'), replacement: 'Contact the practice' },
+    { pattern: new RegExp(PHONE.source, 'gi'), replacement: 'Contact the practice' },
+  ];
+  for (const field of fields) {
+    const canonical = normalizeFieldName(field.name);
+    if (!field.default || !concreteDefault(field.default) || !isCorePersonalizationToken(canonical) || field.default.length < 5) continue;
+    personalReplacements.unshift({
+      pattern: new RegExp(escapeRegExp(field.default), 'gi'),
+      replacement: /EMAIL|PHONE/.test(canonical) ? 'Contact the practice' : 'Practice',
+    });
+  }
+  const neutralizePersonalRuns = (root: HtmlNode): number => {
+    let count = 0;
+    for (const { pattern, replacement } of personalReplacements) {
+      while (true) {
+        const { text, runs } = priceTextRuns(root);
+        const matches = [...text.matchAll(new RegExp(pattern.source, pattern.flags))];
+        const match = matches.at(-1);
+        if (match?.[0] === replacement) break;
+        if (!match || !replaceTextRunRange(runs, match.index ?? 0, (match.index ?? 0) + match[0].length, replacement, 1)) break;
+        count += 1;
+      }
+    }
+    return count;
+  };
+  const neutralizeAddressRuns = (root: HtmlNode): number => {
+    const { text, runs } = priceTextRuns(root);
+    if (!ADDRESS_PLACEHOLDER.test(text.trim())) return 0;
+    const start = text.search(/\S/u);
+    const end = text.length - (text.match(/\s*$/u)?.[0].length ?? 0);
+    return start >= 0 && replaceTextRunRange(runs, start, end, 'Address available on request', 1) ? 1 : 0;
+  };
+  const neutralizeValue = (value: string): string => {
+    let next = value.replace(/\{\{[^{}]*\}\}|\{\{|\}\}/gu, 'Practice information');
+    for (const { pattern, replacement } of personalReplacements) {
+      next = next.replace(new RegExp(pattern.source, pattern.flags), replacement);
+    }
+    next = neutralizeFixedPrices(next);
+    if (
+      containsUnsupportedClaim(next)
+      || PERCENT_RESULT.test(next)
+      || PROOF_TEXT.test(next)
+      || UNSUPPORTED_FABRICATED_METRIC_RE.test(next)
+      || SYNTHETIC_BADGE_SIGNAL.test(next)
+    ) next = NEUTRAL_CLAIM;
+    return next;
+  };
+
+  walk(document, (node) => {
+    const tag = node.tagName?.toLowerCase() ?? '';
+    if (['script', 'iframe', 'frame', 'frameset', 'object', 'embed', 'form', 'input', 'select', 'textarea', 'button'].includes(tag)) {
+      removals.add(node);
+      active += 1;
+      return;
+    }
+    if (tag === 'style') {
+      const styleFile = `${file}#style-${styles++}`;
+      const local = stripNonLocalSvgCssReferences(textContent(node), styleFile);
+      active += local.removed;
+      const result = repairStylesheet(local.css, styleFile);
+      replaceWithText(node, result.css);
+      issues.push(...result.issues);
+      transformations.push(...result.transformations);
+    }
+    if (!node.attrs) return;
+    const insideSvg = isWithinSvg(node);
+    const nextAttrs: Attr[] = [];
+    for (const attribute of node.attrs) {
+      const name = attribute.name.toLowerCase();
+      if (name.startsWith('on') || name === 'srcdoc' || (tag === 'template' && name.startsWith('shadowroot'))) {
+        active += 1;
+        continue;
+      }
+      if (
+        ['src', 'href', 'poster', 'action', 'formaction', 'xlink:href'].includes(name)
+        && (isUnsafeStaticUrl(tag, name, attribute.value)
+          || (['src', 'href', 'xlink:href'].includes(name) && isNonLocalSvgReference(attribute.value)))
+      ) {
+        active += 1;
+        continue;
+      }
+      if (name === 'style' && (containsUnsafeCssReferences(attribute.value) || containsNonLocalCssReferences(attribute.value))) {
+        active += 1;
+        continue;
+      }
+      if (SVG_SEMANTIC_ATTRIBUTE_NAMES.has(name)) {
+        const repaired = neutralizeValue(attribute.value);
+        if (repaired !== attribute.value) semantic += 1;
+        attribute.value = repaired;
+      } else if (/\{\{[^{}]*\}\}|\{\{/u.test(attribute.value)) {
+        attribute.value = attribute.value.replace(/\{\{[^{}]*\}\}|\{\{[^{}]*$/gu, '');
+        semantic += 1;
+      }
+      nextAttrs.push(attribute);
+    }
+    node.attrs = nextAttrs;
+  });
+  for (const node of removals) {
+    if (node.parentNode && !removals.has(node.parentNode)) removeNode(node);
+  }
+  walk(document, (node) => {
+    if (!node.tagName || !PRICE_TEXT_BOUNDARIES.has(node.tagName.toLowerCase())) return;
+    semantic += neutralizeAddressRuns(node);
+    semantic += neutralizePersonalRuns(node);
+    semantic += neutralizeSplitRiskRuns(node);
+    semantic += neutralizeSplitPriceRuns(node);
+  });
+  if (active) transformations.push({ rule: 'strip-active-svg-content', file, count: active });
+  if (semantic) transformations.push({ rule: 'neutralize-svg-semantic-copy', file, count: semantic });
+  return { svg: serialize(document as never), issues, transformations };
 }
 
 function retainFoundationThemeOverrides(css: string): { css: string; removed: number } {
@@ -1722,7 +2828,12 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const issues = [...expressionResult.issues];
   const transformations = [...expressionResult.transformations];
   const pageBackgrounds: BackgroundSelector[] = [];
-  transformations.push(...restoreKnownLiterals(document, options.fields, options.file));
+  const cssContentAttributes = new Set(options.cssContentAttributes ?? []);
+  walk(document, (node) => {
+    if (node.tagName !== 'style') return;
+    for (const name of cssGeneratedContentAttributeNames(textContent(node))) cssContentAttributes.add(name);
+  });
+  transformations.push(...restoreKnownLiterals(document, options.fields, options.file, options.siteLiteralTokens));
 
   const removals = new Set<HtmlNode>();
   const proofReplacements = new Set<HtmlNode>();
@@ -1732,12 +2843,16 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   let riskyProof = 0;
   let standardizedForms = 0;
   let claims = 0;
+  let addresses = 0;
+  let splitPersonalization = 0;
+  let inlineSplitRisks = 0;
   let prices = 0;
   let linkRepairs = 0;
   let inlineStyles = 0;
   let namedFormFields = 0;
   let sanitizedFormWrappers = 0;
   let detachedExternalFormControls = 0;
+  let relocatedHiddenForms = 0;
   const sensitiveFormIdRenames = new Map<string, string>();
 
   walk(document, (node) => {
@@ -1773,6 +2888,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
       removeAttr(node, 'action');
       setAttr(node, 'data-dc-standard-form', 'contact');
       setAttr(node, 'data-netlify', 'true');
+      sanitizedFormWrappers += makeStandardFormAvailable(node);
 
     }
 
@@ -1791,16 +2907,21 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
       const claimRepair = neutralizeUnsupportedClaimSentences(node.value);
       node.value = claimRepair.value;
       claims += claimRepair.count;
-      const replaced = node.value.replace(PRICE, 'Contact for current pricing');
+      const replaced = neutralizeFixedPrices(node.value);
       if (replaced !== node.value) prices += 1;
       node.value = replaced;
       return;
     }
 
     if (!node.attrs) return;
+    const insideSvg = isWithinSvg(node);
     const nextAttrs: Attr[] = [];
     for (const attr of node.attrs) {
       const name = attr.name.toLowerCase();
+      if (node.tagName === 'template' && name.startsWith('shadowroot')) {
+        unsafeAttrs += 1;
+        continue;
+      }
       if (name === 'action' || name === 'formaction') {
         unsafeAttrs += 1;
         continue;
@@ -1809,7 +2930,8 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
         unsafeAttrs += 1;
         continue;
       }
-      if (URL_ATTRS.has(name) && isUnsafeStaticUrl(node.tagName ?? '', name, attr.value)) {
+      if (URL_ATTRS.has(name) && (isUnsafeStaticUrl(node.tagName ?? '', name, attr.value)
+        || (insideSvg && ['src', 'href', 'xlink:href'].includes(name) && isNonLocalSvgReference(attr.value)))) {
         unsafeAttrs += 1;
         continue;
       }
@@ -1817,7 +2939,9 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
         unsafeAttrs += 1;
         continue;
       }
-      if (name === 'style' && (/expression\s*\(/i.test(attr.value) || containsUnsafeCssReferences(attr.value))) {
+      if (name === 'style' && (/expression\s*\(/i.test(attr.value)
+        || containsUnsafeCssReferences(attr.value)
+        || (insideSvg && containsNonLocalCssReferences(attr.value)))) {
         unsafeAttrs += 1;
         continue;
       }
@@ -1826,10 +2950,21 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
           attr.value = NEUTRAL_CLAIM;
           claims += 1;
         }
-        const safeValue = attr.value.replace(PRICE, 'Contact for current pricing');
-        if (safeValue !== attr.value) prices += 1;
-        attr.value = safeValue;
       }
+      const addressContext = isAddressField(node)
+        || ((['fieldset', 'form', 'label'].includes(node.tagName ?? '') || getAttr(node, 'role') === 'group') && containsAddressField(node));
+      if (
+        (name === 'placeholder' || name === 'value' || (addressContext && (name === 'aria-label' || name === 'title')))
+        && ADDRESS_PLACEHOLDER.test(attr.value.trim())
+      ) {
+        attr.value = '{{ADDRESS}}';
+        addresses += 1;
+      }
+      const safeValue = PRICE_SEMANTIC_ATTRIBUTE_RE.test(name) || cssContentAttributes.has(name)
+        ? neutralizeFixedPrices(attr.value)
+        : attr.value;
+      if (safeValue !== attr.value) prices += 1;
+      attr.value = safeValue;
       nextAttrs.push(attr);
     }
     node.attrs = nextAttrs;
@@ -1880,12 +3015,28 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
         : { css, removed: 0 };
       if (foundationTheme.removed) transformations.push({ rule: 'align-foundation-variation', file: options.file, count: foundationTheme.removed });
       const styleIndex = inlineStyles++;
-      const repaired = repairStylesheet(foundationTheme.css, inlineStylesheetPath(options.file, styleIndex));
+      const styleFile = inlineStylesheetPath(options.file, styleIndex);
+      const local = insideSvg
+        ? stripNonLocalSvgCssReferences(foundationTheme.css, styleFile)
+        : { css: foundationTheme.css, removed: 0 };
+      unsafeAttrs += local.removed;
+      const repaired = repairStylesheet(local.css, styleFile);
       replaceWithText(node, repaired.css);
       pageBackgrounds.push(...repaired.backgrounds);
       issues.push(...repaired.issues);
       transformations.push(...repaired.transformations);
     }
+  });
+
+  // A price may be split across inline nodes (`$<span>45</span>`). Rewrite
+  // only its covered text runs; links, icons, emphasis, IDs, and attributes
+  // remain byte-for-byte structural peers.
+  walk(document, (node) => {
+    if (!node.tagName || !PRICE_TEXT_BOUNDARIES.has(node.tagName.toLowerCase())) return;
+    addresses += restoreContextualAddressText(node);
+    splitPersonalization += restoreSplitPersonalizationRuns(node, options.fields);
+    inlineSplitRisks += neutralizeSplitRiskRuns(node);
+    prices += neutralizeSplitPriceRuns(node);
   });
 
   if (sensitiveFormIdRenames.size > 0) {
@@ -1906,6 +3057,32 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   // A `form=` association can otherwise bypass descendant-only form checks;
   // orphan controls can still solicit unsupported data even when inert.
   walk(document, (node) => {
+    if (node.tagName === 'button') {
+      let physicalOwner = node.parentNode;
+      while (physicalOwner && physicalOwner.tagName !== 'form') physicalOwner = physicalOwner.parentNode;
+      if (getAttr(node, 'form') !== undefined) {
+        if (physicalOwner?.tagName === 'form' && getAttr(physicalOwner, 'data-dc-standard-form') === 'contact') {
+          removeAttr(node, 'form');
+        } else {
+          removals.add(node);
+        }
+        detachedExternalFormControls += 1;
+        return;
+      }
+      const type = getAttr(node, 'type')?.trim().toLowerCase();
+      if (!physicalOwner && type === 'submit') {
+        removals.add(node);
+        detachedExternalFormControls += 1;
+        return;
+      }
+      if (!physicalOwner && (type === undefined || type === '' || !['button', 'reset', 'submit'].includes(type))) {
+        // Outside a form, an omitted or invalid button type is a submit-state
+        // control with no submission owner. Preserve navigation/toggle styling
+        // and behavior while making its non-submit intent explicit.
+        setAttr(node, 'type', 'button');
+        detachedExternalFormControls += 1;
+      }
+    }
     if (!['input', 'select', 'textarea'].includes(node.tagName ?? '')) return;
     let owner = node.parentNode;
     while (owner && owner.tagName !== 'form') owner = owner.parentNode;
@@ -1959,6 +3136,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     if (!node.parentNode || removals.has(node.parentNode) || proofReplacements.has(node.parentNode)) continue;
     removeNode(node);
   }
+  relocatedHiddenForms = relocateToggleHiddenStandardForms(document);
   sanitizedFormWrappers += normalizeStandardFormAccessibleNames(document);
   // Netlify and ordinary form encoding omit successful controls without a
   // name. Resolve ownership after form replacement/removal so both descendant
@@ -1970,20 +3148,26 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const mainLandmarks = ensureMainLandmark(document);
   const headings = ensureHeading(document, options.file);
   const accessibility = normalizeAccessibility(document);
+  const duplicateIds = ensureUniqueDomIds(document, options.file);
   if (scripts) transformations.push({ rule: 'replace-scripts-with-audited-runtime', file: options.file, count: scripts });
   if (unsafeAttrs) transformations.push({ rule: 'strip-event-and-unsafe-url-attributes', file: options.file, count: unsafeAttrs });
   if (unsafeElements) transformations.push({ rule: 'strip-active-embedded-content', file: options.file, count: unsafeElements });
   if (riskyProof) transformations.push({ rule: 'replace-unsupported-proof', file: options.file, count: riskyProof });
   if (proofVocabulary) transformations.push({ rule: 'remove-proof-vocabulary', file: options.file, count: proofVocabulary });
+  if (splitPersonalization) transformations.push({ rule: 'restore-split-personalization-tokens', file: options.file, count: splitPersonalization });
+  if (inlineSplitRisks) transformations.push({ rule: 'neutralize-inline-split-risk', file: options.file, count: inlineSplitRisks });
   if (decorativeOverlays) transformations.push({ rule: 'relocate-orphan-decorative-overlay', file: options.file, count: decorativeOverlays });
   if (mainLandmarks) transformations.push({ rule: 'restore-main-landmark', file: options.file, count: mainLandmarks });
   if (headings) transformations.push({ rule: 'restore-page-heading', file: options.file, count: headings });
   if (accessibility) transformations.push({ rule: 'normalize-accessibility-semantics', file: options.file, count: accessibility });
+  if (duplicateIds) transformations.push({ rule: 'deduplicate-dom-ids', file: options.file, count: duplicateIds });
   if (standardizedForms) transformations.push({ rule: 'standardize-contact-form', file: options.file, count: standardizedForms });
   if (namedFormFields) transformations.push({ rule: 'name-form-controls', file: options.file, count: namedFormFields });
   if (sanitizedFormWrappers) transformations.push({ rule: 'sanitize-sensitive-form-wrapper', file: options.file, count: sanitizedFormWrappers });
   if (detachedExternalFormControls) transformations.push({ rule: 'remove-nonstandard-form-controls', file: options.file, count: detachedExternalFormControls });
+  if (relocatedHiddenForms) transformations.push({ rule: 'relocate-toggle-hidden-contact-form', file: options.file, count: relocatedHiddenForms });
   if (claims) transformations.push({ rule: 'neutralize-outcome-claims', file: options.file, count: claims });
+  if (addresses) transformations.push({ rule: 'restore-address-placeholder', file: options.file, count: addresses });
   if (prices) transformations.push({ rule: 'replace-fixed-price', file: options.file, count: prices, detail: 'Contact for current pricing' });
   if (linkRepairs) transformations.push({ rule: 'repair-navigation-targets', file: options.file, count: linkRepairs });
 
@@ -1992,6 +3176,15 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   appendHtml(body, `<script defer src="${COMPATIBILITY_SCRIPT_PATH}" data-dc-runtime="compatibility-v1"></script>`);
 
   const annotated = annotateEditableNodes(document, options.file);
+  const annotationSuppressionCount = Object.values(annotated.suppressions).reduce((sum, count) => sum + count, 0);
+  if (annotationSuppressionCount > 0) {
+    transformations.push({
+      rule: 'suppress-unreachable-customer-slots',
+      file: options.file,
+      count: annotationSuppressionCount,
+      detail: Object.entries(annotated.suppressions).map(([reason, count]) => `${reason}=${count}`).join(';'),
+    });
+  }
   if (annotated.wrappedTextNodes) {
     transformations.push({
       rule: 'wrap-direct-editable-text',

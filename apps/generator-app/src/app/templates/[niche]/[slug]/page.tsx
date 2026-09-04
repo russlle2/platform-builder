@@ -43,6 +43,7 @@ import {
   buildPageSeoInlineEdit,
   type PageSeoField,
 } from '@/lib/page-seo-settings'
+import type { CatalogRevisionPin } from '@/lib/catalog-revision'
 
 interface TemplateField {
   name: string
@@ -62,6 +63,7 @@ interface TemplateData {
   pages: string[]
   fields: TemplateField[]
   snippet: string
+  catalogRevision?: CatalogRevisionPin
 }
 
 /* ---------- Accent map ---------- */
@@ -80,6 +82,8 @@ const nicheLabels: Record<string, string> = {
   sound_bath: 'Sound Bath',
   wellness_coach: 'Wellness Coach',
 }
+
+const CHECKOUT_CATALOG_REVISION_KEY = 'pb_catalog_revision'
 
 export default function TemplateCustomizePage({
   params: paramsPromise,
@@ -151,6 +155,23 @@ export default function TemplateCustomizePage({
     getOrCreateImageOwnerId(portalSlug)
   }, [params, portalSlug])
 
+  // Carry the exact server-issued revision from the approved preview into
+  // checkout. The checkout API re-resolves and verifies it server-side.
+  useEffect(() => {
+    if (!params || !template || portalSlug) return
+    try {
+      if (template.catalogRevision) {
+        sessionStorage.setItem(CHECKOUT_CATALOG_REVISION_KEY, JSON.stringify({
+          niche: params.niche,
+          template: params.slug,
+          catalogRevision: template.catalogRevision,
+        }))
+      } else {
+        sessionStorage.removeItem(CHECKOUT_CATALOG_REVISION_KEY)
+      }
+    } catch { /* quota exceeded — checkout will resolve the active revision */ }
+  }, [params, portalSlug, template])
+
   // Fetch available variation options
   useEffect(() => {
     fetch('/api/templates/variations')
@@ -163,14 +184,8 @@ export default function TemplateCustomizePage({
   // + auto-populate from saved Preview Your Business info if available
   useEffect(() => {
     if (!params) return
-    fetch(`/api/templates/${params.niche}/${params.slug}`)
-      .then((r) => {
-        if (!r.ok) throw new Error('Template not found')
-        return r.json()
-      })
-      .then(async (data: TemplateData) => {
-        setTemplate(data)
-
+    let cancelled = false
+    ;(async () => {
         let portalData: Record<string, unknown> | null = null
         if (portalSlug) {
           const token = getStoredPortalToken(portalSlug) || ''
@@ -185,6 +200,28 @@ export default function TemplateCustomizePage({
           if (portalData.niche !== params.niche || portalData.template !== params.slug) {
             throw new Error('This template does not match the site in your portal.')
           }
+        }
+
+        const metadataResponse = await fetch(`/api/templates/${params.niche}/${params.slug}`, portalData?.catalogRevision
+          ? {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ catalogRevision: portalData.catalogRevision }),
+            }
+          : undefined)
+        const metadata = await metadataResponse.json().catch(() => ({}))
+        if (!metadataResponse.ok) {
+          throw new Error(
+            typeof metadata.error === 'string'
+              ? metadata.error
+              : 'Template not found',
+          )
+        }
+        if (cancelled) return
+        const data = metadata as TemplateData
+        setTemplate(data)
+
+        if (portalData) {
           if (typeof portalData.colorScheme === 'string') setColorScheme(portalData.colorScheme)
           if (typeof portalData.fontVariation === 'string') setFontVariation(portalData.fontVariation)
           if (typeof portalData.structureVariation === 'string') setStructureVariation(portalData.structureVariation)
@@ -258,11 +295,12 @@ export default function TemplateCustomizePage({
         })
         setValues(initial)
         setLoading(false)
-      })
-      .catch((e) => {
+      })().catch((e) => {
+        if (cancelled) return
         setError(e.message)
         setLoading(false)
       })
+    return () => { cancelled = true }
   }, [params, portalSlug])
 
   // Listen for postMessage from iframe
@@ -399,13 +437,28 @@ export default function TemplateCustomizePage({
         const res = await fetch(`/api/templates/${params.niche}/${params.slug}/preview`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page, values, colorScheme, fontVariation, structureVariation, customTheme }),
+          body: JSON.stringify({
+            page,
+            values,
+            colorScheme,
+            fontVariation,
+            structureVariation,
+            customTheme,
+            catalogRevision: template.catalogRevision,
+          }),
         })
-        if (!res.ok) throw new Error('Failed to load preview')
-        const data = await res.json()
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          throw new Error(
+            typeof data.error === 'string' ? data.error : 'Failed to load preview',
+          )
+        }
         if (requestId !== previewRequestIdRef.current) return
 
-        const assetBase = `/api/templates/${params.niche}/${params.slug}/assets`
+        const revision = template.catalogRevision
+        const assetBase = revision?.catalogHash && revision.manifestHash
+          ? `/api/templates/${params.niche}/${params.slug}/assets/__catalog/${revision.catalogHash}/${revision.manifestHash}`
+          : `/api/templates/${params.niche}/${params.slug}/assets`
         const html = composeCustomerPreviewDocument({
           html: data.html as string,
           css: typeof data.css === 'string' ? data.css : null,

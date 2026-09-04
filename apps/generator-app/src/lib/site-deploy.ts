@@ -16,13 +16,14 @@ import {
   readTemplateFile,
   readTemplateFileBuffer,
   hydrateTemplate,
-  getTemplate,
+  getTemplateAtCatalogRevision,
 } from '@/lib/templates/niche-registry'
 import { buildVariationCSS } from '@/lib/templates/variations'
 import { buildCustomThemeCss, type CustomTheme } from '@/lib/custom-theme'
 import { combineTemplateThemeStylesheets } from '@/lib/template-preview-composition'
 import {
   assertCatalogRevision,
+  snapshotCatalogRevision,
   type CatalogRevisionPin,
 } from '@/lib/catalog-revision'
 import {
@@ -313,9 +314,10 @@ export async function buildDeployFiles(
     siteUrl,
   } = opts
 
-  const templateData = await getTemplate(niche, templateSlug)
+  const templateData = await getTemplateAtCatalogRevision(niche, templateSlug, catalogRevision)
   if (!templateData) return null
   assertCatalogRevision(templateData, catalogRevision)
+  const resolvedCatalogRevision = snapshotCatalogRevision(templateData)
   const searchEngineFiles = buildSearchEngineFiles(siteUrl, templateData.pages)
   if (!searchEngineFiles) return null
 
@@ -327,8 +329,8 @@ export async function buildDeployFiles(
   // round-trip in production, so serial loops blow up latency.
   const stylesheetPaths = [...new Set(templateData.files.filter((file) => /\.css$/i.test(file)))].sort()
   const [rawPages, stylesheetValues] = await Promise.all([
-    Promise.all(templateData.pages.map((page) => readTemplateFile(niche, templateSlug, page))),
-    Promise.all(stylesheetPaths.map((file) => readTemplateFile(niche, templateSlug, file))),
+    Promise.all(templateData.pages.map((page) => readTemplateFile(niche, templateSlug, page, resolvedCatalogRevision))),
+    Promise.all(stylesheetPaths.map((file) => readTemplateFile(niche, templateSlug, file, resolvedCatalogRevision))),
   ])
   const stylesheets = stylesheetPaths.map((path, index) => ({ path, css: stylesheetValues[index] }))
   const cssFile = stylesheets.find((entry) => entry.path === 'assets/css/styles.css')?.css || null
@@ -367,7 +369,7 @@ export async function buildDeployFiles(
   const pageSet = new Set(templateData.pages)
   const assets = templateData.files.filter((file) => !pageSet.has(file))
   const assetBuffers = await Promise.all(
-    assets.map((file) => readTemplateFileBuffer(niche, templateSlug, file)),
+    assets.map((file) => readTemplateFileBuffer(niche, templateSlug, file, resolvedCatalogRevision)),
   )
   assets.forEach((file, index) => {
     const content = assetBuffers[index]
