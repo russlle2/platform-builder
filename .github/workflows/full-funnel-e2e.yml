@@ -45,6 +45,16 @@ jobs:
 
       - run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
 
+      - name: Verify the staging harness secret is strong
+        shell: bash
+        run: |
+          if [[ ${#TEST_PURCHASE_ADMIN_SECRET} -lt 32 ]]; then
+            echo "TEST_PURCHASE_ADMIN_SECRET must contain at least 32 characters." >&2
+            exit 1
+          fi
+        env:
+          TEST_PURCHASE_ADMIN_SECRET: ${{ secrets.TEST_PURCHASE_ADMIN_SECRET }}
+
       - run: pnpm --filter @platform-builder/generator-app exec playwright test e2e/full-funnel.spec.ts
         env:
           BASE_URL: https://${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}

@@ -176,7 +176,7 @@ All variables live in `apps/generator-app/.env.local` (local) or in your hosting
 |----------|---------|-------------|
 | `DAILYCLARITY_ENVIRONMENT` | `development` | Must be exactly `staging`; `production` always rejects test purchases |
 | `ENABLE_TEST_PURCHASE` | `false` | Set to `"true"` only on the isolated staging site |
-| `TEST_PURCHASE_ADMIN_SECRET` | — | Staging-only secret passed as `x-test-purchase-secret` |
+| `TEST_PURCHASE_ADMIN_SECRET` | — | Independent staging-only secret of at least 32 characters, passed as `x-test-purchase-secret` |
 | `STAGING_APP_HOST` | — | Exact allowed staging request host, including any non-default port |
 | `STAGING_SUPABASE_PROJECT_REF` | — | Exact isolated staging project ref; must also match `DAILYCLARITY_SUPABASE_PROJECT_REF` and the Supabase URL |
 
@@ -202,7 +202,7 @@ The app is deployed on Netlify (or any Next.js-compatible host).
 1. Keep connected-repository production auto-publishing **disabled**. Production publication is CLI-driven only through `.github/workflows/deploy.yml`; a normal push must never bypass its validation, database-schema, protected-environment, and site-identity gates.
 2. Create a completely separate staging Netlify site and bind the GitHub `staging` environment to its own token/site ID. Never reuse the production site ID.
 3. In each protected GitHub environment, set `NETLIFY_EXPECTED_SITE_ID`, `NETLIFY_EXPECTED_SITE_HOSTNAME`, and `NETLIFY_EXPECTED_ACCOUNT_SLUG` as environment variables. The authenticated Netlify API response must match all three before any app or Blob publication.
-4. Add the runtime environment variables in Netlify → Site settings → Environment variables. Set `DAILYCLARITY_ENVIRONMENT` to the matching environment name. Keep `NEXT_PUBLIC_SUPABASE_URL` and `DAILYCLARITY_SUPABASE_PROJECT_REF` readable, non-secret, and available to both builds and functions; mark `SUPABASE_SERVICE_ROLE_KEY` secret and expose it only to functions. The release gate compares the two public identities to the schema-gated GitHub environment and then proves the deployed runtime can execute the readiness RPC with its own secret.
+4. Add the runtime environment variables in Netlify → Site settings → Environment variables. Set `DAILYCLARITY_ENVIRONMENT` to the matching environment name. Keep `NEXT_PUBLIC_SUPABASE_URL`, `DAILYCLARITY_SUPABASE_PROJECT_REF`, and `DAILYCLARITY_ENVIRONMENT` readable, non-secret, and available to both builds and functions; mark `SUPABASE_SERVICE_ROLE_KEY` secret and expose it only to functions. The release gate compares all three public identities to the protected GitHub environment and then proves the deployed runtime can execute the readiness RPC with its own secret.
 5. Apply and verify the matching Supabase migration before deploying the app. The workflow calls the value-free `launch_schema_readiness()` sentinel and refuses an old or partial schema.
 6. Publish to staging with `.github/workflows/deploy-staging.yml` (`STAGE` confirmation), complete the full-funnel test, then promote reviewed `main` with `.github/workflows/deploy.yml` (`DEPLOY` confirmation).
 

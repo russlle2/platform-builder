@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getTestPurchaseGuardIssue } from './test-purchase-guard'
+import { getTestPurchaseGuardIssue, hasSecureTestPurchaseSecret } from './test-purchase-guard'
 
 const staging = {
   DAILYCLARITY_ENVIRONMENT: 'staging',
@@ -34,5 +34,12 @@ describe('test purchase staging boundary', () => {
       'https://dailyclarity-staging.netlify.app/api/test-purchase',
       { ...staging, NEXT_PUBLIC_SUPABASE_URL: 'https://productionref.supabase.co' },
     )).toBe('STAGING_SUPABASE_MISMATCH')
+  })
+
+  it('requires at least 32 non-whitespace characters for the privileged harness secret', () => {
+    expect(hasSecureTestPurchaseSecret({ TEST_PURCHASE_ADMIN_SECRET: 'x'.repeat(31) })).toBe(false)
+    expect(hasSecureTestPurchaseSecret({
+      TEST_PURCHASE_ADMIN_SECRET: `  ${'x'.repeat(32)}  `,
+    })).toBe(true)
   })
 })

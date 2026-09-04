@@ -42,6 +42,7 @@ assertNetlifyRuntimeEnvironment(await envResponse.json(), {
   context: 'production',
   expectedSupabaseUrl: process.env.NETLIFY_EXPECTED_SUPABASE_URL,
   expectedSupabaseProjectRef: process.env.NETLIFY_EXPECTED_SUPABASE_PROJECT_REF,
+  expectedDeploymentEnvironment: process.env.DEPLOY_ENVIRONMENT,
 })
 
 console.log(

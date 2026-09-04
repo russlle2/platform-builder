@@ -32,6 +32,7 @@ interface SiteData {
   netlify_site_id?: string
   site_url?: string
   plan?: string
+  allowSearchIndexing?: boolean
   [key: string]: unknown
 }
 
@@ -127,6 +128,7 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     imageSwaps: data.imageSwaps,
     slug,
     siteUrl: data.site_url,
+    allowSearchIndexing: data.allowSearchIndexing !== false,
   })
   if (!deployFiles) return false
   await deploySiteFiles(siteId, deployFiles)

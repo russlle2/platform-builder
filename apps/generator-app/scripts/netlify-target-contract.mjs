@@ -1,4 +1,5 @@
 export const PRODUCTION_NETLIFY_SITE_ID = '4a98d266-bb9f-44ab-bf27-30597d741705'
+const PRODUCTION_HOSTNAMES = new Set(['dailyclarity.org', 'www.dailyclarity.org'])
 
 function normalized(value) {
   return typeof value === 'string' ? value.trim().toLowerCase() : ''
@@ -68,6 +69,12 @@ export function assertNetlifyTarget(site, config) {
   if (!boundHostnames.has(expectedHostname)) {
     throw new Error('Netlify hostname does not match the protected environment identity.')
   }
+  if (
+    environment === 'staging' &&
+    [...boundHostnames].some((hostname) => PRODUCTION_HOSTNAMES.has(hostname))
+  ) {
+    throw new Error('Staging may not bind a production DailyClarity hostname.')
+  }
   if (normalized(site?.account_slug) !== expectedAccountSlug) {
     throw new Error('Netlify account does not match the protected environment identity.')
   }
@@ -87,8 +94,12 @@ export function assertNetlifyRuntimeEnvironment(environmentVariables, config) {
   const context = normalized(config.context) || 'production'
   const expectedUrl = normalizedUrl(config.expectedSupabaseUrl)
   const expectedRef = normalized(config.expectedSupabaseProjectRef)
+  const expectedDeploymentEnvironment = normalized(config.expectedDeploymentEnvironment)
   if (!expectedUrl || !expectedRef) {
     throw new Error('Expected Netlify Supabase identity is incomplete.')
+  }
+  if (!['staging', 'production'].includes(expectedDeploymentEnvironment)) {
+    throw new Error('Expected Netlify deployment environment is incomplete.')
   }
 
   const required = new Map([
@@ -111,6 +122,22 @@ export function assertNetlifyRuntimeEnvironment(environmentVariables, config) {
     if (actual !== expected) {
       throw new Error(`Netlify ${key} does not match the protected database identity.`)
     }
+  }
+
+  const deploymentEnvironment = environmentVariables.find(
+    (entry) => entry?.key === 'DAILYCLARITY_ENVIRONMENT',
+  )
+  if (!deploymentEnvironment || deploymentEnvironment.is_secret) {
+    throw new Error('Netlify DAILYCLARITY_ENVIRONMENT must be a readable deployment identity.')
+  }
+  const deploymentScopes = new Set(
+    Array.isArray(deploymentEnvironment.scopes) ? deploymentEnvironment.scopes : [],
+  )
+  if (!deploymentScopes.has('builds') || !deploymentScopes.has('functions')) {
+    throw new Error('DAILYCLARITY_ENVIRONMENT must be available to Netlify builds and functions.')
+  }
+  if (normalized(contextValue(deploymentEnvironment, context)) !== expectedDeploymentEnvironment) {
+    throw new Error('Netlify DAILYCLARITY_ENVIRONMENT does not match the protected environment.')
   }
 
   const serviceRole = environmentVariables.find(

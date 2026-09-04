@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server'
 import { timingSafeEqual } from 'node:crypto'
 import { createClient } from '@supabase/supabase-js'
 import { provisionSite, deploySiteFiles, deleteSite } from '@/lib/netlify'
-import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
-import type { ImageSwap } from '@/lib/image-swaps'
+import {
+  buildDeployFiles,
+  sanitizeCustomerValues,
+  sanitizeInlineEditMap,
+} from '@/lib/site-deploy'
+import { sanitizeImageSwapMap } from '@/lib/image-swaps'
 import {
   CUSTOMER_IMAGES_BUCKET,
   migrateImagesToSiteSlug,
@@ -11,13 +15,19 @@ import {
 } from '@/lib/customer-images'
 import { buildPortalMagicLink, createPortalAccessCredentials } from '@/lib/portal-auth'
 import { sendOrderConfirmationEmail } from '@/lib/email'
-import { sanitizeCustomTheme, type CustomTheme } from '@/lib/custom-theme'
+import { sanitizeCustomTheme } from '@/lib/custom-theme'
 import { isDraftImageOwner } from '@/lib/image-owner'
 import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
-import { getTestPurchaseGuardIssue } from '@/lib/test-purchase-guard'
+import {
+  getTestPurchaseGuardIssue,
+  hasSecureTestPurchaseSecret,
+} from '@/lib/test-purchase-guard'
+import { readBoundedJson } from '@/lib/bounded-json'
+
+const MAX_TEST_PURCHASE_REQUEST_BYTES = 512_000
 
 function hasTestPurchaseSecret(req: Request): boolean {
-  const expected = process.env.TEST_PURCHASE_ADMIN_SECRET
+  const expected = process.env.TEST_PURCHASE_ADMIN_SECRET?.trim()
   const provided = (req.headers.get('x-test-purchase-secret') || '').trim()
   if (!expected || !provided) return false
   const expectedBytes = Buffer.from(expected)
@@ -48,11 +58,10 @@ export async function POST(req: Request) {
   }
 
   // Gate 2: secret header must match TEST_PURCHASE_ADMIN_SECRET
-  const expectedSecret = process.env.TEST_PURCHASE_ADMIN_SECRET
-  if (!expectedSecret) {
+  if (!hasSecureTestPurchaseSecret()) {
     return NextResponse.json(
-      { error: 'Test purchase is not configured.' },
-      { status: 403 }
+      { error: 'Test purchase is not securely configured.' },
+      { status: 503 }
     )
   }
 
@@ -72,11 +81,33 @@ export async function POST(req: Request) {
       { status: 503 },
     )
   }
+  const portalCredentials = createPortalAccessCredentials()
+  if (!portalCredentials) {
+    return NextResponse.json(
+      { error: 'The isolated staging portal harness is not fully configured.' },
+      { status: 503 },
+    )
+  }
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { persistSession: false },
   })
 
-  const body = await req.json()
+  const parsedBody = await readBoundedJson(req, MAX_TEST_PURCHASE_REQUEST_BYTES)
+  if (!parsedBody.ok) {
+    return NextResponse.json(
+      {
+        error: parsedBody.reason === 'too_large'
+          ? 'Test purchase request is too large.'
+          : 'Invalid test purchase request.',
+      },
+      { status: parsedBody.reason === 'too_large' ? 413 : 400 },
+    )
+  }
+  if (!parsedBody.value || typeof parsedBody.value !== 'object' || Array.isArray(parsedBody.value)) {
+    return NextResponse.json({ error: 'Invalid test purchase request.' }, { status: 400 })
+  }
+
+  const body = parsedBody.value as Record<string, unknown>
   const {
     slug,
     template: templateSlug,
@@ -90,31 +121,32 @@ export async function POST(req: Request) {
     imageSwaps = {},
     imageOwner = '',
     customTheme = null,
-  } = body as {
-    slug?: string
-    template?: string
-    niche?: string
-    planKey?: string
-    colorScheme?: string
-    fontVariation?: string
-    structureVariation?: string
-    customerValues?: Record<string, string>
-    inlineEdits?: Record<string, InlineTextEdit[]>
-    imageSwaps?: Record<string, ImageSwap[]>
-    imageOwner?: string
-    customTheme?: CustomTheme | null
-  }
+  } = body
 
-  if (!slug || !templateSlug || !niche) {
+  if (
+    typeof slug !== 'string' ||
+    typeof templateSlug !== 'string' ||
+    typeof niche !== 'string' ||
+    typeof planKey !== 'string' ||
+    typeof colorScheme !== 'string' ||
+    typeof fontVariation !== 'string' ||
+    typeof structureVariation !== 'string'
+  ) {
     return NextResponse.json({ error: 'slug, template, and niche are required' }, { status: 400 })
   }
+
+  const safeCustomerValues = sanitizeCustomerValues(customerValues)
+  const safeInlineEdits = sanitizeInlineEditMap(inlineEdits)
+  const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
+  const safeImageOwner = typeof imageOwner === 'string' ? imageOwner.trim().slice(0, 200) : ''
+  const safeCustomTheme = sanitizeCustomTheme(customTheme)
 
   const normalizedSlug = slug
     .toLowerCase()
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '')
-  const customerEmail = (customerValues.EMAIL || '').trim().toLowerCase()
+  const customerEmail = (safeCustomerValues.EMAIL || '').trim().toLowerCase()
   if (!/^e2e-[a-z0-9._+-]+@dailyclarity\.test$/.test(customerEmail)
       || !/^e2e-[a-z0-9-]{1,50}$/.test(normalizedSlug)) {
     return NextResponse.json(
@@ -129,12 +161,11 @@ export async function POST(req: Request) {
   let netlifyDefaultDomain = ''
   let deploymentSucceeded = false
   let deploymentError: string | null = null
-  let resolvedImageSwaps = imageSwaps as Record<string, ImageSwap[]>
-  const portalCredentials = createPortalAccessCredentials()
+  let resolvedImageSwaps = safeImageSwaps
 
   const imageSession = validateCheckoutImageSession(
     resolvedImageSwaps,
-    isDraftImageOwner(imageOwner) ? imageOwner : null,
+    isDraftImageOwner(safeImageOwner) ? safeImageOwner : null,
   )
   if (!imageSession.ok) {
     return NextResponse.json(
@@ -180,7 +211,9 @@ export async function POST(req: Request) {
 
   // ── 2. Provision Netlify site ────────────────────────────────────
   try {
-    const site = await provisionSite(normalizedSlug)
+    // The staging harness must not claim or depend on public DailyClarity DNS.
+    // Production fulfillment continues to use the branded hostname path.
+    const site = await provisionSite(normalizedSlug, { useNetlifyDefaultDomain: true })
     siteId = site.siteId
     siteUrl = site.siteUrl
     netlifyDefaultDomain = site.defaultDomain
@@ -191,15 +224,16 @@ export async function POST(req: Request) {
       const deployFiles = await buildDeployFiles({
         niche,
         templateSlug,
-        customerValues,
+        customerValues: safeCustomerValues,
         colorScheme,
         fontVariation,
         structureVariation,
-        inlineEdits,
+        inlineEdits: safeInlineEdits,
         imageSwaps: resolvedImageSwaps,
         slug: normalizedSlug,
         siteUrl,
-        customTheme: sanitizeCustomTheme(customTheme),
+        customTheme: safeCustomTheme,
+        allowSearchIndexing: false,
       })
       if (deployFiles) {
         const deploy = await deploySiteFiles(siteId, deployFiles)
@@ -231,7 +265,7 @@ export async function POST(req: Request) {
       .upsert({
         slug: normalizedSlug,
         status: deploymentSucceeded ? 'active' : 'provisioning_failed',
-        portal_token_hash: portalCredentials?.hash ?? null,
+        portal_token_hash: portalCredentials.hash,
         owner_email: customerEmail,
         data: {
           niche,
@@ -239,9 +273,9 @@ export async function POST(req: Request) {
           colorScheme,
           fontVariation,
           structureVariation,
-          customTheme: sanitizeCustomTheme(customTheme),
-          customerValues,
-          inlineEdits,
+          customTheme: safeCustomTheme,
+          customerValues: safeCustomerValues,
+          inlineEdits: safeInlineEdits,
           imageSwaps: resolvedImageSwaps,
           imageOwner: normalizedSlug,
           email: customerEmail,
@@ -250,6 +284,7 @@ export async function POST(req: Request) {
           netlify_default_domain: netlifyDefaultDomain,
           plan: planKey,
           test_purchase: true,
+          allowSearchIndexing: false,
           ...(deploymentError ? { provisioning_error: deploymentError } : {}),
         },
       }, { onConflict: 'slug' })
@@ -261,8 +296,8 @@ export async function POST(req: Request) {
       throw new Error(deploymentError || 'Template deployment did not complete.')
     }
 
-    const businessName = customerValues.BUSINESS_NAME || normalizedSlug
-    await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials?.token, niche).catch((err) =>
+    const businessName = safeCustomerValues.BUSINESS_NAME || normalizedSlug
+    await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials.token, niche).catch((err) =>
       console.error('[test-purchase] order confirmation email failed:', err),
     )
     log.push(`Order confirmation email sent to ${customerEmail}`)
@@ -286,10 +321,8 @@ export async function POST(req: Request) {
     slug: normalizedSlug,
     siteUrl: siteUrl || null,
     siteId: siteId || null,
-    portalAccessToken: portalCredentials?.token ?? null,
-    portalUrl: portalCredentials
-      ? buildPortalMagicLink(normalizedSlug, portalCredentials.token)
-      : null,
+    portalAccessToken: portalCredentials.token,
+    portalUrl: buildPortalMagicLink(normalizedSlug, portalCredentials.token),
     log,
   }
   if (!deploymentSucceeded) {
@@ -304,7 +337,16 @@ export async function POST(req: Request) {
 /** Remove every artifact created by the staging-only E2E purchase. */
 export async function DELETE(req: Request) {
   const guardIssue = getTestPurchaseGuardIssue(req.url)
-  if (guardIssue || !hasTestPurchaseSecret(req)) {
+  if (guardIssue) {
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
+  }
+  if (!hasSecureTestPurchaseSecret()) {
+    return NextResponse.json(
+      { error: 'Test purchase is not securely configured.' },
+      { status: 503 },
+    )
+  }
+  if (!hasTestPurchaseSecret(req)) {
     return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
   }
   const url = new URL(req.url)

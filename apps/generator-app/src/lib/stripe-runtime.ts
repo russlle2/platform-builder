@@ -20,6 +20,19 @@ export const TEMPLATE_FULFILLMENT_ENV_KEYS = [
 
 type RuntimeEnvironment = Partial<Record<string, string | undefined>>
 
+/** The scheduled recovery function should be inert until its isolated runtime is complete. */
+export function hasStripeFulfillmentRecoveryConfig(
+  env: RuntimeEnvironment = process.env,
+): boolean {
+  const origin = env.URL?.trim() || env.DEPLOY_PRIME_URL?.trim() || env.NEXT_PUBLIC_SITE_URL?.trim()
+  return Boolean(
+    origin &&
+    env.NEXT_PUBLIC_SUPABASE_URL?.trim() &&
+    env.SUPABASE_SERVICE_ROLE_KEY?.trim() &&
+    (env.STRIPE_FULFILLMENT_WORKER_SECRET?.trim().length || 0) >= 32
+  )
+}
+
 /** Configuration required to accept a template purchase that can be fulfilled. */
 export function getMissingTemplateFulfillmentConfig(
   env: RuntimeEnvironment = process.env,

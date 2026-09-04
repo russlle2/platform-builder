@@ -2,6 +2,12 @@ import { getSupabaseProjectRef } from './stripe-runtime'
 
 type GuardEnvironment = Partial<Record<string, string | undefined>>
 
+export function hasSecureTestPurchaseSecret(
+  env: GuardEnvironment = process.env,
+): boolean {
+  return (env.TEST_PURCHASE_ADMIN_SECRET?.trim().length || 0) >= 32
+}
+
 export function getTestPurchaseGuardIssue(
   requestUrl: string,
   env: GuardEnvironment = process.env,

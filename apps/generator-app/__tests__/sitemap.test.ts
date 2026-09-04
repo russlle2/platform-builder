@@ -1,13 +1,16 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import sitemap from '@/app/sitemap'
+import robots from '@/app/robots'
 
 describe('sitemap domain', () => {
   const originalSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
   const originalPlatformUrl = process.env.NEXT_PUBLIC_PLATFORM_URL
+  const originalEnvironment = process.env.DAILYCLARITY_ENVIRONMENT
 
   beforeEach(() => {
     delete process.env.NEXT_PUBLIC_SITE_URL
     delete process.env.NEXT_PUBLIC_PLATFORM_URL
+    delete process.env.DAILYCLARITY_ENVIRONMENT
   })
 
   afterEach(() => {
@@ -20,6 +23,11 @@ describe('sitemap domain', () => {
       process.env.NEXT_PUBLIC_PLATFORM_URL = originalPlatformUrl
     } else {
       delete process.env.NEXT_PUBLIC_PLATFORM_URL
+    }
+    if (originalEnvironment !== undefined) {
+      process.env.DAILYCLARITY_ENVIRONMENT = originalEnvironment
+    } else {
+      delete process.env.DAILYCLARITY_ENVIRONMENT
     }
   })
 
@@ -55,5 +63,14 @@ describe('sitemap domain', () => {
     expect(urls).toContain('https://dailyclarity.org/privacy')
     expect(urls).toContain('https://dailyclarity.org/terms')
     expect(urls).toContain('https://dailyclarity.org/refund-policy')
+  })
+
+  it('blocks indexing and omits the sitemap in staging', () => {
+    process.env.DAILYCLARITY_ENVIRONMENT = 'staging'
+
+    expect(sitemap()).toEqual([])
+    expect(robots()).toEqual({
+      rules: [{ userAgent: '*', disallow: '/' }],
+    })
   })
 })

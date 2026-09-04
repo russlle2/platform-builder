@@ -49,6 +49,22 @@ test('accepts a separate staging site using its authenticated Netlify URL', () =
   }))
 })
 
+test('rejects a staging site carrying a production hostname alias', () => {
+  assert.throws(() => assertNetlifyTarget({
+    id: 'staging-site-id',
+    name: 'dailyclarity-staging',
+    ssl_url: 'https://dailyclarity-staging.netlify.app',
+    account_slug: 'christopherlake96',
+    domain_aliases: ['www.dailyclarity.org'],
+  }, {
+    environment: 'staging',
+    configuredSiteId: 'staging-site-id',
+    expectedSiteId: 'staging-site-id',
+    expectedHostname: 'dailyclarity-staging.netlify.app',
+    expectedAccountSlug: 'christopherlake96',
+  }), /production DailyClarity hostname/)
+})
+
 test('rejects site, hostname, and account mismatches', () => {
   const base = {
     environment: 'staging',
@@ -66,6 +82,9 @@ test('rejects site, hostname, and account mismatches', () => {
     ...productionSite,
     id: 'staging-site-id',
     default_domain: 'staging.example.netlify.app',
+    custom_domain: null,
+    domain_aliases: [],
+    ssl_url: 'https://staging.example.netlify.app',
     account_slug: 'another-account',
   }, base), /account/)
 })
@@ -92,6 +111,12 @@ const runtimeEnvironment = [
     values: [{ context: 'production', value: '' }],
     is_secret: true,
   },
+  {
+    key: 'DAILYCLARITY_ENVIRONMENT',
+    scopes: ['builds', 'functions'],
+    values: [{ context: 'production', value: 'staging' }],
+    is_secret: false,
+  },
 ]
 
 test('binds Netlify build and function scopes to the schema-gated database', () => {
@@ -99,6 +124,7 @@ test('binds Netlify build and function scopes to the schema-gated database', () 
     context: 'production',
     expectedSupabaseUrl: 'https://stagingref.supabase.co',
     expectedSupabaseProjectRef: 'stagingref',
+    expectedDeploymentEnvironment: 'staging',
   }))
 })
 
@@ -107,6 +133,7 @@ test('rejects crossed, hidden, under-scoped, or unprotected Netlify database val
     context: 'production',
     expectedSupabaseUrl: 'https://stagingref.supabase.co',
     expectedSupabaseProjectRef: 'stagingref',
+    expectedDeploymentEnvironment: 'staging',
   }
   assert.throws(() => assertNetlifyRuntimeEnvironment(
     runtimeEnvironment.map((entry) => entry.key === 'NEXT_PUBLIC_SUPABASE_URL'
@@ -132,4 +159,10 @@ test('rejects crossed, hidden, under-scoped, or unprotected Netlify database val
       : entry),
     config,
   ), /must exist and be marked secret/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment(
+    runtimeEnvironment.map((entry) => entry.key === 'DAILYCLARITY_ENVIRONMENT'
+      ? { ...entry, values: [{ context: 'production', value: 'production' }] }
+      : entry),
+    config,
+  ), /does not match the protected environment/)
 })
