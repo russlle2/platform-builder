@@ -73,11 +73,11 @@ test('every topology page uses the shared customer route while nested assets and
   const evidenceRoot = join(root, 'evidence');
   const pages = ['index.html', 'pages/services.html', 'pages/contact/form.html'];
   const pageMarkup = (page: string, prefix: string, heading: string, link: string) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${heading}</title>
-    <link rel="stylesheet" href="${prefix}assets/css/styles.css"><link rel="stylesheet" href="${prefix}assets/css/secondary.css"></head><body>
+    <link rel="stylesheet" href="${prefix}assets/css/styles.css"><link rel="stylesheet" href="${prefix}assets/css/secondary.css"></head><body class="hero" data-dc-image-id="css_000000000000000001">
     <header><nav aria-label="Primary"><button type="button" aria-controls="site-menu" aria-expanded="false">Menu</button><div id="site-menu"><a href="${link}">Another page</a></div></nav></header>
     <main><h1 data-dc-edit-id="txt_000000000000000001">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="txt_000000000000000002">${heading} gives visitors clear, practical information about the service, what to expect, and how to make a confident next-step decision.</p>
     <p data-dc-edit-id="txt_000000000000000003" data-dc-edit-attribute="title" title="Helpful context">Hover for more context about this page.</p>
-    <img data-dc-image-id="img_000000000000000001" src="${prefix}assets/img/hero.png" alt="Calm geometric landscape">
+    <a class="linked-image" href="${link}"><img data-dc-image-id="img_000000000000000001" src="${prefix}assets/img/hero.png" alt="Calm geometric landscape"></a>
     <picture><source data-dc-image-id="img_000000000000000002" media="(min-width: 700px)" srcset="${prefix}assets/img/hero.png 1x"><img data-dc-image-id="img_000000000000000003" src="${prefix}assets/img/hero.png" alt="Responsive calm geometric landscape"></picture>
     <form name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><label>Name <input name="name" autocomplete="name" required></label><label>Email <input type="email" name="email" autocomplete="email" required></label><label>Phone <input type="tel" name="phone" autocomplete="tel"></label><label>Message <textarea name="message" required></textarea></label><button type="submit">Send inquiry</button></form>
     <a href="mailto:{{EMAIL}}">Email the studio</a></main><script defer src="assets/js/dc-compat.js" data-dc-runtime="compatibility-v1"></script></body></html>`;
@@ -212,6 +212,7 @@ test('every topology page uses the shared customer route while nested assets and
             .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
           document.querySelector<HTMLElement>('[data-dc-image-id="img_000000000000000003"]')!
             .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+          document.body.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
           document.querySelector<HTMLAnchorElement>('a[href="../../index.html"]')!
             .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
 
@@ -230,6 +231,7 @@ test('every topology page uses the shared customer route while nested assets and
             standalone: document.querySelector<HTMLImageElement>('[data-dc-image-id="img_000000000000000001"]')!.getAttribute('src'),
             pictureSource: document.querySelector<HTMLSourceElement>('[data-dc-image-id="img_000000000000000002"]')!.getAttribute('srcset'),
             pictureImage: document.querySelector<HTMLImageElement>('[data-dc-image-id="img_000000000000000003"]')!.getAttribute('src'),
+            background: document.body.style.backgroundImage,
             compatibilityEvent,
           };
         });
@@ -244,6 +246,7 @@ test('every topology page uses the shared customer route while nested assets and
         assert.match(frameState.standalone ?? '', /^data:image\/png;base64,/);
         assert.match(frameState.pictureSource ?? '', /^data:image\/png;base64,/);
         assert.match(frameState.pictureImage ?? '', /^data:image\/png;base64,/);
+        assert.match(frameState.background, /^url\("data:image\/png;base64,/);
         assert.equal(parentState.promptCalls, 1);
         assert.ok(parentState.messages.some((message) => message.type === 'textEdited' && message.nodeId === 'txt_000000000000000002'));
         assert.ok(parentState.messages.some((message) => message.type === 'editValueRequest' && message.attribute === 'title'));
@@ -255,7 +258,14 @@ test('every topology page uses the shared customer route while nested assets and
           && message.slotId === 'img_000000000000000003'
           && Array.isArray(message.pictureSlotIds)
           && message.pictureSlotIds.length === 2));
-        assert.ok(parentState.messages.some((message) => message.type === 'navigatePage' && message.page === 'index.html'));
+        assert.ok(parentState.messages.some((message) => message.type === 'imageSwapRequest'
+          && message.slotId === 'css_000000000000000001'
+          && Array.isArray(message.pictureSlotIds)
+          && message.pictureSlotIds.length === 1));
+        assert.equal(parentState.messages.filter((message) => message.type === 'imageSwapRequest').length, 3);
+        const navigationMessages = parentState.messages.filter((message) => message.type === 'navigatePage');
+        assert.equal(navigationMessages.length, 1);
+        assert.equal(navigationMessages[0]?.page, 'index.html');
         await context.close();
       } finally {
         await browser.close();

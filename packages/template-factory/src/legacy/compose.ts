@@ -1150,6 +1150,21 @@ function repairLocalReferences(
     walk(document, (node) => {
       if (!node.tagName) return;
       const rel = (getAttr(node, 'rel') ?? '').toLowerCase().split(/\s+/);
+      // A bare `<img>` is valid enough for parse5 and the static reference
+      // scanner to overlook, but browsers expose it as a completed image with
+      // zero natural width. Give every meaningful image an offline fallback;
+      // the existing stable image ID keeps it customer-replaceable.
+      if (node.tagName === 'img' && getAttr(node, 'src') === undefined) {
+        setAttr(node, 'src', relativeReference(page, REPAIR_IMAGE_PATH));
+        repaired += 1;
+        issues.push({
+          code: 'empty-image-reference-repaired',
+          severity: 'warning',
+          file: page,
+          message: 'Added the local editable placeholder to an image with no source.',
+          resolved: true,
+        });
+      }
       for (const name of ['src', 'poster', 'href', 'action', 'formaction', 'xlink:href'] as const) {
         const value = getAttr(node, name);
         if (value === undefined) continue;

@@ -786,6 +786,7 @@ function normalizeAccessibility(document: HtmlNode): number {
     if (isPotentiallyFocusable(node)) return true;
     return (node.childNodes ?? []).some(containsFocusable);
   };
+  const hasFocusableDescendant = (node: HtmlNode): boolean => (node.childNodes ?? []).some(containsFocusable);
   const stripRoleState = (node: HtmlNode): void => {
     for (const attribute of [
       'aria-checked', 'aria-colindex', 'aria-colspan', 'aria-level', 'aria-posinset',
@@ -892,7 +893,16 @@ function normalizeAccessibility(document: HtmlNode): number {
     if (requiredChildren) {
       // Legacy scripts are removed, so composite widget roles would promise
       // keyboard behavior and owned child roles that no longer exist.
-      removeAttr(node, 'role');
+      // A surviving set of native controls can still be exposed as a simple
+      // named group. If sanitization removed those controls, also remove the
+      // now-prohibited accessible name from the generic container.
+      if (nodeRole === 'tablist' && hasFocusableDescendant(node)) {
+        setAttr(node, 'role', 'group');
+      } else {
+        removeAttr(node, 'role');
+        removeAttr(node, 'aria-label');
+        removeAttr(node, 'aria-labelledby');
+      }
       for (const attribute of ['aria-activedescendant', 'aria-multiselectable', 'aria-orientation', 'aria-readonly']) removeAttr(node, attribute);
       stripDescendantRoles(node, requiredChildren);
       count += 1;
@@ -942,6 +952,45 @@ function normalizeAccessibility(document: HtmlNode): number {
       || (id && explicitLabels.has(id)) || hasLabelAncestor(node));
     if (!named) {
       setAttr(node, 'aria-label', accessibleControlName(node));
+      count += 1;
+    }
+  });
+
+  // `aria-label` and `aria-labelledby` cannot name a generic roleless div.
+  // Preserve the author's grouping intent when usable controls survived the
+  // script/form cleanup; otherwise remove the prohibited name. Re-repairing a
+  // compiler artifact can carry an editor slot for that former attribute, so
+  // remove both namespaces' slot metadata before annotation rebuilds any
+  // legitimate visible-text slot.
+  walk(document, (node) => {
+    if (node.tagName !== 'div') return;
+    const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    const explicitlyProhibitedNamingRole = role === 'generic' || role === 'none' || role === 'presentation';
+    if (role && !explicitlyProhibitedNamingRole) return;
+    const namingAttributes = ['aria-label', 'aria-labelledby'] as const;
+    const hasAccessibleNameAttribute = namingAttributes.some((attribute) => getAttr(node, attribute) !== undefined);
+    if (!role && hasAccessibleNameAttribute && hasFocusableDescendant(node)) {
+      setAttr(node, 'role', 'group');
+      count += 1;
+      return;
+    }
+
+    for (const attribute of namingAttributes) {
+      if (getAttr(node, attribute) === undefined) continue;
+      removeAttr(node, attribute);
+      count += 1;
+    }
+    const staleAttributeSlot = ['data-dc-edit-attribute', 'data-pb-edit-attribute']
+      .some((attribute) => namingAttributes.includes((getAttr(node, attribute) ?? '').trim().toLowerCase() as typeof namingAttributes[number]));
+    if (!staleAttributeSlot) return;
+    for (const attribute of [
+      'data-dc-edit-id',
+      'data-dc-edit-attribute',
+      'data-pb-edit-id',
+      'data-pb-edit-attribute',
+    ]) {
+      if (getAttr(node, attribute) === undefined) continue;
+      removeAttr(node, attribute);
       count += 1;
     }
   });

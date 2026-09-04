@@ -2144,6 +2144,20 @@ export function addAccessibilityOverrides(html: string, evidence: readonly Rende
 /** @deprecated Use addAccessibilityOverrides for both supported browser repairs. */
 export const addContrastOverrides = addAccessibilityOverrides;
 
+/** Browser findings whose repair is fully covered by the deterministic pass. */
+export function isDeterministicPrimaryRenderIssue(code: string): boolean {
+  return code === 'axe_color-contrast'
+    || code === 'axe_link-in-text-block'
+    || code === 'axe_aria-command-name'
+    || code === 'axe_aria-toggle-field-name'
+    || code === 'axe_link-name'
+    || code === 'axe_button-name'
+    || code === 'axe_aria-hidden-focus'
+    || code === 'axe_aria-prohibited-attr'
+    || code === 'broken_images'
+    || code === 'horizontal_overflow';
+}
+
 async function rematerializeRenderFallback(
   context: LegacyCommandContext,
   template: LeasedTemplate,
@@ -2497,17 +2511,8 @@ export async function renderPendingBatch(
 
     if (!passed && remediationDepth < 5) {
       const failedIssues = values.filter((item) => !item.passed).flatMap((item) => item.issues);
-      const deterministicPrimaryIssue = (code: string): boolean => code === 'axe_color-contrast'
-        || code === 'axe_link-in-text-block'
-        || code === 'axe_aria-command-name'
-        || code === 'axe_aria-toggle-field-name'
-        || code === 'axe_link-name'
-        || code === 'axe_button-name'
-        || code === 'axe_aria-hidden-focus'
-        || code === 'broken_images'
-        || code === 'horizontal_overflow';
       const onlyDeterministicPrimaryIssues = failedIssues.length > 0
-        && failedIssues.every((issue) => deterministicPrimaryIssue(issue.code));
+        && failedIssues.every((issue) => isDeterministicPrimaryRenderIssue(issue.code));
       let remediated = false;
       // Multiple bounded passes cover state that can change after ancestor
       // opacity correction and allow static semantic/image repairs discovered

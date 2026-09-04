@@ -172,7 +172,18 @@ export function getCustomerPreviewEditorScript(page: string): string {
   }
 
   document.addEventListener('click', function(event) {
-    var image = event.target instanceof Element ? event.target.closest('img,[data-dc-image-id],[data-pb-image-id]') : null;
+    var clickTarget = event.target instanceof Element ? event.target : null;
+    if (!clickTarget) return;
+    // A background-image slot can contain the whole header, navigation, or
+    // content region. Only treat a background slot as selected when the user
+    // clicks that element's own surface; walking up from a descendant would
+    // turn every nested link or control into an image-upload trigger. Raster
+    // images remain selectable when nested inside a link, as intended.
+    var image = clickTarget.closest('img[data-dc-image-id],img[data-pb-image-id]');
+    if (!image && clickTarget.matches('[data-dc-image-id],[data-pb-image-id]')
+        && !clickTarget.closest('a[href],button,input,select,textarea,option,label,summary,[role="button"],[role="link"]')) {
+      image = clickTarget;
+    }
     if (!image) return;
     event.preventDefault();
     // An image can live inside a page link. Stop sibling document listeners

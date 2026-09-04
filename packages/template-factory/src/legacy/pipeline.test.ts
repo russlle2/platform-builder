@@ -13,6 +13,7 @@ import {
   catalogTerminalDisposition,
   composeCatalogTemplateText,
   hasCompletePassingRenderMatrix,
+  isDeterministicPrimaryRenderIssue,
   materializeArtifact,
   rehabCustomizationVerifierArgs,
   rehabStagingUploaderArgs,
@@ -96,6 +97,12 @@ test('render completion requires one passing result per page and viewport', () =
     ...complete.slice(0, 3),
     { ...complete[3]!, passed: false },
   ], ['index.html', 'about.html']), false);
+});
+
+test('browser remediation retries only defects covered by deterministic repair', () => {
+  assert.equal(isDeterministicPrimaryRenderIssue('broken_images'), true);
+  assert.equal(isDeterministicPrimaryRenderIssue('axe_aria-prohibited-attr'), true);
+  assert.equal(isDeterministicPrimaryRenderIssue('customer_editor_navigation_failed'), false);
 });
 
 test('promotion-grade final evidence requires the current protocol and exact page matrices', () => {
@@ -338,6 +345,74 @@ test('deterministic repair emits an uploader-safe, ID-addressable static artifac
   assert.match(html, /mailto:\{\{EMAIL\}\}/);
   assert.match(html, /Contact for current pricing/);
   assert.doesNotMatch(html, /Guaranteed results|Testimonials|\$499|alert\(/i);
+});
+
+test('deterministic repair gives source-less images an offline editable placeholder', () => {
+  const repaired = repairLegacyTemplate({
+    slug: 'source-less-images',
+    niche: 'aromatherapy',
+    files: new Map([
+      ['index.html', '<!doctype html><html><body><main><h1>Studio</h1><p>Explore current services and availability.</p><img alt="Starter kit"><img alt="Diffuser"></main></body></html>'],
+    ]),
+  });
+  const html = String(repaired.files.get('index.html'));
+
+  assert.equal((html.match(/src="assets\/img\/dc-placeholder\.svg"/g) ?? []).length, 2);
+  assert.equal((html.match(/data-dc-image-id=/g) ?? []).length, 2);
+  assert.ok(repaired.issues.some((issue) => issue.code === 'empty-image-reference-repaired'));
+  const verified = verifyStaticArtifact(repaired.files, repaired.fields);
+  assert.equal(verified.passed, true, verified.errors.map((error) => `${error.code}: ${error.detail}`).join('\n'));
+});
+
+test('scripted tablist demotion does not leave a prohibited accessible name', () => {
+  const repaired = repairLegacyTemplate({
+    slug: 'demoted-empty-tablist',
+    niche: 'wellness_coach',
+    files: new Map([
+      ['index.html', '<!doctype html><html><body><main><h1>Studio</h1><p>Choose a starting point for your inquiry.</p><div class="controls" role="tablist" aria-label="mood selector"><label><input type="radio" name="mood"> Calm</label></div></main></body></html>'],
+    ]),
+  });
+  const html = String(repaired.files.get('index.html'));
+
+  assert.doesNotMatch(html, /role="tablist"|aria-label="mood selector"/);
+  const verified = verifyStaticArtifact(repaired.files, repaired.fields);
+  assert.equal(verified.passed, true, verified.errors.map((error) => `${error.code}: ${error.detail}`).join('\n'));
+});
+
+test('roleless div names are normalized without weakening valid named groups or landmarks', () => {
+  const source = new Map<string, string>([
+    ['index.html', `<!doctype html><html><body><header><nav aria-label="Primary navigation"><a href="index.html">Home</a></nav></header><main>
+      <h1 id="page-title">Studio</h1><p>Explore current services and availability.</p>
+      <div id="plain" aria-label="Decorative panel" data-dc-edit-id="stale-dc" data-dc-edit-attribute="aria-label"></div>
+      <div id="referenced" aria-labelledby="page-title" data-pb-edit-id="stale-pb" data-pb-edit-attribute="aria-labelledby"></div>
+      <div id="generic" role="generic" aria-label="Generic panel"></div>
+      <div id="presentational" role="presentation" aria-labelledby="page-title"></div>
+      <div id="interactive" aria-label="Service choices"><button type="button">Choose a service</button></div>
+      <div id="explicit" role="region" aria-labelledby="page-title"><p>Named information region.</p></div>
+    </main></body></html>`],
+  ]);
+  const first = repairLegacyTemplate({ slug: 'roleless-div-names', niche: 'wellness_coach', files: source });
+  const html = String(first.files.get('index.html'));
+
+  const plain = html.match(/<div id="plain"[^>]*>/)?.[0] ?? '';
+  const referenced = html.match(/<div id="referenced"[^>]*>/)?.[0] ?? '';
+  assert.doesNotMatch(plain, /aria-label|data-(?:dc|pb)-edit/);
+  assert.doesNotMatch(referenced, /aria-labelledby|data-(?:dc|pb)-edit/);
+  assert.doesNotMatch(html, /stale-dc|stale-pb/);
+  assert.match(html, /<div id="generic" role="generic"><\/div>/);
+  assert.match(html, /<div id="presentational" role="presentation"><\/div>/);
+  assert.match(html, /<div id="interactive" aria-label="Service choices" role="group"/);
+  assert.match(html, /<div id="explicit" role="region" aria-labelledby="page-title"/);
+  assert.match(html, /<nav aria-label="Primary navigation"/);
+
+  const second = repairLegacyTemplate({
+    slug: 'roleless-div-names',
+    niche: 'wellness_coach',
+    files: first.files,
+  });
+  assert.equal(String(second.files.get('index.html')), html, 'normalization and editor metadata cleanup must be idempotent');
+  const verified = verifyStaticArtifact(first.files, first.fields);
+  assert.equal(verified.passed, true, verified.errors.map((error) => `${error.code}: ${error.detail}`).join('\n'));
 });
 
 test('static gate rejects content metadata that cannot exactly recompose nested media', () => {

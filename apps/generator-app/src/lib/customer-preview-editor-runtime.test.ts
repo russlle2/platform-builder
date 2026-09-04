@@ -20,6 +20,8 @@ describe('customer preview editor runtime', () => {
     expect(first).toContain("type: 'textEdited'")
     expect(first).toContain("type: 'imageSwapRequest'")
     expect(first).toContain("type: 'navigatePage'")
+    expect(first).toContain("clickTarget.matches('[data-dc-image-id],[data-pb-image-id]')")
+    expect(first).toContain("clickTarget.closest('a[href],button,input,select,textarea,option,label,summary")
     expect(first).toContain("event.source !== window.parent")
     expect(first).toContain("if (!slot || slotMatches !== 1) return;")
     expect(first).toContain("if (responsiveChildren !== slots.length) return;")
