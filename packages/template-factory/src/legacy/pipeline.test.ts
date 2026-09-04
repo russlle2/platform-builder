@@ -9,6 +9,7 @@ import { ensureWorkLayout, resolveLegacyConfig } from './config.js';
 import { sha256, stableStringify } from './contracts.js';
 import { LegacyLedger } from './ledger.js';
 import {
+  assertNoNeutralFallbacks,
   composeCatalogTemplateText,
   hasCompletePassingRenderMatrix,
   materializeArtifact,
@@ -48,6 +49,18 @@ test('promotion invokes the uploader with the isolated rehabilitation staging pr
   assert.deepEqual(
     rehabCustomizationVerifierArgs(root, 8),
     ['--root', root, '--workers', '8', '--max-diagnostics', '100', '--json'],
+  );
+});
+
+test('full completion and promotion reject every unwaived neutral fallback', () => {
+  assert.doesNotThrow(() => assertNoNeutralFallbacks('Full catalogue completion', []));
+  assert.throws(
+    () => assertNoNeutralFallbacks('Full catalogue completion', ['legacy-b', 'legacy-a']),
+    /Full catalogue completion blocked: 2 current template artifact\(s\) use a neutral fallback \(legacy-a, legacy-b\)/,
+  );
+  assert.throws(
+    () => assertNoNeutralFallbacks('Promotion', ['legacy-a']),
+    /Promotion blocked: 1 current template artifact\(s\) use a neutral fallback \(legacy-a\)/,
   );
 });
 

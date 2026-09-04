@@ -1867,7 +1867,11 @@ export function addAccessibilityOverrides(html: string, evidence: readonly Rende
   const desktop = viewportAccessibilityRules(evidence.filter((item) => item.viewport === 'desktop'));
   const mobile = viewportAccessibilityRules(evidence.filter((item) => item.viewport === 'mobile'));
   if (!desktop && !mobile) return html;
-  const css = `${desktop ? `@media(min-width:601px){${desktop}}` : ''}${mobile ? `@media(max-width:600px){${mobile}}` : ''}`;
+  // Keep the media close on its own line. Adjacent `}}` is valid minified CSS,
+  // but it is also the delimiter for an unmatched template expression at the
+  // publication boundary. The newline preserves strict token validation while
+  // making generated accessibility CSS unambiguous.
+  const css = `${desktop ? `@media(min-width:601px){${desktop}\n}` : ''}${mobile ? `@media(max-width:600px){${mobile}\n}` : ''}`;
   const priorCss: string[] = [];
   const withoutPriorBlocks = html.replace(
     /<style\b(?=[^>]*\bid\s*=\s*(["'])dc-a11y-contrast-overrides\1)[^>]*>([\s\S]*?)<\/style\s*>/gi,
@@ -1876,7 +1880,7 @@ export function addAccessibilityOverrides(html: string, evidence: readonly Rende
       return '';
     },
   );
-  const style = `<style id="dc-a11y-contrast-overrides">${priorCss.join('')}${css}</style>`;
+  const style = `<style id="dc-a11y-contrast-overrides">${priorCss.join('\n')}${css}</style>`;
   return /<\/head\s*>/i.test(withoutPriorBlocks)
     ? withoutPriorBlocks.replace(/<\/head\s*>/i, `${style}</head>`)
     : `${style}${withoutPriorBlocks}`;
@@ -3030,6 +3034,16 @@ export async function durablePilotFallbackSlugs(
   return fallbackSlugs;
 }
 
+export function assertNoNeutralFallbacks(scope: string, fallbackSlugs: readonly string[]): void {
+  if (fallbackSlugs.length === 0) return;
+  const sample = [...new Set(fallbackSlugs)].sort().slice(0, 5).join(', ');
+  throw new Error(
+    `${scope} blocked: ${fallbackSlugs.length} current template artifact(s) use a neutral fallback`
+    + `${sample ? ` (${sample}${fallbackSlugs.length > 5 ? ', …' : ''})` : ''}. `
+    + 'Every legacy slug must preserve its repaired primary design before rollout.',
+  );
+}
+
 interface PilotEvidenceAudit {
   fallbackSlugs: string[];
   issues: string[];
@@ -3645,6 +3659,7 @@ async function runCommand(context: LegacyCommandContext): Promise<LegacyCommandO
       + `${recovered} complete template(s) were returned to a resumable checkpoint: ${finalEvidence.issues[0]}`,
     );
   }
+  assertNoNeutralFallbacks('Full catalogue completion', finalEvidence.fallbackSlugs);
   await logEvent(context, 'catalog.current_evidence_verified', {
     templates: finalEvidence.uniqueSelectedCount,
     neutralFallbacks: finalEvidence.fallbackSlugs.length,
@@ -3961,6 +3976,7 @@ async function promoteCommand(context: LegacyCommandContext): Promise<LegacyComm
       + promotionEvidence.issues[0],
     );
   }
+  assertNoNeutralFallbacks('Promotion', promotionEvidence.fallbackSlugs);
   const catalogByKey = new Map(catalog.templates.map((entry) => [`${entry.niche}\0${entry.legacySlug}`, entry]));
   const templateByKey = new Map(templates.map((entry) => [`${entry.niche}\0${entry.legacySlug}`, entry]));
   const catalogHash = digest(catalogBytes);

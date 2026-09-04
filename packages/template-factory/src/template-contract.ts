@@ -127,16 +127,16 @@ const PERSONAL_DATA_PLACEHOLDERS: ReadonlyArray<{
  * publication boundary without RegExp lastIndex state leaking between pages.
  */
 export const SENSITIVE_FORM_TEXT_RE = /\b(?:allerg(?:y|ies|ic)|pregnan(?:t|cy)|medications?|diagnos(?:is|ed|tic)|medical history|mental[- ]health history|symptoms?|health conditions?|suicid(?:e|al)|trauma history)\b/i;
-export const UNSUPPORTED_PROOF_TEXT_RE = /\b(?:proof\s*(?:&|and)\s*credibility|testimonials?|client (?:success )?stor(?:y|ies)|patient stor(?:y|ies)|(?:real )?client note|what (?:our )?(?:clients?|patients?) (?:say|share)|voices? from (?:the )?(?:cohort|community|clients?)|trusted by|featured in|real results|success stories)\b/i;
-export const UNSUPPORTED_PROOF_ATTRIBUTE_RE = /(?:^|[-_\s])(?:testimonials?|reviews?|quote|social[-_]?proof|success[-_]?stor(?:y|ies))(?:$|[-_\s])/i;
-export const UNSUPPORTED_CREDENTIAL_PROOF_RE = /\b(?:accredit(?:ed|ation)|award(?:ed|s)?|case stud(?:y|ies)|certification|featured (?:by|in)|independently verified|member rated|partner(?:ed|ship)|peer[- ]reviewed|published|recognition|verified)\b/i;
+export const UNSUPPORTED_PROOF_TEXT_RE = /\b(?:proof\s*(?:(?:&|and)\s*credibility|gallery)|credibility\s*(?:badges?|bar|gallery)|testimonials?|(?:client|patient) (?:success )?stor(?:y|ies)|(?:client|patient) reviews?|(?:real )?client note|what (?:our )?(?:clients?|patients?) (?:say|share)|voices? from (?:the )?(?:cohort|community|clients?)|trusted by|featured in|real results|success stories)\b/i;
+export const UNSUPPORTED_PROOF_ATTRIBUTE_RE = /(?:^|[-_\s])(?:testimonials?|reviews?|quotes?|proof(?:[-_]?gallery)?|credibility|social[-_]?proof|success[-_]?stor(?:y|ies))(?:$|[-_\s])/i;
+export const UNSUPPORTED_CREDENTIAL_PROOF_RE = /\b(?:accredit(?:ed|ation)|award(?:ed|s)?|case stud(?:y|ies)|certification|featured (?:by|in)|independently verified|member rated|partner(?:ed|ship)|peer[- ]reviewed|published|recognition|top[- ]rated|five[- ]star|verified|vetted)\b/i;
 export const UNSUPPORTED_OUTCOME_CLAIM_RE = /\b(?:guarantee(?:d|s)?|promise[sd]?)\s+(?:results?|outcomes?|bookings?|revenue|growth|healing|relief)|\b(?:cure|heal|reverse|eliminate|prevent|treat)(?:s|ed|ing)?\s+(?:anxiety|depression|disease|illness|pain|symptoms?|trauma|insomnia|headaches?|stress|medical conditions?)\b/i;
 export const UNSUPPORTED_PERCENT_RESULT_RE = /\b\d{1,3}(?:\.\d+)?%\s+(?:improvement|better|reduction|relief|success|results?)\b/i;
 export const UNSUPPORTED_ABSOLUTE_EFFICACY_RE = /\b(?:(?:clinically|scientifically) proven|(?:instant|permanent) (?:relief|results?)|(?:works?|effective) (?:every time|for everyone))\b/i;
-export const UNSUPPORTED_CREDENTIAL_CLAIM_RE = /\b(?:independently verified|member[- ]rated|peer[- ]reviewed|featured (?:by|in)|award(?:ed|-winning)?|accredited|recognized by|certified by)\b/i;
+export const UNSUPPORTED_CREDENTIAL_CLAIM_RE = /\b(?:independently verified|member[- ]rated|peer[- ]reviewed|featured (?:by|in)|award(?:ed|-winning)?|accredited|recognized by|certified by|top[- ]rated|five[- ]star|(?:community|clients?|patients?|attendees?|hosts?|studios?|practitioners?|providers?|trainings?|credentials?|sessions?|participants?|collaborations?|reviews?)\s+(?:(?:is|are)\s+)?verified|(?:(?:every|all)\s+)?(?:faculty|facilitators?|practitioners?|providers?|professionals?|experts?|hosts?|teams?|sources?)\s+(?:(?:is|are)\s+)?vetted|(?:expert|client|community|practitioner)[- ]vetted)\b/i;
 export const HARD_CODED_OFFER_PRICE_RE = /(?:[$£€]\s*\d[\d,.]*(?:\s*(?:USD|EUR|GBP))?|\b\d[\d,.]*\s*(?:USD|EUR|GBP)\b)/i;
 
-const UNSUPPORTED_PROOF_MARKUP_RE = /\b(?:class|id|data-[\w-]+)\s*=\s*["'][^"']*(?:testimonials?|reviews?|quote|social[-_]?proof|success[-_]?stor(?:y|ies))[^"']*["']/i;
+const UNSUPPORTED_PROOF_MARKUP_RE = /\b(?:class|id|data-[\w-]+)\s*=\s*["'][^"']*(?:testimonials?|reviews?|quotes?|proof(?:[-_]?gallery)?|credibility|social[-_]?proof|success[-_]?stor(?:y|ies))[^"']*["']/i;
 
 const PUBLICATION_RISK_PATTERNS: ReadonlyArray<{
   label: string;

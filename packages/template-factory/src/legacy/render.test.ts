@@ -219,6 +219,11 @@ test('browser link-in-text-block evidence is repaired by exact viewport-scoped s
       niche: 'wellness_coach',
       files: remediatedInput,
     });
+    assert.equal(
+      remediated.qualityReceipt.status,
+      'passed',
+      remediated.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'),
+    );
     await materialize(remediatedDir, remediated.files);
     const verified = await renderTemplateTasks(root, [{
       key: 'link-distinction-fixture-remediated',

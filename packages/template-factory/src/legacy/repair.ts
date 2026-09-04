@@ -93,7 +93,7 @@ const MUSTACHE = /\{\{\s*([^{}]+?)\s*\}\}/g;
 const SAFE_PROTOCOL = /^(?:https?:|mailto:|tel:|#|\/|\.\.?\/)/i;
 const REMOTE_URL = /^(?:https?:)?\/\//i;
 
-const NEUTRAL_BLOCK = '<section class="dc-neutral-guidance" data-dc-safe-replacement="proof"><h2>A clear, practical next step</h2><p>Ask about current services, availability, and what to expect before you decide.</p></section>';
+const NEUTRAL_BLOCK = '<section class="dc-neutral-guidance" data-dc-safe-replacement="neutral-guidance"><h2>A clear, practical next step</h2><p>Ask about current services, availability, and what to expect before you decide.</p></section>';
 const NEUTRAL_CLAIM = 'Services and experiences vary. Ask the practice what is currently offered and what to expect.';
 const STANDARD_FORM = '<form class="dc-contact-form" name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><p><label>Your name <input name="name" autocomplete="name" required></label></p><p><label>Email <input type="email" name="email" autocomplete="email" required></label></p><p><label>Phone (optional) <input type="tel" name="phone" autocomplete="tel"></label></p><p><label>Message <textarea name="message" rows="5" required></textarea></label></p><button type="submit">Send inquiry</button><p class="dc-form-status" aria-live="polite"></p></form>';
 
@@ -357,7 +357,7 @@ function nearestProofContainer(node: HtmlNode): HtmlNode {
   return node;
 }
 
-function isProofContainer(node: HtmlNode): boolean {
+function hasDirectProofSignal(node: HtmlNode): boolean {
   const tag = node.tagName ?? '';
   if (!['section', 'article', 'aside', 'figure', 'blockquote', 'div'].includes(tag)) return false;
   if (hasClassOrId(node, PROOF_ATTR)) return true;
@@ -372,6 +372,21 @@ function isProofContainer(node: HtmlNode): boolean {
     getAttr(node, 'data-title'),
   ].filter(Boolean).join(' ');
   if (PROOF_TEXT.test(accessibleSignal) || PROOF_ATTR.test(accessibleSignal) || SYNTHETIC_BADGE_SIGNAL.test(accessibleSignal)) return true;
+
+  const signalText = (node.childNodes ?? []).map((child) => {
+    if (child.nodeName === '#text') return child.value ?? '';
+    return /^(?:h[1-6]|p|blockquote|figcaption|small|strong)$/.test(child.tagName ?? '')
+      || (child.tagName === 'div' && (child.childNodes ?? []).every((nested) => nested.nodeName === '#text'))
+      ? textContent(child)
+      : '';
+  }).join(' ');
+  return PROOF_TEXT.test(signalText.replace(/\s+/g, ' '));
+}
+
+function isProofContainer(node: HtmlNode): boolean {
+  const tag = node.tagName ?? '';
+  if (!['section', 'article', 'aside', 'figure', 'blockquote', 'div'].includes(tag)) return false;
+  if (hasDirectProofSignal(node)) return true;
 
   // A quote class is an explicit generated-proof signal, but searching through
   // an arbitrary div can once again select an entire page wrapper. Restrict the
@@ -405,14 +420,7 @@ function isProofContainer(node: HtmlNode): boolean {
   // unrelated sibling content) to be replaced merely because a descendant
   // navigation link mentions client stories. Attribute/class evidence above
   // may search descendants, while vocabulary-only evidence must be direct.
-  const signalText = (node.childNodes ?? []).map((child) => {
-    if (child.nodeName === '#text') return child.value ?? '';
-    return /^(?:h[1-6]|p|blockquote|figcaption|small|strong)$/.test(child.tagName ?? '')
-      || (child.tagName === 'div' && (child.childNodes ?? []).every((nested) => nested.nodeName === '#text'))
-      ? textContent(child)
-      : '';
-  }).join(' ');
-  return PROOF_TEXT.test(signalText.replace(/\s+/g, ' '));
+  return false;
 }
 
 function ensureMainLandmark(document: HtmlNode): number {
@@ -1145,8 +1153,10 @@ function restoreKnownLiterals(document: HtmlNode, fields: readonly CanonicalFiel
   }
   let count = 0;
   const replaceKnownPlaceholders = (segment: string): string => segment
-    .replace(/\bDr\.\s+Morgan\s+Ellis\b/gi, '{{PRACTITIONER_NAME}}')
+    .replace(/\b(?:Dr\.\s+Morgan\s+Ellis|Jane\s+Doe|John\s+Doe)\b/gi, '{{PRACTITIONER_NAME}}')
     .replace(/\b(?:Aromatherapy|Holistic Medicine|Private Practice Therapist|Sound Bath|Wellness Coach) Studio\b/gi, '{{BUSINESS_NAME}}')
+    .replace(/\bAnytown\s*,\s*[A-Z]{2}\b/gi, '{{CITY}}, {{STATE}}')
+    .replace(/\bAnytown\b/gi, '{{CITY}}')
     .replace(/\bYour\s+City\b/gi, '{{CITY}}')
     .replace(/\bYour\s+State\b/gi, '{{STATE}}');
   walk(document, (node) => {
@@ -1170,7 +1180,15 @@ function restoreKnownLiterals(document: HtmlNode, fields: readonly CanonicalFiel
       const attributeName = attr.name.toLowerCase();
       if (!['action', 'alt', 'aria-label', 'content', 'href', 'placeholder', 'title', 'value'].includes(attributeName)
         && !attributeName.startsWith('data-')) continue;
-      let value = outsideMustache(attr.value, (segment) => replaceKnownPlaceholders(segment).replace(EMAIL, '{{EMAIL}}').replace(PHONE, '{{PHONE}}'));
+      let value = outsideMustache(attr.value, (segment) => {
+        const visitorSafe = attributeName === 'placeholder'
+          ? segment
+            .replace(/\b(?:Jane|John)\s+Doe\b/gi, 'Your name')
+            .replace(EMAIL, 'Email address')
+            .replace(PHONE, 'Phone number')
+          : segment;
+        return replaceKnownPlaceholders(visitorSafe).replace(EMAIL, '{{EMAIL}}').replace(PHONE, '{{PHONE}}');
+      });
       const ctaish = /(?:btn|button|cta|book|schedule)/i.test(`${getAttr(node, 'class') ?? ''} ${textContent(node)}`);
       for (const [literal, token] of replacements) {
         if ((token === '{{PRIMARY_CTA_URL}}' || token === '{{BOOKING_URL}}') && !ctaish) continue;
@@ -1227,28 +1245,38 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
   const fallbackPage = pageNames.find((page) => /about|service|offering|program/i.test(page))
     ?? pageNames.find((page) => /index\.html?$/i.test(page))
     ?? '#';
+  const sanitizeText = (value: string): string => value
+    .replace(/\bproof\s*(?:(?:&|and)\s*credibility|gallery)\b/gi, 'practice information')
+    .replace(/\bcredibility\s*(?:badges?|bar|gallery)\b/gi, 'practice information')
+    .replace(/\btestimonials?\b/gi, 'practice information')
+    .replace(/\b(?:client|patient) (?:success )?stor(?:y|ies)\b/gi, 'service information')
+    .replace(/\b(?:client|patient) reviews?\b/gi, 'service information')
+    .replace(/\bsuccess stor(?:y|ies)\b/gi, 'service information')
+    .replace(/\bwhat (?:our )?(?:clients?|patients?) (?:say|share)\b/gi, 'what to expect')
+    .replace(/\bvoices? from (?:the )?(?:cohort|community|clients?)\b/gi, 'practice perspectives')
+    .replace(/\btrusted by\b/gi, 'designed for');
   walk(document, (node) => {
     if (node.nodeName === '#text' && typeof node.value === 'string') {
-      const next = node.value
-        .replace(/\btestimonials?\b/gi, 'practice information')
-        .replace(/\b(?:client|patient) (?:success )?stor(?:y|ies)\b/gi, 'service information')
-        .replace(/\bwhat (?:our )?(?:clients?|patients?) (?:say|share)\b/gi, 'what to expect')
-        .replace(/\bvoices? from (?:the )?(?:cohort|community|clients?)\b/gi, 'practice perspectives');
+      const next = sanitizeText(node.value);
       if (next !== node.value) count += 1;
       node.value = next;
     }
     for (const attr of node.attrs ?? []) {
       let next = attr.value;
-      if (attr.name === 'class' || attr.name === 'id' || attr.name.startsWith('data-')) {
-        next = next.replace(/(?:testimonial|review|quote|social[-_]?proof|success[-_]?stor(?:y|ies))s?/gi, 'dc-guidance');
+      if (attr.name === 'class' || attr.name === 'id' || attr.name === 'data-section' || attr.name === 'data-role') {
+        next = next.replace(/(?:testimonials?|reviews?|quotes?|social[-_]?proof|success[-_]?stor(?:y|ies)|proof(?:[-_]?gallery)?|credibility)/gi, 'dc-guidance');
       } else if ((attr.name === 'href' || attr.name === 'action') && /testimonial|review|success[-_]?stor/i.test(next)) {
         next = fallbackPage;
-      } else if (attr.name === 'content' || attr.name === 'title' || attr.name === 'aria-label' || attr.name === 'alt') {
-        next = next
-          .replace(/\btestimonials?\b/gi, 'practice information')
-          .replace(/\b(?:client|patient) (?:success )?stor(?:y|ies)\b/gi, 'service information')
-          .replace(/\bwhat (?:our )?(?:clients?|patients?) (?:say|share)\b/gi, 'what to expect')
-          .replace(/\bvoices? from (?:the )?(?:cohort|community|clients?)\b/gi, 'practice perspectives');
+      } else if (
+        attr.name === 'content'
+        || attr.name === 'title'
+        || attr.name === 'aria-label'
+        || attr.name === 'alt'
+        || (attr.name.startsWith('data-') && attr.name !== 'data-dc-safe-replacement')
+      ) {
+        next = PROOF_TEXT.test(next) || CLAIM_TEXT.test(next) || SYNTHETIC_BADGE_SIGNAL.test(next)
+          ? 'Practice information'
+          : sanitizeText(next);
       }
       if (next !== attr.value) {
         if (attr.name === 'id') renamedIds.set(attr.value, next);
@@ -1668,8 +1696,20 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     }
     return false;
   });
+  const hasDirectSelectedAncestor = (node: HtmlNode): boolean => {
+    let cursor = node.parentNode;
+    while (cursor) {
+      if (proofReplacements.has(cursor) && hasDirectProofSignal(cursor)) return true;
+      cursor = cursor.parentNode;
+    }
+    return false;
+  };
   for (const node of proofReplacements) {
-    if (!node.parentNode || hasSelectedDescendant(node)) continue;
+    if (!node.parentNode || hasDirectSelectedAncestor(node)) continue;
+    // Preserve a general wrapper that matched only because it contains a
+    // smaller proof card. Conversely, when the wrapper itself is explicitly
+    // labeled as proof, replace it once and suppress all selected descendants.
+    if (!hasDirectProofSignal(node) && hasSelectedDescendant(node)) continue;
     replaceNode(node, NEUTRAL_BLOCK);
   }
   for (const node of removals) {

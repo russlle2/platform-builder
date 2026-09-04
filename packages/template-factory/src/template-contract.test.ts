@@ -110,3 +110,23 @@ test('rejects adversarial sample identity, medical outcomes, proof, and sensitiv
   assert.match(errors, /unverified credential or recognition claim/i);
   assert.match(errors, /sensitive health information/i);
 });
+
+test('rejects generated proof-gallery and vetted-credential synonyms', () => {
+  const pages = new Map([
+    [
+      'index.html',
+      `<main><h1>{{BUSINESS_NAME}}</h1>
+        <section class="credibility-bar"><h2>Proof Gallery</h2><p>Patient review</p>
+          <span>Faculty vetted</span><span>Every facilitator is vetted</span>
+        </section><a href="mailto:{{EMAIL}}">Email</a></main>`,
+    ],
+  ]);
+  const result = validateTemplateContract(pages, [
+    { name: 'BUSINESS_NAME', default: 'Wellness Practice' },
+    { name: 'EMAIL' },
+  ]);
+
+  const errors = result.errors.join('\n');
+  assert.match(errors, /unverified testimonial or review content/i);
+  assert.match(errors, /unverified credential or recognition claim/i);
+});

@@ -87,7 +87,7 @@ test('repairs unsafe legacy markup, claims, prices, forms, links, and personaliz
   assert.doesNotMatch(html, /tracker\.invalid|onload=|<iframe/i);
   assert.doesNotMatch(html, /Testimonials|Guaranteed healing|\$299/i);
   assert.match(html, /Contact for current pricing/i);
-  assert.match(html, /data-dc-safe-replacement="proof"/);
+  assert.match(html, /data-dc-safe-replacement="neutral-guidance"/);
   assert.match(html, /data-dc-standard-form="contact"/);
   assert.doesNotMatch(html, /medications|medical-history/i);
   assert.match(html, /\{\{BUSINESS_NAME\}\}/);
@@ -129,7 +129,89 @@ test('removes generated proof regions and tooltip-only badges without deleting b
   assert.match(html, /Original service copy remains/);
   assert.match(html, /data-tip="Local \{\{BUSINESS_NAME\}\}, open by appointment"/);
   assert.doesNotMatch(html, /Proof &amp; Credibility|Bloom Journal|Green Lab|Community Picks/i);
-  assert.match(html, /data-dc-safe-replacement="proof"/);
+  assert.match(html, /data-dc-safe-replacement="neutral-guidance"/);
+});
+
+test('restores locality and practitioner identity without personalizing visitor placeholders', () => {
+  const result = repairLegacyTemplate({
+    slug: 'legacy-placeholder-contexts',
+    niche: 'holistic_medicine',
+    files: new Map([['index.html', `<!doctype html><html><head>
+      <meta name="description" content="Visit the practice in Anytown, CA."><title>Practice</title>
+      </head><body><main><h1>{{BUSINESS_NAME}}</h1><p>Care from John Doe.</p>
+      <form><label>Your name<input name="name" placeholder="Jane Doe"></label></form>
+      <a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+
+  assert.match(html, /content="Visit the practice in \{\{CITY\}\}, \{\{STATE\}\}\."/);
+  assert.match(html, /Care from \{\{PRACTITIONER_NAME\}\}\./);
+  assert.match(html, /placeholder="Your name"/);
+  assert.doesNotMatch(html, /Anytown|Jane Doe|John Doe/i);
+  assert.doesNotMatch(html, /placeholder="\{\{PRACTITIONER_NAME\}\}"/);
+  assert.ok(result.fields.some((field) => field.name === 'CITY'));
+  assert.ok(result.fields.some((field) => field.name === 'STATE'));
+  assert.ok(result.fields.some((field) => field.name === 'PRACTITIONER_NAME'));
+  assert.equal(result.qualityReceipt.status, 'passed');
+});
+
+test('an explicitly marked proof parent supersedes nested proof descendants', () => {
+  const result = repairLegacyTemplate({
+    slug: 'direct-proof-parent',
+    niche: 'holistic_medicine',
+    files: new Map([['index.html', `<!doctype html><html><head><title>Practice</title></head><body><main>
+      <h1>{{BUSINESS_NAME}}</h1><p>Original service copy remains.</p>
+      <section class="social-proof"><h2>Trusted by locals for practical care</h2>
+        <div class="pulse"><strong>4.9</strong> — Patient review</div>
+        <div class="testimonials"><blockquote>A generated client quote.</blockquote></div>
+      </section><p>Safe sibling remains.</p><a href="mailto:{{EMAIL}}">Contact</a>
+      </main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+
+  assert.match(html, /Original service copy remains\./);
+  assert.match(html, /Safe sibling remains\./);
+  assert.doesNotMatch(html, /Trusted by|Patient review|generated client quote|4\.9/i);
+  assert.equal((html.match(/data-dc-safe-replacement="neutral-guidance"/g) ?? []).length, 1);
+  assert.equal(result.qualityReceipt.status, 'passed');
+});
+
+test('removes repeated proof tooltip attributes with their nested evidence', () => {
+  const result = repairLegacyTemplate({
+    slug: 'nested-tooltip-proof',
+    niche: 'sound_bath',
+    files: new Map([['index.html', `<!doctype html><html><head><title>Practice</title></head><body><main>
+      <h1>{{BUSINESS_NAME}}</h1><p>Original event description remains.</p>
+      <section><h2>Proof Gallery</h2><div class="badgelist">
+        <div class="badge" data-tip="Featured in Local Wellbeing">LW<div class="tip">Featured in Local Wellbeing</div></div>
+        <div class="badge" data-tip="Trusted by community centers">CC<div class="tip">Trusted by community centers</div></div>
+        <div class="badge" data-tip="Faculty vetted">FV<div class="tip">Faculty vetted</div></div>
+      </div></section><a href="mailto:{{EMAIL}}">Contact</a>
+      </main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+
+  assert.match(html, /Original event description remains\./);
+  assert.doesNotMatch(html, /Proof Gallery|Featured in|Trusted by|Faculty vetted|data-tip=/i);
+  assert.equal((html.match(/data-dc-safe-replacement="neutral-guidance"/g) ?? []).length, 1);
+  assert.equal(result.qualityReceipt.status, 'passed');
+});
+
+test('neutralizes residual proof navigation labels while preserving navigation', () => {
+  const result = repairLegacyTemplate({
+    slug: 'proof-navigation-label',
+    niche: 'wellness_coach',
+    files: new Map([
+      ['index.html', '<!doctype html><html><head><title>Practice</title></head><body><nav><a href="testimonials.html">Success Stories</a></nav><main><h1>{{BUSINESS_NAME}}</h1><p>Original introduction.</p><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>'],
+      ['about.html', '<!doctype html><html><body><main><h1>About {{BUSINESS_NAME}}</h1><p>About the practice.</p><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>'],
+      ['testimonials.html', '<!doctype html><html><body><main><h1>Practice information</h1><p>Current service information.</p><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>'],
+    ]),
+  });
+  const html = String(result.files.get('index.html'));
+
+  assert.match(html, /<nav><a href="about\.html"[^>]*>service information<\/a><\/nav>/i);
+  assert.doesNotMatch(html, /Success Stories|testimonials\.html/i);
+  assert.equal(result.qualityReceipt.status, 'passed');
 });
 
 test('preserves a page wrapper while replacing nested proof and normalizing escaped tokens', () => {
@@ -149,7 +231,7 @@ test('preserves a page wrapper while replacing nested proof and normalizing esca
   assert.match(html, /This original design copy remains in place\./);
   assert.match(html, /\{\{TAGLINE\}\}/);
   assert.doesNotMatch(html, /Voices from the cohort|Everything changed for me/i);
-  assert.match(html, /data-dc-safe-replacement="proof"/);
+  assert.match(html, /data-dc-safe-replacement="neutral-guidance"/);
   assert.ok(result.transformations.some((item) => item.rule === 'normalize-escaped-token-delimiters'));
   assert.equal(result.qualityReceipt.status, 'passed');
 });
@@ -186,7 +268,7 @@ test('sanitizes only the smallest proof card and preserves its siblings', () => 
   assert.match(html, /Ongoing support/);
   assert.match(html, /Review the plan and adjust it together\./);
   assert.doesNotMatch(html, /guaranteed transformation/i);
-  assert.equal((html.match(/data-dc-safe-replacement="proof"/g) ?? []).length, 1);
+  assert.equal((html.match(/data-dc-safe-replacement="neutral-guidance"/g) ?? []).length, 1);
   assert.equal(result.qualityReceipt.status, 'passed');
 });
 
@@ -298,7 +380,7 @@ test('removes accessible-label proof, repairs ID references, and keeps site chro
   assert.doesNotMatch(html, /Client stories|guaranteed a complete transformation|testimonials-heading/i);
   assert.match(html, /aria-labelledby="dc-guidance-heading"/);
   assert.match(html, /id="dc-guidance-heading"/);
-  assert.match(html, /data-dc-safe-replacement="proof"/);
+  assert.match(html, /data-dc-safe-replacement="neutral-guidance"/);
   assert.match(html, /<header>[\s\S]*<\/header>\s*<main class="content">/);
   assert.match(html, /<\/main>\s*<footer>/);
   const mainMarkup = html.match(/<main[^>]*>[\s\S]*?<\/main>/)?.[0] ?? '';
@@ -668,7 +750,7 @@ test('a later remediation style cannot overwrite an existing externalized styles
   const withRemediation = new Map(first.files);
   withRemediation.set(
     'index.html',
-    firstHtml.replace('</head>', '<style id="dc-a11y-contrast-overrides">.card{color:#111827!important}</style></head>'),
+    firstHtml.replace('</head>', '<style id="dc-a11y-contrast-overrides">@media(max-width:600px){.card{color:#111827!important}\n}</style></head>'),
   );
   const second = repairLegacyTemplate({
     slug: first.manifest.legacySlug,
@@ -681,7 +763,7 @@ test('a later remediation style cannot overwrite an existing externalized styles
   assert.equal(new Set(imports).size, 1);
   assert.ok(imports.includes(originalImport));
   assert.match(String(second.files.get(originalImport)), /\.card\s*\{/);
-  assert.match(String(second.files.get('index.html')), /<style id="dc-a11y-contrast-overrides">\.card\{color:#111827!important}<\/style>/);
+  assert.match(String(second.files.get('index.html')), /<style id="dc-a11y-contrast-overrides">@media\(max-width:600px\)\{\.card\{color:#111827!important}\s*}<\/style>/);
   assert.doesNotMatch(String(second.files.get('index.html')), /dc-a11y-contrast-overrides[^<]*@import/i);
 
   const third = repairLegacyTemplate({
@@ -690,6 +772,8 @@ test('a later remediation style cannot overwrite an existing externalized styles
     files: second.files,
   });
   assert.equal(third.files.get('index.html'), second.files.get('index.html'));
+  assert.equal(second.qualityReceipt.status, 'passed');
+  assert.equal(third.qualityReceipt.status, 'passed');
 });
 
 test('reconstructs a missing homepage without losing the source page', () => {
