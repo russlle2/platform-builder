@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { jsonTooManyRequests, rateLimitByIp } from '@/lib/server-auth'
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const RATE_LIMIT_MS = 30_000
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -22,13 +22,17 @@ function getSupabase() {
   })
 }
 
-function asOptionalString(value: unknown): string | null {
+function asOptionalString(value: unknown, maxLength: number): string | null {
   if (typeof value !== 'string') return null
   const trimmed = value.trim()
-  return trimmed.length > 0 ? trimmed : null
+  return trimmed.length > 0 ? trimmed.slice(0, maxLength) : null
 }
 
 export async function POST(req: NextRequest) {
+  if (!rateLimitByIp(req, 'intake-contact', 10, 10 * 60 * 1000)) {
+    return jsonTooManyRequests()
+  }
+
   try {
     const supabase = getSupabase()
     if (!supabase) {
@@ -41,7 +45,7 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as IntakeContactBody
     const emailRaw = typeof body.email === 'string' ? body.email.trim() : ''
 
-    if (!emailRaw || !EMAIL_RE.test(emailRaw)) {
+    if (!emailRaw || emailRaw.length > 320 || !EMAIL_RE.test(emailRaw)) {
       return NextResponse.json(
         { error: 'A valid email is required.' },
         { status: 400 },
@@ -49,45 +53,25 @@ export async function POST(req: NextRequest) {
     }
 
     const email = emailRaw.toLowerCase()
-    const name = asOptionalString(body.name)
-    const phone = asOptionalString(body.phone)
-    const businessName = asOptionalString(body.businessName)
-    const niche = asOptionalString(body.niche)
+    const name = asOptionalString(body.name, 160)
+    const phone = asOptionalString(body.phone, 40)
+    const businessName = asOptionalString(body.businessName, 200)
+    const niche = asOptionalString(body.niche, 80)
 
-    const { data: existing, error: lookupError } = await supabase
-      .from('intake_contacts')
-      .select('updated_at')
-      .eq('email', email)
-      .maybeSingle()
-
-    if (lookupError) {
-      console.error('[api/intake/contact] lookup error:', lookupError)
-      return NextResponse.json(
-        { error: 'Failed to save intake contact.' },
-        { status: 500 },
-      )
-    }
-
-    if (existing?.updated_at) {
-      const lastUpdate = new Date(existing.updated_at).getTime()
-      if (Date.now() - lastUpdate < RATE_LIMIT_MS) {
-        return NextResponse.json({ ok: true })
-      }
-    }
-
-    const { error } = await supabase.from('intake_contacts').upsert(
-      {
-        email,
-        name,
-        phone,
-        business_name: businessName,
-        niche,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'email' },
-    )
+    // Anonymous intake is insert-only. A caller who knows an email address can
+    // neither inspect nor replace an existing person's contact/profile data.
+    const { error } = await supabase.from('intake_contacts').insert({
+      email,
+      name,
+      phone,
+      business_name: businessName,
+      niche,
+      source: 'preview-intake',
+      updated_at: new Date().toISOString(),
+    })
 
     if (error) {
+      if (error.code === '23505') return NextResponse.json({ ok: true })
       console.error('[api/intake/contact] database error:', error)
       return NextResponse.json(
         { error: 'Failed to save intake contact.' },

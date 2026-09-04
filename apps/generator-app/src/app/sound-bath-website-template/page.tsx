@@ -4,9 +4,18 @@ import { SeoPageShell } from '@/components/seo/SeoPageShell'
 import { SeoCtaGroup } from '@/components/seo/SeoCtaGroup'
 
 export const metadata: Metadata = {
-  title: 'Sound Bath Website Templates | DailyClarity',
+  title: 'Sound Bath Website Templates',
   description:
     'Immersive sound bath and sound healing website templates with session info, contraindications, event booking, and inquiry paths.',
+  alternates: { canonical: '/sound-bath-website-template' },
+  openGraph: {
+    title: 'Sound Bath Website Templates | DailyClarity',
+    description:
+      'Immersive sound bath and sound healing website templates with session info, contraindications, event booking, and inquiry paths.',
+    url: '/sound-bath-website-template',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
 }
 
 export default function SoundBathWebsiteTemplatePage() {
@@ -53,7 +62,7 @@ export default function SoundBathWebsiteTemplatePage() {
           <div className="card-mahogany space-y-3">
             <h2 className="text-xl font-bold text-white">Guided customization</h2>
             <p className="text-slate-300 text-sm">
-              Add your studio name, session types, and location once. Preview every page with your real copy
+              Add your studio name, session types, and location once. Preview supported fields in the available pages
               before launch.
             </p>
           </div>

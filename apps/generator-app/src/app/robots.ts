@@ -1,6 +1,13 @@
 import type { MetadataRoute } from 'next'
+import { shouldIndexDeployment } from '@/lib/deployment-environment'
 
 export default function robots(): MetadataRoute.Robots {
+  if (!shouldIndexDeployment()) {
+    return {
+      rules: [{ userAgent: '*', disallow: '/' }],
+    }
+  }
+
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.NEXT_PUBLIC_PLATFORM_URL ||
@@ -11,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/', '/portal', '/success', '/cancel', '/_next/'],
+        disallow: ['/api/'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

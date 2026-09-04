@@ -1,6 +1,7 @@
 /**
  * Server-side customer image storage (Supabase Storage).
- * Falls back to local public/uploads when Supabase is not configured.
+ * Local storage is available only in development; production fails closed so
+ * an ephemeral serverless filesystem can never be reported as durable.
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
@@ -8,6 +9,7 @@ import { writeFile, mkdir, readdir, stat, unlink } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 import sharp from 'sharp'
+import { isDraftImageOwner } from './image-owner'
 
 export const CUSTOMER_IMAGES_BUCKET = 'customer-images'
 
@@ -20,7 +22,9 @@ const ALLOWED_TYPES = [
   'image/avif',
 ]
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024
+// Netlify's buffered function payload limit is 6 MB before base64/multipart
+// overhead. Four MiB leaves enough room for transport encoding and headers.
+const MAX_FILE_SIZE = 4 * 1024 * 1024
 
 export interface StoredCustomerImage {
   url: string
@@ -58,13 +62,58 @@ export function getPublicStorageUrl(storagePath: string): string {
 }
 
 async function optimizeToWebp(buffer: Buffer): Promise<Buffer> {
+  const image = sharp(buffer, { animated: true, limitInputPixels: 40_000_000 })
+  const metadata = await image.metadata()
+  if (!metadata.format || !['jpeg', 'png', 'gif', 'webp', 'avif'].includes(metadata.format)) {
+    throw new Error('Invalid image content.')
+  }
+  return image
+    .rotate()
+    .resize({ width: 1920, withoutEnlargement: true })
+    .webp({ quality: 85 })
+    .toBuffer()
+}
+
+/** Resolve an object path only when it belongs to the exact owner prefix. */
+export function normalizeOwnedStoragePath(owner: string, storagePath: string): string {
+  const safeOwner = normalizeImageOwner(owner)
+  const candidate = storagePath.trim().replace(/\\/g, '/').replace(/^\/+/, '')
+  if (!candidate || candidate.includes('\0')) throw new Error('Invalid storage path')
+  if (candidate.split('/').some((segment) => segment === '.' || segment === '..')) {
+    throw new Error('Invalid storage path')
+  }
+  if (!candidate.includes('/')) return `${safeOwner}/${candidate}`
+  if (!candidate.startsWith(`${safeOwner}/`)) throw new Error('Invalid storage path')
+  return candidate
+}
+
+/** Resolve one generated customer-image URL back to a path beneath its owner. */
+export function getCustomerImageRelativePath(owner: string, imageUrl: string): string | null {
+  const safeOwner = normalizeImageOwner(owner)
+  let segments: string[]
   try {
-    return await sharp(buffer, { animated: true })
-      .resize({ width: 1920, withoutEnlargement: true })
-      .webp({ quality: 85 })
-      .toBuffer()
+    const pathname = new URL(imageUrl, 'https://local.invalid').pathname
+    segments = pathname
+      .split('/')
+      .filter(Boolean)
+      .map((segment) => decodeURIComponent(segment))
   } catch {
-    return buffer
+    return null
+  }
+
+  const ownerIndex = segments.findIndex((segment, index) => (
+    segment === safeOwner &&
+    index > 0 &&
+    (segments[index - 1] === CUSTOMER_IMAGES_BUCKET || segments[index - 1] === 'uploads')
+  ))
+  if (ownerIndex < 0 || ownerIndex === segments.length - 1) return null
+
+  const relativePath = segments.slice(ownerIndex + 1).join('/')
+  try {
+    const ownedPath = normalizeOwnedStoragePath(safeOwner, `${safeOwner}/${relativePath}`)
+    return ownedPath.slice(safeOwner.length + 1)
+  } catch {
+    return null
   }
 }
 
@@ -134,7 +183,7 @@ export async function storeCustomerImage(
     throw new Error('Invalid file type. Upload JPEG, PNG, GIF, or WebP.')
   }
   if (file.size > MAX_FILE_SIZE) {
-    throw new Error('File too large. Maximum size is 10MB.')
+    throw new Error('File too large. Maximum size is 4MB.')
   }
 
   const bytes = await file.arrayBuffer()
@@ -143,6 +192,9 @@ export async function storeCustomerImage(
 
   if (getSupabaseAdmin()) {
     return uploadToSupabase(owner, webpBuffer, 'image/webp', file.name)
+  }
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Durable image storage is not configured.')
   }
   return uploadToLocal(owner, webpBuffer, file.name)
 }
@@ -172,6 +224,8 @@ export async function listCustomerImages(owner: string): Promise<StoredCustomerI
       })
   }
 
+  if (process.env.NODE_ENV === 'production') return []
+
   const uploadDir = path.join(process.cwd(), 'public', 'uploads', safeOwner)
   if (!existsSync(uploadDir)) return []
 
@@ -200,12 +254,14 @@ export async function deleteCustomerImage(owner: string, storagePath: string): P
   const supabase = getSupabaseAdmin()
 
   if (supabase) {
-    const normalized = storagePath.startsWith(safeOwner)
-      ? storagePath
-      : `${safeOwner}/${storagePath.replace(/^\/+/, '')}`
+    const normalized = normalizeOwnedStoragePath(safeOwner, storagePath)
     const { error } = await supabase.storage.from(CUSTOMER_IMAGES_BUCKET).remove([normalized])
     if (error) throw new Error(error.message)
     return
+  }
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Durable image storage is not configured.')
   }
 
   // Path traversal prevention: resolve and verify the candidate path stays
@@ -222,40 +278,81 @@ export async function deleteCustomerImage(owner: string, storagePath: string): P
   }
 }
 
-/** Copy all images from draft owner folder to site slug (post-purchase). */
+/**
+ * Copy all images from a draft owner folder to a site slug (post-purchase).
+ *
+ * Source objects are intentionally retained. Fulfillment is an at-least-once
+ * workflow: a later database, deployment, or email failure can retry the whole
+ * job. Keeping the immutable draft source makes that retry safe even after the
+ * first copy succeeded. Old draft objects can be removed later by a separate
+ * retention job, after the order has reached a terminal successful state.
+ */
 export async function migrateImagesToSiteSlug(
   draftOwner: string,
   siteSlug: string,
+  referencedImageUrls: readonly string[] = [],
 ): Promise<number> {
   const from = normalizeImageOwner(draftOwner)
   const to = normalizeImageOwner(siteSlug)
-  if (from === to) return 0
+  if (!isDraftImageOwner(from)) throw new Error('Invalid draft image owner.')
+  if (!to || to === 'anonymous' || from === to) throw new Error('Invalid destination site slug.')
 
   const supabase = getSupabaseAdmin()
-  if (!supabase) return 0
+  if (!supabase) throw new Error('Supabase image storage is not configured.')
 
-  const { data: files, error } = await supabase.storage.from(CUSTOMER_IMAGES_BUCKET).list(from)
-  if (error || !files?.length) return 0
-
-  let moved = 0
-  for (const f of files) {
-    if (!f.name || f.name.endsWith('/')) continue
-    const fromPath = `${from}/${f.name}`
-    const toPath = `${to}/${f.name}`
-    const { data: blob, error: dlErr } = await supabase.storage
-      .from(CUSTOMER_IMAGES_BUCKET)
-      .download(fromPath)
-    if (dlErr || !blob) continue
-    const buffer = Buffer.from(await blob.arrayBuffer())
-    const { error: upErr } = await supabase.storage
-      .from(CUSTOMER_IMAGES_BUCKET)
-      .upload(toPath, buffer, { contentType: 'image/webp', upsert: true })
-    if (!upErr) {
-      await supabase.storage.from(CUSTOMER_IMAGES_BUCKET).remove([fromPath])
-      moved++
-    }
+  const bucket = supabase.storage.from(CUSTOMER_IMAGES_BUCKET)
+  let relativePaths: string[]
+  if (referencedImageUrls.length > 0) {
+    relativePaths = referencedImageUrls.map((url) => {
+      const relativePath = getCustomerImageRelativePath(from, url)
+      if (!relativePath) throw new Error('A referenced draft image URL is invalid.')
+      return relativePath
+    })
+  } else {
+    const { data: files, error } = await bucket.list(from, { limit: 1_000 })
+    if (error) throw new Error(`Unable to list draft images: ${error.message}`)
+    relativePaths = (files || [])
+      .filter((file) => file.name && !file.name.endsWith('/'))
+      .map((file) => file.name)
   }
-  return moved
+  relativePaths = [...new Set(relativePaths)]
+  if (relativePaths.length === 0) return 0
+
+  let durableCount = 0
+  // Keep concurrency bounded: checkout can contain many swaps, while each
+  // object requires a download plus an idempotent upload.
+  for (let offset = 0; offset < relativePaths.length; offset += 8) {
+    const batch = relativePaths.slice(offset, offset + 8)
+    const results = await Promise.all(batch.map(async (relativePath) => {
+      const fromPath = `${from}/${relativePath}`
+      const toPath = `${to}/${relativePath}`
+      const { data: blob, error: downloadError } = await bucket.download(fromPath)
+
+      if (downloadError || !blob) {
+        // A previous attempt may have copied successfully and then failed in a
+        // later provisioning step. Accept that exact durable destination so a
+        // retry does not depend on the draft source still existing.
+        const { data: existing, error: existingError } = await bucket.download(toPath)
+        if (!existingError && existing) return 1
+        throw new Error(
+          `Unable to recover draft image ${relativePath}: ${downloadError?.message || 'missing source and destination'}`,
+        )
+      }
+
+      const buffer = Buffer.from(await blob.arrayBuffer())
+      const { error: uploadError } = await bucket.upload(toPath, buffer, {
+        contentType: blob.type || 'image/webp',
+        upsert: true,
+        cacheControl: '31536000',
+      })
+      if (uploadError) {
+        throw new Error(`Unable to copy draft image ${relativePath}: ${uploadError.message}`)
+      }
+      return 1
+    }))
+    durableCount += results.reduce((sum, count) => sum + count, 0)
+  }
+  return durableCount
 }
 
 /** Rewrite image swap URLs from draft paths to site slug paths after migration. */

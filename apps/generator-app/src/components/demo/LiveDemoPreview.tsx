@@ -9,7 +9,7 @@ export function LiveDemoPreview() {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-white mb-3">Live Demo</h2>
         <p className="text-white text-lg">
-          Click below to start the guided preview — your details fill every page automatically
+          Click below to start the guided preview — supported fields populate across the template
         </p>
       </div>
 

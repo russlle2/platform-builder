@@ -33,10 +33,10 @@ export function HeroSection() {
               href="/demo"
               className="inline-block px-10 py-4 bg-white text-amber-900 font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
             >
-              Reserve your spot
+              Explore the platform
             </Link>
             <p className="text-white text-sm font-medium">
-              Limited to 30 active monthly members nationwide
+              Preview the product before choosing a plan
             </p>
           </div>
         </div>

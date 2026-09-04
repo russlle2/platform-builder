@@ -1,4 +1,23 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Checkout Canceled',
+  description: 'Return to DailyClarity pricing or update your website preview after canceling checkout.',
+  alternates: { canonical: '/cancel' },
+  openGraph: {
+    title: 'Checkout Canceled | DailyClarity',
+    description: 'Return to DailyClarity pricing or update your website preview after canceling checkout.',
+    url: '/cancel',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
+}
 
 export default function CancelPage() {
   return (

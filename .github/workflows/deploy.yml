@@ -1,73 +1,105 @@
-name: Deploy
+name: Promote generator to production
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type DEPLOY to run the validated production promotion'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dailyclarity-production
+  cancel-in-progress: false
 
 jobs:
-  deploy-generator:
+  validate-and-deploy:
+    if: ${{ inputs.confirm == 'DEPLOY' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Enable Corepack
-        run: corepack enable
+    environment: production
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '20.x'
-          cache: 'pnpm'
-      
+          node-version: '22'
+
+      - name: Install the repository pnpm version
+        run: |
+          corepack enable
+          corepack install
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
-      - name: Build generator app
-        run: pnpm run generator:build
-      
-      - name: Deploy to Netlify
-        continue-on-error: true
-        uses: nwtgck/actions-netlify@v2
-        with:
-          publish-dir: './apps/generator-app/.next'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
+
+      - name: Run the complete release gate
+        run: |
+          pnpm validate
+          pnpm audit --prod --audit-level moderate
+
+      - name: Verify the matching production database schema
+        run: node apps/generator-app/scripts/verify-launch-schema.mjs
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DAILYCLARITY_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+
+      - name: Verify the exact production Netlify site
+        run: node apps/generator-app/scripts/verify-netlify-target.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+
+      - name: Build and deploy with the Netlify Next.js runtime
+        shell: bash
+        run: |
+          if [[ "$DEPLOY_ENVIRONMENT" != "production" ]]; then
+            echo "Refusing production publication: environment sentinel mismatch." >&2
+            exit 1
+          fi
+          pnpm dlx netlify-cli@27.4.2 deploy \
+            --build \
+            --prod \
+            --context production \
+            --site "$NETLIFY_SITE_ID" \
+            --auth "$NETLIFY_AUTH_TOKEN" \
+            --message "Validated GitHub promotion $GITHUB_SHA"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-  
-  deploy-client-site:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Enable Corepack
-        run: corepack enable
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NEXT_PUBLIC_RELEASE_SHA: ${{ github.sha }}
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      
-      - name: Build client site
-        run: pnpm run client:build
-      
-      - name: Deploy to Netlify
-        continue-on-error: true
-        uses: nwtgck/actions-netlify@v2
-        with:
-          publish-dir: './apps/client-template/.next'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
+      - name: Attest the published production commit and database binding
+        run: node apps/generator-app/scripts/verify-netlify-target.mjs
         env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_CLIENT }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+
+      - name: Prove the deployed runtime can reach the gated production schema
+        run: node apps/generator-app/scripts/verify-deployed-runtime.mjs
+        env:
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_RELEASE_SHA: ${{ github.sha }}
+
+# Customer sites are provisioned and deployed by the fulfillment pipeline.
+# Do not publish the raw client-template .next directory as a static site.

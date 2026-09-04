@@ -47,6 +47,7 @@ export default function PortalClient() {
     phone: '',
     email: '',
     address: '',
+    description: '',
     services: '',
   })
   const [siteTemplate, setSiteTemplate] = useState<{ niche?: string; template?: string }>({})
@@ -66,9 +67,12 @@ export default function PortalClient() {
     setPortalAuthenticated(false)
     setPublicSiteUrl(null)
     try {
-      const query = new URLSearchParams({ slug: normalized })
-      if (token) query.set('token', token)
-      const response = await fetch(`/api/portal/customer?${query.toString()}`)
+      const headers: Record<string, string> = {}
+      if (token) headers['x-portal-token'] = token
+      const response = await fetch(
+        `/api/portal/customer?slug=${encodeURIComponent(normalized)}`,
+        { headers, cache: 'no-store' },
+      )
       const data = await response.json()
       if (!response.ok) {
         setStatus('error')
@@ -84,6 +88,7 @@ export default function PortalClient() {
           phone: cv.PHONE || cv.PHONE_NUMBER || (d.phone as string) || '',
           email: cv.EMAIL || (d.email as string) || '',
           address: cv.ADDRESS || (d.address as string) || '',
+          description: cv.DESCRIPTION || (d.description as string) || '',
           services: cv.SERVICES || (d.services as string) || '',
         })
         setSiteTemplate({
@@ -125,16 +130,24 @@ export default function PortalClient() {
 
   useEffect(() => {
     if (!initialSlug) return
-    if (initialToken) {
-      storePortalToken(normalizeSlug(initialSlug), initialToken)
-      setPortalToken(initialToken)
-      if (typeof window !== 'undefined') {
-        const url = new URL(window.location.href)
+    const url = typeof window !== 'undefined' ? new URL(window.location.href) : null
+    const fragmentToken = url?.hash.startsWith('#token=')
+      ? new URLSearchParams(url.hash.slice(1)).get('token') || ''
+      : ''
+    const bootstrapToken = initialToken || fragmentToken
+    if (bootstrapToken) {
+      storePortalToken(normalizeSlug(initialSlug), bootstrapToken)
+      setPortalToken(bootstrapToken)
+      if (url) {
         url.searchParams.delete('token')
-        window.history.replaceState({}, '', `${url.pathname}${url.search}`)
+        if (fragmentToken) url.hash = ''
+        window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`)
       }
     }
-    loadSite(initialSlug, initialToken || getStoredPortalToken(normalizeSlug(initialSlug)) || undefined)
+    loadSite(
+      initialSlug,
+      bootstrapToken || getStoredPortalToken(normalizeSlug(initialSlug)) || undefined,
+    )
   }, [initialSlug, initialToken, loadSite])
 
   useEffect(() => {
@@ -152,28 +165,59 @@ export default function PortalClient() {
   // Dynamic checklist derived from loaded site data.
   const checklistItems = useMemo(() => [
     { label: 'Site published', done: provisioningStatus === 'active' },
-    { label: 'Custom domain connected', done: hasCustomDomain },
-    { label: 'Business info complete', done: Boolean(formData.businessName && formData.email) },
-    { label: 'Contact form tested', done: provisioningStatus === 'active' },
+    { label: 'Custom domain added', done: hasCustomDomain },
+    { label: 'Required business details added', done: Boolean(formData.businessName && formData.email) },
   ], [provisioningStatus, hasCustomDomain, formData.businessName, formData.email])
   const completedCount = checklistItems.filter((i) => i.done).length
 
-  // Derive integration statuses from loaded site data — no extra API calls needed.
+  // Show only states evidenced by the customer record. A published site does
+  // not, by itself, prove that email delivery or a contact form was tested.
   const integrations = useMemo(() => {
-    if (!portalAuthenticated) {
-      return [
-        { name: 'Contact Email', status: 'Setting up...' },
-        { name: 'Image Storage', status: 'Setting up...' },
-        { name: 'Billing',       status: 'Setting up...' },
-      ]
-    }
-    const siteActive = provisioningStatus === 'active'
     return [
-      { name: 'Contact Email', status: siteActive ? 'Connected' : 'Setting up...' },
-      { name: 'Image Storage', status: siteActive ? 'Connected' : 'Setting up...' },
-      { name: 'Billing',       status: stripeCustomerId ? 'Connected' : 'Setting up...' },
+      {
+        name: 'Website publishing',
+        status: provisioningStatus === 'active'
+          ? 'Published'
+          : provisioningStatus === 'failed'
+            ? 'Needs attention'
+            : 'Provisioning',
+        tone: provisioningStatus === 'active'
+          ? 'ready'
+          : provisioningStatus === 'failed'
+            ? 'error'
+            : 'pending',
+      },
+      {
+        name: 'Portal access',
+        status: portalAuthenticated ? 'Authenticated' : 'Sign in required',
+        tone: portalAuthenticated ? 'ready' : 'pending',
+      },
+      {
+        name: 'Billing management',
+        status: stripeCustomerId ? 'Available' : 'Not linked',
+        tone: stripeCustomerId ? 'ready' : 'pending',
+      },
     ]
   }, [portalAuthenticated, provisioningStatus, stripeCustomerId])
+
+  const launchStatus = useMemo(() => {
+    if (provisioningStatus === 'active') {
+      return {
+        summary: 'Your hosted site is published. Review it and send a test form submission before promoting it.',
+        label: 'Published',
+      }
+    }
+    if (provisioningStatus === 'failed') {
+      return {
+        summary: 'Publishing needs attention. Review the error below or contact support.',
+        label: 'Needs attention',
+      }
+    }
+    return {
+      summary: 'Your site is being prepared. This page will show Published after deployment succeeds.',
+      label: 'In progress',
+    }
+  }, [provisioningStatus])
 
   useEffect(() => {
     if (!normalizedSlug || !portalAuthenticated) {
@@ -181,9 +225,11 @@ export default function PortalClient() {
       return
     }
     const token = portalToken || getStoredPortalToken(normalizedSlug)
-    if (!token) return
+    const headers: Record<string, string> = {}
+    if (token) headers['x-portal-token'] = token
     fetch(
-      `/api/sites/domain?slug=${encodeURIComponent(normalizedSlug)}&token=${encodeURIComponent(token)}`,
+      `/api/sites/domain?slug=${encodeURIComponent(normalizedSlug)}`,
+      { headers, cache: 'no-store' },
     )
       .then((res) => res.json())
       .then((data) => {
@@ -201,7 +247,7 @@ export default function PortalClient() {
   const saveSite = async () => {
     const normalized = normalizeSlug(slug)
     const token = portalToken || getStoredPortalToken(normalized)
-    if (!normalized || !token) {
+    if (!normalized) {
       setStatus('error')
       return
     }
@@ -216,11 +262,17 @@ export default function PortalClient() {
       // aliases) so the redeploy hydrates templates the same way the preview did.
       const customerValues: Record<string, string> = {
         BUSINESS_NAME: formData.businessName,
+        PRACTICE_NAME: formData.businessName,
+        BRAND_NAME: formData.businessName,
+        STUDIO_NAME: formData.businessName,
         TAGLINE: formData.tagline,
         PHONE: formData.phone,
         PHONE_NUMBER: formData.phone,
+        CONTACT_PHONE: formData.phone,
         EMAIL: formData.email,
+        CONTACT_EMAIL: formData.email,
         ADDRESS: formData.address,
+        DESCRIPTION: formData.description,
         SERVICES: formData.services,
         business_name: formData.businessName,
         tagline: formData.tagline,
@@ -228,17 +280,25 @@ export default function PortalClient() {
         phone_number: formData.phone,
         email: formData.email,
         address: formData.address,
+        description: formData.description,
         services: formData.services,
       }
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+      if (token) headers['x-portal-token'] = token
       const response = await fetch('/api/portal/customer', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-portal-token': token,
-        },
-        body: JSON.stringify({ slug: normalized, customerValues, token }),
+        headers,
+        body: JSON.stringify({
+          slug: normalized,
+          customerValues,
+        }),
       })
       const result = await response.json().catch(() => ({}))
+      if (!response.ok && result?.saved) {
+        setStatus('saved')
+        setPublishNote(result.error || 'Saved, but the live publish needs to be retried.')
+        return
+      }
       if (!response.ok) {
         throw new Error('Failed')
       }
@@ -342,10 +402,26 @@ export default function PortalClient() {
                 <a href={publicSiteUrl} className="underline font-semibold" target="_blank" rel="noreferrer">
                   {publicSiteUrl}
                 </a>
-                . Open the secure link from your welcome email to edit and publish changes.
+                . Open the secure link from your welcome email or{' '}
+                <Link
+                  href={`/login?next=${encodeURIComponent(`/portal?slug=${normalizedSlug}`)}`}
+                  className="underline font-semibold"
+                >
+                  sign in with the customer email
+                </Link>{' '}
+                to edit and publish changes.
               </>
             ) : (
-              <>This slug does not have portal access yet, or your access token is missing or invalid.</>
+              <>
+                This slug does not have portal access yet, or your access token is missing or expired.{' '}
+                <Link
+                  href={`/login?next=${encodeURIComponent(`/portal?slug=${normalizedSlug}`)}`}
+                  className="underline font-semibold"
+                >
+                  Sign in with the customer email
+                </Link>{' '}
+                or contact support if you still cannot open it.
+              </>
             )}
           </div>
         )}
@@ -371,7 +447,7 @@ export default function PortalClient() {
                   <div>
                     <p className="font-semibold">We&rsquo;re provisioning your website</p>
                     <p className="text-amber-100/80 mt-1">
-                      Your website is being set up. This typically takes less than 48 hours. We&rsquo;ll send you an email when it&rsquo;s live!
+                      Your website setup is in progress. We&rsquo;ll send you an email when it is live or if we need anything else from you.
                     </p>
                   </div>
                 </div>
@@ -418,10 +494,8 @@ export default function PortalClient() {
               <div className="flex-1">
                 <p className="font-semibold text-base">Security + Ads — managed by our team</p>
                 <p className="text-cyan-100/80 mt-1">
-                  You&rsquo;re on our done-for-you plan. Alongside your fully automated website, our
-                  team personally sets up and manages your ad &amp; promo campaigns and hardens and
-                  monitors your site&rsquo;s security and uptime. We&rsquo;ll reach out by email to
-                  coordinate — no action needed from you.
+                  You&rsquo;re on our done-for-you plan. Our team will email you to confirm campaign
+                  goals and the security and operations work included before managed work begins.
                 </p>
                 <p className="text-cyan-100/70 mt-2">
                   Want to brief us on goals or audiences?{' '}
@@ -457,15 +531,15 @@ export default function PortalClient() {
           </div>
           <div className="glass-panel rounded-3xl p-8">
             <h2 className="text-xl font-bold text-white">Launch status</h2>
-            <p className="text-slate-300 mt-2">Awaiting onboarding completion</p>
+            <p className="text-slate-300 mt-2">{launchStatus.summary}</p>
             <div className="mt-6 grid grid-cols-2 gap-4">
               <div className="stat-card">
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Checklist</p>
                 <p className="text-3xl font-bold text-white">{completedCount}/{checklistItems.length}</p>
               </div>
               <div className="stat-card">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">ETA</p>
-                <p className="text-3xl font-bold text-white">48 hrs</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Current state</p>
+                <p className="text-xl font-bold text-white">{launchStatus.label}</p>
               </div>
             </div>
           </div>
@@ -480,9 +554,10 @@ export default function PortalClient() {
               </span>
             </div>
             <div className="space-y-4 mb-8">
-              <label className="text-sm text-slate-300">Subdomain slug</label>
+              <label htmlFor="portal-site-slug" className="text-sm text-slate-300">Subdomain slug</label>
               <div className="flex gap-3">
                 <input
+                  id="portal-site-slug"
                   value={slug}
                   onChange={(event) => setSlug(normalizeSlug(event.target.value))}
                   placeholder="your-slug"
@@ -499,6 +574,7 @@ export default function PortalClient() {
             </div>
             <div className={`grid grid-cols-1 md:grid-cols-2 gap-4 ${!portalAuthenticated ? 'opacity-60 pointer-events-none' : ''}`}>
               <input
+                aria-label="Business name"
                 value={formData.businessName}
                 onChange={(event) =>
                   setFormData({ ...formData, businessName: event.target.value })
@@ -508,6 +584,7 @@ export default function PortalClient() {
                 className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
+                aria-label="Tagline"
                 value={formData.tagline}
                 onChange={(event) => setFormData({ ...formData, tagline: event.target.value })}
                 placeholder="Tagline"
@@ -515,6 +592,9 @@ export default function PortalClient() {
                 className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
+                aria-label="Phone number"
+                type="tel"
+                autoComplete="tel"
                 value={formData.phone}
                 onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
                 placeholder="Phone"
@@ -522,6 +602,9 @@ export default function PortalClient() {
                 className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
+                aria-label="Email address"
+                type="email"
+                autoComplete="email"
                 value={formData.email}
                 onChange={(event) => setFormData({ ...formData, email: event.target.value })}
                 placeholder="Email"
@@ -529,6 +612,7 @@ export default function PortalClient() {
                 className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white disabled:cursor-not-allowed"
               />
               <input
+                aria-label="Service area"
                 value={formData.address}
                 onChange={(event) => setFormData({ ...formData, address: event.target.value })}
                 placeholder="Service area"
@@ -536,6 +620,16 @@ export default function PortalClient() {
                 className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2 disabled:cursor-not-allowed"
               />
               <textarea
+                aria-label="Business description"
+                value={formData.description}
+                onChange={(event) => setFormData({ ...formData, description: event.target.value })}
+                placeholder="Business description"
+                rows={3}
+                disabled={!portalAuthenticated}
+                className="px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white md:col-span-2 disabled:cursor-not-allowed"
+              />
+              <textarea
+                aria-label="Services"
                 value={formData.services}
                 onChange={(event) => setFormData({ ...formData, services: event.target.value })}
                 placeholder="Services (comma-separated)"
@@ -607,10 +701,10 @@ export default function PortalClient() {
                       {normalizedSlug}.{platformDomain}
                     </a>
                   </div>
-                  {portalAuthenticated && (portalToken || getStoredPortalToken(normalizedSlug)) && (
+                  {portalAuthenticated && (
                     <DomainConnectCard
                       slug={normalizedSlug}
-                      portalToken={portalToken || getStoredPortalToken(normalizedSlug) || ''}
+                      portalToken={portalToken || getStoredPortalToken(normalizedSlug) || undefined}
                     />
                   )}
                   {!portalAuthenticated && (
@@ -646,9 +740,9 @@ export default function PortalClient() {
                   <div key={item.name} className="flex items-center justify-between text-sm text-slate-200">
                     <span>{item.name}</span>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      item.status === 'Connected'
+                      item.tone === 'ready'
                         ? 'bg-emerald-500/20 text-emerald-200'
-                        : item.status === 'Not configured'
+                        : item.tone === 'error'
                         ? 'bg-red-500/20 text-red-200'
                         : 'bg-white/10 text-slate-200'
                     }`}>
@@ -660,14 +754,18 @@ export default function PortalClient() {
             </div>
 
             {portalAuthenticated && normalizedSlug && (
-              <CustomerImageLibrary owner={normalizedSlug} compact />
+              <CustomerImageLibrary
+                owner={normalizedSlug}
+                portalToken={portalToken || getStoredPortalToken(normalizedSlug) || undefined}
+                compact
+              />
             )}
 
             {portalAuthenticated && siteTemplate.niche && siteTemplate.template && (
               <div className="glass-panel rounded-2xl p-6">
                 <h3 className="text-xl font-bold text-white">Visual editor</h3>
                 <p className="text-slate-300 text-sm mt-2">
-                  Replace images and text on your live template, then purchase updates are applied on save from the editor checkout flow.
+                  Edit supported text and image fields in your selected template. Saving from the editor republishes the current site.
                 </p>
                 <Link
                   href={`/templates/${siteTemplate.niche}/${siteTemplate.template}?portalSlug=${encodeURIComponent(normalizedSlug)}`}
@@ -681,7 +779,7 @@ export default function PortalClient() {
             <div className="glass-panel rounded-2xl p-6">
               <h3 className="text-xl font-bold text-white">Recent activity</h3>
               <p className="text-slate-300 text-sm mt-2">
-                No activity yet. Complete onboarding to unlock your build timeline.
+                Activity history is not available yet. Use the save confirmation and launch status above to verify current changes.
               </p>
             </div>
           </aside>

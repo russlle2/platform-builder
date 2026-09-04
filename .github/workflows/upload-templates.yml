@@ -1,42 +1,115 @@
-name: Upload templates to Netlify Blobs
+name: Validate or publish curated templates
 
 on:
   workflow_dispatch:
     inputs:
-      force:
-        description: 'Force re-upload all files (skip idempotency)'
+      target_environment:
+        description: 'Protected environment whose isolated Blob store receives the catalog'
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
+      publish:
+        description: 'Publish the validated catalog to Netlify Blobs'
         required: false
-        default: 'false'
+        default: false
+        type: boolean
+      force:
+        description: 'Overwrite existing Blob objects (use only for an intentional replacement)'
+        required: false
+        default: false
+        type: boolean
+      production_confirmation:
+        description: 'For a production publish, type PUBLISH PRODUCTION'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dailyclarity-template-catalog
+  cancel-in-progress: false
 
 jobs:
-  upload:
+  curated-catalog:
+    if: ${{ inputs.target_environment != 'production' || github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
+    environment: ${{ inputs.target_environment }}
     steps:
-      - uses: actions/checkout@v4
-        # platform-builder/ is still in the repo index at the time this workflow
-        # is first run (before the git rm --cached cleanup commit). After the
-        # cleanup commit, this workflow will need to fetch templates from LFS or
-        # an alternate source — but for the initial upload, the files are present.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '20'
+          node-version: '22'
 
-      - name: Enable pnpm via corepack
-        run: corepack enable
+      - name: Install the repository pnpm version
+        run: |
+          corepack enable
+          corepack install
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Upload templates
-        working-directory: apps/generator-app
+      - name: Test the factory and publication contract
         run: |
-          ARGS=""
-          if [ "${{ github.event.inputs.force }}" = "true" ]; then
-            ARGS="--force"
+          pnpm --filter @platform/template-factory test
+          node apps/generator-app/scripts/upload-templates-to-blobs.test.mjs
+
+      - name: Export the deterministic launch catalog
+        run: >-
+          pnpm --filter @platform/template-factory export:curated --
+          --output "$RUNNER_TEMP/dailyclarity-curated"
+
+      - name: Validate the exact upload plan without credentials or writes
+        run: >-
+          node apps/generator-app/scripts/upload-templates-to-blobs.mjs
+          --dry-run
+          --root "$RUNNER_TEMP/dailyclarity-curated"
+
+      - name: Preserve the signed catalog report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: dailyclarity-curated-report
+          path: ${{ runner.temp }}/dailyclarity-curated/curated-report.json
+          if-no-files-found: error
+
+      - name: Verify the exact Netlify Blob target
+        if: ${{ inputs.publish }}
+        run: node apps/generator-app/scripts/verify-netlify-target.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ inputs.target_environment == 'staging' && vars.STAGING_SUPABASE_URL || secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ inputs.target_environment == 'staging' && vars.STAGING_SUPABASE_PROJECT_REF || secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+
+      - name: Publish the reviewed catalog
+        if: ${{ inputs.publish }}
+        shell: bash
+        run: |
+          if [[ "$CATALOG_PUBLISH_ENVIRONMENT" != "$TARGET_ENVIRONMENT" ]]; then
+            echo "Refusing catalog publication: environment sentinel mismatch." >&2
+            exit 1
           fi
-          node scripts/upload-templates-to-blobs.mjs $ARGS
+          if [[ "$TARGET_ENVIRONMENT" == "production" && "$PRODUCTION_CONFIRMATION" != "PUBLISH PRODUCTION" ]]; then
+            echo "Refusing production catalog publication: confirmation phrase mismatch." >&2
+            exit 1
+          fi
+          args=(--root "$RUNNER_TEMP/dailyclarity-curated")
+          if [[ "$FORCE_UPLOAD" == "true" ]]; then
+            args+=(--force)
+          fi
+          node apps/generator-app/scripts/upload-templates-to-blobs.mjs "${args[@]}"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          CATALOG_PUBLISH_ENVIRONMENT: ${{ vars.CATALOG_PUBLISH_ENVIRONMENT }}
+          TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+          PRODUCTION_CONFIRMATION: ${{ inputs.production_confirmation }}
+          FORCE_UPLOAD: ${{ inputs.force }}

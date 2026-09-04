@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
 import {
   type InlineEditMap,
+  buildCustomizationScope,
   mergeInlineEdit,
   applyInlineEditsToHtml,
   loadInlineEdits,
@@ -29,9 +30,25 @@ import type {
   PreviewStep,
 } from '@/store/previewStore'
 import { computeClientReadiness } from '@/lib/client-readiness'
+import {
+  CUSTOM_THEME_STORAGE_KEY,
+  sanitizeCustomTheme,
+} from '@/lib/custom-theme'
 import { ClientReadinessPanel } from '@/components/preview/ClientReadinessPanel'
+import {
+  isSafePreviewImageUrl,
+  isSafePreviewPage,
+  isSafePreviewText,
+  rewriteTemplateAssetReferences,
+  sanitizeTemplatePreviewHtml,
+} from '@/lib/template-preview-security'
 
 import { getNicheOptions } from '@/lib/templates/niche-meta'
+import {
+  resolveQuizColorScheme,
+  resolveQuizFontVariation,
+  resolveQuizStructureVariation,
+} from '@/lib/templates/variations'
 
 /* ================================================================== */
 /* Constants & helpers                                                 */
@@ -100,16 +117,16 @@ const DEMO_RECORD_CALLOUTS: Record<PreviewStep, string> = {
   style: 'Step 2 — Choose the look and voice for your brand',
   matching: 'Step 3 — We match you with a layout for your niche',
   editor: 'Your website preview — filled with your real business info',
-  browse: 'Browse personalized layouts — every page already has your details',
+  browse: 'Browse personalized layouts with your supported business fields applied',
 }
 
 const VIBE_OPTIONS: { value: VibeOption; label: string; icon: string; desc: string }[] = [
-  { value: 'warm', label: 'Warm', icon: '≡ƒîà', desc: 'Inviting, cozy, human' },
-  { value: 'bold', label: 'Bold', icon: 'ΓÜí', desc: 'Strong, assertive, high-impact' },
-  { value: 'clean', label: 'Clean', icon: 'Γ£¿', desc: 'Minimal, organized, crisp' },
-  { value: 'luxurious', label: 'Luxurious', icon: '≡ƒÆÄ', desc: 'Premium, sophisticated, refined' },
-  { value: 'earthy', label: 'Earthy', icon: '≡ƒî┐', desc: 'Natural, grounded, organic' },
-  { value: 'playful', label: 'Playful', icon: '≡ƒÄ¿', desc: 'Creative, fun, approachable' },
+  { value: 'warm', label: 'Warm', icon: '🌈', desc: 'Inviting, cozy, human' },
+  { value: 'bold', label: 'Bold', icon: '⚡', desc: 'Strong, assertive, high-impact' },
+  { value: 'clean', label: 'Clean', icon: '✨', desc: 'Minimal, organized, crisp' },
+  { value: 'luxurious', label: 'Luxurious', icon: '💎', desc: 'Premium, sophisticated, refined' },
+  { value: 'earthy', label: 'Earthy', icon: '🌿', desc: 'Natural, grounded, organic' },
+  { value: 'playful', label: 'Playful', icon: '🎨', desc: 'Creative, fun, approachable' },
 ]
 
 const PROSE_OPTIONS: { value: ProseStyle; label: string; desc: string }[] = [
@@ -147,6 +164,7 @@ interface ApiTemplate {
   nicheSlug: string
   layoutFamily?: string
   voiceFamily?: string
+  pages: string[]
   snippet: string
 }
 
@@ -298,6 +316,7 @@ export default function PreviewYourBusinessClient() {
   // page navigation and carry through to purchase.
   const inlineEditsRef = useRef<InlineEditMap>({})
   const imageSwapsRef = useRef<ImageSwapMap>({})
+  const activeCustomizationScopeRef = useRef('')
   const currentPageRef = useRef('index.html')
   currentPageRef.current = currentPage
 
@@ -308,6 +327,8 @@ export default function PreviewYourBusinessClient() {
     body: string
     importUrl?: string
   }>({ heading: 'inherit', body: 'inherit' })
+  const [customThemeReady, setCustomThemeReady] = useState(false)
+  const [customThemeActive, setCustomThemeActive] = useState(false)
   const [showColorPanel, setShowColorPanel] = useState(false)
   const [showFontPanel, setShowFontPanel] = useState(false)
 
@@ -388,6 +409,7 @@ export default function PreviewYourBusinessClient() {
         nicheSlug: businessInfo.niche || 'wellness_coach',
         templateSlug: '',
         templateName: 'No templates found',
+        pages: [],
         matchScore: 0,
         reason: 'No templates available for this niche',
       })
@@ -408,6 +430,7 @@ export default function PreviewYourBusinessClient() {
       nicheSlug: resolvedNiche,
       templateSlug: best.slug,
       templateName: best.name,
+      pages: best.pages,
       matchScore: best.score,
       reason: best.reason,
     })
@@ -442,6 +465,16 @@ export default function PreviewYourBusinessClient() {
         setPreviewHtml(null)
         return
       }
+
+      // Switching templates must also switch the persisted customization set.
+      // Do this synchronously here because callers can request a new template
+      // before React has committed the corresponding matched-template state.
+      const customizationScope = buildCustomizationScope(ns, ts)
+      if (customizationScope !== activeCustomizationScopeRef.current) {
+        activeCustomizationScopeRef.current = customizationScope
+        inlineEditsRef.current = loadInlineEdits(customizationScope)
+        imageSwapsRef.current = loadImageSwaps(customizationScope)
+      }
       setPreviewLoading(true)
       setPreviewError(null)
 
@@ -459,9 +492,19 @@ export default function PreviewYourBusinessClient() {
           body: JSON.stringify({
             page,
             values: getFieldValues(),
-            colorScheme: stylePreferences.colorMood,
-            fontVariation: stylePreferences.fontPreference,
-            structureVariation: stylePreferences.layoutDensity,
+            colorScheme: resolveQuizColorScheme(stylePreferences.colorMood),
+            fontVariation: resolveQuizFontVariation(stylePreferences.fontPreference),
+            structureVariation: resolveQuizStructureVariation(stylePreferences.layoutDensity),
+            customTheme: customThemeActive
+              ? sanitizeCustomTheme({
+                  primary: customColors.primary,
+                  background: customColors.bg,
+                  text: customColors.text,
+                  headingFont: customFonts.heading,
+                  bodyFont: customFonts.body,
+                  fontImportUrl: customFonts.importUrl,
+                })
+              : null,
           }),
           signal: controller.signal,
         })
@@ -473,16 +516,9 @@ export default function PreviewYourBusinessClient() {
         }
         const data = await res.json()
 
-        let html = data.html as string
+        let html = sanitizeTemplatePreviewHtml(data.html as string)
         const assetBase = `/api/templates/${ns}/${ts}/assets`
-
-        html = html.replace(
-          /(href|src)="(?!https?:\/\/|\/\/|data:|mailto:|tel:|#)([^"]+)"/g,
-          (match, attr, path) => {
-            if (path.endsWith('.html')) return match
-            return `${attr}="${assetBase}/${path}"`
-          },
-        )
+        html = rewriteTemplateAssetReferences(html, assetBase, page)
 
         html = html.replace(
           /<img([^>]*?)src="([^"]+)"([^>]*)>/gi,
@@ -497,7 +533,12 @@ export default function PreviewYourBusinessClient() {
         )
 
         if (data.css) {
-          html = html.replace('</head>', `<style>${data.css}</style></head>`)
+          const rewrittenCss = rewriteTemplateAssetReferences(
+            data.css,
+            assetBase,
+            'assets/css/styles.css',
+          )
+          html = html.replace('</head>', `<style>${rewrittenCss}</style></head>`)
         }
         if (data.variationCSS) {
           html = html.replace(
@@ -516,7 +557,7 @@ export default function PreviewYourBusinessClient() {
         </head>`)
 
         // Re-apply inline text edits captured earlier (not part of hydration)
-        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page])
+        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page], page)
         html = applyImageSwapsToHtml(html, imageSwapsRef.current[page])
 
         // Inject editing + nav scripts
@@ -540,7 +581,15 @@ export default function PreviewYourBusinessClient() {
         setPreviewLoading(false)
       }
     },
-    [matchedTemplate, businessInfo.niche, getFieldValues, stylePreferences],
+    [
+      matchedTemplate,
+      businessInfo.niche,
+      getFieldValues,
+      stylePreferences,
+      customThemeActive,
+      customColors,
+      customFonts,
+    ],
   )
 
   useEffect(() => {
@@ -552,33 +601,79 @@ export default function PreviewYourBusinessClient() {
     nichePrefilledRef.current = true
   }, [nichePrefill, businessInfo.niche, setBusinessInfo])
 
-  /* ================ Restore persisted inline edits ================ */
+  /* ================ Restore persisted customization ================ */
   useEffect(() => {
-    inlineEditsRef.current = loadInlineEdits()
-    imageSwapsRef.current = loadImageSwaps()
     getOrCreateImageOwnerId()
+    try {
+      const stored = sanitizeCustomTheme(
+        JSON.parse(sessionStorage.getItem(CUSTOM_THEME_STORAGE_KEY) || 'null'),
+      )
+      if (stored) {
+        setCustomThemeActive(true)
+        setCustomColors({ primary: stored.primary, bg: stored.background, text: stored.text })
+        setCustomFonts({
+          heading: stored.headingFont,
+          body: stored.bodyFont,
+          importUrl: stored.fontImportUrl,
+        })
+      }
+    } catch { /* ignore malformed legacy state */ }
+    setCustomThemeReady(true)
   }, [])
+
+  useEffect(() => {
+    const niche = matchedTemplate?.nicheSlug || businessInfo.niche
+    const template = matchedTemplate?.templateSlug
+    if (!niche || !template) return
+    const scope = buildCustomizationScope(niche, template)
+    activeCustomizationScopeRef.current = scope
+    inlineEditsRef.current = loadInlineEdits(scope)
+    imageSwapsRef.current = loadImageSwaps(scope)
+  }, [matchedTemplate?.nicheSlug, matchedTemplate?.templateSlug, businessInfo.niche])
+
+  useEffect(() => {
+    if (!customThemeReady || !customThemeActive) return
+    const theme = sanitizeCustomTheme({
+      primary: customColors.primary,
+      background: customColors.bg,
+      text: customColors.text,
+      headingFont: customFonts.heading,
+      bodyFont: customFonts.body,
+      fontImportUrl: customFonts.importUrl,
+    })
+    if (!theme) return
+    try {
+      sessionStorage.setItem(CUSTOM_THEME_STORAGE_KEY, JSON.stringify(theme))
+    } catch { /* quota exceeded — keep the live preview usable */ }
+  }, [customColors, customFonts, customThemeReady, customThemeActive])
 
   /* ================ Iframe messaging ================ */
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
+      if (e.source !== iframeRef.current?.contentWindow) return
       if (!e.data || typeof e.data !== 'object') return
       if (e.data.type === 'navigatePage') {
-        loadPreview(undefined, undefined, e.data.page)
+        if (isSafePreviewPage(e.data.page)) {
+          loadPreview(undefined, undefined, e.data.page)
+        }
       }
       if (e.data.type === 'imageSwapRequest') {
-        pendingImageSwapSrc.current = e.data.src
-        fileInputRef.current?.click()
+        if (isSafePreviewImageUrl(e.data.src)) {
+          pendingImageSwapSrc.current = e.data.src
+          fileInputRef.current?.click()
+        }
       }
       if (e.data.type === 'textEdited') {
+        if (!isSafePreviewText(e.data.original) || !isSafePreviewText(e.data.text)) return
         const page = currentPageRef.current
         const pageEdits = mergeInlineEdit(
           inlineEditsRef.current[page] || [],
-          (e.data.original as string) || '',
-          (e.data.text as string) || '',
+          e.data.original,
+          e.data.text,
+          e.data.id,
         )
         inlineEditsRef.current = { ...inlineEditsRef.current, [page]: pageEdits }
-        saveInlineEdits(inlineEditsRef.current)
+        saveInlineEdits(inlineEditsRef.current, activeCustomizationScopeRef.current)
       }
     }
     window.addEventListener('message', handleMessage)
@@ -598,6 +693,8 @@ export default function PreviewYourBusinessClient() {
         originalSrc,
         page,
         imageSwapsRef.current,
+        undefined,
+        activeCustomizationScopeRef.current,
       )
       imageSwapsRef.current = map
       iframeRef.current?.contentWindow?.postMessage(
@@ -665,6 +762,7 @@ export default function PreviewYourBusinessClient() {
       nicheSlug: resolvedNiche,
       templateSlug: t.slug,
       templateName: t.name,
+      pages: t.pages,
       matchScore: 0,
       reason: 'manually selected',
     })
@@ -712,7 +810,7 @@ export default function PreviewYourBusinessClient() {
                           : 'bg-white/10 text-slate-400'
                     }`}
                   >
-                    {isCompleted ? 'Γ£ô' : meta.number}
+                    {isCompleted ? '✓' : meta.number}
                   </div>
                   <span className={`text-xs font-semibold uppercase tracking-wider ${isActive ? 'text-white' : 'text-slate-400'}`}>
                     {meta.label}
@@ -724,7 +822,7 @@ export default function PreviewYourBusinessClient() {
           </div>
         </div>
 
-        {/* ============ STEP 1 ΓÇö BUSINESS INFO ============ */}
+        {/* ============ STEP 1 — BUSINESS INFO ============ */}
         {step === 'info' && (
           <InfoStep
             info={businessInfo}
@@ -734,7 +832,7 @@ export default function PreviewYourBusinessClient() {
           />
         )}
 
-        {/* ============ STEP 2 ΓÇö STYLE & VIBE ============ */}
+        {/* ============ STEP 2 — STYLE & VIBE ============ */}
         {step === 'style' && (
           <StyleStep
             prefs={stylePreferences}
@@ -759,6 +857,7 @@ export default function PreviewYourBusinessClient() {
                 nicheSlug: resolvedNiche,
                 templateSlug: t.slug,
                 templateName: t.name,
+                pages: t.pages,
                 matchScore: 0,
                 reason: 'alternative style selected',
               })
@@ -769,7 +868,7 @@ export default function PreviewYourBusinessClient() {
           />
         )}
 
-        {/* ============ STEP 4 ΓÇö EDITOR ============ */}
+        {/* ============ STEP 4 — EDITOR ============ */}
         {step === 'editor' && matchedTemplate && (
           <EditorStep
             matched={matchedTemplate}
@@ -793,6 +892,9 @@ export default function PreviewYourBusinessClient() {
             setCustomColors={setCustomColors}
             customFonts={customFonts}
             setCustomFonts={setCustomFonts}
+            customThemeActive={customThemeActive}
+            setCustomThemeActive={setCustomThemeActive}
+            checkoutHref={`/pricing?template=${encodeURIComponent(matchedTemplate.templateSlug)}&niche=${encodeURIComponent(matchedTemplate.nicheSlug)}&color=${encodeURIComponent(resolveQuizColorScheme(stylePreferences.colorMood))}&font=${encodeURIComponent(resolveQuizFontVariation(stylePreferences.fontPreference))}&structure=${encodeURIComponent(resolveQuizStructureVariation(stylePreferences.layoutDensity))}`}
           />
         )}
 
@@ -827,7 +929,7 @@ export default function PreviewYourBusinessClient() {
 }
 
 /* ================================================================== */
-/* STEP 1 ΓÇö Info collection                                            */
+/* STEP 1 — Info collection                                            */
 /* ================================================================== */
 
 function InfoStep({
@@ -867,7 +969,7 @@ function InfoStep({
           Tell us about your business
         </h1>
         <p className="text-lg text-slate-300">
-          We&apos;ll use this to fill in every page of your website automatically.
+          We&apos;ll apply these details to supported fields throughout your website preview.
         </p>
       </div>
 
@@ -937,7 +1039,7 @@ function InfoStep({
         </div>
         <Field label="Services (comma-separated)" value={info.services}
           onChange={(v) => onChange({ services: v })} placeholder={ex.services} />
-        <Field label="Existing Website (optional)" value={info.website}
+        <Field label="Existing website for design reference (optional; never published)" value={info.website}
           onChange={(v) => onChange({ website: v })} placeholder="https://yourbusiness.com" />
       </div>
 
@@ -946,7 +1048,7 @@ function InfoStep({
           onClick={handleNext}
           className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
         >
-          Continue to Style Preferences ΓåÆ
+          Continue to Style Preferences →
         </button>
       </div>
     </section>
@@ -954,7 +1056,7 @@ function InfoStep({
 }
 
 /* ================================================================== */
-/* STEP 2 ΓÇö Style & Vibe quiz                                         */
+/* STEP 2 — Style & Vibe quiz                                         */
 /* ================================================================== */
 
 function StyleStep({
@@ -1101,9 +1203,9 @@ function StyleStep({
           <h2 className="text-xl font-bold text-white mb-1">Layout feel</h2>
           <div className="grid grid-cols-3 gap-3">
             {([
-              { value: 'spacious' as const, label: 'Spacious', icon: 'ΓûæΓûæΓûæ' },
-              { value: 'balanced' as const, label: 'Balanced', icon: 'ΓûÆΓûÆΓûÆ' },
-              { value: 'compact' as const, label: 'Compact', icon: 'ΓûêΓûêΓûê' },
+              { value: 'spacious' as const, label: 'Spacious', icon: '░░░' },
+              { value: 'balanced' as const, label: 'Balanced', icon: '▒▒▒' },
+              { value: 'compact' as const, label: 'Compact', icon: '███' },
             ]).map((l) => (
               <button
                 key={l.value}
@@ -1128,13 +1230,13 @@ function StyleStep({
           onClick={onBack}
           className="px-6 py-3 text-sm font-bold text-slate-300 border border-white/20 rounded-lg hover:bg-white/10 transition-all"
         >
-          ΓåÉ Back
+          ← Back
         </button>
         <button
           onClick={onNext}
           className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
         >
-          Find My Perfect Template ΓåÆ
+          Find My Perfect Template →
         </button>
       </div>
     </section>
@@ -1187,7 +1289,7 @@ function MatchStep({
         <div className="glass-panel rounded-2xl p-8 space-y-6">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-3xl shadow-lg shrink-0">
-              ≡ƒÄ»
+              🎯
             </div>
             <div>
               <h2 className="text-3xl font-bold text-white">{matched.templateName}</h2>
@@ -1207,7 +1309,7 @@ function MatchStep({
                 'Double-click any text to edit it directly',
                 'Click any image to replace it with your own',
                 'Swap color palettes and fonts with one click',
-                'Browse other templates anytime ΓÇö your info stays saved',
+                'Browse other templates anytime — your info stays saved',
               ].map((item) => (
                 <li key={item} className="flex items-center gap-3 text-slate-200">
                   <span className="w-2 h-2 rounded-full bg-cyan-400 shrink-0" />
@@ -1281,7 +1383,7 @@ function MatchStep({
 }
 
 /* ================================================================== */
-/* STEP 4 ΓÇö Editor with live preview                                   */
+/* STEP 4 — Editor with live preview                                   */
 /* ================================================================== */
 
 function EditorStep({
@@ -1306,6 +1408,9 @@ function EditorStep({
   setCustomColors,
   customFonts,
   setCustomFonts,
+  customThemeActive,
+  setCustomThemeActive,
+  checkoutHref,
 }: {
   matched: MatchedTemplate
   readiness: ReturnType<typeof computeClientReadiness>
@@ -1328,6 +1433,9 @@ function EditorStep({
   setCustomColors: (v: { primary: string; bg: string; text: string }) => void
   customFonts: { heading: string; body: string; importUrl?: string }
   setCustomFonts: (v: { heading: string; body: string; importUrl?: string }) => void
+  customThemeActive: boolean
+  setCustomThemeActive: (v: boolean) => void
+  checkoutHref: string
 }) {
   const COLOR_PRESETS = [
     { label: 'Ocean', primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' },
@@ -1391,39 +1499,13 @@ function EditorStep({
   ]
 
   const applyCustomStyles = useCallback(() => {
+    if (!customThemeActive) return
     const iframe = iframeRef.current
-    const doc = iframe?.contentDocument
-    if (!doc) return
-
-    if (customFonts.importUrl) {
-      let linkEl = doc.getElementById('pb-google-fonts') as HTMLLinkElement | null
-      if (!linkEl) {
-        linkEl = doc.createElement('link')
-        linkEl.id = 'pb-google-fonts'
-        linkEl.rel = 'stylesheet'
-        doc.head.appendChild(linkEl)
-      }
-      linkEl.href = customFonts.importUrl
-    }
-
-    let styleEl = doc.getElementById('pb-custom-styles') as HTMLStyleElement | null
-    if (!styleEl) {
-      styleEl = doc.createElement('style')
-      styleEl.id = 'pb-custom-styles'
-      doc.head.appendChild(styleEl)
-    }
-    styleEl.textContent = `
-      :root {
-        --pb-primary: ${customColors.primary};
-        --pb-bg: ${customColors.bg};
-        --pb-text: ${customColors.text};
-        --pb-heading-font: ${customFonts.heading};
-        --pb-body-font: ${customFonts.body};
-      }
-      h1, h2, h3, h4, h5, h6 { font-family: ${customFonts.heading} !important; }
-      body, p, li, span, a, button, label { font-family: ${customFonts.body} !important; }
-    `
-  }, [customColors, customFonts, iframeRef])
+    iframe?.contentWindow?.postMessage(
+      { type: 'applyPreviewStyles', colors: customColors, fonts: customFonts },
+      '*',
+    )
+  }, [customColors, customFonts, customThemeActive, iframeRef])
 
   useEffect(() => {
     applyCustomStyles()
@@ -1438,13 +1520,13 @@ function EditorStep({
       )}
       {demoRecord ? (
         <p className="text-center text-sm text-cyan-200/90 mb-3 font-medium">
-          Your live website preview ΓÇö filled with your business details
+          Your live website preview — filled with supported business fields
         </p>
       ) : (
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold text-white">{matched.templateName}</h1>
-            <p className="text-sm text-slate-400">Double-click text to edit ΓÇó Click images to replace</p>
+            <p className="text-sm text-slate-400">Double-click text to edit • Click images to replace</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
           <button
@@ -1453,7 +1535,7 @@ function EditorStep({
               showColorPanel ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'border-white/20 text-slate-300 hover:bg-white/10'
             }`}
           >
-            ≡ƒÄ¿ Colors
+            🎨 Colors
           </button>
           <button
             onClick={() => setShowFontPanel(!showFontPanel)}
@@ -1464,7 +1546,7 @@ function EditorStep({
             🔤 Fonts
           </button>
           <Link
-            href={`/pricing?template=${encodeURIComponent(matched.templateSlug)}&niche=${encodeURIComponent(matched.nicheSlug)}`}
+            href={checkoutHref}
             className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
           >
             Purchase & Launch
@@ -1483,7 +1565,10 @@ function EditorStep({
             {COLOR_PRESETS.map((p) => (
               <button
                 key={p.label}
-                onClick={() => setCustomColors({ primary: p.primary, bg: p.bg, text: p.text })}
+                onClick={() => {
+                  setCustomThemeActive(true)
+                  setCustomColors({ primary: p.primary, bg: p.bg, text: p.text })
+                }}
                 className="flex items-center gap-2 px-3 py-2 rounded-lg border border-white/10 hover:border-white/30 transition-all bg-white/5"
               >
                 <div className="w-6 h-6 rounded-full border border-white/20" style={{ background: p.primary }} />
@@ -1495,19 +1580,28 @@ function EditorStep({
             <div>
               <label className="text-xs text-slate-400">Primary</label>
               <input type="color" value={customColors.primary}
-                onChange={(e) => setCustomColors({ ...customColors, primary: e.target.value })}
+                onChange={(e) => {
+                  setCustomThemeActive(true)
+                  setCustomColors({ ...customColors, primary: e.target.value })
+                }}
                 className="w-full h-8 rounded cursor-pointer bg-transparent" />
             </div>
             <div>
               <label className="text-xs text-slate-400">Background</label>
               <input type="color" value={customColors.bg}
-                onChange={(e) => setCustomColors({ ...customColors, bg: e.target.value })}
+                onChange={(e) => {
+                  setCustomThemeActive(true)
+                  setCustomColors({ ...customColors, bg: e.target.value })
+                }}
                 className="w-full h-8 rounded cursor-pointer bg-transparent" />
             </div>
             <div>
               <label className="text-xs text-slate-400">Text</label>
               <input type="color" value={customColors.text}
-                onChange={(e) => setCustomColors({ ...customColors, text: e.target.value })}
+                onChange={(e) => {
+                  setCustomThemeActive(true)
+                  setCustomColors({ ...customColors, text: e.target.value })
+                }}
                 className="w-full h-8 rounded cursor-pointer bg-transparent" />
             </div>
           </div>
@@ -1522,7 +1616,10 @@ function EditorStep({
             {FONT_PRESETS.map((f) => (
               <button
                 key={f.label}
-                onClick={() => setCustomFonts({ heading: f.heading, body: f.body, importUrl: f.importUrl })}
+                onClick={() => {
+                  setCustomThemeActive(true)
+                  setCustomFonts({ heading: f.heading, body: f.body, importUrl: f.importUrl })
+                }}
                 className={`px-3 py-2 rounded-lg border transition-all bg-white/5 ${
                   customFonts.heading === f.heading
                     ? 'border-cyan-400 ring-1 ring-cyan-400/40'
@@ -1557,6 +1654,8 @@ function EditorStep({
             onLoad={applyCustomStyles}
             loading="lazy"
             className={`w-full border-0 ${demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'}`}
+            sandbox="allow-scripts"
+            referrerPolicy="no-referrer"
             title="Template preview"
           />
         ) : previewError ? (
@@ -1597,7 +1696,7 @@ function EditorStep({
       {/* Page navigation */}
       <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
         <span className="text-xs text-slate-400 mr-2">Pages:</span>
-        {['index.html', 'about.html', 'services.html', 'contact.html'].map((page) => (
+        {(matched.pages?.length ? matched.pages : ['index.html']).map((page) => (
           <button
             key={page}
             onClick={() => onLoadPreview(matched.nicheSlug, matched.templateSlug, page)}
@@ -1649,7 +1748,7 @@ function BrowseStep({
             {nicheLabel} Templates
           </h1>
           <p className="text-slate-300 mt-1">
-            {total > 0 ? `${total} templates available.` : ''} Your business info will auto-populate on any template you choose.
+            {total > 0 ? `${total} templates available.` : ''} Supported business fields will populate on compatible templates you choose.
           </p>
         </div>
         <button
@@ -1664,7 +1763,7 @@ function BrowseStep({
       <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4 mb-8 flex items-center gap-3">
         <span className="text-cyan-400 text-xl">💾</span>
         <p className="text-cyan-200 text-sm">
-          <strong>Your info is saved.</strong> Any template you open will be automatically filled with your business details.
+          <strong>Your info is saved.</strong> Compatible templates will reuse it in their supported business fields.
         </p>
       </div>
 
@@ -1780,7 +1879,7 @@ function getIframeInjectionScript(): string {
   return `
 <script>
 (function(){
-  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd';
+  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div:not(:has(h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div,section,article)),section:not(:has(*)),article:not(:has(*))';
   var supportsHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
 
   function startEditing(el) {
@@ -1798,7 +1897,7 @@ function getIframeInjectionScript(): string {
       el.style.outlineOffset = '';
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
-      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, original: originalText, text: el.textContent }, '*');
+      window.parent.postMessage({ type: 'textEdited', id: el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
   }
 
@@ -1854,9 +1953,10 @@ function getIframeInjectionScript(): string {
   });
 
   window.addEventListener('message', function(e) {
+    if (e.source !== window.parent || !e.data || typeof e.data !== 'object') return;
     if (e.data && e.data.type === 'imageSwapResponse') {
       var newSrc = e.data.imageUrl || e.data.dataUrl;
-      if (!newSrc) return;
+      if (typeof newSrc !== 'string' || newSrc.length > 2048 || !/^(https?:\\/\\/|data:image\\/|blob:|\\/)/i.test(newSrc)) return;
       var imgs = document.querySelectorAll('img');
       for (var i = 0; i < imgs.length; i++) {
         if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
@@ -1864,6 +1964,36 @@ function getIframeInjectionScript(): string {
           break;
         }
       }
+    }
+    if (e.data.type === 'applyPreviewStyles') {
+      var colors = e.data.colors || {};
+      var fonts = e.data.fonts || {};
+      var isColor = function(value) { return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value); };
+      var isFont = function(value) { return typeof value === 'string' && value.length <= 120 && /^[a-z0-9,'" -]+$/i.test(value); };
+      if (!isColor(colors.primary) || !isColor(colors.bg) || !isColor(colors.text) || !isFont(fonts.heading) || !isFont(fonts.body)) return;
+      if (typeof fonts.importUrl === 'string' && /^https:\\/\\/fonts\\.googleapis\\.com\\//.test(fonts.importUrl)) {
+        var link = document.getElementById('pb-google-fonts');
+        if (!link) {
+          link = document.createElement('link');
+          link.id = 'pb-google-fonts';
+          link.rel = 'stylesheet';
+          document.head.appendChild(link);
+        }
+        link.href = fonts.importUrl;
+      }
+      var style = document.getElementById('pb-custom-styles');
+      if (!style) {
+        style = document.createElement('style');
+        style.id = 'pb-custom-styles';
+        document.head.appendChild(style);
+      }
+      style.textContent = ':root{' +
+        '--pb-primary:' + colors.primary + ';--pb-bg:' + colors.bg + ';--pb-text:' + colors.text + ';' +
+        '--primary:' + colors.primary + '!important;--bg:' + colors.bg + '!important;--fg:' + colors.text + '!important;' +
+        '--pb-heading-font:' + fonts.heading + ';--pb-body-font:' + fonts.body + ';}' +
+        'body{background-color:' + colors.bg + '!important;color:' + colors.text + '!important;font-family:' + fonts.body + '!important;}' +
+        'h1,h2,h3,h4,h5,h6,.h1,.h2,.brand{font-family:' + fonts.heading + '!important;}' +
+        'a,.btn,button{--pb-accent:' + colors.primary + ';}';
     }
   });
 

@@ -9,7 +9,7 @@
  *  - basic         ($20/mo): the fully automated, self-serve website platform.
  *  - security_ads  ($80/mo): everything in Basic PLUS one done-for-you premium
  *                            bundle we run by hand — ad/promo campaigns and
- *                            security + uptime hardening.
+ *                            security + operational hardening.
  *
  * Note on Stripe env vars: the $80 price still lives in STRIPE_PRICE_GROWTH for
  * backwards compatibility, and the legacy `growth` planKey is accepted as an
@@ -41,7 +41,7 @@ export const PLANS: Record<PlanKey, Plan> = {
     name: 'Basic',
     price: 20,
     period: 'monthly',
-    description: 'Your professional website, launched and fully automated — edit it yourself anytime.',
+    description: 'A hosted professional website with self-serve editing for supported content and images.',
     badge: 'Self-serve',
     highlight: false,
     managedService: false,
@@ -49,11 +49,11 @@ export const PLANS: Record<PlanKey, Plan> = {
       'Professional website, built and launched for you',
       'Hosted subdomain + SSL included',
       'Live preview and self-serve portal editing',
-      'Switch templates and styles anytime',
+      'Edit supported text and images after launch',
       'Contact forms with email notifications',
       'Secure cloud storage and database',
-      'Online-payment ready',
-      '7-day free trial',
+      'Stripe-secured DailyClarity billing portal',
+      'Free-trial terms shown before checkout when offered',
     ],
   },
   security_ads: {
@@ -68,11 +68,11 @@ export const PLANS: Record<PlanKey, Plan> = {
     managedService: true,
     features: [
       'Everything in Basic',
-      'Done-for-you ad & promo campaigns, managed by us',
-      'Security hardening & uptime monitoring, managed by us',
-      'Hands-on optimization a few times each week',
-      'Priority support',
-      '7-day free trial',
+      'Agreed ad & promo campaign work, managed by us',
+      'Agreed security hardening & operations review, managed by us',
+      'Scope and cadence confirmed by email before work begins',
+      'Email support for managed work',
+      'Free-trial terms shown before checkout when offered',
     ],
   },
 }
@@ -86,18 +86,18 @@ export const PLAN_LIST: Plan[] = [PLANS.basic, PLANS.security_ads]
  */
 export const AUTOMATED_FEATURES: string[] = [
   'Professional website + hosted subdomain',
-  'SSL, hosting, and uptime',
+  'SSL and managed hosting',
   'Contact forms + email notifications',
-  'Secure storage, database & payments',
+  'Secure storage and account billing',
   'Self-serve portal edits',
-  'Template & style switching',
-  '7-day free trial',
+  'Current-template content editing',
+  'Free-trial terms shown before checkout when offered',
 ]
 
 /** The single manually delivered premium bundle, gated to the $80 tier. */
 export const MANAGED_FEATURES: string[] = [
-  'Done-for-you ad & promo campaigns',
-  'Security hardening & uptime monitoring',
+  'Agreed ad & promo campaign work',
+  'Agreed security hardening & operations review',
 ]
 
 /**
@@ -115,6 +115,19 @@ export function normalizePlanKey(input: string | null | undefined): PlanKey | nu
 /** True when the plan includes the manually delivered premium bundle. */
 export function isManagedPlan(input: string | null | undefined): boolean {
   return normalizePlanKey(input) === 'security_ads'
+}
+
+/**
+ * A fulfilled managed-plan checkout opens its work item when the subscription
+ * starts, including a trial or 100%-discounted `no_payment_required` session.
+ */
+export function shouldCreateManagedServiceTask(
+  input: string | null | undefined,
+  paymentStatus: string | null | undefined,
+): boolean {
+  return isManagedPlan(input) && (
+    paymentStatus === 'paid' || paymentStatus === 'no_payment_required'
+  )
 }
 
 /** Resolve a plan definition from any planKey/alias. */

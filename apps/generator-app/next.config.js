@@ -3,7 +3,6 @@ const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ['@platform-builder/ui-components', '@platform-builder/utils'],
   images: {
-    domains: ['placeholder.com', 'via.placeholder.com'],
     remotePatterns: [
       {
         protocol: 'https',

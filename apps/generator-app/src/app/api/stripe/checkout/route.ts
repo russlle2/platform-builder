@@ -1,52 +1,78 @@
-import { headers } from 'next/headers'
+import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { createClient } from '@supabase/supabase-js'
 import { getStripeTrialDays } from '@/lib/platform-config'
-import { chunkJsonToMetadata } from '@/lib/site-deploy'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 import { getPlan, normalizePlanKey } from '@/lib/plans'
+import { getTrustedSiteOrigin } from '@/lib/site-origin'
+import { sanitizeImageSwapMap } from '@/lib/image-swaps'
+import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
+import { sanitizeCustomTheme } from '@/lib/custom-theme'
+import { sanitizeCustomerValues, sanitizeInlineEditMap } from '@/lib/site-deploy'
+import { getTemplate } from '@/lib/templates/niche-registry'
+import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
+import {
+  TEMPLATE_CHECKOUT_TYPE,
+  getTemplateFulfillmentConfigIssues,
+} from '@/lib/stripe-runtime'
+import { normalizeSiteSlug, validateSiteSlug } from '@/lib/site-slug'
+import { UPLOAD_SESSION_COOKIE, verifyUploadSessionValue } from '@/lib/upload-session'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const MAX_CHECKOUT_PAYLOAD_BYTES = 200_000
 
-/** Resolve the Stripe price ID for a (normalized) plan from its env var. */
-function resolvePriceId(planKey: string): string | undefined {
+/** Resolve and verify the recurring Stripe price before accepting checkout. */
+async function resolvePriceId(stripe: Stripe, planKey: string): Promise<string | undefined> {
   const plan = getPlan(planKey)
   if (!plan) return undefined
-  return process.env[plan.stripePriceEnv]
-}
-
-function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .normalize('NFKD')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 40)
+  const priceId = process.env[plan.stripePriceEnv]
+  if (!priceId) return undefined
+  const price = await stripe.prices.retrieve(priceId)
+  if (
+    !price.active ||
+    price.type !== 'recurring' ||
+    price.recurring?.interval !== 'month' ||
+    price.recurring.interval_count !== 1 ||
+    price.unit_amount !== plan.price * 100 ||
+    price.currency !== 'usd'
+  ) {
+    throw new Error(`stripe_price_mismatch:${plan.key}`)
+  }
+  return price.id
 }
 
 /** Short, collision-resistant suffix for auto-generated slugs. */
 function randomSuffix(): string {
-  return Math.random().toString(36).slice(2, 6)
+  return randomUUID().replace(/-/g, '').slice(0, 6)
 }
 
 export async function POST(req: NextRequest) {
   const allowed = rateLimitByIp(req, 'checkout', 10, 10 * 60 * 1000)
   if (!allowed) return jsonTooManyRequests()
 
+  let checkoutIntentId: string | null = null
+  let reservedSlug: string | null = null
+  const supabase = supabaseUrl && supabaseServiceKey
+    ? createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } })
+    : null
+
   try {
-    if (!stripeSecretKey) {
-      return NextResponse.json(
-        { error: 'Missing STRIPE_SECRET_KEY' },
-        { status: 500 }
+    const runtimeConfigIssues = getTemplateFulfillmentConfigIssues()
+    if (runtimeConfigIssues.length > 0 || !stripeSecretKey || !supabase) {
+      console.error(
+        '[stripe/checkout] unavailable; fulfillment configuration issues:',
+        runtimeConfigIssues.join(', '),
       )
+      return NextResponse.json({ error: 'Checkout is temporarily unavailable.' }, { status: 503 })
     }
-
-    const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2023-10-16',
-    })
-
-    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customerValues, inlineEdits, imageSwaps, imageOwner } = await req.json()
+    const body = await req.json()
+    if (!body || typeof body !== 'object' || JSON.stringify(body).length > MAX_CHECKOUT_PAYLOAD_BYTES) {
+      return NextResponse.json({ error: 'Checkout details are invalid or too large.' }, { status: 413 })
+    }
+    const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customTheme, customerValues, inlineEdits, imageSwaps } = body
 
     const canonicalPlan = normalizePlanKey(planKey)
     if (!canonicalPlan) {
@@ -57,18 +83,52 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate required profile fields
-    const businessName = (customerValues?.BUSINESS_NAME || '').trim()
-    const email = (customerValues?.EMAIL || '').trim()
-    if (customerValues && typeof customerValues === 'object') {
-      if (!businessName) {
-        return NextResponse.json({ error: 'Business name is required.' }, { status: 400 })
-      }
-      if (!email) {
-        return NextResponse.json({ error: 'Email address is required.' }, { status: 400 })
-      }
+    if (!customerValues || typeof customerValues !== 'object' || Array.isArray(customerValues)) {
+      return NextResponse.json({ error: 'Business profile details are required.' }, { status: 400 })
+    }
+    const safeCustomerValues = sanitizeCustomerValues(customerValues)
+    const businessName = String(safeCustomerValues.BUSINESS_NAME || '').trim()
+    const email = String(safeCustomerValues.EMAIL || '').trim().toLowerCase()
+    if (!businessName || businessName.length > 200) {
+      return NextResponse.json({ error: 'Business name is required.' }, { status: 400 })
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 320) {
+      return NextResponse.json({ error: 'A valid email address is required.' }, { status: 400 })
+    }
+    const templateSlug = typeof template === 'string' ? template.trim() : ''
+    const nicheSlug = typeof niche === 'string' ? niche.trim() : ''
+    if (!templateSlug || !nicheSlug) {
+      return NextResponse.json({ error: 'Choose a valid template before checkout.' }, { status: 400 })
+    }
+    const selectedTemplate = await getTemplate(nicheSlug, templateSlug)
+    if (!selectedTemplate) {
+      return NextResponse.json(
+        { error: 'That template is not currently available for purchase.' },
+        { status: 400 },
+      )
     }
 
-    const priceId = resolvePriceId(canonicalPlan)
+    const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
+    const cookieImageOwner = verifyUploadSessionValue(
+      req.cookies.get(UPLOAD_SESSION_COOKIE)?.value,
+    )
+    const imageSession = validateCheckoutImageSession(safeImageSwaps, cookieImageOwner)
+    if (!imageSession.ok) {
+      return NextResponse.json(
+        {
+          error: imageSession.error,
+          code: imageSession.code,
+          recoveryUrl: '/preview-your-business',
+        },
+        { status: 409 },
+      )
+    }
+
+    // No Stripe API request is made until every draft image is bound to the
+    // active signed upload session. This prevents accepting payment for an
+    // order that fulfillment already knows it cannot migrate.
+    const stripe = createStripeClient(stripeSecretKey)
+    const priceId = await resolvePriceId(stripe, canonicalPlan)
     if (!priceId) {
       return NextResponse.json(
         { error: 'Invalid or missing price configuration.' },
@@ -79,39 +139,96 @@ export async function POST(req: NextRequest) {
     // Derive a stable, unique slug. Never fall back to the (shared) template
     // slug — that causes collisions/overwrites across customers. Prefer an
     // explicit slug, otherwise generate one from the business name.
-    const templateSlug = typeof template === 'string' ? template : ''
-    let resolvedSlug = typeof slug === 'string' ? slugify(slug) : ''
-    if (!resolvedSlug || resolvedSlug === slugify(templateSlug)) {
-      const base = slugify(businessName) || slugify(templateSlug) || 'site'
+    const explicitSlug = typeof slug === 'string' && slug.trim().length > 0
+    let resolvedSlug = explicitSlug ? normalizeSiteSlug(slug) : ''
+    if (explicitSlug) {
+      const slugError = validateSiteSlug(resolvedSlug)
+      if (slugError) return NextResponse.json({ error: slugError }, { status: 400 })
+    }
+    if (!resolvedSlug || resolvedSlug === normalizeSiteSlug(templateSlug)) {
+      let base = (normalizeSiteSlug(businessName) || normalizeSiteSlug(templateSlug) || 'site').slice(0, 23)
+      // `draft-*` is the private upload-capability namespace. A business name
+      // may legitimately begin with "Draft", so move only generated slugs out
+      // of that namespace while continuing to reject explicit reserved slugs.
+      if (base === 'draft' || base.startsWith('draft-')) {
+        base = `site-${base}`.slice(0, 23)
+      }
       resolvedSlug = `${base}-${randomSuffix()}`
     }
+    const generatedSlugError = validateSiteSlug(resolvedSlug)
+    if (generatedSlugError) {
+      return NextResponse.json({ error: generatedSlugError }, { status: 400 })
+    }
 
-    const origin = (await headers()).get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const origin = getTrustedSiteOrigin(req.url)
+    if (!origin) {
+      return NextResponse.json({ error: 'Checkout redirect configuration is missing.' }, { status: 503 })
+    }
 
-    const metadata: Record<string, string> = {
-      planKey: canonicalPlan,
-      slug: resolvedSlug,
+    checkoutIntentId = randomUUID()
+    const checkoutPayload = {
       template: templateSlug,
-      niche: typeof niche === 'string' ? niche : '',
+      niche: nicheSlug,
       colorScheme: typeof colorScheme === 'string' ? colorScheme : 'original',
       fontVariation: typeof fontVariation === 'string' ? fontVariation : 'original',
       structureVariation: typeof structureVariation === 'string' ? structureVariation : 'original',
+      customTheme: sanitizeCustomTheme(customTheme),
+      customerValues: safeCustomerValues,
+      inlineEdits: sanitizeInlineEditMap(inlineEdits),
+      imageSwaps: safeImageSwaps,
+      imageOwner: imageSession.imageOwner,
     }
+    const { error: intentError } = await supabase.from('checkout_intents').insert({
+      id: checkoutIntentId,
+      slug: resolvedSlug,
+      plan: canonicalPlan,
+      email,
+      payload: checkoutPayload,
+      status: 'pending',
+    })
+    if (intentError) throw new Error(`checkout_intent_insert:${intentError.code || 'unknown'}`)
 
-    // Stripe caps each metadata value at 500 chars. A full intake easily
-    // exceeds that, so chunk the customer's values + inline edits across
-    // numbered keys; the webhook reassembles them. (See lib/site-deploy.)
-    if (customerValues && typeof customerValues === 'object') {
-      Object.assign(metadata, chunkJsonToMetadata('customerValues', customerValues, 18))
+    // Stripe requires expires_at to be at least 30 minutes in the future. Use
+    // a full hour so request/network latency cannot push it below that floor.
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
+    const reservation = {
+      slug: resolvedSlug,
+      status: 'checkout_pending',
+      reserved_for: checkoutIntentId,
+      reservation_expires_at: expiresAt.toISOString(),
     }
-    if (inlineEdits && typeof inlineEdits === 'object') {
-      Object.assign(metadata, chunkJsonToMetadata('inlineEdits', inlineEdits, 10))
+    const { error: reserveError } = await supabase.from('site_slugs').insert(reservation)
+    if (reserveError) {
+      if (reserveError.code !== '23505') {
+        throw new Error(`slug_reservation:${reserveError.code || 'unknown'}`)
+      }
+      const { data: reclaimed, error: reclaimError } = await supabase
+        .from('site_slugs')
+        .update(reservation)
+        .eq('slug', resolvedSlug)
+        .eq('status', 'checkout_pending')
+        .lt('reservation_expires_at', new Date().toISOString())
+        .select('slug')
+        .maybeSingle()
+      if (reclaimError || !reclaimed) {
+        await supabase.from('checkout_intents').update({
+          status: 'checkout_failed',
+          last_error: 'slug_unavailable',
+          updated_at: new Date().toISOString(),
+        }).eq('id', checkoutIntentId)
+        return NextResponse.json(
+          { error: 'That site address was just reserved. Please choose another.' },
+          { status: 409 },
+        )
+      }
     }
-    if (imageSwaps && typeof imageSwaps === 'object') {
-      Object.assign(metadata, chunkJsonToMetadata('imageSwaps', imageSwaps, 12))
-    }
-    if (typeof imageOwner === 'string' && imageOwner.trim()) {
-      metadata.imageOwner = imageOwner.trim().slice(0, 64)
+    reservedSlug = resolvedSlug
+
+    const metadata: Record<string, string> = {
+      checkoutType: TEMPLATE_CHECKOUT_TYPE,
+      checkoutIntentId,
+      planKey: canonicalPlan,
+      slug: resolvedSlug,
     }
 
     const trialDays = getStripeTrialDays()
@@ -129,16 +246,45 @@ export async function POST(req: NextRequest) {
       cancel_url: `${origin}/cancel`,
       allow_promotion_codes: true,
       payment_method_collection: 'always',
+      expires_at: Math.floor(expiresAt.getTime() / 1000),
       ...(email ? { customer_email: email } : {}),
+      client_reference_id: checkoutIntentId,
+      integration_identifier: stripeIntegrationIdentifier('dailyclarity-template', checkoutIntentId),
       metadata,
       subscription_data: subscriptionData,
-    })
+    }, { idempotencyKey: `dailyclarity-checkout-${checkoutIntentId}` })
+
+    if (!session.url) throw new Error('stripe_checkout_missing_url')
+    const { error: sessionUpdateError } = await supabase.from('checkout_intents').update({
+      status: 'session_created',
+      stripe_session_id: session.id,
+      updated_at: new Date().toISOString(),
+    }).eq('id', checkoutIntentId)
+    if (sessionUpdateError) {
+      console.error('[stripe/checkout] intent session update failed:', sessionUpdateError)
+    }
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Unable to create checkout session.'
     console.error('[stripe/checkout]', message)
-    return NextResponse.json({ error: message }, { status: 500 })
+    if (supabase && checkoutIntentId) {
+      await supabase.from('checkout_intents').update({
+        status: 'checkout_failed',
+        last_error: message.slice(0, 500),
+        updated_at: new Date().toISOString(),
+      }).eq('id', checkoutIntentId)
+      if (reservedSlug) {
+        await supabase.from('site_slugs').delete()
+          .eq('slug', reservedSlug)
+          .eq('reserved_for', checkoutIntentId)
+          .eq('status', 'checkout_pending')
+      }
+    }
+    return NextResponse.json(
+      { error: 'Unable to start checkout. Please try again.' },
+      { status: 500 },
+    )
   }
 }

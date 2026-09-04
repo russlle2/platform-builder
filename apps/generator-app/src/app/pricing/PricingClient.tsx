@@ -5,6 +5,11 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
 import { PLAN_LIST, AUTOMATED_FEATURES, MANAGED_FEATURES } from '@/lib/plans'
+import {
+  CUSTOM_THEME_STORAGE_KEY,
+  sanitizeCustomTheme,
+  type CustomTheme,
+} from '@/lib/custom-theme'
 
 const pricingTiers = PLAN_LIST
 
@@ -22,11 +27,10 @@ type CheckoutContext = {
 export default function PricingClient() {
   const billingPeriod: 'monthly' | 'annual' = 'monthly'
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
-  const [trialDays, setTrialDays] = useState(7)
+  const [checkoutRecoveryUrl, setCheckoutRecoveryUrl] = useState<string | null>(null)
+  const [trialDays, setTrialDays] = useState(0)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
   const [checkoutReady, setCheckoutReady] = useState(false)
-  const [testRunning, setTestRunning] = useState(false)
-  const [testResult, setTestResult] = useState<{ success: boolean; slug: string; siteUrl: string | null; log: string[] } | null>(null)
   const searchParams = useSearchParams()
   const slug = useMemo(() => searchParams.get('slug'), [searchParams])
   const template = useMemo(() => searchParams.get('template'), [searchParams])
@@ -57,12 +61,14 @@ export default function PricingClient() {
     try {
       track('checkout_start', { planKey })
       setCheckoutError(null)
+      setCheckoutRecoveryUrl(null)
 
       // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
       let inlineEdits: Record<string, unknown> = {}
       let imageSwaps: Record<string, unknown> = {}
       let imageOwner = ''
+      let customTheme: CustomTheme | null = null
       try {
         const saved = sessionStorage.getItem('pb_template_values')
         if (saved) customerValues = JSON.parse(saved)
@@ -71,6 +77,9 @@ export default function PricingClient() {
         const savedImages = sessionStorage.getItem('pb_image_swaps')
         if (savedImages) imageSwaps = JSON.parse(savedImages)
         imageOwner = sessionStorage.getItem('pb_image_owner') || ''
+        customTheme = sanitizeCustomTheme(
+          JSON.parse(sessionStorage.getItem(CUSTOM_THEME_STORAGE_KEY) || 'null'),
+        )
       } catch { /* ignore */ }
 
       const ctx = readCheckoutContext()
@@ -111,12 +120,18 @@ export default function PricingClient() {
           inlineEdits,
           imageSwaps,
           imageOwner,
+          customTheme,
         }),
       })
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
+        const failure = data as { error?: string; code?: string; recoveryUrl?: string }
+        if (failure.code?.startsWith('image_upload_')) {
+          const base = failure.recoveryUrl || '/preview-your-business'
+          setCheckoutRecoveryUrl(`${base}?plan=${encodeURIComponent(planKey)}`)
+        }
         throw new Error(
-          (data as { error?: string }).error || 'Checkout failed. Please try again.'
+          failure.error || 'Checkout failed. Please try again.'
         )
       }
       if (data?.url) {
@@ -170,7 +185,7 @@ export default function PricingClient() {
     fetch('/api/platform/config')
       .then((res) => res.json())
       .then((data) => {
-        if (typeof data?.trialDays === 'number' && data.trialDays > 0) {
+        if (typeof data?.trialDays === 'number' && data.trialDays >= 0) {
           setTrialDays(data.trialDays)
         }
       })
@@ -186,10 +201,11 @@ export default function PricingClient() {
             <div className="space-y-6">
               <span className="signal-chip">Pricing</span>
               <h1 className="text-5xl md:text-6xl font-bold text-bright-white">
-                Choose the plan that launches your website platform
+                See the product first. Then choose the plan that fits.
               </h1>
               <p className="text-xl text-slate-200 max-w-xl">
-                Every plan includes hosting, integrations, and portal access.
+                Explore the platform, build an editable preview with your own details, and compare
+                the published scope of each plan before checkout.
                 {trialDays > 0 && (
                   <span className="block mt-2 text-cyan-200">
                     {trialDays}-day free trial — card required, cancel anytime before billing starts.
@@ -197,22 +213,22 @@ export default function PricingClient() {
                 )}
               </p>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-                <span>Fully automated setup</span>
-                <span>Portal edits included</span>
-                <span>Done-for-you ads + security on the $80 plan</span>
+                <span>Preview before payment</span>
+                <span>Plan scope shown side by side</span>
+                <span>Secure Stripe checkout</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-white">What you get on day one</h2>
+              <h2 className="text-2xl font-bold text-white">What you can check before checkout</h2>
               <ul className="space-y-3 text-slate-200">
-                <li>Hosted platform + subdomain reservation</li>
-                <li>Postmark email + Supabase storage connected</li>
-                <li>Stripe payments ready for online bookings</li>
-                <li>Portal access to edit and publish updates</li>
+                <li>Interactive platform walkthrough</li>
+                <li>A template preview populated with your business details</li>
+                <li>Included features and managed services compared side by side</li>
+                <li>Current price and trial terms before Stripe opens</li>
               </ul>
               <div className="flex items-center justify-between text-sm text-slate-300">
-                <span>Setup timeline</span>
-                <span className="text-cyan-200">48 hours or less</span>
+                <span>No sales call required</span>
+                <span className="text-cyan-200">Start with a preview</span>
               </div>
             </div>
           </div>
@@ -226,14 +242,14 @@ export default function PricingClient() {
               <p className="text-sm text-slate-300">Therapy, coaching, sound, scent &amp; integrative care</p>
             </div>
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Avg launch time</p>
-              <p className="text-3xl font-bold text-white">48 hrs</p>
-              <p className="text-sm text-slate-300">From intake to hosted platform</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Try first</p>
+              <p className="text-3xl font-bold text-white">Your preview</p>
+              <p className="text-sm text-slate-300">Review your content and template before choosing</p>
             </div>
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Platform uptime</p>
-              <p className="text-3xl font-bold text-white">Hosted 24/7</p>
-              <p className="text-sm text-slate-300">Managed security on the $80 plan</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Compare clearly</p>
+              <p className="text-3xl font-bold text-white">Published scope</p>
+              <p className="text-sm text-slate-300">Current prices, inclusions, and billing terms</p>
             </div>
           </div>
         </section>
@@ -254,7 +270,17 @@ export default function PricingClient() {
             ))}
           </div>
           {checkoutError && (
-            <p className="text-center text-red-200 mt-6">{checkoutError}</p>
+            <div className="text-center text-red-200 mt-6" role="alert">
+              <p>{checkoutError}</p>
+              {checkoutRecoveryUrl && (
+                <Link
+                  href={checkoutRecoveryUrl}
+                  className="inline-block mt-3 font-semibold text-cyan-200 underline hover:text-cyan-100"
+                >
+                  Return to your preview to re-upload images
+                </Link>
+              )}
+            </div>
           )}
           {!slug && (
             <p className="text-center text-gray-300 mt-4">
@@ -304,111 +330,6 @@ export default function PricingClient() {
           </div>
         </section>
 
-        {/* ═══ DEV-ONLY: Test Purchase ═══ */}
-        {process.env.NEXT_PUBLIC_APP_STAGE !== 'production' && (
-          <section className="container-hvac pb-12">
-            <div className="rounded-2xl border-2 border-dashed border-yellow-500/40 bg-yellow-500/5 p-8 space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="px-2.5 py-1 rounded bg-yellow-500/20 text-yellow-300 text-[10px] font-bold uppercase tracking-widest">Dev Only</span>
-                <h3 className="text-lg font-bold text-yellow-200">Simulate Purchase</h3>
-              </div>
-              <p className="text-sm text-yellow-100/70">
-                Runs the full provisioning pipeline (slug reservation, Netlify deploy, Supabase records) without Stripe.
-                {template && niche && (
-                  <span className="block mt-1 text-yellow-200/90">
-                    Template: <strong>{template}</strong> &middot; Niche: <strong>{niche}</strong> &middot; Color: <strong>{colorScheme}</strong> &middot; Font: <strong>{fontVariation}</strong> &middot; Layout: <strong>{structureVariation}</strong>
-                  </span>
-                )}
-              </p>
-              <div className="flex flex-wrap items-center gap-4">
-                <button
-                  onClick={async () => {
-                    setTestRunning(true)
-                    setTestResult(null)
-                    try {
-                      let customerValues: Record<string, string> = {}
-                      let inlineEdits: Record<string, unknown> = {}
-                      let imageSwaps: Record<string, unknown> = {}
-                      let imageOwner = ''
-                      try {
-                        const saved = sessionStorage.getItem('pb_template_values')
-                        if (saved) customerValues = JSON.parse(saved)
-                        const savedEdits = sessionStorage.getItem('pb_inline_edits')
-                        if (savedEdits) inlineEdits = JSON.parse(savedEdits)
-                        const savedImages = sessionStorage.getItem('pb_image_swaps')
-                        if (savedImages) imageSwaps = JSON.parse(savedImages)
-                        imageOwner = sessionStorage.getItem('pb_image_owner') || ''
-                      } catch { /* ignore */ }
-
-                      const res = await fetch('/api/test-purchase', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                          slug: slug || template || 'test-site',
-                          template,
-                          niche,
-                          planKey: 'basic',
-                          colorScheme,
-                          fontVariation,
-                          structureVariation,
-                          customerValues,
-                          inlineEdits,
-                          imageSwaps,
-                          imageOwner,
-                        }),
-                      })
-                      const data = await res.json()
-                      setTestResult(data)
-                    } catch (err) {
-                      setTestResult({ success: false, slug: '', siteUrl: null, log: [`Error: ${err}`] })
-                    } finally {
-                      setTestRunning(false)
-                    }
-                  }}
-                  disabled={testRunning}
-                  className="px-6 py-3 text-sm font-bold rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-900 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {testRunning ? 'Provisioning...' : 'Simulate Purchase (Free)'}
-                </button>
-                {testResult && (
-                  <button
-                    onClick={() => window.location.assign('/success')}
-                    className="px-6 py-3 text-sm font-bold rounded-lg bg-green-500 hover:bg-green-400 text-slate-900 transition-all"
-                  >
-                    Go to Success Page &rarr;
-                  </button>
-                )}
-              </div>
-              {testResult && (
-                <div className="mt-4 rounded-lg bg-slate-900/80 border border-white/10 p-4 space-y-2 text-sm font-mono">
-                  <div className="flex items-center gap-2">
-                    <span className={testResult.success ? 'text-green-400' : 'text-red-400'}>
-                      {testResult.success ? '\u2713' : '\u2717'}
-                    </span>
-                    <span className="text-white font-bold">
-                      {testResult.success ? 'Purchase simulated successfully' : 'Simulation completed with issues'}
-                    </span>
-                  </div>
-                  {testResult.slug && (
-                    <p className="text-slate-300">Slug: <span className="text-cyan-300">{testResult.slug}</span></p>
-                  )}
-                  {testResult.siteUrl && (
-                    <p className="text-slate-300">
-                      Site: <a href={testResult.siteUrl} target="_blank" rel="noopener noreferrer" className="text-cyan-300 underline">{testResult.siteUrl}</a>
-                    </p>
-                  )}
-                  <div className="space-y-1 pt-2 border-t border-white/10">
-                    <p className="text-slate-500 text-xs uppercase tracking-wider">Pipeline log</p>
-                    {testResult.log.map((line, i) => (
-                      <p key={i} className="text-slate-400 text-xs">{line}</p>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </section>
-        )}
-
         <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-10">
             <h2 className="text-3xl font-bold text-white mb-2">Compare plans</h2>
@@ -438,31 +359,37 @@ export default function PricingClient() {
 
         <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-10">
-            <h2 className="text-3xl font-bold text-white mb-6">What practitioners say</h2>
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
+                Evidence, not theater
+              </p>
+              <h2 className="mt-3 text-3xl font-bold text-white">
+                What we can substantiate today
+              </h2>
+              <p className="mt-4 leading-relaxed text-slate-300">
+                DailyClarity is in early access. We are keeping customer outcome claims off this
+                page until they are permissioned, measured, and useful enough to evaluate fairly.
+                In the meantime, you can inspect the product directly.
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
-                  quote: 'Booked five new discovery calls in week one after launch.',
-                  name: 'Jordan M.',
-                  company: 'Lumen Wellness Studio',
+                  title: 'Interactive walkthrough',
+                  copy: 'See the platform workflow, page structure, and customer editing path in the product demo.',
                 },
                 {
-                  quote: 'The platform made our booking flow feel premium overnight.',
-                  name: 'Renee K.',
-                  company: 'Stillwater Holistic',
+                  title: 'Your content in context',
+                  copy: 'Build a preview with your own business details and explore compatible templates before payment.',
                 },
                 {
-                  quote: 'Finally a site that matches our brand and converts on mobile.',
-                  name: 'Carlos D.',
-                  company: 'Harmony Sound Bath',
+                  title: 'A clear proof standard',
+                  copy: 'Future case studies will include customer permission, defined measurements, and enough context to interpret the result.',
                 },
               ].map((item) => (
-                <div key={item.name} className="card-mahogany space-y-4">
-                  <p className="text-slate-200">&ldquo;{item.quote}&rdquo;</p>
-                  <div>
-                    <p className="text-white font-semibold">{item.name}</p>
-                    <p className="text-sm text-slate-400">{item.company}</p>
-                  </div>
+                <div key={item.title} className="card-mahogany mt-6 space-y-3">
+                  <h3 className="text-xl font-semibold text-white">{item.title}</h3>
+                  <p className="leading-relaxed text-slate-300">{item.copy}</p>
                 </div>
               ))}
             </div>
@@ -478,11 +405,11 @@ export default function PricingClient() {
             <div className="max-w-3xl mx-auto space-y-6">
               <FAQItem
                 question="What's included in Basic ($20)?"
-                answer="Basic is the fully automated platform: we build and launch your site on a hosted subdomain with SSL, and connect email notifications, secure storage, and online payments. From there it's self-serve — switch templates and styles, edit, and publish anytime through your portal, with a 7-day free trial to start."
+                answer="Basic is the automated platform: we launch your selected template on a hosted subdomain with SSL and configure contact-form email notifications, secure storage, and a Stripe-secured DailyClarity billing portal. From there you can edit supported text and images in the current template and republish through your portal. Any free-trial terms are shown before checkout."
               />
               <FAQItem
                 question="What does Security + Ads ($80) add?"
-                answer="Everything in Basic is still fully automated. On top of that, we personally run one done-for-you service: we set up and manage your ad and promo campaigns, and we harden and monitor your site's security and uptime. It's hands-on work delivered by our team — the rest of the platform stays self-serve."
+                answer="Security + Ads includes the self-serve Basic platform plus manually delivered campaign and security/operations work. We confirm goals, scope, and cadence by email before managed work begins."
               />
               <FAQItem
                 question="How does the $500 custom website build work?"
@@ -490,23 +417,23 @@ export default function PricingClient() {
               />
               <FAQItem
                 question="How fast can I launch?"
-                answer="Most builds go live within 48 hours once your intake is complete and your subscription is active."
+                answer="Launch timing depends on the completeness of your intake, the template you choose, and any domain or integration work required. We confirm the applicable next steps after checkout rather than promise one universal turnaround."
               />
               <FAQItem
                 question="Is there a free trial?"
                 answer={
                   trialDays > 0
-                    ? `Yes — every plan includes a ${trialDays}-day trial. We collect your card at checkout, but you are not charged until the trial ends. Cancel anytime in Stripe before then.`
+                    ? `Yes — both monthly plans include a ${trialDays}-day trial. We collect your card at checkout, but you are not charged until the trial ends. The one-time custom build does not include a trial.`
                     : 'Subscriptions start billing when you complete checkout.'
                 }
               />
               <FAQItem
-                question="Can I switch plans later?"
-                answer="Absolutely! You can upgrade or downgrade at any time. Changes take effect immediately, and we'll prorate any differences."
+                question="How do I change plans?"
+                answer="Contact DailyClarity support to change plans. Self-service plan switching stays disabled until we can reconcile the service scope and billing adjustment safely."
               />
               <FAQItem
-                question="What happens after the 30-member limit?"
-                answer="Once we reach 30 active monthly members, new sign-ups will be added to a waitlist. This ensures we maintain premium quality and personal attention for all members."
+                question="Why don't you show customer results or testimonials yet?"
+                answer="DailyClarity is in early access. We will publish customer stories only after receiving permission and documenting the work, measurement window, and relevant context. Until then, the demo and editable preview are the most honest ways to evaluate the product."
               />
               <FAQItem
                 question="Do I need technical skills?"
@@ -522,7 +449,7 @@ export default function PricingClient() {
               />
               <FAQItem
                 question="What if I need help?"
-                answer="Contact us before or after checkout — we're here to help. Reach us through the contact page and we'll get back to you within one business day."
+                answer="Contact us before or after checkout through the contact page. Include the plan or workflow you're considering so we can respond with specific next steps."
               />
             </div>
           </div>
@@ -532,10 +459,11 @@ export default function PricingClient() {
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-bright-white mb-6">
-              Ready to Claim Your Spot?
+              See your business in the product before you choose
             </h2>
             <p className="text-xl text-pure-white mb-8 max-w-2xl mx-auto">
-              Join the elite professionals who build like pros
+              Build an editable preview, explore compatible templates, and return here when the
+              product and plan scope feel right.
             </p>
             <Link href="/preview-your-business" className="cta-button">
               Preview Your Business

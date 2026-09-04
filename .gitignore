@@ -6,6 +6,7 @@ node_modules/
 # Testing
 coverage/
 *.log
+.playwright-results/
 
 # Production
 dist/
@@ -43,3 +44,10 @@ yarn.lock
 # Template library — stored in Netlify Blobs, not in the repo.
 # Local dev reads from disk; production reads from Blobs.
 platform-builder/
+
+# Generated template mirrors and factory runtime state. The canonical template
+# library is uploaded to Netlify Blobs and must not be duplicated in git.
+apps/generator-app/public/_templates/
+packages/template-factory/.factory-cache/*
+!packages/template-factory/.factory-cache/.gitkeep
+packages/template-factory/log-*.txt

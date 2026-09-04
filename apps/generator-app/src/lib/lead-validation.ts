@@ -12,7 +12,7 @@ export function validateLeadContact(email: string, phone: string): string | null
   if (!email && !phone) {
     return 'Enter an email or phone number.'
   }
-  if (email && !EMAIL_RE.test(email)) {
+  if (email && (email.length > 320 || !EMAIL_RE.test(email))) {
     return 'Enter a valid email address.'
   }
   if (phone && !PHONE_RE.test(phone)) {

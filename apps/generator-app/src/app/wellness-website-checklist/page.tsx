@@ -4,9 +4,18 @@ import { SeoPageShell } from '@/components/seo/SeoPageShell'
 import { SeoCtaGroup } from '@/components/seo/SeoCtaGroup'
 
 export const metadata: Metadata = {
-  title: 'Wellness Website Checklist | DailyClarity',
+  title: 'Wellness Website Checklist',
   description:
     'A practical checklist for therapy, coaching, and wellness practice websites — offer clarity, trust, booking paths, proof, and local SEO.',
+  alternates: { canonical: '/wellness-website-checklist' },
+  openGraph: {
+    title: 'Wellness Website Checklist | DailyClarity',
+    description:
+      'A practical checklist for therapy, coaching, and wellness practice websites — offer clarity, trust, booking paths, proof, and local SEO.',
+    url: '/wellness-website-checklist',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
 }
 
 const CHECKLIST_SECTIONS: { title: string; intro: string; items: string[] }[] = [
