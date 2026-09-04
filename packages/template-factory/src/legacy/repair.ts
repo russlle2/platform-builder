@@ -723,7 +723,14 @@ function normalizeAccessibility(document: HtmlNode): number {
   walk(document, (node) => {
     if (!node.tagName) return;
     const ariaHidden = getAttr(node, 'aria-hidden');
-    if (ariaHidden !== undefined && !/^(?:true|false)$/i.test(ariaHidden)) {
+    if (ariaHidden !== undefined && !ariaHidden.trim() && node.tagName === 'svg' && !containsFocusable(node)) {
+      // Legacy generators emitted the intended decorative SVG marker as a
+      // boolean HTML attribute even though aria-hidden requires a value.
+      // Preserve that unambiguous intent so the accessibility tree and the
+      // mobile overflow clamp both continue to recognize the decoration.
+      setAttr(node, 'aria-hidden', 'true');
+      count += 1;
+    } else if (ariaHidden !== undefined && !/^(?:true|false)$/i.test(ariaHidden)) {
       removeAttr(node, 'aria-hidden');
       count += 1;
     } else if (/^true$/i.test(ariaHidden ?? '') && containsFocusable(node)) {

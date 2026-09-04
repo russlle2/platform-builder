@@ -417,6 +417,23 @@ test('normalizes legacy accessibility semantics and root-relative CSS assets', (
   assert.ok(result.transformations.some((item) => item.rule === 'normalize-accessibility-semantics'));
 });
 
+test('preserves boolean decorative SVG intent for the mobile overflow clamp', () => {
+  const result = repairLegacyTemplate({
+    slug: 'boolean-decorative-svg',
+    niche: 'holistic_medicine',
+    files: new Map<string, string>([[
+      'index.html',
+      '<!doctype html><html><head><title>Practice</title><style>.svg-back{position:absolute;left:6%;width:520px;height:520px}</style></head><body><svg class="svg-back" viewBox="0 0 200 200" aria-hidden><rect width="100%" height="100%"></rect></svg><main><h1>{{BUSINESS_NAME}}</h1><p>Original practice copy.</p><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>',
+    ]]),
+  });
+  const html = String(result.files.get('index.html'));
+  const repairCss = String(result.files.get('assets/css/dc-repair.css'));
+
+  assert.match(html, /<svg class="svg-back"[^>]*aria-hidden="true"/);
+  assert.match(repairCss, /body>svg\[aria-hidden\]/);
+  assert.equal(result.qualityReceipt.status, 'passed');
+});
+
 test('repairs unnamed commands, hidden focus, fragment images, and mobile decorative overflow without replacing primary copy', () => {
   const result = repairLegacyTemplate({
     slug: 'browser-primary-repairs',
