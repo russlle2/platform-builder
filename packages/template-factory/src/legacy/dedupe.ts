@@ -178,7 +178,11 @@ function presetCompatibility(design: CanonicalDesign, candidate: DedupeCandidate
   const expectedEdits = reachable.edits;
   const suppliedEdits = new Set(candidate.contentPreset.entries.map((entry) => `${entry.page}\0${entry.nodeId}\0${entry.attribute ?? ''}`));
   const expectedImages = reachable.images;
-  const suppliedImages = new Set(candidate.contentPreset.images.map((entry) => `${entry.page}\0${entry.slotId}`));
+  // CSS-background placeholders live in the design stylesheet, while their
+  // DOM bindings remain page-scoped for the editor. Compare those entries by
+  // the stylesheet they actually compose into; native and inline images keep
+  // their page-scoped identity.
+  const suppliedImages = new Set(candidate.contentPreset.images.map((entry) => `${entry.stylesheet ?? entry.page}\0${entry.slotId}`));
   const expectedTheme = themeSlots(design);
   const suppliedTheme = new Set(candidate.themePreset.tokens.map((token) => token.id));
   const issues: string[] = [];

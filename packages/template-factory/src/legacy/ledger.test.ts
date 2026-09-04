@@ -85,6 +85,39 @@ test('WAL ledger leases work idempotently and produces aggregate status', async 
       qualityReceipt: 'receipt-a',
     }), true);
 
+    const compositionLease = ledger.leaseTemplates({
+      stages: ['verified', 'complete'],
+      legacySlugs: [inserted.legacySlug],
+      claimedStage: 'clustered',
+      owner: 'composer-1',
+      limit: 1,
+      runId: run.id,
+    })[0];
+    assert.ok(compositionLease, 'a completed pilot row can be re-leased for full-catalogue disposition reconciliation');
+    assert.equal(ledger.completeTemplateLease({
+      templateId: inserted.id,
+      leaseToken: compositionLease.leaseToken,
+      stage: 'complete',
+      terminalDisposition: 'passing_alias',
+      qualityReceipt: 'receipt-a',
+    }), true);
+    const canonicalLease = ledger.leaseTemplates({
+      stages: ['verified', 'complete'],
+      legacySlugs: [inserted.legacySlug],
+      claimedStage: 'clustered',
+      owner: 'composer-2',
+      limit: 1,
+      runId: run.id,
+    })[0];
+    assert.ok(canonicalLease);
+    assert.equal(ledger.completeTemplateLease({
+      templateId: inserted.id,
+      leaseToken: canonicalLease.leaseToken,
+      stage: 'complete',
+      terminalDisposition: 'passing_design',
+      qualityReceipt: 'receipt-a',
+    }), true);
+
     const pageId = ledger.upsertPage({
       templateId: inserted.id,
       relativePath: 'index.html',

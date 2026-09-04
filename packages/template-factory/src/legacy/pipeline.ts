@@ -2952,23 +2952,29 @@ async function composeCatalog(
         qualityReceipt: receipt,
         status: 'passing',
       });
+      const mappingDisposition = template.legacySlug === canonical.legacySlug ? 'canonical' : 'alias';
+      const terminalDisposition = catalogTerminalDisposition(mappingDisposition);
       const lease = context.ledger.leaseTemplates({
-        stages: ['verified'],
+        // A pilot canonical is selected from only the pilot sample. The full
+        // catalogue may reveal a lexicographically earlier member of the same
+        // cluster, so already-complete pilot rows must be atomically
+        // reclassified alongside newly verified rows.
+        stages: ['verified', 'complete'],
         legacySlugs: [template.legacySlug],
         claimedStage: 'clustered',
         owner: `${process.pid}-${context.runId}-compose`,
         limit: 1,
         runId: context.runId,
       })[0];
-      if (lease) {
-        context.ledger.completeTemplateLease({
-          templateId: template.id,
-          leaseToken: lease.leaseToken,
-          stage: 'complete',
-          terminalDisposition: template.legacySlug === canonical.legacySlug ? 'passing_design' : 'passing_alias',
-          qualityReceipt: receipt,
-        });
-      }
+      if (!lease) throw new Error(`Could not acquire catalogue-composition lease for ${template.legacySlug}`);
+      const completed = context.ledger.completeTemplateLease({
+        templateId: template.id,
+        leaseToken: lease.leaseToken,
+        stage: 'complete',
+        terminalDisposition,
+        qualityReceipt: receipt,
+      });
+      if (!completed) throw new Error(`Catalogue-composition lease expired for ${template.legacySlug}`);
       aliases.push({
         legacySlug: template.legacySlug,
         niche: template.niche,
@@ -2977,7 +2983,7 @@ async function composeCatalog(
         themePresetId: alias.themePresetId,
         qualityReceipt: receipt,
         canonicalLegacySlug: canonical.legacySlug,
-        disposition: template.legacySlug === canonical.legacySlug ? 'canonical' : 'alias',
+        disposition: mappingDisposition,
       });
     }
   }
@@ -2999,6 +3005,12 @@ async function composeCatalog(
     canonicalDesigns: document.canonicalDesigns,
   });
   return document;
+}
+
+export function catalogTerminalDisposition(
+  disposition: CatalogV3Alias['disposition'],
+): 'passing_design' | 'passing_alias' {
+  return disposition === 'canonical' ? 'passing_design' : 'passing_alias';
 }
 
 function catalogTemplatePlaceholder(template: LegacyTemplateRecord): CatalogTemplate {
@@ -3200,6 +3212,13 @@ async function auditPilotEvidence(
     if (!mapping) {
       addTemplateIssue(slug, `${slug}: missing catalogue mapping`);
     } else {
+      const expectedDisposition = catalogTerminalDisposition(mapping.disposition);
+      if (template.terminalDisposition !== expectedDisposition) {
+        addTemplateIssue(
+          slug,
+          `${slug}: terminal disposition ${template.terminalDisposition ?? 'null'} does not match catalogue ${mapping.disposition}`,
+        );
+      }
       if (mapping.niche !== inventory.niche || mapping.niche !== template.niche) {
         addTemplateIssue(slug, `${slug}: catalogue niche does not match the current source`);
       }

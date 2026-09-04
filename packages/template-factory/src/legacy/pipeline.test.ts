@@ -10,6 +10,7 @@ import { sha256, stableStringify } from './contracts.js';
 import { LegacyLedger } from './ledger.js';
 import {
   assertNoNeutralFallbacks,
+  catalogTerminalDisposition,
   composeCatalogTemplateText,
   hasCompletePassingRenderMatrix,
   materializeArtifact,
@@ -62,6 +63,11 @@ test('full completion and promotion reject every unwaived neutral fallback', () 
     () => assertNoNeutralFallbacks('Promotion', ['legacy-a']),
     /Promotion blocked: 1 current template artifact\(s\) use a neutral fallback \(legacy-a\)/,
   );
+});
+
+test('catalogue mappings require exact canonical and alias dispositions', () => {
+  assert.equal(catalogTerminalDisposition('canonical'), 'passing_design');
+  assert.equal(catalogTerminalDisposition('alias'), 'passing_alias');
 });
 
 test('render completion requires one passing result per page and viewport', () => {

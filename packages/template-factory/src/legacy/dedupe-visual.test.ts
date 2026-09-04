@@ -167,6 +167,23 @@ test('aliases differing irregular design hashes only with complete boundary-pass
   );
 });
 
+test('validates page-bound CSS background presets against their design stylesheet', () => {
+  const value = candidate({ slug: 'css-background', layout: 'grid' });
+  value.design.styles['assets/css/styles.css'] += '.banner{background-image:url("__DC_IMAGE_css_hero__")}';
+  value.contentPreset.images.push({
+    slotId: 'css_hero',
+    page: 'index.html',
+    kind: 'background',
+    source: 'assets/img/background.webp',
+    stylesheet: 'assets/css/styles.css',
+    selector: '.banner',
+    attribute: 'css-url',
+  });
+
+  assert.deepEqual(checkCompositionCompatibility(value, value).issues, []);
+  assert.equal(buildDedupeClusters([value]).length, 1);
+});
+
 test('keeps irregular designs distinct below any one visual threshold', async (t) => {
   const failures: Array<[string, VisualAliasEvidence]> = [
     ['DOM similarity', { ...PASSING_EVIDENCE, domSimilarity: 0.979999 }],
