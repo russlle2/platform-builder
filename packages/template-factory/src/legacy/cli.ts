@@ -201,6 +201,27 @@ async function processIsAlive(pid: number): Promise<boolean> {
 
 const execFileAsync = promisify(execFile);
 const PROCESS_START_TOLERANCE_MS = 5_000;
+export const LEGACY_RUN_HEARTBEAT_STALE_MS = 30 * 60_000;
+
+export interface LegacyRunActivity {
+  state: 'active' | 'inactive' | 'orphaned' | 'stale' | 'unknown';
+  reason:
+    | 'live-compiler'
+    | 'latest-run-not-running'
+    | 'no-run'
+    | 'missing-compiler-lock'
+    | 'malformed-compiler-lock'
+    | 'compiler-lock-initializing'
+    | 'compiler-lock-unreadable'
+    | 'compiler-process-not-running'
+    | 'compiler-owner-mismatch'
+    | 'compiler-owner-unverifiable'
+    | 'compiler-owner-identity-uncertain'
+    | 'stale-run-heartbeat'
+    | 'invalid-run-heartbeat';
+  lockPid: number | null;
+  heartbeatAgeMs: number | null;
+}
 
 interface CompilerLockOwner {
   executable: string;
@@ -377,6 +398,133 @@ async function lockBelongsToLiveCompiler(
   return looksLikeLegacyCompiler(inspection.identity);
 }
 
+/**
+ * Read-only observation of the durable run row and compiler lock. This never
+ * reclaims a lock or changes the ledger; it exists so `status` does not present
+ * an abandoned `running` row as proof that work is still progressing.
+ */
+export async function inspectLegacyRunActivity(
+  workRoot: string,
+  latestRun: ReturnType<LegacyLedger['latestRun']>,
+  inspector: LegacyProcessInspector = inspectProcess,
+  nowMs = Date.now(),
+): Promise<LegacyRunActivity> {
+  if (!latestRun) {
+    return { state: 'inactive', reason: 'no-run', lockPid: null, heartbeatAgeMs: null };
+  }
+  const updatedAtMs = Date.parse(latestRun.updatedAt);
+  const heartbeatAgeMs = Number.isFinite(updatedAtMs) ? Math.max(0, nowMs - updatedAtMs) : null;
+  if (latestRun.state !== 'running') {
+    return { state: 'inactive', reason: 'latest-run-not-running', lockPid: null, heartbeatAgeMs };
+  }
+
+  const lockPath = join(workRoot, '.compiler.lock');
+  let raw: string;
+  try {
+    raw = await readFile(lockPath, 'utf8');
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    return {
+      state: code === 'ENOENT' ? 'orphaned' : 'unknown',
+      reason: code === 'ENOENT' ? 'missing-compiler-lock' : 'compiler-lock-unreadable',
+      lockPid: null,
+      heartbeatAgeMs,
+    };
+  }
+
+  let record: CompilerLockRecord;
+  try {
+    record = JSON.parse(raw) as CompilerLockRecord;
+  } catch {
+    const lockStat = await stat(lockPath).catch(() => null);
+    const initializing = Boolean(lockStat && nowMs - lockStat.mtimeMs < 30_000);
+    return {
+      state: initializing ? 'unknown' : 'orphaned',
+      reason: initializing ? 'compiler-lock-initializing' : 'malformed-compiler-lock',
+      lockPid: null,
+      heartbeatAgeMs,
+    };
+  }
+  const lockPid = typeof record.pid === 'number' && Number.isSafeInteger(record.pid) && record.pid > 0
+    ? record.pid
+    : null;
+  if (lockPid === null) {
+    const lockStat = await stat(lockPath).catch(() => null);
+    const initializing = Boolean(lockStat && nowMs - lockStat.mtimeMs < 30_000);
+    return {
+      state: initializing ? 'unknown' : 'orphaned',
+      reason: initializing ? 'compiler-lock-initializing' : 'malformed-compiler-lock',
+      lockPid: null,
+      heartbeatAgeMs,
+    };
+  }
+
+  let inspection: LegacyProcessInspection;
+  try {
+    inspection = await inspector(lockPid);
+  } catch {
+    inspection = { state: 'running' };
+  }
+  if (inspection.state === 'not-running') {
+    return {
+      state: 'orphaned',
+      reason: 'compiler-process-not-running',
+      lockPid,
+      heartbeatAgeMs,
+    };
+  }
+  if (!inspection.identity) {
+    return heartbeatAgeMs === null || heartbeatAgeMs > LEGACY_RUN_HEARTBEAT_STALE_MS
+      ? {
+          state: 'stale',
+          reason: heartbeatAgeMs === null ? 'invalid-run-heartbeat' : 'stale-run-heartbeat',
+          lockPid,
+          heartbeatAgeMs,
+        }
+      : {
+          state: 'unknown',
+          reason: 'compiler-owner-unverifiable',
+          lockPid,
+          heartbeatAgeMs,
+        };
+  }
+
+  const expected = parseLockOwner(record.owner);
+  if (expected) {
+    const comparison = compareOwnerIdentity(expected, inspection.identity);
+    if (comparison === 'different') {
+      return { state: 'orphaned', reason: 'compiler-owner-mismatch', lockPid, heartbeatAgeMs };
+    }
+    if (comparison === 'uncertain') {
+      return heartbeatAgeMs === null || heartbeatAgeMs > LEGACY_RUN_HEARTBEAT_STALE_MS
+        ? {
+            state: 'stale',
+            reason: heartbeatAgeMs === null ? 'invalid-run-heartbeat' : 'stale-run-heartbeat',
+            lockPid,
+            heartbeatAgeMs,
+          }
+        : {
+            state: 'unknown',
+            reason: 'compiler-owner-identity-uncertain',
+            lockPid,
+            heartbeatAgeMs,
+          };
+    }
+    // A positively matched lock owner is stronger liveness evidence than the
+    // run-row heartbeat. Inventory, composition, or an unusually slow browser
+    // batch can legitimately go longer than the advisory heartbeat interval.
+    return { state: 'active', reason: 'live-compiler', lockPid, heartbeatAgeMs };
+  } else {
+    const lockStartedAtMs = typeof record.startedAt === 'string' ? Date.parse(record.startedAt) : Number.NaN;
+    const recycledPid = Number.isFinite(lockStartedAtMs)
+      && inspection.identity.startedAtMs > lockStartedAtMs + PROCESS_START_TOLERANCE_MS;
+    if (recycledPid || !looksLikeLegacyCompiler(inspection.identity)) {
+      return { state: 'orphaned', reason: 'compiler-owner-mismatch', lockPid, heartbeatAgeMs };
+    }
+    return { state: 'active', reason: 'live-compiler', lockPid, heartbeatAgeMs };
+  }
+}
+
 async function atomicallyPublishLock(path: string, body: string, token: string): Promise<void> {
   const temporaryPath = `${path}.${process.pid}.${token}.tmp`;
   const handle = await open(temporaryPath, 'wx');
@@ -458,14 +606,22 @@ export async function acquireCompilerLock(
   throw new Error(`Could not acquire the legacy compiler lock at ${path}`);
 }
 
-function outputHumanStatus(io: LegacyCliIo, status: ReturnType<LegacyLedger['status']>): void {
+function outputHumanStatus(
+  io: LegacyCliIo,
+  status: ReturnType<LegacyLedger['status']>,
+  activity?: LegacyRunActivity,
+): void {
+  const observedState = status.latestRun?.state === 'running' && activity
+    ? activity.state
+    : status.latestRun?.state;
   const latest = status.latestRun
-    ? `${status.latestRun.command} ${status.latestRun.state} (${status.latestRun.id})`
+    ? `${status.latestRun.command} ${String(observedState)} (${status.latestRun.id})`
     : 'none';
   io.stdout([
     `Ledger: ${status.databasePath}`,
     `Schema: v${status.schemaVersion}`,
     `Latest run: ${latest}`,
+    ...(activity ? [`Run observation: ${activity.state} (${activity.reason})`] : []),
     `Templates by stage: ${JSON.stringify(status.templatesByStage)}`,
     `Terminal dispositions: ${JSON.stringify(status.templatesByDisposition)}`,
     `Open issues: ${JSON.stringify(status.unresolvedIssuesBySeverity)}`,
@@ -501,6 +657,24 @@ async function callStage(
     throw new Error(`No ${command} pipeline handler is installed. Export legacyCommandServices from legacy/pipeline.ts.`);
   }
   return handler(context);
+}
+
+function storedRunCloudRepairAuthorization(optionsJson: string): boolean {
+  let options: unknown;
+  try {
+    options = JSON.parse(optionsJson) as unknown;
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`Stored run options are invalid and cloud work cannot be reconciled safely: ${detail}`);
+  }
+  if (!options || typeof options !== 'object' || Array.isArray(options)) {
+    throw new Error('Stored run options are invalid and cloud work cannot be reconciled safely: expected a JSON object');
+  }
+  const cloudRepair = (options as { cloudRepair?: unknown }).cloudRepair;
+  if (cloudRepair !== undefined && typeof cloudRepair !== 'boolean') {
+    throw new Error('Stored run options contain an invalid cloudRepair authorization');
+  }
+  return cloudRepair === true;
 }
 
 export async function runLegacyCli(argv: string[], dependencies: LegacyCliDependencies = {}): Promise<number> {
@@ -585,8 +759,14 @@ export async function runLegacyCli(argv: string[], dependencies: LegacyCliDepend
 
   try {
     if (parsed.command === 'status') {
-      const status = ledger.status();
-      parsed.flags.json ? outputJson(io, status) : outputHumanStatus(io, status);
+      const ledgerStatus = ledger.status();
+      const latestRunActivity = await inspectLegacyRunActivity(
+        config.workRoot,
+        ledgerStatus.latestRun,
+        dependencies.processInspector,
+      );
+      const status = { ...ledgerStatus, latestRunActivity };
+      parsed.flags.json ? outputJson(io, status) : outputHumanStatus(io, ledgerStatus, latestRunActivity);
       return 0;
     }
 
@@ -630,17 +810,16 @@ export async function runLegacyCli(argv: string[], dependencies: LegacyCliDepend
       let run = (parsed.command === 'run' || parsed.command === 'pilot') && parsed.flags.resume
         ? ledger.findResumableRun(parsed.command, config.sourceRoot, config.ruleVersion)
         : null;
-      if (run && !parsed.flags.cloudRepair) {
-        let priorCloudRepair = false;
-        try {
-          const priorOptions = JSON.parse(run.optionsJson) as { cloudRepair?: unknown };
-          priorCloudRepair = priorOptions.cloudRepair === true;
-        } catch {
-          // Never infer renewed cloud authority from unreadable historical
-          // options. The ordinary run audit remains responsible for them.
-        }
-        if (priorCloudRepair) {
+      if (run) {
+        const priorCloudRepair = storedRunCloudRepairAuthorization(run.optionsJson);
+        if (priorCloudRepair && !parsed.flags.cloudRepair) {
           throw new Error('This resumable run used cloud repair; repeat --cloud-repair so pending batches can be reconciled explicitly.');
+        }
+        if (parsed.flags.cloudRepair) {
+          // Persist this authorization before the resumed pipeline can submit
+          // or reconcile provider work. It is deliberately monotonic so a
+          // later restart cannot bypass another explicit opt-in.
+          run = ledger.markRunCloudRepairEnabled(run.id);
         }
       }
       // Holding the compiler lock proves there is no other live writer. Close

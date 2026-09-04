@@ -2,13 +2,16 @@ import assert from 'node:assert/strict';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import test from 'node:test';
 import {
+  LEGACY_RUN_HEARTBEAT_STALE_MS,
   acquireCompilerLock,
   runLegacyCli,
   type LegacyProcessIdentity,
   type LegacyProcessInspector,
 } from './cli.js';
+import { LegacyLedger } from './ledger.js';
 
 const SELF_IDENTITY: LegacyProcessIdentity = {
   executable: process.execPath,
@@ -162,6 +165,176 @@ test('atomic lock publication admits only one concurrent writer', async () => {
     assert.equal(acquired.length, 1);
     assert.equal(refused.length, 1);
     await acquired[0]!.value();
+  });
+});
+
+test('status reports a dead lock owner as orphaned without reclaiming lock or run state', async () => {
+  await withCliRoots(async (sourceRoot, workRoot) => {
+    const ledger = new LegacyLedger({ databasePath: join(workRoot, 'ledger.sqlite') });
+    const run = ledger.createRun({
+      command: 'pilot',
+      ruleVersion: 'status-observation-v1',
+      sourceRoot,
+      workRoot,
+    });
+    ledger.close();
+
+    const lockPath = join(workRoot, '.compiler.lock');
+    const deadPid = 424_205;
+    const lock = `${JSON.stringify({
+      version: 2,
+      pid: deadPid,
+      token: 'dead-owner',
+      startedAt: new Date().toISOString(),
+      owner: {
+        executable: 'c:/program files/nodejs/node.exe',
+        commandHash: 'a'.repeat(64),
+        processStartedAtMs: Date.now(),
+        inspectionSource: 'test-inspector',
+      },
+    }, null, 2)}\n`;
+    await writeFile(lockPath, lock, 'utf8');
+
+    const output: string[] = [];
+    const exitCode = await runLegacyCli([
+      'status', '--source', sourceRoot, '--work-root', workRoot, '--json',
+    ], {
+      processInspector: inspectorFor(new Map()),
+      io: { stdout: (message) => output.push(message), stderr: () => undefined },
+    });
+    assert.equal(exitCode, 0);
+    const status = JSON.parse(output.join('\n')) as {
+      latestRun: { id: string; state: string };
+      latestRunActivity: { state: string; reason: string; lockPid: number | null; heartbeatAgeMs: number | null };
+    };
+    assert.equal(status.latestRun.id, run.id);
+    assert.equal(status.latestRun.state, 'running', 'status preserves the durable database fact');
+    assert.equal(status.latestRunActivity.state, 'orphaned');
+    assert.equal(status.latestRunActivity.reason, 'compiler-process-not-running');
+    assert.equal(status.latestRunActivity.lockPid, deadPid);
+    assert.ok((status.latestRunActivity.heartbeatAgeMs ?? -1) >= 0);
+    assert.equal(await readFile(lockPath, 'utf8'), lock, 'status must not reclaim the stale lock');
+
+    const readback = new LegacyLedger({ databasePath: join(workRoot, 'ledger.sqlite') });
+    try {
+      assert.equal(readback.getRun(run.id)?.state, 'running', 'status must not reconcile the run row');
+    } finally {
+      readback.close();
+    }
+  });
+});
+
+test('status keeps a positively identified long-lived compiler active despite an old heartbeat', async () => {
+  await withCliRoots(async (sourceRoot, workRoot) => {
+    const databasePath = join(workRoot, 'ledger.sqlite');
+    const ledger = new LegacyLedger({ databasePath });
+    const run = ledger.createRun({
+      command: 'run',
+      ruleVersion: 'status-observation-v1',
+      sourceRoot,
+      workRoot,
+    });
+    ledger.close();
+
+    const staleUpdatedAt = new Date(Date.now() - LEGACY_RUN_HEARTBEAT_STALE_MS - 60_000).toISOString();
+    const database = new DatabaseSync(databasePath);
+    try {
+      database.prepare('UPDATE runs SET updated_at = ? WHERE id = ?').run(staleUpdatedAt, run.id);
+    } finally {
+      database.close();
+    }
+
+    const inspector = inspectorFor(new Map());
+    const release = await acquireCompilerLock(workRoot, inspector);
+    const lockPath = join(workRoot, '.compiler.lock');
+    const lockBefore = await readFile(lockPath, 'utf8');
+    try {
+      const output: string[] = [];
+      const exitCode = await runLegacyCli([
+        'status', '--source', sourceRoot, '--work-root', workRoot, '--json',
+      ], {
+        processInspector: inspector,
+        io: { stdout: (message) => output.push(message), stderr: () => undefined },
+      });
+      assert.equal(exitCode, 0);
+      const status = JSON.parse(output.join('\n')) as {
+        latestRun: { state: string; updatedAt: string };
+        latestRunActivity: { state: string; reason: string; lockPid: number | null };
+      };
+      assert.equal(status.latestRun.state, 'running');
+      assert.equal(status.latestRun.updatedAt, staleUpdatedAt);
+      assert.equal(status.latestRunActivity.state, 'active');
+      assert.equal(status.latestRunActivity.reason, 'live-compiler');
+      assert.equal(status.latestRunActivity.lockPid, process.pid);
+      assert.equal(await readFile(lockPath, 'utf8'), lockBefore);
+
+      const readback = new LegacyLedger({ databasePath });
+      try {
+        assert.equal(readback.getRun(run.id)?.updatedAt, staleUpdatedAt);
+      } finally {
+        readback.close();
+      }
+    } finally {
+      await release();
+    }
+  });
+});
+
+test('status reports a stale heartbeat when a live lock owner cannot be verified', async () => {
+  await withCliRoots(async (sourceRoot, workRoot) => {
+    const databasePath = join(workRoot, 'ledger.sqlite');
+    const ledger = new LegacyLedger({ databasePath });
+    const run = ledger.createRun({
+      command: 'pilot',
+      ruleVersion: 'status-observation-v1',
+      sourceRoot,
+      workRoot,
+    });
+    ledger.close();
+
+    const staleUpdatedAt = new Date(Date.now() - LEGACY_RUN_HEARTBEAT_STALE_MS - 60_000).toISOString();
+    const database = new DatabaseSync(databasePath);
+    try {
+      database.prepare('UPDATE runs SET updated_at = ? WHERE id = ?').run(staleUpdatedAt, run.id);
+    } finally {
+      database.close();
+    }
+
+    const lockPath = join(workRoot, '.compiler.lock');
+    const unverifiablePid = 424_206;
+    const lock = `${JSON.stringify({
+      version: 2,
+      pid: unverifiablePid,
+      token: 'unverifiable-owner',
+      startedAt: new Date().toISOString(),
+    })}\n`;
+    await writeFile(lockPath, lock, 'utf8');
+
+    const output: string[] = [];
+    const exitCode = await runLegacyCli([
+      'status', '--source', sourceRoot, '--work-root', workRoot, '--json',
+    ], {
+      processInspector: inspectorFor(new Map([[unverifiablePid, 'unknown']])),
+      io: { stdout: (message) => output.push(message), stderr: () => undefined },
+    });
+    assert.equal(exitCode, 0);
+    const status = JSON.parse(output.join('\n')) as {
+      latestRun: { state: string; updatedAt: string };
+      latestRunActivity: { state: string; reason: string; lockPid: number | null };
+    };
+    assert.equal(status.latestRun.state, 'running');
+    assert.equal(status.latestRun.updatedAt, staleUpdatedAt);
+    assert.equal(status.latestRunActivity.state, 'stale');
+    assert.equal(status.latestRunActivity.reason, 'stale-run-heartbeat');
+    assert.equal(status.latestRunActivity.lockPid, unverifiablePid);
+    assert.equal(await readFile(lockPath, 'utf8'), lock);
+
+    const readback = new LegacyLedger({ databasePath });
+    try {
+      assert.equal(readback.getRun(run.id)?.updatedAt, staleUpdatedAt);
+    } finally {
+      readback.close();
+    }
   });
 });
 

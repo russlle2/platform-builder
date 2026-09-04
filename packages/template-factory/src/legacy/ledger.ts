@@ -1032,6 +1032,39 @@ export class LegacyLedger {
     `).get(command, resolve(sourceRoot), ruleVersion) as SqlRow | undefined);
   }
 
+  /**
+   * Persist the fact that this durable run has ever been authorized to use the
+   * cloud lane. The flag is monotonic: a later invocation may require a fresh
+   * opt-in, but it must never make the ledger forget that provider work may
+   * need reconciliation after another interruption.
+   */
+  markRunCloudRepairEnabled(id: string): LegacyRunRecord {
+    return this.transaction(() => {
+      const run = this.getRun(id);
+      if (!run) throw new Error(`Unknown run: ${id}`);
+      let options: Record<string, unknown>;
+      try {
+        const parsed = JSON.parse(run.optionsJson) as unknown;
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          throw new Error('run options must be a JSON object');
+        }
+        options = parsed as Record<string, unknown>;
+      } catch (error) {
+        const detail = error instanceof Error ? error.message : String(error);
+        throw new Error(`Cannot enable cloud repair because stored run options are invalid: ${detail}`);
+      }
+      if ('cloudRepair' in options && typeof options.cloudRepair !== 'boolean') {
+        throw new Error('Cannot enable cloud repair because stored cloudRepair authorization is invalid');
+      }
+      if (options.cloudRepair === true) return run;
+      const result = this.database.prepare(`
+        UPDATE runs SET options_json = ?, updated_at = ? WHERE id = ?
+      `).run(json({ ...options, cloudRepair: true }), nowIso(), id);
+      if (Number(result.changes) !== 1) throw new Error(`Unknown run: ${id}`);
+      return this.getRun(id) as LegacyRunRecord;
+    });
+  }
+
   resumeRun(id: string): LegacyRunRecord {
     const timestamp = nowIso();
     const result = this.database.prepare(`
