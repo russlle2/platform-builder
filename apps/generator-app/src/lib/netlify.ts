@@ -20,10 +20,11 @@ const NETLIFY_API = 'https://api.netlify.com/api/v1'
 interface NetlifySite {
   id: string
   name: string
-  ssl_url: string
-  url: string
+  ssl_url?: string
+  url?: string
   custom_domain: string | null
-  default_domain: string
+  domain_aliases?: string[]
+  default_domain?: string
   admin_url: string
 }
 
@@ -31,7 +32,16 @@ interface ProvisionResult {
   siteId: string
   subdomain: string
   siteUrl: string
+  defaultDomain: string
   adminUrl: string
+}
+
+interface ProvisionSiteOptions {
+  /**
+   * Keep isolated test sites entirely on Netlify-owned DNS. Production callers
+   * omit this option and continue to receive the branded platform hostname.
+   */
+  useNetlifyDefaultDomain?: boolean
 }
 
 function getToken(): string {
@@ -44,6 +54,47 @@ function getDomain(): string {
   const domain = process.env.PLATFORM_DOMAIN?.trim().toLowerCase()
   if (!domain) throw new Error('PLATFORM_DOMAIN is not configured.')
   return domain
+}
+
+function hostnameFromUrl(value: string | undefined): string {
+  if (!value) return ''
+  try {
+    return new URL(value).hostname.toLowerCase()
+  } catch {
+    return ''
+  }
+}
+
+function siteBoundaryIssue(
+  site: NetlifySite,
+  siteName: string,
+  expectedDefaultDomain: string,
+  brandedSubdomain: string | null,
+): string | null {
+  const suppliedDefaultDomain = site.default_domain?.trim().toLowerCase() || ''
+  const observedUrlHosts = new Set([
+    hostnameFromUrl(site.url),
+    hostnameFromUrl(site.ssl_url),
+  ].filter(Boolean))
+  const boundDomains = new Set([
+    site.custom_domain,
+    ...(site.domain_aliases || []),
+  ].filter((value): value is string => Boolean(value)).map((value) => value.toLowerCase()))
+
+  if (site.name !== siteName) return 'site name mismatch'
+  if (suppliedDefaultDomain && suppliedDefaultDomain !== expectedDefaultDomain) {
+    return 'default domain mismatch'
+  }
+  if (!observedUrlHosts.has(expectedDefaultDomain)) return 'default URL mismatch'
+  if (brandedSubdomain) {
+    if (!boundDomains.has(brandedSubdomain)) return 'branded domain mismatch'
+  } else {
+    const advertisedHosts = new Set([...observedUrlHosts, ...boundDomains])
+    if ([...advertisedHosts].some((value) => value !== expectedDefaultDomain)) {
+      return 'test site has a non-Netlify alias'
+    }
+  }
+  return null
 }
 
 async function netlifyFetch(path: string, options: RequestInit = {}): Promise<Response> {
@@ -71,10 +122,15 @@ async function netlifyFetch(path: string, options: RequestInit = {}): Promise<Re
  *  - You'll add a wildcard DNS record: *.platformdomain.com → Netlify
  *    (or individual CNAME records per slug)
  */
-export async function provisionSite(slug: string): Promise<ProvisionResult> {
-  const domain = getDomain()
-  const subdomain = `${slug}.${domain}`
+export async function provisionSite(
+  slug: string,
+  options: ProvisionSiteOptions = {},
+): Promise<ProvisionResult> {
+  const useNetlifyDefaultDomain = options.useNetlifyDefaultDomain === true
+  const domain = useNetlifyDefaultDomain ? null : getDomain()
+  const brandedSubdomain = domain ? `${slug}.${domain}` : null
   const siteName = `platform-${slug}`
+  const expectedDefaultDomain = `${siteName}.netlify.app`
   const teamSlug = process.env.NETLIFY_TEAM_SLUG
 
   // The deterministic Netlify hostname closes the crash window between site
@@ -83,13 +139,14 @@ export async function provisionSite(slug: string): Promise<ProvisionResult> {
   const existingResponse = await netlifyFetch(`/sites/${encodeURIComponent(`${siteName}.netlify.app`)}`)
   if (existingResponse.ok) {
     const existing: NetlifySite = await existingResponse.json()
-    if (existing.name !== siteName || existing.custom_domain !== subdomain) {
+    if (siteBoundaryIssue(existing, siteName, expectedDefaultDomain, brandedSubdomain)) {
       throw new Error('The deterministic Netlify site name is already bound to another domain.')
     }
     return {
       siteId: existing.id,
-      subdomain,
-      siteUrl: `https://${subdomain}`,
+      subdomain: brandedSubdomain || expectedDefaultDomain,
+      siteUrl: `https://${brandedSubdomain || expectedDefaultDomain}`,
+      defaultDomain: expectedDefaultDomain,
       adminUrl: existing.admin_url,
     }
   }
@@ -99,8 +156,8 @@ export async function provisionSite(slug: string): Promise<ProvisionResult> {
 
   const body: Record<string, unknown> = {
     name: siteName,
-    custom_domain: subdomain,
   }
+  if (brandedSubdomain) body.custom_domain = brandedSubdomain
 
   const endpoint = teamSlug
     ? `/${teamSlug}/sites`
@@ -117,15 +174,32 @@ export async function provisionSite(slug: string): Promise<ProvisionResult> {
   }
 
   const site: NetlifySite = await response.json()
+  if (siteBoundaryIssue(site, siteName, expectedDefaultDomain, brandedSubdomain)) {
+    try {
+      await deleteSite(site.id)
+    } catch (cleanupError) {
+      console.error('[netlify] boundary-violating site cleanup failed:', cleanupError)
+    }
+    throw new Error('Netlify created a site outside the requested domain boundary.')
+  }
 
   return {
     siteId: site.id,
-    subdomain,
-    // `ssl_url` is commonly the Netlify-owned fallback hostname. The product
-    // promises the branded wildcard hostname, so canonical metadata, customer
-    // email, and the portal must all use that URL and wait for its TLS endpoint.
-    siteUrl: `https://${subdomain}`,
+    subdomain: brandedSubdomain || expectedDefaultDomain,
+    // Production promises the branded wildcard hostname. The isolated staging
+    // harness deliberately uses Netlify-owned DNS so it never touches public DNS.
+    siteUrl: `https://${brandedSubdomain || expectedDefaultDomain}`,
+    defaultDomain: expectedDefaultDomain,
     adminUrl: site.admin_url,
+  }
+}
+
+/** Delete a staging/test customer site. Callers must enforce their own scope boundary. */
+export async function deleteSite(siteId: string): Promise<void> {
+  if (!/^[A-Za-z0-9-]{3,100}$/.test(siteId)) throw new Error('Invalid Netlify site ID.')
+  const response = await netlifyFetch(`/sites/${encodeURIComponent(siteId)}`, { method: 'DELETE' })
+  if (!response.ok && response.status !== 404) {
+    throw new Error(`Netlify site deletion failed (${response.status}): ${await response.text()}`)
   }
 }
 
@@ -341,12 +415,25 @@ export async function triggerDeploy(siteId: string): Promise<{ deployId: string 
  */
 export async function setCustomDomain(
   siteId: string,
-  customDomain: string
+  customDomain: string,
+  retainedAliases: readonly string[] = [],
 ): Promise<{ domain: string; sslUrl: string }> {
-  // Update the site's custom domain
+  // `domain_aliases` is replaced as a complete set. Deliberately do not carry
+  // forward Netlify's current aliases: a prior customer domain must be
+  // detached when the customer switches domains, otherwise the database can
+  // release that hostname while Netlify still routes it to the old site.
+  const domainAliases = [...new Set([
+    ...retainedAliases,
+  ]
+    .map((value) => value?.trim().toLowerCase())
+    .filter((value): value is string => Boolean(value) && value !== customDomain))]
+
+  // Promote the customer domain while explicitly retaining the branded
+  // DailyClarity hostname as an alias. The Netlify-owned default domain remains
+  // the stable DNS target and is never replaced.
   const response = await netlifyFetch(`/sites/${siteId}`, {
     method: 'PATCH',
-    body: JSON.stringify({ custom_domain: customDomain }),
+    body: JSON.stringify({ custom_domain: customDomain, domain_aliases: domainAliases }),
   })
 
   if (!response.ok) {

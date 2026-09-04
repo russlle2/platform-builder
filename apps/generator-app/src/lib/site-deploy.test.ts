@@ -103,4 +103,23 @@ describe('site customization safety', () => {
     expect(files?.['sitemap.xml']).toContain('<loc>https://calm-studio.netlify.app/contact/team.html</loc>')
     expect(buildSearchEngineFiles('javascript:alert(1)', ['index.html'])).toBeNull()
   })
+
+  it('keeps isolated E2E customer sites out of search indexes', () => {
+    const files = buildSearchEngineFiles(
+      'https://platform-e2e-calm-studio.netlify.app',
+      ['index.html', 'about.html'],
+      false,
+    )
+
+    expect(files).toEqual({
+      'robots.txt': 'User-agent: *\nDisallow: /\n',
+      'sitemap.xml': [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>',
+        '',
+      ].join('\n'),
+      '_headers': '/*\n  X-Robots-Tag: noindex, nofollow, noarchive\n',
+    })
+    expect(files?.['sitemap.xml']).not.toContain('<loc>')
+  })
 })

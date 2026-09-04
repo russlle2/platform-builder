@@ -13,6 +13,7 @@ vi.mock('@supabase/supabase-js', () => ({
 
 vi.mock('@/lib/stripe-client', () => ({
   createStripeClient: mocks.createStripeClient,
+  stripeIntegrationIdentifier: (_kind: string, id: string) => `dc-${id}`,
 }))
 
 vi.mock('@/lib/templates/niche-registry', () => ({
@@ -164,6 +165,7 @@ describe('template checkout draft-image gate', () => {
       }),
     }))
     const stripePayload = createSession.mock.calls[0]?.[0]
+    expect(stripePayload.integration_identifier).toBe(`dc-${stripePayload.client_reference_id}`)
     expect(stripePayload.metadata.catalogRevision_n).toBe('1')
     expect(JSON.parse(stripePayload.metadata.catalogRevision_0)).toMatchObject({
       designId: 'design_shared',
@@ -196,5 +198,28 @@ describe('template checkout draft-image gate', () => {
     })
     expect(mocks.createStripeClient).not.toHaveBeenCalled()
     expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+  })
+
+  it('rejects malformed and oversized bodies before catalogue, database, or Stripe access', async () => {
+    const malformed = new NextRequest('https://dailyclarity.org/api/stripe/checkout', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-forwarded-for': '198.51.100.31' },
+      body: '{',
+    })
+    const declaredOversize = new NextRequest('https://dailyclarity.org/api/stripe/checkout', {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+        'content-length': '200001',
+        'x-forwarded-for': '198.51.100.32',
+      },
+      body: '{}',
+    })
+
+    expect((await checkoutPost(malformed)).status).toBe(400)
+    expect((await checkoutPost(declaredOversize)).status).toBe(413)
+    expect(mocks.getTemplate).not.toHaveBeenCalled()
+    expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+    expect(mocks.createStripeClient).not.toHaveBeenCalled()
   })
 })

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   buildCustomThemeCss,
   buildLivePreviewThemeCss,
+  customThemeAfterVariationChange,
   sanitizeCustomTheme,
 } from './custom-theme'
 
@@ -61,5 +62,13 @@ describe('custom theme', () => {
     expect(sanitizeCustomTheme({ ...validTheme, primary: 'red;display:none' })).toBeNull()
     expect(sanitizeCustomTheme({ ...validTheme, fontImportUrl: 'https://evil.test/font.css' })).toBeNull()
     expect(buildCustomThemeCss({ ...validTheme, headingFont: 'Inter;display:none' })).toBe('')
+  })
+
+  it('preserves custom colors and fonts across structure-only changes', () => {
+    const sanitized = sanitizeCustomTheme(validTheme)
+
+    expect(customThemeAfterVariationChange(sanitized, 'structure')).toBe(sanitized)
+    expect(customThemeAfterVariationChange(sanitized, 'color')).toBeNull()
+    expect(customThemeAfterVariationChange(sanitized, 'font')).toBeNull()
   })
 })

@@ -9,7 +9,7 @@ import {
 } from '@/lib/custom-build'
 import { jsonTooManyRequests, rateLimitByIp } from '@/lib/server-auth'
 import { getTrustedSiteOrigin } from '@/lib/site-origin'
-import { createStripeClient } from '@/lib/stripe-client'
+import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
 import {
   CUSTOM_BUILD_CHECKOUT_TYPE,
   isDedicatedSupabaseProjectConfigured,
@@ -105,6 +105,7 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: parsed.data.email,
       client_reference_id: requestId,
+      integration_identifier: stripeIntegrationIdentifier('dailyclarity-custom-build', requestId),
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/custom-build?canceled=1`,
       metadata: {

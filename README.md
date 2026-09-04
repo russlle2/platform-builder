@@ -164,7 +164,7 @@ All variables live in `apps/generator-app/.env.local` (local) or in your hosting
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `INTERNAL_ADMIN_TOKEN` | Yes | Protects `/api/portal/site`, `/api/sites/provision`, `/api/sites/domain`, `/api/integrations/status`. Generate: `openssl rand -hex 32` |
+| `INTERNAL_ADMIN_TOKEN` | Yes | Protects `/api/portal/site`, `/api/sites/domain`, `/api/integrations/status`. Generate: `openssl rand -hex 32` |
 | `PORTAL_TOKEN_SECRET` | Yes | Signs private, slug-bound portal access tokens; generate at least 32 random bytes |
 | `STRIPE_FULFILLMENT_WORKER_SECRET` | Yes | Authenticates queue dispatches to the Netlify background worker; generate independently with `openssl rand -hex 32` |
 | `UPLOAD_TOKEN_SECRET` | Recommended | Dedicated signing secret for upload sessions; falls back to `PORTAL_TOKEN_SECRET` |
@@ -174,10 +174,13 @@ All variables live in `apps/generator-app/.env.local` (local) or in your hosting
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `ENABLE_TEST_PURCHASE` | `false` | Set to `"true"` to enable test purchase endpoint |
-| `TEST_PURCHASE_ADMIN_SECRET` | — | Required when test purchase is enabled. Pass as `x-test-purchase-secret` header |
+| `DAILYCLARITY_ENVIRONMENT` | `development` | Must be exactly `staging`; `production` always rejects test purchases |
+| `ENABLE_TEST_PURCHASE` | `false` | Set to `"true"` only on the isolated staging site |
+| `TEST_PURCHASE_ADMIN_SECRET` | — | Independent staging-only secret of at least 32 characters, passed as `x-test-purchase-secret` |
+| `STAGING_APP_HOST` | — | Exact allowed staging request host, including any non-default port |
+| `STAGING_SUPABASE_PROJECT_REF` | — | Exact isolated staging project ref; must also match `DAILYCLARITY_SUPABASE_PROJECT_REF` and the Supabase URL |
 
-> **Never enable test purchase in production.** It is disabled by default and requires both env vars plus a matching secret header.
+> **Never enable test purchase in production.** The route now fails closed unless all staging identity checks and the secret match. The E2E cleanup route accepts only generated `e2e-*` fixtures and removes the corresponding Netlify site, uploaded images, and database rows.
 
 ### Analytics (All Optional)
 
@@ -196,11 +199,28 @@ The app is deployed on Netlify (or any Next.js-compatible host).
 
 ### Netlify Setup
 
-1. Connect the repo to Netlify
-2. Set build command: `pnpm --filter @platform-builder/generator-app build`
-3. Set publish directory: `apps/generator-app/.next`
-4. Add all environment variables in Netlify → Site settings → Environment variables
-5. Redeploy after adding variables
+1. Keep connected-repository production auto-publishing **disabled**. Production publication is CLI-driven only through `.github/workflows/deploy.yml`; a normal push must never bypass its validation, database-schema, protected-environment, and site-identity gates.
+2. Create a completely separate staging Netlify site and bind the GitHub `staging` environment to its own token/site ID. Never reuse the production site ID.
+3. In each protected GitHub environment, set `NETLIFY_EXPECTED_SITE_ID`, `NETLIFY_EXPECTED_SITE_HOSTNAME`, and `NETLIFY_EXPECTED_ACCOUNT_SLUG` as environment variables. The authenticated Netlify API response must match all three before any app or Blob publication.
+4. Add the runtime environment variables in Netlify → Site settings → Environment variables. Set `DAILYCLARITY_ENVIRONMENT` to the matching environment name. Keep `NEXT_PUBLIC_SUPABASE_URL`, `DAILYCLARITY_SUPABASE_PROJECT_REF`, and `DAILYCLARITY_ENVIRONMENT` readable, non-secret, and available to both builds and functions; mark `SUPABASE_SERVICE_ROLE_KEY` secret and expose it only to functions. The release gate compares all three public identities to the protected GitHub environment and then proves the deployed runtime can execute the readiness RPC with its own secret.
+5. Apply and verify the matching Supabase migration before deploying the app. The workflow calls the value-free `launch_schema_readiness()` sentinel and refuses an old or partial schema.
+6. Publish to staging with `.github/workflows/deploy-staging.yml` (`STAGE` confirmation), complete the full-funnel test, then promote reviewed `main` with `.github/workflows/deploy.yml` (`DEPLOY` confirmation).
+
+The protected GitHub `staging` environment keeps public database identity separate
+from credentials: set `STAGING_SUPABASE_URL` and
+`STAGING_SUPABASE_PROJECT_REF` as environment variables, and set only
+`STAGING_SUPABASE_SERVICE_ROLE_KEY` as an environment secret. The deploy and
+full-funnel workflows map that single contract to the application's runtime names,
+compare it to the site-level Netlify environment, pin the published deploy to the
+reviewed commit, and live-probe schema `20260903.3`. Store the same independent
+`INTERNAL_ADMIN_TOKEN` in the protected GitHub environment and the matching
+Netlify site so that probe remains authenticated. The full-funnel workflow derives
+its URL from the attested hostname rather than accepting an unrelated URL secret,
+so staging cannot silently fall back to generic production-named credentials or a
+different deployment.
+Set the non-secret `DEPLOY_ENVIRONMENT` and `CATALOG_PUBLISH_ENVIRONMENT`
+environment variables to the environment's own name (`staging` or `production`);
+the workflows fail closed if either identity sentinel is crossed.
 
 ---
 
@@ -249,8 +269,13 @@ node apps/generator-app/scripts/upload-templates-to-blobs.mjs --root /absolute/p
 ```
 
 The uploader publishes only templates that satisfy publication contract v2.
-Legacy generated templates remain excluded until they are normalized and pass
-the same contract.
+It verifies the approved report SHA-256 plus every niche/slug/artifact digest,
+uploads to an immutable catalog-digest prefix, reads every object back, and only
+then atomically switches `_manifest.json`. An interrupted upload therefore
+leaves the prior catalog live and rollback-capable. Production publication is
+main-only, protected by an exact `PUBLISH PRODUCTION` confirmation, and bound
+to the verified production Netlify site. Legacy generated templates remain
+excluded until they are normalized and pass the same contract.
 
 ---
 
@@ -286,7 +311,7 @@ pnpm validate
 - **Rate limiting**: Abuse-sensitive API routes have endpoint-specific in-memory limits plus a shared Netlify edge rule. Verify both code-based rules appear in every production deploy log; serverless instances do not share memory.
 - **Path traversal**: Image deletion validates paths stay within the owner's upload directory.
 - **CSP headers**: Set via middleware on all routes.
-- **Test purchase**: Disabled by default. Enable only in staging with a strong secret.
+- **Test purchase**: Disabled by default and hard-bound to the exact staging host and Supabase project. Enable only in an isolated staging environment with a strong secret.
 
 > **Live-checkout gate:** verified Stripe events are durably queued before a
 > fast `202` response. Netlify background fulfillment has database leases,

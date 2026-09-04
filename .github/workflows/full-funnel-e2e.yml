@@ -6,10 +6,11 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
 
@@ -21,12 +22,43 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Pin the simulation to the reviewed staging deployment
+        run: node apps/generator-app/scripts/verify-netlify-target.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+
+      - name: Prove the staging runtime/database binding
+        run: node apps/generator-app/scripts/verify-deployed-runtime.mjs
+        env:
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_RELEASE_SHA: ${{ github.sha }}
+
       - run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
+
+      - name: Verify the staging harness secret is strong
+        shell: bash
+        run: |
+          if [[ ${#TEST_PURCHASE_ADMIN_SECRET} -lt 32 ]]; then
+            echo "TEST_PURCHASE_ADMIN_SECRET must contain at least 32 characters." >&2
+            exit 1
+          fi
+        env:
+          TEST_PURCHASE_ADMIN_SECRET: ${{ secrets.TEST_PURCHASE_ADMIN_SECRET }}
 
       - run: pnpm --filter @platform-builder/generator-app exec playwright test e2e/full-funnel.spec.ts
         env:
-          BASE_URL: ${{ secrets.STAGING_BASE_URL }}
+          BASE_URL: https://${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
           ENABLE_TEST_PURCHASE: 'true'
           TEST_PURCHASE_ADMIN_SECRET: ${{ secrets.TEST_PURCHASE_ADMIN_SECRET }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}

@@ -60,6 +60,8 @@ export interface BuildSiteOptions {
   slug: string
   /** Canonical public origin used to generate robots.txt and sitemap.xml. */
   siteUrl: string
+  /** False for isolated E2E fixtures; production customer sites default to true. */
+  allowSearchIndexing?: boolean
 }
 
 export const STRIPE_METADATA_VALUE_LIMIT = 500
@@ -87,9 +89,24 @@ function escapeXml(value: string): string {
     .replace(/'/g, '&apos;')
 }
 
-export function buildSearchEngineFiles(siteUrl: string, pages: readonly string[]) {
+export function buildSearchEngineFiles(
+  siteUrl: string,
+  pages: readonly string[],
+  allowSearchIndexing = true,
+): Record<string, string> | null {
   const origin = canonicalSiteOrigin(siteUrl)
   if (!origin) return null
+  if (!allowSearchIndexing) {
+    return {
+      'robots.txt': 'User-agent: *\nDisallow: /\n',
+      'sitemap.xml': [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>',
+        '',
+      ].join('\n'),
+      '_headers': '/*\n  X-Robots-Tag: noindex, nofollow, noarchive\n',
+    }
+  }
   const pageUrls = pages.map((page) => new URL(page === 'index.html' ? '/' : `/${page}`, origin).toString())
   return {
     'robots.txt': `User-agent: *\nAllow: /\n\nSitemap: ${origin}/sitemap.xml\n`,
@@ -312,13 +329,18 @@ export async function buildDeployFiles(
     imageSwaps,
     slug,
     siteUrl,
+    allowSearchIndexing = true,
   } = opts
 
   const templateData = await getTemplateAtCatalogRevision(niche, templateSlug, catalogRevision)
   if (!templateData) return null
   assertCatalogRevision(templateData, catalogRevision)
   const resolvedCatalogRevision = snapshotCatalogRevision(templateData)
-  const searchEngineFiles = buildSearchEngineFiles(siteUrl, templateData.pages)
+  const searchEngineFiles = buildSearchEngineFiles(
+    siteUrl,
+    templateData.pages,
+    allowSearchIndexing,
+  )
   if (!searchEngineFiles) return null
 
   const safeCustomerValues = sanitizeCustomerValues(customerValues)

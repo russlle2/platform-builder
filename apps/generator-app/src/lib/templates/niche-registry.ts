@@ -3,6 +3,7 @@ import path from 'path'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
 import { inspectLaunchCatalog } from './launch-catalog-integrity'
+import launchCatalogContract from './launch-catalog-contract.json'
 import {
   LAUNCH_TEMPLATE_STORE,
   REHAB_STAGING_EXPECTED_BY_NICHE,
@@ -60,6 +61,12 @@ export interface TemplateMeta {
    * The registry composes both filesystem paths and CDN URLs from this.
    */
   dir: string
+  /** SHA-256 of the complete deterministic template directory. */
+  artifactSha256?: string
+  /** SHA-256 of the approved curated export report. */
+  catalogReportSha256?: string
+  /** Original niche/slug path retained when Blob objects use release prefixes. */
+  sourceDir?: string
   fields: TemplateField[]
   /** First 160 chars of visible text from index.html (for card preview) */
   snippet: string
@@ -325,7 +332,7 @@ function templateFromCatalogState(
   templateSlug: string,
 ): TemplateMeta | null {
   const value = (state.manifest[nicheSlug] || []).find((template) => template.slug === templateSlug)
-  if (!isPublishableTemplateMeta(value)) return null
+  if (!isPublishableTemplateMeta(value, state.profile)) return null
   if (
     value.validation?.contractVersion === 3 &&
     state.catalogHash && state.manifestHash
@@ -362,7 +369,7 @@ async function getCaches(): Promise<TemplateCaches> {
   for (const nicheSlug of Object.keys(NICHE_META)) {
     const templates = manifest[nicheSlug] || []
     const publishable = templates
-      .filter(isPublishableTemplateMeta)
+      .filter((template) => isPublishableTemplateMeta(template, state.profile))
       .map((template) => (
         template.validation?.contractVersion === 3 && state.catalogHash && state.manifestHash
           ? { ...template, catalogHash: state.catalogHash, manifestHash: state.manifestHash }
@@ -379,7 +386,15 @@ async function getCaches(): Promise<TemplateCaches> {
 
   const counts = [...all.entries()].map(([slug, templates]) => ({ slug, templateCount: templates.length }))
   const integrity = state.profile === 'launch'
-    ? inspectLaunchCatalog(counts)
+    ? inspectLaunchCatalog(
+        [...all.entries()].map(([slug, templates]) => ({
+          slug,
+          templates: templates.map((template) => ({
+            slug: template.slug,
+            artifactSha256: template.artifactSha256 || '',
+          })),
+        })),
+      )
     : (() => {
         const actualByNiche = Object.fromEntries(counts.map(({ slug, templateCount }) => [slug, templateCount]))
         const issues = Object.entries(REHAB_STAGING_EXPECTED_BY_NICHE)
@@ -411,20 +426,31 @@ async function getCaches(): Promise<TemplateCaches> {
  * Fail-closed catalog boundary. Only manifests emitted by the audited uploader
  * can make a template visible to preview or checkout.
  */
-export function isPublishableTemplateMeta(value: unknown): value is TemplateMeta {
+export function isPublishableTemplateMeta(
+  value: unknown,
+  profile: TemplateCatalogProfile = 'launch',
+): value is TemplateMeta {
   if (!value || typeof value !== 'object') return false
   const template = value as Partial<TemplateMeta>
   const validation = template.validation
   if (
     template.editable !== true ||
     validation?.status !== 'passed' ||
-    ![2, 3].includes(validation.contractVersion) ||
+    validation.contractVersion !== (profile === 'launch' ? 2 : 3) ||
     !Array.isArray(validation.tokens) ||
     validation.tokens.length === 0
   ) {
     return false
   }
-  if (validation.contractVersion === 3 && (
+  if (profile === 'launch' && (
+    typeof template.artifactSha256 !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(template.artifactSha256) ||
+    typeof template.catalogReportSha256 !== 'string' ||
+    template.catalogReportSha256 !== launchCatalogContract.curatedReportSha256
+  )) {
+    return false
+  }
+  if (profile === 'rehab-staging' && (
     typeof template.designId !== 'string' || !/^design_[A-Za-z0-9_-]+$/.test(template.designId) ||
     typeof template.contentPresetId !== 'string' || !/^content_[A-Za-z0-9_-]+$/.test(template.contentPresetId) ||
     typeof template.themePresetId !== 'string' || !/^theme_[A-Za-z0-9_-]+$/.test(template.themePresetId) ||
@@ -442,6 +468,9 @@ export function isPublishableTemplateMeta(value: unknown): value is TemplateMeta
     typeof template.nicheSlug !== 'string' ||
     typeof template.dir !== 'string' ||
     !safeTemplateKey(template.dir) ||
+    (template.sourceDir !== undefined && (
+      typeof template.sourceDir !== 'string' || !safeTemplateKey(template.sourceDir)
+    )) ||
     !Array.isArray(template.pages) ||
     template.pages.length === 0 ||
     !template.pages.every((page) => typeof page === 'string' && Boolean(safeTemplateKey(page))) ||
@@ -555,6 +584,18 @@ function safeJoin(root: string, ...parts: string[]): string | null {
   const relative = path.relative(resolvedRoot, resolvedPath)
   if (relative.startsWith('..') || path.isAbsolute(relative)) return null
   return resolvedPath
+}
+
+/** Exact identities used by readiness checks; never exposes file contents. */
+export async function getLaunchCatalogIdentitySnapshot() {
+  const cache = (await getCaches()).all
+  return [...cache.entries()].map(([slug, templates]) => ({
+    slug,
+    templates: templates.map((template) => ({
+      slug: template.slug,
+      artifactSha256: template.artifactSha256 || '',
+    })),
+  }))
 }
 
 function safeTemplateKey(...parts: string[]): string | null {

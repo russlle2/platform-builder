@@ -12,7 +12,7 @@
     "build": "pnpm -r --workspace-concurrency=1 --if-present build",
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm --filter @platform-builder/generator-app exec tsc --noEmit && pnpm exec tsc --noEmit -p netlify/functions/tsconfig.json",
-    "test": "pnpm -r --if-present test && node apps/generator-app/scripts/upload-templates-to-blobs.test.mjs",
+    "test": "pnpm -r --if-present test && node apps/generator-app/scripts/upload-templates-to-blobs.test.mjs && node apps/generator-app/scripts/netlify-target-contract.test.mjs && node apps/generator-app/scripts/launch-migration.pglite.test.mjs",
     "test:e2e": "pnpm --filter @platform-builder/generator-app exec playwright test",
     "validate": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "clean": "node scripts/clean.mjs",
@@ -25,10 +25,11 @@
     "templates:legacy": "pnpm --filter @platform/template-factory exec tsx src/legacy/cli.ts"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@opentelemetry/api": "^1.9.0",
     "@types/node": "^22.20.1",
-    "typescript": "^5.3.2",
-    "sharp": "^0.35.4"
+    "sharp": "^0.35.4",
+    "typescript": "^5.3.2"
   },
   "engines": {
     "node": ">=22.0.0 <25",

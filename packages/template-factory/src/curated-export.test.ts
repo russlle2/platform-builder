@@ -3,6 +3,7 @@ import { mkdtemp, readFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
+import { hydrateTemplate } from '../../../apps/generator-app/src/lib/templates/template-hydration.js';
 import { normalizeFoundationForPublication } from './assembler.js';
 import {
   buildCuratedCopy,
@@ -104,6 +105,64 @@ test('offline exporter produces reproducible v2-ready output', { timeout: 30_000
       }),
       /pass --replace/,
     );
+  } finally {
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('all 60 curated templates hydrate internal CTA links to declared pages', { timeout: 60_000 }, async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'curated-cta-smoke-'));
+  const outputRoot = join(scratch, 'all');
+
+  try {
+    const report = await exportCuratedTemplates({ outputRoot });
+    assert.equal(report.templateCount, 60);
+
+    let templatesWithCta = 0;
+    let pagesWithCta = 0;
+    for (const receipt of report.templates) {
+      const templateRoot = join(outputRoot, receipt.niche, receipt.slug);
+      const [templateRaw, fieldsRaw] = await Promise.all([
+        readFile(join(templateRoot, 'template.json'), 'utf-8'),
+        readFile(join(templateRoot, 'fields.json'), 'utf-8'),
+      ]);
+      const template = JSON.parse(templateRaw) as { pages: string[] };
+      const fields = JSON.parse(fieldsRaw) as {
+        fields: Array<{ name: string; type?: string; default?: string }>;
+      };
+
+      assert.equal(template.pages.length, 6, `${receipt.slug} must expose six editable pages`);
+      assert.ok(template.pages.includes('contact.html'), `${receipt.slug} must declare contact.html`);
+
+      let templateHasCta = false;
+      for (const page of template.pages) {
+        const source = await readFile(join(templateRoot, page), 'utf-8');
+        if (!source.includes('{{PRIMARY_CTA_URL}}')) continue;
+
+        templateHasCta = true;
+        pagesWithCta += 1;
+        for (const target of ['/contact.html', 'contact.html']) {
+          const hydrated = hydrateTemplate(source, { PRIMARY_CTA_URL: target }, fields.fields);
+          assert.ok(
+            hydrated.includes(`href="${target}"`) || hydrated.includes(`href='${target}'`),
+            `${receipt.slug}/${page} must retain the internal CTA target`,
+          );
+          assert.doesNotMatch(hydrated, /https:\/\/contact\.html/i);
+
+          const declaredTarget = target.replace(/^\//, '').split(/[?#]/, 1)[0]!;
+          assert.ok(
+            template.pages.includes(declaredTarget),
+            `${receipt.slug}/${page} CTA must resolve to a declared page`,
+          );
+        }
+      }
+
+      assert.ok(templateHasCta, `${receipt.slug} must expose an editable internal CTA`);
+      templatesWithCta += 1;
+    }
+
+    assert.equal(templatesWithCta, 60);
+    assert.equal(pagesWithCta, 60);
   } finally {
     await rm(scratch, { recursive: true, force: true });
   }

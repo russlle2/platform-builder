@@ -14,7 +14,8 @@ import {
 } from '@/lib/site-deploy'
 import { getTemplateAtCatalogRevision } from '@/lib/templates/niche-registry'
 import { buildCheckoutTemplateState } from '@/lib/customer-site-state'
-import { createStripeClient } from '@/lib/stripe-client'
+import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
+import { readBoundedJson } from '@/lib/bounded-json'
 import {
   TEMPLATE_CHECKOUT_TYPE,
   getTemplateFulfillmentConfigIssues,
@@ -71,13 +72,25 @@ export async function POST(req: NextRequest) {
       )
       return NextResponse.json({ error: 'Checkout is temporarily unavailable.' }, { status: 503 })
     }
-    const body = await req.json()
-    if (!body || typeof body !== 'object' || JSON.stringify(body).length > MAX_CHECKOUT_PAYLOAD_BYTES) {
-      return NextResponse.json({ error: 'Checkout details are invalid or too large.' }, { status: 413 })
+    const parsedBody = await readBoundedJson(req, MAX_CHECKOUT_PAYLOAD_BYTES)
+    if (!parsedBody.ok) {
+      return NextResponse.json(
+        {
+          error: parsedBody.reason === 'too_large'
+            ? 'Checkout details are too large.'
+            : 'Checkout details are invalid.',
+        },
+        { status: parsedBody.reason === 'too_large' ? 413 : 400 },
+      )
     }
+    const bodyValue = parsedBody.value
+    if (!bodyValue || typeof bodyValue !== 'object' || Array.isArray(bodyValue)) {
+      return NextResponse.json({ error: 'Checkout details are invalid.' }, { status: 400 })
+    }
+    const body = bodyValue as Record<string, unknown>
     const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customTheme, customerValues, inlineEdits, imageSwaps, catalogRevision: requestedCatalogRevision } = body
 
-    const canonicalPlan = normalizePlanKey(planKey)
+    const canonicalPlan = normalizePlanKey(typeof planKey === 'string' ? planKey : null)
     if (!canonicalPlan) {
       return NextResponse.json(
         { error: 'Invalid or unknown plan.' },
@@ -277,6 +290,7 @@ export async function POST(req: NextRequest) {
       expires_at: Math.floor(expiresAt.getTime() / 1000),
       ...(email ? { customer_email: email } : {}),
       client_reference_id: checkoutIntentId,
+      integration_identifier: stripeIntegrationIdentifier('dailyclarity-template', checkoutIntentId),
       metadata,
       subscription_data: subscriptionData,
     }, { idempotencyKey: `dailyclarity-checkout-${checkoutIntentId}` })

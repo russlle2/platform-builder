@@ -5,11 +5,46 @@ import {
   getTemplateFulfillmentConfigIssues,
   isDedicatedSupabaseProjectConfigured,
 } from '@/lib/stripe-runtime'
-import { getNiches } from '@/lib/templates/niche-registry'
+import { getLaunchCatalogIdentitySnapshot } from '@/lib/templates/niche-registry'
 import {
   inspectLaunchCatalog,
   type LaunchCatalogIntegrity,
 } from '@/lib/templates/launch-catalog-integrity'
+
+const EXPECTED_LAUNCH_SCHEMA_VERSION = '20260903.3'
+
+function getSupabaseProjectRef(value: string | undefined): string | null {
+  try {
+    return new URL(value || '').hostname.toLowerCase().match(/^([a-z0-9-]+)\.supabase\.co$/)?.[1] || null
+  } catch {
+    return null
+  }
+}
+
+async function inspectLaunchSchema(url: string | undefined, serviceKey: string | undefined) {
+  if (!url || !serviceKey) return { ready: false, schemaVersion: null }
+  try {
+    const response = await fetch(`${url.replace(/\/$/, '')}/rest/v1/rpc/launch_schema_readiness`, {
+      method: 'POST',
+      headers: {
+        apikey: serviceKey,
+        authorization: `Bearer ${serviceKey}`,
+        'content-type': 'application/json',
+      },
+      body: '{}',
+      cache: 'no-store',
+      signal: AbortSignal.timeout(10_000),
+    })
+    if (!response.ok) return { ready: false, schemaVersion: null }
+    const result = await response.json() as { ready?: boolean; schemaVersion?: string }
+    return {
+      ready: result.ready === true && result.schemaVersion === EXPECTED_LAUNCH_SCHEMA_VERSION,
+      schemaVersion: typeof result.schemaVersion === 'string' ? result.schemaVersion : null,
+    }
+  } catch {
+    return { ready: false, schemaVersion: null }
+  }
+}
 
 /**
  * GET /api/integrations/status
@@ -44,11 +79,17 @@ export async function GET(req: NextRequest) {
   const hasSupabaseServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY
   const hasDedicatedSupabaseRef = !!process.env.DAILYCLARITY_SUPABASE_PROJECT_REF
   const supabaseProjectMatches = isDedicatedSupabaseProjectConfigured()
+  const supabaseProjectRef = getSupabaseProjectRef(process.env.NEXT_PUBLIC_SUPABASE_URL)
+  const launchSchema = await inspectLaunchSchema(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.SUPABASE_SERVICE_ROLE_KEY,
+  )
   const supabaseReady =
     hasSupabaseUrl &&
     hasSupabaseServiceKey &&
     hasDedicatedSupabaseRef &&
-    supabaseProjectMatches
+    supabaseProjectMatches &&
+    launchSchema.ready
   const hasNetlifyToken = !!process.env.NETLIFY_ACCESS_TOKEN
   const hasPlatformDomain = !!process.env.PLATFORM_DOMAIN
   const netlifyReady = hasNetlifyToken && hasPlatformDomain
@@ -56,7 +97,7 @@ export async function GET(req: NextRequest) {
 
   let catalogIntegrity: LaunchCatalogIntegrity = inspectLaunchCatalog([])
   try {
-    const niches = await getNiches()
+    const niches = await getLaunchCatalogIdentitySnapshot()
     catalogIntegrity = inspectLaunchCatalog(niches)
   } catch (error) {
     console.error('[integrations/status] template catalog check failed:', error)
@@ -68,6 +109,7 @@ export async function GET(req: NextRequest) {
     ...getTemplateFulfillmentConfigIssues(),
     ...(!hasStripePriceBasic ? ['STRIPE_PRICE_BASIC'] : []),
     ...(!hasStripePriceGrowth ? ['STRIPE_PRICE_GROWTH'] : []),
+    ...(!launchSchema.ready ? [`supabase_schema_${EXPECTED_LAUNCH_SCHEMA_VERSION}`] : []),
     ...(!templateCatalogReady ? ['validated_template_catalog'] : []),
   ]
   const checkoutReady = missingRequirements.length === 0
@@ -115,7 +157,9 @@ export async function GET(req: NextRequest) {
             ? 'Missing DAILYCLARITY_SUPABASE_PROJECT_REF'
             : !supabaseProjectMatches
               ? 'NEXT_PUBLIC_SUPABASE_URL does not match the dedicated DailyClarity project ref'
-              : 'Dedicated project configured (schema and API access not live-tested)',
+              : !launchSchema.ready
+                ? `Dedicated project schema/API probe failed (expected ${EXPECTED_LAUNCH_SCHEMA_VERSION})`
+                : `Dedicated project and schema ${launchSchema.schemaVersion} verified`,
     },
     {
       name: 'Netlify',
@@ -157,6 +201,11 @@ export async function GET(req: NextRequest) {
     fulfillmentReady: checkoutReady,
     emailReady: postmarkReady,
     platformDomain: getPlatformDomain(),
+    deploymentSiteId: process.env.SITE_ID || null,
+    deploymentReleaseSha: process.env.NEXT_PUBLIC_RELEASE_SHA || null,
+    supabaseProjectRef,
+    supabaseSchemaVersion: launchSchema.schemaVersion,
+    supabaseSchemaReady: launchSchema.ready,
     publishedTemplateCount,
     expectedTemplateCount: catalogIntegrity.expectedTotal,
     templateCountsByNiche: catalogIntegrity.actualByNiche,
@@ -164,6 +213,6 @@ export async function GET(req: NextRequest) {
     templateCatalogIssues: catalogIntegrity.issues,
     missingRequirements,
     readinessBasis:
-      'Configuration and validated template manifest only; external APIs, webhook delivery, sender verification, and DNS are not probed.',
+      'Configuration, live Supabase schema/API probe, and validated template manifest; Stripe/webhook delivery, sender verification, and DNS are not probed.',
   })
 }

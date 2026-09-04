@@ -36,6 +36,7 @@ import { composeCustomerPreviewDocument } from '@/lib/customer-preview-document'
 import { getCustomerPreviewEditorScript } from '@/lib/customer-preview-editor-runtime'
 import {
   CUSTOM_THEME_STORAGE_KEY,
+  customThemeAfterVariationChange,
   sanitizeCustomTheme,
   type CustomTheme,
 } from '@/lib/custom-theme'
@@ -263,8 +264,8 @@ export default function TemplateCustomizePage({
               DESCRIPTION: info.description || '',
               SERVICES: info.services || '',
               WEBSITE: info.website || '',
-              PRIMARY_CTA_URL: 'contact.html',
-              BOOKING_URL: 'contact.html',
+              PRIMARY_CTA_URL: '/contact.html',
+              BOOKING_URL: '/contact.html',
               PRIMARY_CTA_LABEL: 'Get in touch',
               CTA_LABEL: 'Get in touch',
               business_name: info.businessName || '',
@@ -632,17 +633,17 @@ export default function TemplateCustomizePage({
             setEditMode={setEditMode}
             colorScheme={colorScheme}
             setColorScheme={(value) => {
-              setCustomTheme(null)
+              setCustomTheme((current) => customThemeAfterVariationChange(current, 'color'))
               setColorScheme(value)
             }}
             fontVariation={fontVariation}
             setFontVariation={(value) => {
-              setCustomTheme(null)
+              setCustomTheme((current) => customThemeAfterVariationChange(current, 'font'))
               setFontVariation(value)
             }}
             structureVariation={structureVariation}
             setStructureVariation={(value) => {
-              setCustomTheme(null)
+              setCustomTheme((current) => customThemeAfterVariationChange(current, 'structure'))
               setStructureVariation(value)
             }}
             variationOptions={variationOptions}

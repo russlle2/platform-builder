@@ -5,7 +5,7 @@ const mocks = vi.hoisted(() => ({
   deploySiteFiles: vi.fn(),
   verifyPublishedSite: vi.fn(),
   provisionSite: vi.fn(),
-  portalUpsert: vi.fn(),
+  rpc: vi.fn(),
 }))
 
 vi.mock('@/lib/site-deploy', async (importOriginal) => ({
@@ -60,7 +60,7 @@ describe('fulfillment catalogue revision persistence', () => {
     mocks.buildDeployFiles.mockResolvedValue({ 'index.html': '<html></html>' })
     mocks.deploySiteFiles.mockResolvedValue({ deployId: 'deploy-1' })
     mocks.verifyPublishedSite.mockResolvedValue(undefined)
-    mocks.portalUpsert.mockResolvedValue({ error: null })
+    mocks.rpc.mockResolvedValue({ data: true, error: null })
   })
 
   afterEach(() => vi.unstubAllEnvs())
@@ -109,7 +109,6 @@ describe('fulfillment catalogue revision persistence', () => {
       if (table === 'portal_sites') {
         return {
           select: () => ({ eq: () => ({ maybeSingle: async () => ({ data: null, error: null }) }) }),
-          upsert: mocks.portalUpsert,
           update: () => mutation(),
         }
       }
@@ -120,7 +119,7 @@ describe('fulfillment catalogue revision persistence', () => {
       throw new Error(`Unexpected table ${table}`)
     })
 
-    await handleCheckoutCompleted({ from } as never, {
+    await handleCheckoutCompleted({ from, rpc: mocks.rpc } as never, {
       id: 'cs_test',
       metadata: { slug: 'customer-site', checkoutIntentId: 'intent-1', planKey: 'basic' },
       customer: null,
@@ -135,15 +134,18 @@ describe('fulfillment catalogue revision persistence', () => {
       templateSlug: 'legacy-alias',
       catalogRevision,
     }))
-    expect(mocks.portalUpsert).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ catalogRevision }),
-    }), { onConflict: 'slug' })
+    expect(mocks.rpc).toHaveBeenCalledWith(
+      'upsert_portal_checkout_state',
+      expect.objectContaining({
+        p_data_patch: expect.objectContaining({ catalogRevision }),
+      }),
+    )
 
     // The Stripe copy is a recovery path for older/missing intent payload
     // fields. It must reconstruct the identical immutable pin.
     delete (checkoutIntent.payload as Record<string, unknown>).catalogRevision
     mocks.buildDeployFiles.mockClear()
-    await handleCheckoutCompleted({ from } as never, {
+    await handleCheckoutCompleted({ from, rpc: mocks.rpc } as never, {
       id: 'cs_test',
       metadata: {
         slug: 'customer-site',

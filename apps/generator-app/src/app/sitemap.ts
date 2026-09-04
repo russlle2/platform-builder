@@ -1,6 +1,9 @@
 import type { MetadataRoute } from 'next'
+import { shouldIndexDeployment } from '@/lib/deployment-environment'
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  if (!shouldIndexDeployment()) return []
+
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL ||
     process.env.NEXT_PUBLIC_PLATFORM_URL ||

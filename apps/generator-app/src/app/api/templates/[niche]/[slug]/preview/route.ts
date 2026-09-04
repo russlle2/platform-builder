@@ -9,13 +9,28 @@ import {
   combineTemplateThemeStylesheets,
   composeTemplatePreview,
 } from '@/lib/template-preview-composition'
+import { sanitizeCustomerValues } from '@/lib/site-deploy'
+import { jsonTooManyRequests, rateLimitByIp } from '@/lib/server-auth'
+import { readBoundedJson } from '@/lib/bounded-json'
+
+const MAX_PREVIEW_REQUEST_BYTES = 256_000
 
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ niche: string; slug: string }> }
 ) {
+  if (!rateLimitByIp(req, 'template-preview', 60, 60_000)) {
+    return jsonTooManyRequests()
+  }
+  const parsedBody = await readBoundedJson(req, MAX_PREVIEW_REQUEST_BYTES)
+  if (!parsedBody.ok && parsedBody.reason === 'too_large') {
+    return NextResponse.json({ error: 'Preview request is too large.' }, { status: 413 })
+  }
   const { niche, slug } = await params
-  const body = await req.json()
+  const body = parsedBody.ok ? parsedBody.value : null
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return NextResponse.json({ error: 'Invalid preview request.' }, { status: 400 })
+  }
   const {
     page = 'index.html',
     values = {},
@@ -68,7 +83,7 @@ export async function POST(
       themeStylesheet: combineTemplateThemeStylesheets(stylesheets),
       page,
       fields: template.fields,
-      values: values && typeof values === 'object' && !Array.isArray(values) ? values : {},
+      values: sanitizeCustomerValues(values),
       colorScheme,
       fontVariation,
       structureVariation,

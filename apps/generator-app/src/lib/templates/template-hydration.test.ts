@@ -52,6 +52,18 @@ describe('hydrateTemplate', () => {
     )).toBe('<a href="https://example.com/about">Site</a><p></p>')
   })
 
+  it('preserves safe bare HTML page targets before inferring public domains', () => {
+    const html = '<a href="{{PRIMARY_CTA_URL}}">Contact</a>'
+    const fields = [{ name: 'PRIMARY_CTA_URL', type: 'url', default: '/contact.html' }]
+
+    expect(hydrateTemplate(html, { PRIMARY_CTA_URL: 'contact.html' }, fields))
+      .toBe('<a href="contact.html">Contact</a>')
+    expect(hydrateTemplate(html, { PRIMARY_CTA_URL: 'contact.html?from=home#inquiry' }, fields))
+      .toBe('<a href="contact.html?from=home#inquiry">Contact</a>')
+    expect(hydrateTemplate(html, { PRIMARY_CTA_URL: '../contact.html' }, fields))
+      .toBe('<a href="/contact.html">Contact</a>')
+  })
+
   it('does not re-inject token-valued defaults', () => {
     expect(hydrateTemplate(
       '<h1>{{BUSINESS_NAME}}</h1>',

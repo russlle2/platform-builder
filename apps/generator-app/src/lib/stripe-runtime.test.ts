@@ -4,6 +4,7 @@ import {
   getMissingTemplateFulfillmentConfig,
   getSupportedCheckoutType,
   getTemplateFulfillmentConfigIssues,
+  hasStripeFulfillmentRecoveryConfig,
   isDedicatedSupabaseProjectConfigured,
   isCheckoutPaymentReady,
 } from './stripe-runtime'
@@ -108,5 +109,17 @@ describe('Stripe runtime compatibility', () => {
       ...configured,
       STRIPE_FULFILLMENT_WORKER_SECRET: 'too-short',
     })).toContain('STRIPE_FULFILLMENT_WORKER_SECRET_TOO_SHORT')
+
+    expect(hasStripeFulfillmentRecoveryConfig({
+      URL: ' https://dailyclarity-staging.netlify.app ',
+      NEXT_PUBLIC_SUPABASE_URL: configured.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: configured.SUPABASE_SERVICE_ROLE_KEY,
+      STRIPE_FULFILLMENT_WORKER_SECRET: configured.STRIPE_FULFILLMENT_WORKER_SECRET,
+    })).toBe(true)
+    expect(hasStripeFulfillmentRecoveryConfig({
+      URL: 'https://dailyclarity-staging.netlify.app',
+      NEXT_PUBLIC_SUPABASE_URL: configured.NEXT_PUBLIC_SUPABASE_URL,
+      SUPABASE_SERVICE_ROLE_KEY: configured.SUPABASE_SERVICE_ROLE_KEY,
+    })).toBe(false)
   })
 })

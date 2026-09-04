@@ -42,6 +42,11 @@ function escapeHtml(value: string): string {
 function normalizeUrl(value: string): string | null {
   if (/^(?:\/[^/]|\.\/|#)/.test(value)) return value
 
+  // Exported multi-page templates use bare sibling-page links (for example,
+  // "contact.html"). Keep those relative instead of mistaking the final
+  // ".html" segment for a public hostname.
+  if (/^[a-z0-9][a-z0-9._-]*\.html(?:[?#][^\s<>"']*)?$/i.test(value)) return value
+
   const candidate = /^[a-z0-9.-]+\.[a-z]{2,}(?:[/:?#]|$)/i.test(value)
     ? `https://${value}`
     : value
