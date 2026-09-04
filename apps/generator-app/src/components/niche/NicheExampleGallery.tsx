@@ -15,7 +15,7 @@ export function NicheExampleGallery({ niche, nicheLabel, headingClass = 'text-cy
   if (examples.length === 0) return null
 
   return (
-    <section className="container-hvac py-16">
+    <section className="container-wide py-16">
       <div className="text-center mb-10 space-y-3 max-w-3xl mx-auto">
         <span className="signal-chip">Example homepage styles</span>
         <h2 className="text-3xl md:text-4xl font-bold text-white">

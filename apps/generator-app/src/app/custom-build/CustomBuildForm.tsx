@@ -84,7 +84,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
 
   return (
     <main className="relative min-h-screen pt-24 pb-20">
-      <section className="container-hvac py-12">
+      <section className="container-wide py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-10 items-start">
           <aside className="lg:sticky lg:top-24 space-y-6">
             <div>

@@ -37,7 +37,7 @@ export default async function NicheDemoPage({
 
   return (
     <main className="relative min-h-screen pt-24 pb-20">
-      <div className="container-hvac max-w-4xl space-y-8">
+      <div className="container-wide max-w-4xl space-y-8">
         <div className="space-y-4">
           <div className="flex flex-wrap gap-4 text-sm">
             <Link href="/demo" className="text-slate-400 hover:text-white transition-colors">

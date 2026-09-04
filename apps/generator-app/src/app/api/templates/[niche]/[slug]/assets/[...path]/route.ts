@@ -50,7 +50,10 @@ export async function GET(
   return new NextResponse(ab, {
     headers: {
       'Content-Type': contentType,
-      'Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400',
+      // Template assets are effectively immutable per (niche, slug, path); cache
+      // aggressively on the CDN and client so the preview only fetches each
+      // asset once — a meaningful speed-up on repeat loads and slow connections.
+      'Cache-Control': 'public, max-age=86400, s-maxage=31536000, immutable',
       'Netlify-CDN-Cache-Control': 'public, s-maxage=86400, stale-while-revalidate=86400',
     },
   })

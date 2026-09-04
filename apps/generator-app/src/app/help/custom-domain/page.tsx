@@ -62,7 +62,7 @@ const FAQ_ITEMS: { question: string; answer: string }[] = [
 export default function CustomDomainHelpPage() {
   return (
     <main className="min-h-screen pt-24 pb-20">
-      <div className="container-hvac max-w-3xl mx-auto space-y-10 px-4">
+      <div className="container-wide max-w-3xl mx-auto space-y-10 px-4">
         <header className="space-y-4 text-center">
           <span className="signal-chip">Help</span>
           <h1 className="text-4xl md:text-5xl font-bold text-white">

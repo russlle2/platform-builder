@@ -57,7 +57,7 @@ export default async function HomePage() {
       </div>
       <div className="relative z-10">
         {/* Hero */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="hero-grid">
             <div className="space-y-8">
               <span className="signal-chip">DailyClarity Platform Builder</span>
@@ -120,7 +120,7 @@ export default async function HomePage() {
         </section>
 
         {/* Why this is different */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Why this is different</span>
             <h2 className="text-4xl md:text-5xl font-bold text-white max-w-4xl mx-auto">
@@ -176,7 +176,7 @@ export default async function HomePage() {
         </section>
 
         {/* Niche Cards — main CTA section */}
-        <section id="niches" className="container-hvac py-16">
+        <section id="niches" className="container-wide py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Built for real wellness businesses</span>
             <h2 className="text-4xl md:text-5xl font-bold text-white">
@@ -217,15 +217,18 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* What happens after checkout */}
-        <section className="container-hvac py-16">
-          <div className="text-center mb-12 space-y-4">
-            <span className="signal-chip">What happens after checkout</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
-              From details to a live site, one step at a time
-            </h2>
-          </div>
-          <div className="relative grid grid-cols-1 md:grid-cols-5 gap-6">
+        {/* How it works */}
+        <section className="container-wide py-16">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="glass-panel rounded-2xl p-8">
+              <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
+              <p className="text-slate-300 mb-6">
+                A streamlined flow from template selection to a launched website with integrations.
+              </p>
+              <Link href="#niches" className="text-cyan-300 font-semibold">
+                Start browsing →
+              </Link>
+            </div>
             {[
               { step: '01', title: 'Choose your niche', copy: 'Pick your practice and fill in your business details.' },
               { step: '02', title: 'Match & customize', copy: 'Match with a template and customize it live.' },
@@ -244,37 +247,34 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Proof / trust — honest, no fabricated claims */}
-        <section className="container-hvac py-16">
-          <div className="text-center mb-12 space-y-4">
-            <span className="signal-chip">Early access</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Pilot builds are going live now
-            </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-              DailyClarity is in early access. Pilot client screenshots and case studies will be
-              added here as builds go live — real proof only, no inflated numbers.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { title: 'Pilot builds', copy: 'Launch examples coming soon as early-access sites go live.' },
-              { title: 'Case studies', copy: 'Real before-and-after results will be published here.' },
-              { title: 'Launch slots', copy: 'Early-access slots are opening for new wellness practices.' },
-            ].map((item) => (
-              <div key={item.title} className="card-mahogany space-y-3">
-                <div className="h-32 rounded-xl border border-dashed border-white/15 bg-white/5 flex items-center justify-center text-sm text-slate-400">
-                  Coming soon
-                </div>
-                <h3 className="text-xl font-bold text-bright-white">{item.title}</h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{item.copy}</p>
-              </div>
-            ))}
+        {/* Feature cards */}
+        <section className="container-wide py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <FeatureCard
+              icon="🎨"
+              title="Unique Designs"
+              description={`${totalTemplates}+ templates — each with its own layout, voice, and content structure.`}
+            />
+            <FeatureCard
+              icon="📱"
+              title="Mobile-First"
+              description="Every template is responsive and optimized for conversions on any device."
+            />
+            <FeatureCard
+              icon="⚡"
+              title="Instant Preview"
+              description="See your real info in the template before you purchase. No surprises."
+            />
+            <FeatureCard
+              icon="🛠️"
+              title="Managed Launch"
+              description="Hosting, domain, email, and integrations — all set up and managed for you."
+            />
           </div>
         </section>
 
         {/* CTA */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Your website should do more than look good.
@@ -332,5 +332,23 @@ export default async function HomePage() {
         }}
       />
     </main>
+  )
+}
+
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: string
+  title: string
+  description: string
+}) {
+  return (
+    <div className="card-mahogany text-center space-y-4 hover:scale-105 transition-transform">
+      <div className="text-4xl">{icon}</div>
+      <h3 className="text-2xl font-bold text-bright-white">{title}</h3>
+      <p className="text-gray-300 leading-relaxed">{description}</p>
+    </div>
   )
 }

@@ -26,7 +26,7 @@ export default function DemoHubPage() {
         />
       </div>
 
-      <div className="relative z-10 container-hvac max-w-5xl space-y-12">
+      <div className="relative z-10 container-wide max-w-5xl space-y-12">
         <div className="space-y-4">
           <span className="signal-chip">DailyClarity Platform Builder</span>
           <h1 className="text-4xl md:text-5xl font-bold text-white">Watch a build walkthrough</h1>

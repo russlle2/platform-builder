@@ -630,7 +630,7 @@ export default async function NicheLandingPage({
 
       <div className="relative z-10">
         {/* Hero */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="hero-grid">
             <div className="space-y-8">
               <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] border ${colors.chip}`}>
@@ -677,7 +677,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Pain points */}
-        <section className="container-hvac py-12">
+        <section className="container-wide py-12">
           <div className="max-w-3xl mx-auto text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-white">Sound familiar?</h2>
           </div>
@@ -702,7 +702,7 @@ export default async function NicheLandingPage({
         />
 
         {/* Trust builders */}
-        <section className="container-hvac py-12">
+        <section className="container-wide py-12">
           <div className="glass-panel rounded-3xl p-8 md:p-10 max-w-4xl mx-auto space-y-6">
             <h2 className="text-2xl md:text-3xl font-bold text-white">Built for {meta.label.toLowerCase()} professionals like you</h2>
             <ul className="space-y-4">
@@ -717,7 +717,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Conversion job */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="glass-panel rounded-3xl p-10 md:p-12 space-y-6 max-w-4xl">
             <h2 className="text-3xl md:text-4xl font-bold text-white">{copy.conversionJob.title}</h2>
             <p className="text-lg text-slate-300 leading-relaxed">{copy.conversionJob.body}</p>
@@ -725,7 +725,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Funnel cards */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="mb-10">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Your {meta.label.toLowerCase()} client funnel</h2>
             <p className="text-slate-300 text-lg max-w-2xl">
@@ -744,7 +744,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Demo CTA */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className={`glass-panel rounded-3xl p-10 md:p-12 border ${colors.border} space-y-6`}>
             <div className="flex flex-wrap items-center gap-3">
               <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider border ${colors.chip}`}>
@@ -764,7 +764,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Sections included */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
             <div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Sections included in your site</h2>
@@ -787,7 +787,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* How it works */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="glass-panel rounded-2xl p-8">
               <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
@@ -828,7 +828,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Objection + Proof */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="glass-panel rounded-2xl p-10 space-y-6">
               <div className="text-5xl">{meta.icon}</div>
@@ -850,7 +850,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* Feature cards */}
-        <section className="container-hvac py-16">
+        <section className="container-wide py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: '🎨', title: 'Unique Designs', description: `Every template has a distinct layout, color palette, and content strategy tailored for ${meta.label.toLowerCase()}.` },
@@ -868,7 +868,7 @@ export default async function NicheLandingPage({
         </section>
 
         {/* CTA */}
-        <section className="container-hvac py-20">
+        <section className="container-wide py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
               {copy.ctaHeadline}

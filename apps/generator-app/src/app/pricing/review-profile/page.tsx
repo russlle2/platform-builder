@@ -81,7 +81,7 @@ function ReviewProfileInner() {
 
   return (
     <main className="min-h-screen pt-24 pb-20">
-      <div className="container-hvac max-w-2xl mx-auto">
+      <div className="container-wide max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-bright-white mb-4">

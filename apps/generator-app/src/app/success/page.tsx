@@ -53,7 +53,7 @@ export default async function SuccessPage({
 
   if (!result.ok) {
     return (
-      <main className="min-h-screen pt-24 pb-16 container-hvac">
+      <main className="min-h-screen pt-24 pb-16 container-wide">
         <div className="glass-panel rounded-3xl p-12 max-w-3xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-bright-white mb-4">
             We couldn&rsquo;t confirm this payment
@@ -80,7 +80,7 @@ export default async function SuccessPage({
 
   if (result.customBuild) {
     return (
-      <main className="min-h-screen pt-24 pb-16 container-hvac">
+      <main className="min-h-screen pt-24 pb-16 container-wide">
         <div className="glass-panel rounded-3xl p-10 md:p-14 max-w-4xl mx-auto text-center">
           <span className="signal-chip">Payment confirmed</span>
           <h1 className="text-4xl md:text-5xl font-bold text-bright-white mt-5 mb-4">
@@ -128,7 +128,7 @@ export default async function SuccessPage({
   const platformDomain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'dailyclarity.org'
 
   return (
-    <main className="min-h-screen pt-24 pb-16 container-hvac">
+    <main className="min-h-screen pt-24 pb-16 container-wide">
       <div className="glass-panel rounded-3xl p-12 max-w-4xl mx-auto">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-bright-white mb-4">

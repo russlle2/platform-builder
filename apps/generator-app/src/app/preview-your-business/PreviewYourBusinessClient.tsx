@@ -695,7 +695,7 @@ export default function PreviewYourBusinessClient() {
 
       <div className="relative z-10">
         {/* Progress bar */}
-        <div className="container-hvac mb-8">
+        <div className="container-wide mb-8">
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
             {(['info', 'style', 'matching', 'editor'] as PreviewStep[]).map((s) => {
               const meta = STEP_META[s]
@@ -860,7 +860,7 @@ function InfoStep({
   const ex = getNicheExample(info.niche)
 
   return (
-    <section className="container-hvac py-8 max-w-3xl mx-auto">
+    <section className="container-wide py-8 max-w-3xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 1 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
@@ -978,7 +978,7 @@ function StyleStep({
   }
 
   return (
-    <section className="container-hvac py-8 max-w-3xl mx-auto">
+    <section className="container-wide py-8 max-w-3xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 2 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
@@ -1163,7 +1163,7 @@ function MatchStep({
   onSelectAlternative: (t: ApiTemplate) => void
 }) {
   return (
-    <section className="container-hvac py-8 max-w-4xl mx-auto">
+    <section className="container-wide py-8 max-w-4xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 3 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
@@ -1430,7 +1430,7 @@ function EditorStep({
   }, [applyCustomStyles])
 
   return (
-    <section className={`container-hvac ${demoRecord ? 'py-2' : 'py-4'}`}>
+    <section className={`container-wide ${demoRecord ? 'py-2' : 'py-4'}`}>
       {!demoRecord && (
         <div className="mb-6">
           <ClientReadinessPanel result={readiness} compact />
@@ -1641,7 +1641,7 @@ function BrowseStep({
   const nicheLabel = NICHE_OPTIONS.find((n) => n.slug === niche)?.label || niche
 
   return (
-    <section className="container-hvac py-8">
+    <section className="container-wide py-8">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
           <span className="signal-chip">Browse Templates</span>

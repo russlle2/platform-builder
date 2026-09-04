@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function CancelPage() {
   return (
-    <main className="min-h-screen pt-24 pb-16 container-hvac">
+    <main className="min-h-screen pt-24 pb-16 container-wide">
       <div className="mahogany-surface rounded-3xl p-12 text-center max-w-3xl mx-auto">
         <h1 className="text-4xl md:text-5xl font-bold text-bright-white mb-4">
           Checkout canceled

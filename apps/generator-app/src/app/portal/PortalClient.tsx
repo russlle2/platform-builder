@@ -258,7 +258,7 @@ export default function PortalClient() {
   if (!initialSlug && !slug) {
     return (
       <main className="min-h-screen pt-24 pb-20">
-        <div className="container-hvac">
+        <div className="container-wide">
           <div className="max-w-lg mx-auto space-y-8 py-20">
             <div className="space-y-4 text-center">
               <span className="signal-chip">Portal</span>
@@ -322,7 +322,7 @@ export default function PortalClient() {
 
   return (
     <main className="min-h-screen pt-24 pb-20">
-      <div className="container-hvac space-y-10">
+      <div className="container-wide space-y-10">
         {showDevPortalWarning && (
           <div
             role="alert"

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function PlatformBuilderDemoPage() {
   return (
     <main className="relative min-h-screen pt-24 pb-20">
-      <div className="container-hvac max-w-4xl space-y-8">
+      <div className="container-wide max-w-4xl space-y-8">
         <div className="space-y-4">
           <Link href="/demo" className="text-sm text-slate-400 hover:text-white transition-colors">
             ← All demos

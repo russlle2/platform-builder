@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function AromatherapyWebsiteBuilderPage() {
   return (
     <SeoPageShell>
-      <section className="container-hvac py-12 max-w-4xl mx-auto space-y-12">
+      <section className="container-wide py-12 max-w-4xl mx-auto space-y-12">
         <div className="space-y-6">
           <span className="signal-chip">Aromatherapy</span>
           <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
