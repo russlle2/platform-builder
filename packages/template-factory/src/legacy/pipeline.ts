@@ -879,12 +879,24 @@ export function verifyStaticArtifact(
       if (ACTIVE_MARKUP_RE.test(content)) errors.push({ code: 'unsafe_active_markup', page: path, detail: 'Unsafe or unaudited active markup remains' });
       const runtimes = content.match(/<script\b[^>]*\bsrc=["']assets\/js\/dc-compat\.js["'][^>]*>/gi) ?? [];
       if (runtimes.length !== 1) errors.push({ code: 'compatibility_runtime_count', page: path, detail: `Expected one audited runtime, found ${runtimes.length}` });
-      const editIds = [...content.matchAll(/\bdata-dc-edit-id=["']([^"']+)["']/gi)].map((match) => match[1]!);
-      const imageIds = [...content.matchAll(/\bdata-dc-image-id=["']([^"']+)["']/gi)].map((match) => match[1]!);
+      const document = parse(content) as unknown as HtmlNode;
+      // Read IDs from actual DOM attributes. Accessibility overrides target
+      // those IDs from inline CSS, so a raw-text regex would count selector
+      // references as duplicate elements and force a valid primary design into
+      // the neutral fallback lane.
+      const editIds: string[] = [];
+      const imageIds: string[] = [];
+      const collectEditorIds = (node: HtmlNode): void => {
+        for (const attr of node.attrs ?? []) {
+          if (attr.name === 'data-dc-edit-id') editIds.push(attr.value);
+          if (attr.name === 'data-dc-image-id') imageIds.push(attr.value);
+        }
+        for (const child of node.childNodes ?? []) collectEditorIds(child);
+      };
+      collectEditorIds(document);
       if (editIds.length === 0) errors.push({ code: 'missing_edit_ids', page: path, detail: 'No editable text IDs were emitted' });
       if (new Set(editIds).size !== editIds.length) errors.push({ code: 'duplicate_edit_ids', page: path, detail: 'Editable text IDs are not unique within the page' });
       if (new Set(imageIds).size !== imageIds.length) errors.push({ code: 'duplicate_image_ids', page: path, detail: 'Image IDs are not unique within the page' });
-      const document = parse(content) as unknown as HtmlNode;
       const forms: HtmlNode[] = [];
       const controls: HtmlNode[] = [];
       const collectFormTopology = (node: HtmlNode): void => {

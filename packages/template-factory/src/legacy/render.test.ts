@@ -5,7 +5,7 @@ import { dirname, join } from 'node:path';
 import test from 'node:test';
 import sharp from 'sharp';
 import { repairLegacyTemplate } from './compose.js';
-import { addAccessibilityOverrides, addContrastOverrides } from './pipeline.js';
+import { addAccessibilityOverrides, addContrastOverrides, verifyStaticArtifact } from './pipeline.js';
 import {
   hammingDistance,
   hydrateSentinelHtml,
@@ -224,6 +224,8 @@ test('browser link-in-text-block evidence is repaired by exact viewport-scoped s
       'passed',
       remediated.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'),
     );
+    const staticVerification = verifyStaticArtifact(remediated.files, remediated.fields);
+    assert.equal(staticVerification.passed, true, staticVerification.errors.map((issue) => `${issue.code}: ${issue.detail}`).join('\n'));
     await materialize(remediatedDir, remediated.files);
     const verified = await renderTemplateTasks(root, [{
       key: 'link-distinction-fixture-remediated',
