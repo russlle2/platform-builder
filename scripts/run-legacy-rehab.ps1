@@ -10,7 +10,7 @@ param(
     [string]$WorkRoot = 'C:\Users\chris\Documents\DailyClarity\template-rehab',
 
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$')]
-    [string]$RuleVersion = 'legacy-rehab-1.0.29',
+    [string]$RuleVersion = 'legacy-rehab-1.0.30',
 
     [ValidateRange(100, 10000)]
     [int]$PilotSize = 100,

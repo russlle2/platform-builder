@@ -1089,6 +1089,74 @@ function markMobileStackContainers(document: HtmlNode): number {
   return count;
 }
 
+function inlineStyleDeclarations(value: string): Map<string, string> {
+  const declarations = new Map<string, string>();
+  try {
+    const root = postcss.parse(`.dc-inline-style{${value}}`);
+    root.walkDecls((declaration) => {
+      declarations.set(decodeCssEscapes(declaration.prop).trim().toLowerCase(), declaration.value.trim());
+    });
+  } catch {
+    // Malformed inline declarations are handled by the ordinary sanitizer.
+  }
+  return declarations;
+}
+
+/**
+ * Inline fixed-track grids cannot be repaired by the stylesheet pass. Mark
+ * only explicit multi-column grid containers so the shared mobile stylesheet
+ * can stack them without changing their desktop design.
+ */
+function markMobileGridStackContainers(document: HtmlNode): number {
+  let count = 0;
+  walk(document, (node) => {
+    if (!node.tagName || !['article', 'aside', 'div', 'footer', 'main', 'section'].includes(node.tagName)) return;
+    const style = getAttr(node, 'style') ?? '';
+    if (!/\bdisplay\s*:\s*(?:inline-)?grid\b/i.test(style) || !/\bgrid-template-columns\s*:/i.test(style)) return;
+    const declarations = inlineStyleDeclarations(style);
+    if (!/^(?:inline-)?grid$/i.test(declarations.get('display') ?? '')) return;
+    if (!needsMobileSingleColumn(declarations.get('grid-template-columns') ?? '')) return;
+    if (getAttr(node, 'data-dc-mobile-grid-stack') !== 'true') count += 1;
+    setAttr(node, 'data-dc-mobile-grid-stack', 'true');
+  });
+  return count;
+}
+
+/**
+ * Visible fixed-position utility panels can cover customer-editable content
+ * at a narrow viewport. Flow meaningful inline-positioned panels on mobile;
+ * hidden dialogs and decorative layers retain their authored behavior.
+ */
+function markMobileFixedFlowContainers(document: HtmlNode): number {
+  let count = 0;
+  walk(document, (node) => {
+    if (!node.tagName || ['html', 'body', 'head', 'link', 'meta', 'script', 'style'].includes(node.tagName)) return;
+    const style = getAttr(node, 'style') ?? '';
+    if (!/\bposition\s*:\s*fixed\b/i.test(style)) return;
+    const declarations = inlineStyleDeclarations(style);
+    if ((declarations.get('position') ?? '').toLowerCase() !== 'fixed') return;
+    const identity = `${getAttr(node, 'id') ?? ''} ${getAttr(node, 'class') ?? ''}`;
+    if (
+      DECORATIVE_HIT_LAYER_SIGNAL.test(identity)
+      || getAttr(node, 'hidden') !== undefined
+      || getAttr(node, 'inert') !== undefined
+      || getAttr(node, 'aria-hidden')?.trim().toLowerCase() === 'true'
+      || (declarations.get('pointer-events') ?? '').toLowerCase() === 'none'
+      || inlineStyleSuppressesInteraction(style)
+    ) return;
+    let meaningful = /[\p{L}\p{N}]/u.test(textContent(node));
+    if (!meaningful) {
+      walk(node, (candidate) => {
+        if (INTERACTIVE_DESCENDANT_TAGS.has(candidate.tagName ?? '') || getAttr(candidate, 'href') !== undefined) meaningful = true;
+      });
+    }
+    if (!meaningful) return;
+    if (getAttr(node, 'data-dc-mobile-fixed-flow') !== 'true') count += 1;
+    setAttr(node, 'data-dc-mobile-fixed-flow', 'true');
+  });
+  return count;
+}
+
 function neutralizeSensitiveFormMarker(value: string): string {
   return value.replace(new RegExp(UNSAFE_FORM_MARKER.source, 'gi'), 'contact');
 }
@@ -2610,6 +2678,11 @@ export function detectFoundation(html: string): string | undefined {
 }
 
 const MOBILE_GRID_REPAIR_MARKER = 'dc-repair-mobile-grid';
+const MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex';
+const MOBILE_FIXED_FLOW_REPAIR_MARKER = 'dc-repair-mobile-fixed-flow';
+const MOBILE_CONTENT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:cards?|columns?|content|features?|grid|hero(?:-inner|-grid)?|layout|plans?|pricing|services?|split|tiles?|top)(?:$|[-_.:#\[\s>+~])/i;
+const MOBILE_COMPACT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:actions?|brand|breadcrumbs?|buttons?|controls?|footer|header|logo|menu|nav|pagination|social|tabs?|toolbar)(?:$|[-_.:#\[\s>+~])/i;
+const FIXED_TRANSIENT_UI_SIGNAL = /(?:^|[-_.#\s>+~])(?:dialog|drawer|lightbox|modal|popover|popup)(?:$|[-_.:#\[\s>+~])/i;
 
 function topLevelGridTracks(value: string): string[] {
   const tracks: string[] = [];
@@ -2692,6 +2765,118 @@ function addMobileGridFallbacks(root: postcss.Root): number {
     media.append(rule);
   }
   root.append(postcss.comment({ text: MOBILE_GRID_REPAIR_MARKER }), media);
+  return selectors.size;
+}
+
+/**
+ * A flex container may technically wrap yet still allocate a zero-width
+ * `flex:1` content column beside a fixed-width sibling. For semantic content
+ * layouts, give direct children a useful mobile basis. Compact navigation and
+ * control rows receive the shared wrap guard but are deliberately excluded
+ * from this full-width content treatment.
+ */
+function addMobileContentFlexFallbacks(root: postcss.Root): number {
+  let alreadyRepaired = false;
+  root.walkComments((comment) => {
+    if (comment.text.trim() === MOBILE_FLEX_REPAIR_MARKER) alreadyRepaired = true;
+  });
+  if (alreadyRepaired) return 0;
+
+  const selectors = new Set<string>();
+  root.walkRules((rule) => {
+    const displayFlex = (rule.nodes ?? []).some((node) => (
+      node.type === 'decl'
+      && decodeCssEscapes(node.prop).toLowerCase() === 'display'
+      && /^(?:inline-)?flex$/i.test(node.value.trim())
+    ));
+    if (!displayFlex) return;
+    for (const selector of splitSelectorList(rule.selector) ?? []) {
+      if (
+        /::(?:before|after|marker)\b/i.test(selector)
+        || DECORATIVE_HIT_LAYER_SIGNAL.test(selector.replace(/[^A-Za-z0-9_-]+/g, ' '))
+        || MOBILE_COMPACT_FLEX_SIGNAL.test(selector)
+        || !MOBILE_CONTENT_FLEX_SIGNAL.test(selector)
+      ) continue;
+      selectors.add(selector);
+    }
+  });
+  if (selectors.size === 0) return 0;
+
+  const media = postcss.atRule({ name: 'media', params: '(max-width:600px)' });
+  for (const selector of [...selectors].sort()) {
+    const containerRule = postcss.rule({ selector });
+    const wrap = postcss.decl({ prop: 'flex-wrap', value: 'wrap' });
+    wrap.important = true;
+    containerRule.append(wrap);
+    const childrenRule = postcss.rule({ selector: `${selector}>*` });
+    const flex = postcss.decl({ prop: 'flex', value: '1 1 min(100%,18rem)' });
+    flex.important = true;
+    const minWidth = postcss.decl({ prop: 'min-width', value: 'min(100%,18rem)' });
+    minWidth.important = true;
+    childrenRule.append(flex, minWidth);
+    media.append(containerRule, childrenRule);
+  }
+  root.append(postcss.comment({ text: MOBILE_FLEX_REPAIR_MARKER }), media);
+  return selectors.size;
+}
+
+/**
+ * Flow visible fixed utility surfaces (for example a legacy cart card) on
+ * mobile so they cannot cover unrelated editor targets. Transient dialogs
+ * and decorative layers are excluded and remain controlled by their own UI.
+ */
+function addMobileFixedFlowFallbacks(root: postcss.Root): number {
+  let alreadyRepaired = false;
+  root.walkComments((comment) => {
+    if (comment.text.trim() === MOBILE_FIXED_FLOW_REPAIR_MARKER) alreadyRepaired = true;
+  });
+  if (alreadyRepaired) return 0;
+
+  const selectors = new Set<string>();
+  root.walkRules((rule) => {
+    const declarations = (rule.nodes ?? []).filter((node): node is postcss.Declaration => node.type === 'decl');
+    const positionFixed = declarations.some((declaration) => (
+      decodeCssEscapes(declaration.prop).toLowerCase() === 'position'
+      && declaration.value.trim().toLowerCase() === 'fixed'
+    ));
+    const suppressed = declarations.some((declaration) => {
+      const property = decodeCssEscapes(declaration.prop).toLowerCase();
+      const value = declaration.value.trim().toLowerCase();
+      return (property === 'display' && value === 'none')
+        || (property === 'visibility' && value === 'hidden')
+        || (property === 'opacity' && /^0(?:\.0*)?$/.test(value))
+        || (property === 'pointer-events' && value === 'none');
+    });
+    if (!positionFixed || suppressed) return;
+    for (const selector of splitSelectorList(rule.selector) ?? []) {
+      if (
+        /::(?:before|after|marker)\b/i.test(selector)
+        || /^\s*(?:html|body|:root)\s*$/i.test(selector)
+        || DECORATIVE_HIT_LAYER_SIGNAL.test(selector.replace(/[^A-Za-z0-9_-]+/g, ' '))
+        || FIXED_TRANSIENT_UI_SIGNAL.test(selector)
+      ) continue;
+      selectors.add(selector);
+    }
+  });
+  if (selectors.size === 0) return 0;
+
+  const media = postcss.atRule({ name: 'media', params: '(max-width:600px)' });
+  for (const selector of [...selectors].sort()) {
+    const rule = postcss.rule({ selector });
+    for (const [property, value] of [
+      ['position', 'static'],
+      ['inset', 'auto'],
+      ['transform', 'none'],
+      ['z-index', 'auto'],
+      ['margin-block', '1rem'],
+    ] as const) {
+      const declaration = postcss.decl({ prop: property, value });
+      declaration.important = true;
+      rule.append(declaration);
+    }
+    media.append(rule);
+  }
+  root.append(postcss.comment({ text: MOBILE_FIXED_FLOW_REPAIR_MARKER }), media);
   return selectors.size;
 }
 
@@ -2946,6 +3131,14 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
   const mobileGridFallbacks = addMobileGridFallbacks(root);
   if (mobileGridFallbacks) {
     transformations.push({ rule: 'stack-fixed-grid-on-mobile', file, count: mobileGridFallbacks });
+  }
+  const mobileContentFlexFallbacks = addMobileContentFlexFallbacks(root);
+  if (mobileContentFlexFallbacks) {
+    transformations.push({ rule: 'stack-content-flex-on-mobile', file, count: mobileContentFlexFallbacks });
+  }
+  const mobileFixedFlowFallbacks = addMobileFixedFlowFallbacks(root);
+  if (mobileFixedFlowFallbacks) {
+    transformations.push({ rule: 'flow-fixed-content-on-mobile', file, count: mobileFixedFlowFallbacks });
   }
   return { css: root.toString(), backgrounds, issues, transformations };
 }
@@ -3463,6 +3656,8 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const decorativeHitLayers = markDecorativeHitLayers(document);
   const mobileNavigationFallbacks = markMobileNavigationFallbacks(document);
   const mobileStackContainers = markMobileStackContainers(document);
+  const mobileGridStackContainers = markMobileGridStackContainers(document);
+  const mobileFixedFlowContainers = markMobileFixedFlowContainers(document);
   const duplicateIds = ensureUniqueDomIds(document, options.file);
   if (scripts) transformations.push({ rule: 'replace-scripts-with-audited-runtime', file: options.file, count: scripts });
   if (unsafeAttrs) transformations.push({ rule: 'strip-event-and-unsafe-url-attributes', file: options.file, count: unsafeAttrs });
@@ -3478,6 +3673,8 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   if (decorativeHitLayers) transformations.push({ rule: 'make-decorative-layers-pointer-transparent', file: options.file, count: decorativeHitLayers });
   if (mobileNavigationFallbacks) transformations.push({ rule: 'restore-orphaned-mobile-navigation', file: options.file, count: mobileNavigationFallbacks });
   if (mobileStackContainers) transformations.push({ rule: 'make-inline-flex-content-responsive', file: options.file, count: mobileStackContainers });
+  if (mobileGridStackContainers) transformations.push({ rule: 'stack-inline-grid-on-mobile', file: options.file, count: mobileGridStackContainers });
+  if (mobileFixedFlowContainers) transformations.push({ rule: 'flow-inline-fixed-content-on-mobile', file: options.file, count: mobileFixedFlowContainers });
   if (duplicateIds) transformations.push({ rule: 'deduplicate-dom-ids', file: options.file, count: duplicateIds });
   if (standardizedForms) transformations.push({ rule: 'standardize-contact-form', file: options.file, count: standardizedForms });
   if (namedFormFields) transformations.push({ rule: 'name-form-controls', file: options.file, count: namedFormFields });

@@ -427,6 +427,51 @@ test('compiler-v3 zero-image pages keep decorative hero layers while every adver
   }
 });
 
+test('mobile repair keeps flex, inline-grid, and fixed-panel customer edits physically reachable', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-mobile-layout-repair-'));
+  const templateDir = join(root, 'niche', 'mobile-layout-repair');
+  const evidenceRoot = join(root, 'evidence');
+  try {
+    const repaired = repairLegacyTemplate({
+      slug: 'mobile-layout-repair',
+      niche: 'aromatherapy',
+      files: new Map<string, string | Uint8Array>([
+        ['index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mobile layout repair</title><link rel="stylesheet" href="styles.css"></head><body>
+          <header><strong>{{BUSINESS_NAME}}</strong><nav aria-label="Primary"><a href="index.html">Overview</a><a href="mailto:{{EMAIL}}">Contact</a></nav></header>
+          <main><section class="content-layout"><article class="content"><h1>Practical aromatherapy guidance</h1><p>This substantial introduction must remain readable and physically editable even when a fixed-width supporting column was authored without a mobile breakpoint.</p></article><aside class="sidebar"><h2>Current availability</h2><p>Ask the studio which educational services and appointment times are currently available.</p></aside></section>
+          <section style="display:grid;grid-template-columns:1fr 320px;gap:14px"><article><h2>Preparing for a visit</h2><p>Bring questions about the service, ingredients, and safe use so the conversation can focus on your needs.</p></article><aside><h2>Safety first</h2><p>Discuss sensitivities, household considerations, and any guidance received from qualified professionals.</p></aside></section></main>
+          <aside class="cart"><strong>Saved choices</strong><p>Your current selections remain available while you review the page.</p></aside>
+          <footer><p>Questions? Email <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for current information.</p></footer></body></html>`],
+        ['styles.css', ':root{--surface:#fffaf4;--ink:#29231f;--accent:#315f46}*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);font:16px Arial,sans-serif}h1{color:#315f46}a{color:var(--accent)}header,main,footer{width:min(68rem,92vw);margin:1rem auto}.content-layout{display:flex;gap:18px;align-items:flex-start}.content{flex:1}.sidebar{width:360px;padding:1rem;background:#fff}.cart{position:fixed;inset:auto 0 0 0;padding:1rem;background:#efe1d4;z-index:20}section{margin-block:2rem}'],
+        ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+      ]),
+    });
+    const html = String(repaired.files.get('index.html'));
+    const css = String(repaired.files.get('styles.css'));
+    assert.match(html, /data-dc-mobile-grid-stack="true"/);
+    assert.match(css, /\.content-layout>\*\{flex:1 1 min\(100%,18rem\)\s*!important/);
+    assert.match(css, /\.cart\{position:static\s*!important/);
+    for (const [relativePath, contents] of repaired.files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+
+    const evidence = await renderTemplateTasks(root, [{
+      key: 'mobile-layout-repair',
+      niche: 'aromatherapy',
+      slug: 'mobile-layout-repair',
+      page: 'index.html',
+      templateDir,
+    }], { evidenceRoot, workers: 1, retries: 0 });
+
+    assert.equal(evidence.length, 2);
+    assert.ok(evidence.every((viewport) => viewport.passed), JSON.stringify(evidence, null, 2));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('browser QA records same-origin HTTP error responses as failed requests', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-render-http-status-'));
   const templateDir = join(root, 'niche', 'slug');

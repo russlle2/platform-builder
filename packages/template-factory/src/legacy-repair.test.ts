@@ -17,7 +17,7 @@ import {
   satisfiesVisualAliasThresholds,
 } from './legacy/dedupe.js';
 import { normalizeFields } from './legacy/contracts.js';
-import { resolveStaticSelectorTargets, type HtmlNode } from './legacy/repair.js';
+import { repairStylesheet, resolveStaticSelectorTargets, type HtmlNode } from './legacy/repair.js';
 import { findUnsafeCssGeneratedContent } from './template-contract.js';
 
 const SOURCE_HTML = `<!doctype html>
@@ -1166,10 +1166,15 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
         <section class="booking-layout"><div><h2>Reserve a time</h2><p>Choose a practical next step and ask about current availability.</p></div><aside><h2>Before you book</h2><p>Review the service details and bring any questions to the conversation.</p></aside></section>
         <section id="content-row" style="margin-top:18px;display:flex;gap:12px"><div><h2>How it works</h2><p>Review the practical guidance and choose a next step that fits your current priorities and schedule.</p></div><div style="flex:1"><h2>Current workshops</h2><p>Ask which educational sessions are currently available and what to expect before reserving a place.</p></div></section>
         <section id="compact-row" style="display:flex"><a href="#details" style="flex:1">Details</a><a href="mailto:{{EMAIL}}">Contact</a></section>
+        <section id="inline-grid" style="display:grid;grid-template-columns:1fr 320px;gap:14px"><article><h2>What to expect</h2><p>Review the preparation guidance before choosing a current service.</p></article><aside><h2>Questions</h2><p>Contact the studio for practical details.</p></aside></section>
+        <aside id="inline-utility" style="position:fixed;right:12px;bottom:12px"><a href="contact.html">Open contact options</a></aside>
+        <div id="inline-dialog" style="display:none;position:fixed;inset:0"><p>Closed dialog content</p></div>
+        <section class="top"><article><h2>Flexible introduction</h2><p>Readable content must retain a useful width beside a fixed-width supporting panel.</p></article><aside>Supporting details</aside></section>
+        <aside class="cart"><a href="contact.html">Utility panel</a></aside><div class="modal">Transient dialog</div>
         <div class="editorial-background"></div></main>
         <footer><nav aria-label="Footer"><a href="mailto:{{EMAIL}}">Contact</a></nav><nav class="footer-nav">Privacy Terms</nav></footer>
       </body></html>`],
-      ['styles.css', '.pattern{position:fixed;inset:0}.hero{position:relative}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-inner{position:relative}.booking-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1rem}.editorial-background{width:10rem;height:10rem;background-image:url("assets/img/editorial.svg")}'],
+      ['styles.css', '.pattern{position:fixed;inset:0}.hero{position:relative}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-inner{position:relative}.booking-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1rem}.top{display:flex;gap:1rem}.top>article{flex:1}.top>aside{width:360px}.cart{position:fixed;right:1rem;bottom:1rem}.hover-info{position:fixed;pointer-events:none}.modal{position:fixed;inset:0}.editorial-background{width:10rem;height:10rem;background-image:url("assets/img/editorial.svg")}'],
       ['assets/img/pattern.svg', '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>'],
       ['assets/img/editorial.svg', '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>'],
       ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
@@ -1189,14 +1194,57 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.match(html, /<nav class="footer-nav"><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Privacy Terms<\/span><\/nav>/);
   assert.match(html, /id="content-row"[^>]*data-dc-mobile-stack="true"/);
   assert.doesNotMatch(html, /id="compact-row"[^>]*data-dc-mobile-stack/);
+  assert.match(html, /id="inline-grid"[^>]*data-dc-mobile-grid-stack="true"/);
+  assert.match(html, /id="inline-utility"[^>]*data-dc-mobile-fixed-flow="true"/);
+  assert.doesNotMatch(html, /id="inline-dialog"[^>]*data-dc-mobile-fixed-flow/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-decoration="pointer-layer"\]\{pointer-events:none!important\}/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-stack="true"\]\{flex-wrap:wrap!important\}/);
-  assert.match(String(result.files.get('styles.css')), /dc-repair-mobile-grid/);
-  assert.match(String(result.files.get('styles.css')), /@media \(max-width:600px\)[^{]*\{\.booking-layout\{grid-template-columns:minmax\(0,1fr\)\s*!important;grid-auto-flow:row\s*!important\}\}/);
+  assert.match(String(result.files.get('assets/css/dc-repair.css')), /body \*\{[^}]*flex-wrap:wrap!important/);
+  assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-grid-stack="true"\]\{grid-template-columns:minmax\(0,1fr\)!important/);
+  assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-fixed-flow="true"\]\{position:static!important/);
+  const repairedCss = String(result.files.get('styles.css'));
+  assert.match(repairedCss, /dc-repair-mobile-grid/);
+  assert.match(repairedCss, /@media \(max-width:600px\)[^{]*\{\.booking-layout\{grid-template-columns:minmax\(0,1fr\)\s*!important;grid-auto-flow:row\s*!important\}\}/);
+  assert.match(repairedCss, /dc-repair-mobile-content-flex/);
+  assert.match(repairedCss, /\.top>\*\{flex:1 1 min\(100%,18rem\)\s*!important;min-width:min\(100%,18rem\)\s*!important\}/);
+  assert.match(repairedCss, /dc-repair-mobile-fixed-flow/);
+  assert.match(repairedCss, /\.cart\{position:static\s*!important;inset:auto\s*!important;transform:none\s*!important;z-index:auto\s*!important;margin-block:1rem\s*!important\}/);
+  assert.doesNotMatch(repairedCss, /\.pattern\{position:static/);
+  assert.doesNotMatch(repairedCss, /\.hover-info\{position:static/);
+  assert.doesNotMatch(repairedCss, /\.modal\{position:static/);
   assert.ok(result.transformations.some((item) => item.rule === 'make-decorative-layers-pointer-transparent'));
   assert.ok(result.transformations.some((item) => item.rule === 'make-inline-flex-content-responsive'));
   assert.ok(result.transformations.some((item) => item.rule === 'stack-fixed-grid-on-mobile'));
+  assert.ok(result.transformations.some((item) => item.rule === 'stack-inline-grid-on-mobile'));
+  assert.ok(result.transformations.some((item) => item.rule === 'stack-content-flex-on-mobile'));
+  assert.ok(result.transformations.some((item) => item.rule === 'flow-fixed-content-on-mobile'));
+  assert.ok(result.transformations.some((item) => item.rule === 'flow-inline-fixed-content-on-mobile'));
   assert.equal(result.qualityReceipt.status, 'passed', JSON.stringify(result.qualityReceipt.checks, null, 2));
+});
+
+test('flows only visible fixed utility selectors on mobile and remains stylesheet-idempotent', () => {
+  const source = [
+    '.cart{position:fixed;right:1rem;bottom:1rem}',
+    'body::before{position:fixed;inset:0}',
+    '.pattern{position:fixed;inset:0}',
+    '.hover-info{position:fixed;pointer-events:none}',
+    '.hidden-panel{position:fixed;display:none}',
+    '.modal{position:fixed;inset:0}',
+  ].join('');
+  const first = repairStylesheet(source, 'styles.css');
+  const second = repairStylesheet(first.css, 'styles.css');
+
+  assert.match(first.css, /dc-repair-mobile-fixed-flow/);
+  assert.match(first.css, /\.cart\{position:static\s*!important/);
+  for (const selector of ['body::before', '.pattern', '.hover-info', '.hidden-panel', '.modal']) {
+    assert.doesNotMatch(first.css, new RegExp(`${selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\{position:static`));
+  }
+  assert.deepEqual(
+    first.transformations.filter((item) => item.rule === 'flow-fixed-content-on-mobile').map((item) => item.count),
+    [1],
+  );
+  assert.equal(second.css, first.css);
+  assert.equal(second.transformations.some((item) => item.rule === 'flow-fixed-content-on-mobile'), false);
 });
 
 test('restores only header navigation that has no working responsive controller', () => {
