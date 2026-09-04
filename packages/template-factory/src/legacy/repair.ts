@@ -2244,6 +2244,15 @@ function annotateEditableNodes(
   type Unavailability = 'hidden' | 'pointerless' | 'excluded';
   const directlyUnavailable = (node: HtmlNode): Unavailability | undefined => {
     if (NON_EDITABLE_ELEMENTS.has(node.tagName ?? '')) return 'excluded';
+    // Skip links are application-owned accessibility controls rather than
+    // customer copy. They are intentionally parked off-screen until keyboard
+    // focus, so advertising them as canvas-editable creates a false physical
+    // editor path and lets a content edit damage required accessibility text.
+    if (
+      node.tagName === 'a'
+      && (getAttr(node, 'class') ?? '').split(/\s+/).some((token) => token.toLowerCase() === 'skip-link')
+      && /^#[A-Za-z][A-Za-z0-9._:-]*$/.test((getAttr(node, 'href') ?? '').trim())
+    ) return 'excluded';
     if (
       getAttr(node, 'hidden') !== undefined
     || getAttr(node, 'inert') !== undefined

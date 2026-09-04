@@ -19,6 +19,7 @@ test('niche-neutral fallback remains multi-page, editable, and contract safe', (
   const result = verifyStaticArtifact(repaired.files, repaired.fields);
   assert.equal(result.passed, true, result.errors.map((error) => error.detail).join('\n'));
   assert.equal(repaired.manifest.pages.length, 4);
+  assert.doesNotMatch(String(repaired.files.get('index.html')), /class="skip-link"[^>]*data-dc-edit-id/);
   assert.match(String(repaired.files.get('pricing.html')), /Contact for current pricing/);
   assert.match(String(repaired.files.get('contact.html')), /name="message"/);
 });

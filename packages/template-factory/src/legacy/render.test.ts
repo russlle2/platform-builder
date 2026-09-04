@@ -8,6 +8,7 @@ import { chromium } from '@playwright/test';
 import sharp from 'sharp';
 import { repairLegacyTemplate } from './compose.js';
 import { satisfiesVisualAliasThresholds } from './dedupe.js';
+import { createNeutralFallbackFiles } from './fallback.js';
 import { addAccessibilityOverrides, addContrastOverrides, verifyStaticArtifact } from './pipeline.js';
 import { LEGACY_COMPATIBILITY_SCRIPT } from './repair.js';
 import {
@@ -334,6 +335,43 @@ test('browser QA rejects advertised slots that cannot be physically hit', async 
       assert.match(byCode.get('edit_smoke_failed') ?? '', /txt_hidden/);
       assert.match(byCode.get('image_edit_smoke_failed') ?? '', /img_blocked/);
     }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('neutral fallback keeps the off-screen skip link out of customer editing and passes browser QA', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-neutral-fallback-'));
+  const templateDir = join(root, 'niche', 'neutral-fallback');
+  const evidenceRoot = join(root, 'evidence');
+  try {
+    const repaired = repairLegacyTemplate({
+      slug: 'neutral-fallback',
+      niche: 'wellness_coach',
+      files: createNeutralFallbackFiles({
+        slug: 'neutral-fallback',
+        niche: 'wellness_coach',
+        pages: ['index.html'],
+        reason: 'browser fixture',
+      }),
+    });
+    assert.doesNotMatch(String(repaired.files.get('index.html')), /class="skip-link"[^>]*data-dc-edit-id/);
+    for (const [relativePath, contents] of repaired.files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+
+    const evidence = await renderTemplateTasks(root, [{
+      key: 'neutral-fallback',
+      niche: 'wellness_coach',
+      slug: 'neutral-fallback',
+      page: 'index.html',
+      templateDir,
+    }], { evidenceRoot, workers: 1, retries: 0 });
+
+    assert.equal(evidence.length, 2);
+    assert.ok(evidence.every((viewport) => viewport.passed), JSON.stringify(evidence, null, 2));
   } finally {
     await rm(root, { recursive: true, force: true });
   }

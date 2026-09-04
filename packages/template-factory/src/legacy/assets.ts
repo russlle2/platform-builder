@@ -497,8 +497,9 @@ export function readAssetLicenseManifest(
 
 /**
  * Reconcile final emitted vendor bytes with their content-addressed names and
- * provenance. Only text/css may be renamed after a mechanical rewrite;
- * changed binary bytes are rejected rather than attributed to their source.
+ * provenance. Textual CSS and SVG may be renamed after a deterministic
+ * compiler rewrite; changed binary bytes are rejected rather than attributed
+ * to their source.
  */
 export function reconcileAssetLicenseManifest(
   inputFiles: ReadonlyMap<string, string | Uint8Array>,
@@ -530,7 +531,14 @@ export function reconcileAssetLicenseManifest(
       if (expected === path) continue;
       const records = lineage.get(path) ?? [];
       if (records.length === 0) throw new Error(`Vended asset has no trustworthy provenance: ${path}`);
-      if (!records.every((record) => record.contentType.toLowerCase().startsWith('text/css')) || extension !== '.css') {
+      const mechanicallyRewritableText = (
+        extension === '.css'
+        && records.every((record) => record.contentType.toLowerCase().startsWith('text/css'))
+      ) || (
+        extension === '.svg'
+        && records.every((record) => record.contentType.toLowerCase().startsWith('image/svg+xml'))
+      );
+      if (!mechanicallyRewritableText) {
         throw new Error(`Refusing to re-attest modified binary vendor bytes: ${path}`);
       }
       renames.set(path, expected);
@@ -582,6 +590,7 @@ export function reconcileAssetLicenseManifest(
     for (const record of records) {
       const updated: VendedAsset = {
         ...record,
+        ...(record.fallback ? { finalUrl: `${GENERATED_ASSET_ORIGIN}/${cacheFilename}` } : {}),
         sha256: digest,
         bytes: bytes.byteLength,
         cacheFilename,

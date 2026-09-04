@@ -172,6 +172,41 @@ test('generated fallbacks use truthful first-party provenance and corrupted cach
   }
 });
 
+test('deterministically sanitized fallback SVGs are re-attested with preserved provenance', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-assets-svg-reattest-'));
+  const sourceUrl = 'https://images.unsplash.com/photo-svg-reattest?w=1200';
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async () => { throw new Error('offline test'); }) as typeof fetch;
+  try {
+    const vendor = new AssetVendor(root);
+    await vendor.initialize();
+    const first = await vendorRemoteAssets(new Map<string, string | Uint8Array>([[
+      'index.html',
+      `<!doctype html><html><body><main><h1>{{BUSINESS_NAME}}</h1><p>Useful introduction copy for the fixture.</p><img src="${sourceUrl}" alt="Practice setting"></main></body></html>`,
+    ]]), vendor);
+    const originalSvg = first.assets[0];
+    assert.ok(originalSvg);
+    assert.equal(originalSvg.contentType, 'image/svg+xml');
+
+    const repaired = repairLegacyTemplate({
+      slug: 'svg-reattest-fixture',
+      niche: 'wellness_coach',
+      files: first.files,
+    });
+    const final = await vendorRemoteAssets(repaired.files, vendor);
+    const manifest = readAssetLicenseManifest(final.files);
+    const attestedSvg = manifest.find((asset) => asset.sourceUrl === originalSvg.sourceUrl);
+    assert.ok(attestedSvg, JSON.stringify({ originalSvg, manifest }, null, 2));
+    assert.notEqual(attestedSvg.cacheFilename, originalSvg.cacheFilename, 'SVG sanitation must produce a newly addressed object');
+    assert.equal(attestedSvg.licenseName, 'DailyClarity first-party generated placeholder');
+    assert.deepEqual(validateAssetLicenseManifest(final.files), []);
+    assert.match(String(final.files.get('index.html')), new RegExp(attestedSvg.cacheFilename.replace('.', '\\.')));
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('cached bytes cannot inherit forged source, redirect, or license provenance on resume', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-assets-provenance-'));
   const sourceUrl = 'https://images.unsplash.com/photo-provenance-integrity?w=1200';
