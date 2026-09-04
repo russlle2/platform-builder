@@ -387,11 +387,11 @@ test('compiler-v3 zero-image pages keep decorative hero layers while every adver
       niche: 'aromatherapy',
       files: new Map<string, string | Uint8Array>([
         ['index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decorative layer</title><link rel="stylesheet" href="assets/css/styles.css"></head><body>
-          <header><nav aria-label="Primary"><a href="#main">Overview</a></nav></header><main id="main"><section class="hero">
+          <header><nav aria-label="Primary"><a href="index.html">Overview</a></nav></header><main id="main"><section class="hero">
           <div class="hero-bg"><img src="assets/img/pattern.svg" alt="" aria-hidden="true"><div class="hero-gradient"></div></div>
           <div class="hero-inner"><h1>{{BUSINESS_NAME}}</h1><p>This complete introduction gives customers clear information about current aromatherapy services, practical expectations, scheduling, and the next step without making unsupported promises.</p><a href="mailto:{{EMAIL}}">Ask about availability</a></div>
-          </section><section style="margin-top:18px;display:flex;gap:12px"><div><h2>How the process works</h2><p>Review the practical guidance and choose a next step that fits your current priorities and schedule.</p></div><div style="flex:1"><h2>Current workshops</h2><p>Ask which educational sessions are currently available and what to expect before reserving a place.</p></div></section></main></body></html>`],
-        ['assets/css/styles.css', ':root{--surface:#fff;--ink:#111;--accent:#315f46}*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);font:16px Arial,sans-serif}header,main{position:relative}nav,.hero-inner{width:min(70rem,92vw);margin:auto}.hero{position:relative;min-height:32rem;padding:5rem 0}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.15}.hero-gradient{background:linear-gradient(120deg,rgba(49,95,70,.12),transparent)}.hero-inner{position:relative}a{color:#17472f}'],
+          </section><section class="responsive-copy" style="margin-top:18px;display:flex;gap:12px"><div><h2>How the process works</h2><p>Review the practical guidance and choose a next step that fits your current priorities and schedule.</p></div><div style="flex:1"><h2>Current workshops</h2><p>Ask which educational sessions are currently available and what to expect before reserving a place.</p></div></section></main></body></html>`],
+        ['assets/css/styles.css', ':root{--surface:#fff;--ink:#111;--accent:#315f46}html{scroll-behavior:smooth}*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);font:16px Arial,sans-serif}header,main{position:relative}nav,.hero-inner{width:min(70rem,92vw);margin:auto}.hero{position:relative;min-height:32rem;padding:5rem 0}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.15}.hero-gradient{background:linear-gradient(120deg,rgba(49,95,70,.12),transparent)}.hero-inner{position:relative}.responsive-copy{margin-top:70rem!important}a{color:#17472f}@media(max-width:600px){header nav{display:none}}'],
         ['assets/img/pattern.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path fill="#dbe9e0" d="M0 0h10v10H0z"/></svg>'],
         ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
       ]),
@@ -401,6 +401,8 @@ test('compiler-v3 zero-image pages keep decorative hero layers while every adver
     assert.doesNotMatch(html, /data-dc-image-id/);
     assert.doesNotMatch(html, /<nav[^>]*data-dc-edit-id/);
     assert.match(html, /data-dc-decoration="pointer-layer"/);
+    assert.match(html, /<img[^>]*data-dc-decoration="pointer-layer"/);
+    assert.match(html, /<nav[^>]*data-dc-mobile-nav-fallback="true"/);
     assert.match(html, /data-dc-mobile-stack="true"/);
     for (const [relativePath, contents] of repaired.files) {
       const target = join(templateDir, ...relativePath.split('/'));

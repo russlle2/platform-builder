@@ -929,14 +929,21 @@ const INTERACTIVE_DESCENDANT_TAGS = new Set(['a', 'button', 'details', 'input', 
 function markDecorativeHitLayers(document: HtmlNode): number {
   let count = 0;
   walk(document, (node) => {
-    if (!node.tagName || !['aside', 'div', 'section', 'span'].includes(node.tagName)) return;
+    if (!node.tagName || !['aside', 'div', 'img', 'section', 'span'].includes(node.tagName)) return;
     const identity = `${getAttr(node, 'id') ?? ''} ${getAttr(node, 'class') ?? ''}`;
     const stronglyDecorative = DECORATIVE_HIT_LAYER_SIGNAL.test(identity);
     const backgroundNamed = BACKGROUND_HIT_LAYER_SIGNAL.test(identity);
-    if ((!stronglyDecorative && !backgroundNamed) || textContent(node).trim()) return;
+    const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    const explicitlyDecorativeSelf = node.tagName === 'img' && (
+      getAttr(node, 'aria-hidden')?.trim().toLowerCase() === 'true'
+      || role === 'none'
+      || role === 'presentation'
+      || (!getAttr(node, 'alt')?.trim() && (stronglyDecorative || backgroundNamed))
+    );
+    if ((!stronglyDecorative && !backgroundNamed && !explicitlyDecorativeSelf) || textContent(node).trim()) return;
 
     let ownsMeaningfulContent = false;
-    let hasExplicitDecorativeDescendant = false;
+    let hasExplicitDecorativeDescendant = explicitlyDecorativeSelf;
     const inspect = (candidate: HtmlNode): void => {
       if (ownsMeaningfulContent) return;
       if (candidate !== node && candidate.tagName) {
@@ -993,6 +1000,70 @@ function markDecorativeHitLayers(document: HtmlNode): number {
     if (getAttr(node, 'data-dc-decoration') !== 'pointer-layer') count += 1;
     setAttr(node, 'data-dc-decoration', 'pointer-layer');
     setAttr(node, 'aria-hidden', 'true');
+  });
+  return count;
+}
+
+function isDescendantOf(node: HtmlNode, ancestor: HtmlNode): boolean {
+  let cursor: HtmlNode | undefined = node;
+  while (cursor) {
+    if (cursor === ancestor) return true;
+    cursor = cursor.parentNode;
+  }
+  return false;
+}
+
+/**
+ * Preserve a visible mobile navigation path on pages that inherit responsive
+ * CSS which hides header links but do not contain a controller for that menu.
+ * Controlled menus retain their authored collapse/toggle behavior.
+ */
+function markMobileNavigationFallbacks(document: HtmlNode): number {
+  const nodesById = new Map<string, HtmlNode>();
+  const controls: HtmlNode[] = [];
+  walk(document, (node) => {
+    const id = getAttr(node, 'id')?.trim();
+    if (id) nodesById.set(id, node);
+    const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    if (
+      getAttr(node, 'aria-controls')?.trim()
+      && (['a', 'button', 'input', 'summary'].includes(node.tagName ?? '') || role === 'button')
+    ) controls.push(node);
+  });
+
+  let count = 0;
+  walk(document, (node) => {
+    if (node.tagName !== 'nav') return;
+    let header: HtmlNode | undefined = node.parentNode;
+    while (header && header.tagName !== 'header') header = header.parentNode;
+    if (!header) return;
+
+    let hasInternalLink = false;
+    walk(node, (candidate) => {
+      if (candidate.tagName !== 'a') return;
+      const href = (getAttr(candidate, 'href') ?? '').trim();
+      if (href && !/^(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/|#)/.test(href)) hasInternalLink = true;
+    });
+    if (!hasInternalLink) return;
+
+    let detailsAncestor: HtmlNode | undefined = node.parentNode;
+    while (detailsAncestor && detailsAncestor !== header && detailsAncestor.tagName !== 'details') {
+      detailsAncestor = detailsAncestor.parentNode;
+    }
+    if (detailsAncestor?.tagName === 'details') return;
+
+    const hasController = controls.some((control) => {
+      if (!isDescendantOf(control, header)) return false;
+      const controlled = (getAttr(control, 'aria-controls') ?? '')
+        .split(/\s+/)
+        .map((id) => nodesById.get(id))
+        .filter((target): target is HtmlNode => Boolean(target));
+      return controlled.some((target) => target === node || isDescendantOf(target, node));
+    });
+    if (hasController) return;
+
+    if (getAttr(node, 'data-dc-mobile-nav-fallback') !== 'true') count += 1;
+    setAttr(node, 'data-dc-mobile-nav-fallback', 'true');
   });
   return count;
 }
@@ -3272,6 +3343,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const headings = ensureHeading(document, options.file);
   const accessibility = normalizeAccessibility(document);
   const decorativeHitLayers = markDecorativeHitLayers(document);
+  const mobileNavigationFallbacks = markMobileNavigationFallbacks(document);
   const mobileStackContainers = markMobileStackContainers(document);
   const duplicateIds = ensureUniqueDomIds(document, options.file);
   if (scripts) transformations.push({ rule: 'replace-scripts-with-audited-runtime', file: options.file, count: scripts });
@@ -3286,6 +3358,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   if (headings) transformations.push({ rule: 'restore-page-heading', file: options.file, count: headings });
   if (accessibility) transformations.push({ rule: 'normalize-accessibility-semantics', file: options.file, count: accessibility });
   if (decorativeHitLayers) transformations.push({ rule: 'make-decorative-layers-pointer-transparent', file: options.file, count: decorativeHitLayers });
+  if (mobileNavigationFallbacks) transformations.push({ rule: 'restore-orphaned-mobile-navigation', file: options.file, count: mobileNavigationFallbacks });
   if (mobileStackContainers) transformations.push({ rule: 'make-inline-flex-content-responsive', file: options.file, count: mobileStackContainers });
   if (duplicateIds) transformations.push({ rule: 'deduplicate-dom-ids', file: options.file, count: duplicateIds });
   if (standardizedForms) transformations.push({ rule: 'standardize-contact-form', file: options.file, count: standardizedForms });

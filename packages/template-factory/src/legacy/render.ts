@@ -775,7 +775,10 @@ async function physicalHitPoint(
     };
     if (hiddenByLayout(hitTarget)) return null;
     if ((hitMode === 'image' || hitMode === 'background') && getComputedStyle(hitTarget).pointerEvents === 'none') return null;
-    hitTarget.scrollIntoView({ block: 'center', inline: 'center' });
+    // Force an audit-only instant scroll. With authored `scroll-behavior:
+    // smooth`, sampling elementFromPoint synchronously observes the previous
+    // scroll position and falsely reports every below-fold slot as blocked.
+    hitTarget.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
     const protectedSelector = 'a[href],button,input,select,textarea,option,label,summary,[role="button"],[role="link"]';
     const editId = (element: Element) => element.getAttribute('data-dc-edit-id') || element.getAttribute('data-pb-edit-id') || '';
     const imageId = (element: Element) => element.getAttribute('data-dc-image-id') || element.getAttribute('data-pb-image-id') || '';
@@ -870,7 +873,7 @@ async function inspectTextSlotReachability(page: Page): Promise<CustomerEditorRu
     };
     const hasPoint = (declaredTarget: HTMLElement, hitTarget: HTMLElement, option = false): boolean => {
       if (hiddenByLayout(hitTarget) || getComputedStyle(hitTarget).pointerEvents === 'none') return false;
-      hitTarget.scrollIntoView({ block: 'center', inline: 'center' });
+      hitTarget.scrollIntoView({ behavior: 'instant', block: 'center', inline: 'center' });
       for (const rect of [...hitTarget.getClientRects()]) {
         const left = Math.max(0, rect.left);
         const right = Math.min(window.innerWidth, rect.right);

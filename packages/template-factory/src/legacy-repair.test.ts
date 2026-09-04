@@ -1177,6 +1177,7 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.match(html, /<html[^>]*data-dc-catalog-version="3"/);
   assert.match(html, /class="hero-bg"[^>]*data-dc-decoration="pointer-layer"[^>]*aria-hidden="true"/);
   assert.match(html, /class="hero-gradient"[^>]*data-dc-decoration="pointer-layer"[^>]*aria-hidden="true"/);
+  assert.match(html, /<img[^>]*pattern\.svg[^>]*data-dc-decoration="pointer-layer"/);
   assert.doesNotMatch(html, /<img[^>]*pattern\.svg[^>]*data-dc-image-id/);
   assert.match(html, /class="editorial-background"[^>]*data-dc-image-id="css_[a-f0-9]{18}"/);
   assert.doesNotMatch(html, /class="editorial-background"[^>]*data-dc-decoration/);
@@ -1188,6 +1189,28 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-stack="true"\]\{flex-wrap:wrap!important\}/);
   assert.ok(result.transformations.some((item) => item.rule === 'make-decorative-layers-pointer-transparent'));
   assert.ok(result.transformations.some((item) => item.rule === 'make-inline-flex-content-responsive'));
+  assert.equal(result.qualityReceipt.status, 'passed', JSON.stringify(result.qualityReceipt.checks, null, 2));
+});
+
+test('restores only header navigation that has no working responsive controller', () => {
+  const result = repairLegacyTemplate({
+    slug: 'mobile-navigation-fallback',
+    niche: 'wellness_coach',
+    files: new Map([['index.html', `<!doctype html><html lang="en"><head><title>Navigation</title><style>
+      @media(max-width:900px){header nav,header nav a,header nav ul{display:none}}
+      </style></head><body><header>
+      <nav id="orphan-nav"><a href="index.html">Home</a><a href="contact.html">Contact</a></nav>
+      <nav id="controlled-nav"><button type="button" aria-expanded="false" aria-controls="controlled-list">Menu</button>
+        <ul id="controlled-list"><li><a href="index.html">Home</a></li><li><a href="contact.html">Contact</a></li></ul></nav>
+      </header><main><h1>{{BUSINESS_NAME}}</h1><p>Practical information about current services and how to contact the practice.</p></main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+  const css = String(result.files.get('assets/css/dc-repair.css'));
+
+  assert.match(html, /<nav id="orphan-nav"[^>]*data-dc-mobile-nav-fallback="true"/);
+  assert.doesNotMatch(html, /<nav id="controlled-nav"[^>]*data-dc-mobile-nav-fallback/);
+  assert.match(css, /\[data-dc-mobile-nav-fallback="true"\][^{]*\{display:flex!important/);
+  assert.ok(result.transformations.some((item) => item.rule === 'restore-orphaned-mobile-navigation'));
   assert.equal(result.qualityReceipt.status, 'passed', JSON.stringify(result.qualityReceipt.checks, null, 2));
 });
 
@@ -1332,7 +1355,7 @@ test('emits only leaf text slots while preserving navigation and form descendant
       );
     }
   }
-  assert.match(html, /<nav><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Explore <\/span><a href="about\.html"><strong data-dc-edit-id="txt_[a-f0-9]{18}">About us<\/strong><\/a><\/nav>/);
+  assert.match(html, /<nav[^>]*><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Explore <\/span><a href="about\.html"><strong data-dc-edit-id="txt_[a-f0-9]{18}">About us<\/strong><\/a><\/nav>/);
   assert.match(html, /<label><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Your name <\/span><input name="name" autocomplete="name" required="">/);
   assert.doesNotMatch(html, /<input[^>]*data-dc-edit-id=/);
   assert.match(html, /<textarea name="message" rows="5" required=""><\/textarea>/);
