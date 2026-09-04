@@ -35,6 +35,30 @@ test('asset rewrite leaves ordinary links and data images intact', async () => {
   }
 });
 
+test('asset rewrite vendors parse5-escaped remote image query strings', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-assets-html-entity-'));
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async () => new Response(Buffer.from('image-bytes'), {
+    status: 200,
+    headers: { 'content-type': 'image/jpeg' },
+  })) as typeof fetch;
+  try {
+    const vendor = new AssetVendor(root);
+    await vendor.initialize();
+    const source = 'https://images.unsplash.com/photo-entity?w=1200&h=700&q=82';
+    const result = await vendorRemoteAssets(new Map([
+      ['index.html', `<img src="${source.replace(/&/g, '&amp;')}" alt="">`],
+    ]), vendor);
+    const html = String(result.files.get('index.html'));
+    assert.equal(result.assets.length, 1);
+    assert.doesNotMatch(html, /https:\/\//i);
+    assert.match(html, /src="assets\/vendor\/[a-f0-9]{64}\.jpg"/i);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('asset vendor refuses a redirect hop that leaves the approved host allowlist', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-assets-redirect-'));
   const originalFetch = globalThis.fetch;

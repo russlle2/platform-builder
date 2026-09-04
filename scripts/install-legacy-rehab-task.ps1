@@ -9,7 +9,7 @@ param(
     [string]$WorkRoot,
 
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$')]
-    [string]$RuleVersion = 'legacy-rehab-1.0.15',
+    [string]$RuleVersion = 'legacy-rehab-1.0.16',
 
     [ValidateRange(1, 64)]
     [int]$StaticWorkers = 8,

@@ -417,6 +417,13 @@ export async function vendorRemoteAssets(
       const destination = `assets/vendor/${asset.cacheFilename}`;
       const localReference = posix.relative(fromDir === '.' ? '' : fromDir, destination) || posix.basename(destination);
       rewritten = rewritten.split(url).join(localReference);
+      // parse5 serializes query separators in HTML attributes as `&amp;`.
+      // Collection intentionally normalizes that entity before URL validation,
+      // so replacement must cover the serialized spelling as well or the
+      // verified foundation-alignment path would leave a remote dependency.
+      if (/\.html?$/i.test(filename) && url.includes('&')) {
+        rewritten = rewritten.split(url.replace(/&/g, '&amp;')).join(localReference);
+      }
     }
     files.set(filename, rewritten);
   }
