@@ -1165,6 +1165,7 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
         <div class="hero-inner"><h1>{{BUSINESS_NAME}}</h1><p>Visible customer introduction.</p></div></section>
         <section class="booking-layout"><div><h2>Reserve a time</h2><p>Choose a practical next step and ask about current availability.</p></div><aside><h2>Before you book</h2><p>Review the service details and bring any questions to the conversation.</p></aside></section>
         <section id="content-row" style="margin-top:18px;display:flex;gap:12px"><div><h2>How it works</h2><p>Review the practical guidance and choose a next step that fits your current priorities and schedule.</p></div><div style="flex:1"><h2>Current workshops</h2><p>Ask which educational sessions are currently available and what to expect before reserving a place.</p></div></section>
+        <section id="inline-column-card" style="display:flex;flex-direction:column;gap:12px"><div style="flex:1"><h2>Vertical card</h2><p>This card is intentionally vertical and must not receive horizontal child sizing.</p></div><a href="contact.html">Ask a question</a></section>
         <section id="compact-row" style="display:flex"><a href="#details" style="flex:1">Details</a><a href="mailto:{{EMAIL}}">Contact</a></section>
         <section id="inline-grid" style="display:grid;grid-template-columns:1fr 320px;gap:14px"><article><h2>What to expect</h2><p>Review the preparation guidance before choosing a current service.</p></article><aside><h2>Questions</h2><p>Contact the studio for practical details.</p></aside></section>
         <aside id="inline-utility" style="position:fixed;right:12px;bottom:12px"><a href="contact.html">Open contact options</a></aside>
@@ -1193,13 +1194,14 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.doesNotMatch(html, /<nav[^>]*aria-label="Footer"[^>]*data-dc-edit-id/);
   assert.match(html, /<nav class="footer-nav"><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Privacy Terms<\/span><\/nav>/);
   assert.match(html, /id="content-row"[^>]*data-dc-mobile-stack="true"/);
+  assert.doesNotMatch(html, /id="inline-column-card"[^>]*data-dc-mobile-stack/);
   assert.doesNotMatch(html, /id="compact-row"[^>]*data-dc-mobile-stack/);
   assert.match(html, /id="inline-grid"[^>]*data-dc-mobile-grid-stack="true"/);
   assert.match(html, /id="inline-utility"[^>]*data-dc-mobile-fixed-flow="true"/);
   assert.doesNotMatch(html, /id="inline-dialog"[^>]*data-dc-mobile-fixed-flow/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-decoration="pointer-layer"\]\{pointer-events:none!important\}/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-stack="true"\]\{flex-wrap:wrap!important\}/);
-  assert.match(String(result.files.get('assets/css/dc-repair.css')), /body \*\{[^}]*flex-wrap:wrap!important/);
+  assert.doesNotMatch(String(result.files.get('assets/css/dc-repair.css')), /body \*\{[^}]*flex-wrap:wrap!important/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-grid-stack="true"\]\{grid-template-columns:minmax\(0,1fr\)!important/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-fixed-flow="true"\]\{position:static!important/);
   const repairedCss = String(result.files.get('styles.css'));
@@ -1245,6 +1247,38 @@ test('flows only visible fixed utility selectors on mobile and remains styleshee
   );
   assert.equal(second.css, first.css);
   assert.equal(second.transformations.some((item) => item.rule === 'flow-fixed-content-on-mobile'), false);
+});
+
+test('sizes horizontal content flex rows without expanding vertical card children', () => {
+  const source = [
+    '.top{display:flex;gap:1rem}',
+    '.feature-card{display:flex;flex-direction:column;gap:1rem}',
+    '.price-card{display:flex;gap:1rem}',
+    '.price-card{flex-flow:column nowrap}',
+  ].join('');
+  const result = repairStylesheet(source, 'styles.css');
+
+  assert.match(result.css, /\.top>\*\{flex:1 1 min\(100%,18rem\)\s*!important/);
+  assert.doesNotMatch(result.css, /\.feature-card>\*\{flex:/);
+  assert.doesNotMatch(result.css, /\.price-card>\*\{flex:/);
+  assert.deepEqual(
+    result.transformations.filter((item) => item.rule === 'stack-content-flex-on-mobile').map((item) => item.count),
+    [1],
+  );
+});
+
+test('replaces the unsafe 1.0.30 content-flex block when re-attesting an artifact', () => {
+  const source = [
+    '.feature-card{display:flex;flex-direction:column;gap:1rem}',
+    '/* dc-repair-mobile-content-flex */',
+    '@media (max-width:600px){.feature-card{flex-wrap:wrap!important}.feature-card>*{flex:1 1 min(100%,18rem)!important;min-width:min(100%,18rem)!important}}',
+  ].join('');
+  const first = repairStylesheet(source, 'styles.css');
+  const second = repairStylesheet(first.css, 'styles.css');
+
+  assert.doesNotMatch(first.css, /\/\* dc-repair-mobile-content-flex \*\//);
+  assert.doesNotMatch(first.css, /\.feature-card>\*\{flex:/);
+  assert.equal(second.css, first.css);
 });
 
 test('restores only header navigation that has no working responsive controller', () => {

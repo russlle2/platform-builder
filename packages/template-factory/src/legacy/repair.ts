@@ -1079,6 +1079,10 @@ function markMobileStackContainers(document: HtmlNode): number {
     if (!node.tagName || !['article', 'aside', 'div', 'footer', 'main', 'section'].includes(node.tagName)) return;
     const style = getAttr(node, 'style') ?? '';
     if (!/(?:^|;)\s*display\s*:\s*(?:inline-)?flex(?:\s*!important)?\s*(?:;|$)/i.test(style)) return;
+    const declarations = inlineStyleDeclarations(style);
+    const direction = (declarations.get('flex-direction') ?? '').trim().toLowerCase();
+    const flow = (declarations.get('flex-flow') ?? '').trim().toLowerCase();
+    if (/^column(?:-reverse)?$/.test(direction) || /(?:^|\s)column(?:-reverse)?(?:\s|$)/.test(flow)) return;
     const children = (node.childNodes ?? []).filter((child) => Boolean(child.tagName));
     if (children.length < 2 || textContent(node).replace(/\s+/g, ' ').trim().length < 80) return;
     const hasFlexibleChild = children.some((child) => /(?:^|;)\s*(?:flex(?:-grow)?\s*:\s*(?:1|[1-9]\d*)|flex\s*:\s*(?:auto|[1-9]\d*))(?:\s|;|$)/i.test(getAttr(child, 'style') ?? ''));
@@ -2678,7 +2682,8 @@ export function detectFoundation(html: string): string | undefined {
 }
 
 const MOBILE_GRID_REPAIR_MARKER = 'dc-repair-mobile-grid';
-const MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex';
+const LEGACY_MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex';
+const MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex-v2';
 const MOBILE_FIXED_FLOW_REPAIR_MARKER = 'dc-repair-mobile-fixed-flow';
 const MOBILE_CONTENT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:cards?|columns?|content|features?|grid|hero(?:-inner|-grid)?|layout|plans?|pricing|services?|split|tiles?|top)(?:$|[-_.:#\[\s>+~])/i;
 const MOBILE_COMPACT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:actions?|brand|breadcrumbs?|buttons?|controls?|footer|header|logo|menu|nav|pagination|social|tabs?|toolbar)(?:$|[-_.:#\[\s>+~])/i;
@@ -2771,28 +2776,55 @@ function addMobileGridFallbacks(root: postcss.Root): number {
 /**
  * A flex container may technically wrap yet still allocate a zero-width
  * `flex:1` content column beside a fixed-width sibling. For semantic content
- * layouts, give direct children a useful mobile basis. Compact navigation and
- * control rows receive the shared wrap guard but are deliberately excluded
- * from this full-width content treatment.
+ * horizontal layouts, give direct children a useful mobile basis. Vertical
+ * card stacks, compact navigation, and control rows are deliberately excluded
+ * from this full-width child treatment.
  */
 function addMobileContentFlexFallbacks(root: postcss.Root): number {
+  // 1.0.30 emitted an unsafe unversioned block for some vertical card stacks.
+  // Remove only that compiler-owned block so previously materialized evidence
+  // can be re-attested safely; immutable catalogue sources normally never hit
+  // this migration path.
+  root.walkComments((comment) => {
+    if (comment.text.trim() !== LEGACY_MOBILE_FLEX_REPAIR_MARKER) return;
+    const generatedMedia = comment.next();
+    if (generatedMedia?.type === 'atrule' && generatedMedia.name.toLowerCase() === 'media') {
+      generatedMedia.remove();
+    }
+    comment.remove();
+  });
+
   let alreadyRepaired = false;
   root.walkComments((comment) => {
     if (comment.text.trim() === MOBILE_FLEX_REPAIR_MARKER) alreadyRepaired = true;
   });
   if (alreadyRepaired) return 0;
 
+  const columnSelectors = new Set<string>();
+  root.walkRules((rule) => {
+    const declarations = (rule.nodes ?? []).filter((node): node is postcss.Declaration => node.type === 'decl');
+    const columnDirection = declarations.some((declaration) => {
+      const property = decodeCssEscapes(declaration.prop).toLowerCase();
+      const value = declaration.value.trim().toLowerCase();
+      return (property === 'flex-direction' && /^column(?:-reverse)?$/.test(value))
+        || (property === 'flex-flow' && /(?:^|\s)column(?:-reverse)?(?:\s|$)/.test(value));
+    });
+    if (!columnDirection) return;
+    for (const selector of splitSelectorList(rule.selector) ?? []) columnSelectors.add(selector);
+  });
+
   const selectors = new Set<string>();
   root.walkRules((rule) => {
-    const displayFlex = (rule.nodes ?? []).some((node) => (
-      node.type === 'decl'
-      && decodeCssEscapes(node.prop).toLowerCase() === 'display'
-      && /^(?:inline-)?flex$/i.test(node.value.trim())
+    const declarations = (rule.nodes ?? []).filter((node): node is postcss.Declaration => node.type === 'decl');
+    const displayFlex = declarations.some((declaration) => (
+      decodeCssEscapes(declaration.prop).toLowerCase() === 'display'
+      && /^(?:inline-)?flex$/i.test(declaration.value.trim())
     ));
     if (!displayFlex) return;
     for (const selector of splitSelectorList(rule.selector) ?? []) {
       if (
-        /::(?:before|after|marker)\b/i.test(selector)
+        columnSelectors.has(selector)
+        || /::(?:before|after|marker)\b/i.test(selector)
         || DECORATIVE_HIT_LAYER_SIGNAL.test(selector.replace(/[^A-Za-z0-9_-]+/g, ' '))
         || MOBILE_COMPACT_FLEX_SIGNAL.test(selector)
         || !MOBILE_CONTENT_FLEX_SIGNAL.test(selector)
