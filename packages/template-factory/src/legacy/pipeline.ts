@@ -3634,8 +3634,9 @@ async function pilotCommand(context: LegacyCommandContext): Promise<LegacyComman
 async function runCommand(context: LegacyCommandContext): Promise<LegacyCommandOutcome> {
   checkCancellation(context);
   const gatePath = join(context.config.reportRoot, 'pilot-gate.json');
-  const gate = JSON.parse(await readFile(gatePath, 'utf8').catch(() => {
-    throw new Error(`A passing stratified pilot is required before a full run: ${gatePath}`);
+  const gate = JSON.parse(await readFile(gatePath, 'utf8').catch((error: unknown) => {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`A passing stratified pilot is required before a full run: ${gatePath} (${detail})`);
   })) as unknown;
   const authorization = validatePilotGateAuthorization(gate, context.config.ruleVersion);
   const inventory = await inventoryStage(context);

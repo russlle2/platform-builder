@@ -435,6 +435,18 @@ $aggregateLogPath = Join-Path $runnerLogRoot "$runStamp-$Command.log"
 $finalExitCode = 1
 $intentionalCancellation = $false
 
+if ($Command -eq 'run') {
+    $pilotGatePath = Join-Path $resolvedWorkRoot 'reports\pilot-gate.json'
+    try {
+        $pilotGate = Get-Item -LiteralPath $pilotGatePath -ErrorAction Stop
+        $pilotGateHash = (Get-FileHash -LiteralPath $pilotGatePath -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
+        Add-Content -LiteralPath $aggregateLogPath -Value "scheduler-preflight pilotGate=$($pilotGate.FullName) bytes=$($pilotGate.Length) sha256=$pilotGateHash identity=$([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+    }
+    catch {
+        Add-Content -LiteralPath $aggregateLogPath -Value "scheduler-preflight pilotGate=$pilotGatePath unreadable=$($_.Exception.Message) identity=$([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+    }
+}
+
 Enable-LegacyRehabSleepPrevention -TemporaryRoot $resolvedWorkRoot
 try {
     for ($attempt = 1; $attempt -le $effectiveMaxAttempts; $attempt++) {
