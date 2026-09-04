@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
 export const LEGACY_CATALOG_CONTRACT_VERSION = 3 as const;
-export const LEGACY_REPAIR_RULE_VERSION = 'legacy-rehab-1.0.14' as const;
+export const LEGACY_REPAIR_RULE_VERSION = 'legacy-rehab-1.0.15' as const;
 export const COMPATIBILITY_SCRIPT_PATH = 'assets/js/dc-compat.js' as const;
 
 export type IssueSeverity = 'info' | 'warning' | 'error' | 'critical';
@@ -68,6 +68,10 @@ export interface ImageEntry {
   page: string;
   kind: 'image' | 'background';
   source: string;
+  /** Original responsive candidates when the same DOM target also owns srcset. */
+  srcset?: string;
+  /** CSS file holding the design-time placeholder; page stays the customer-editable HTML target. */
+  stylesheet?: string;
   selector?: string;
   attribute?: 'src' | 'srcset' | 'style' | 'css-url';
 }

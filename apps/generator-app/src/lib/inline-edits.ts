@@ -31,6 +31,16 @@ export interface InlineEditApplicationResult {
   unmatchedNodeIds: string[]
 }
 
+export const EDITABLE_ATTRIBUTE_NAMES = [
+  'content',
+  'alt',
+  'title',
+  'placeholder',
+  'aria-label',
+] as const
+
+export type EditableAttributeName = (typeof EDITABLE_ATTRIBUTE_NAMES)[number]
+
 export const INLINE_EDITS_KEY = 'pb_inline_edits'
 const SCOPED_INLINE_EDITS_KEY = 'pb_inline_edits_by_scope_v1'
 const LEGACY_INLINE_MIGRATION_KEY = 'pb_inline_edits_legacy_migrated_v1'
@@ -45,6 +55,21 @@ const EDITABLE_TAGS = [
   'div', 'section', 'article',
 ] as const
 
+/** Selector shared by both visual editors. Attribute slots are explicitly
+ * included because several compiler slots live on otherwise non-text nodes
+ * such as images and form controls. */
+export const VISUAL_EDITABLE_SELECTOR = [
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'td', 'th', 'a',
+  'blockquote', 'caption', 'figcaption', 'label', 'button', 'dt', 'dd', 'small',
+  'summary', 'strong', 'em', 'b', 'i', 'cite', 'legend', 'address', 'time',
+  'code', 'pre', 'caption', 'option', 'title', 'select',
+  'div:not(:has(h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,caption,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,option,div,section,article))',
+  'section:not(:has(*))',
+  'article:not(:has(*))',
+  '[data-dc-edit-id][data-dc-edit-attribute]',
+  '[data-pb-edit-id][data-pb-edit-attribute]',
+].join(',')
+
 const EDITABLE_OPEN_TAG_RE = new RegExp(
   `<(${EDITABLE_TAGS.join('|')})\\b([^>]*)>`,
   'gi',
@@ -54,7 +79,9 @@ const EXISTING_DC_EDIT_ID_RE = /\sdata-dc-edit-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>
 const EXISTING_PB_EDIT_ID_RE = /\sdata-pb-edit-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
 const READ_DC_EDIT_ID_RE = /\bdata-dc-edit-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
 const READ_PB_EDIT_ID_RE = /\bdata-pb-edit-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
+const READ_EDIT_ATTRIBUTE_RE = /\bdata-(?:dc|pb)-edit-attribute\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
 const SAFE_EDIT_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/
+const EDITABLE_ATTRIBUTE_SET = new Set<string>(EDITABLE_ATTRIBUTE_NAMES)
 
 function escapeHtmlText(value: string): string {
   return value
@@ -96,6 +123,10 @@ export function buildCustomizationScope(
 
 export function isSafeInlineEditId(value: unknown): value is string {
   return typeof value === 'string' && SAFE_EDIT_ID_RE.test(value)
+}
+
+export function isSafeEditableAttribute(value: unknown): value is EditableAttributeName {
+  return typeof value === 'string' && EDITABLE_ATTRIBUTE_SET.has(value)
 }
 
 function readEditId(rawAttrs: string): string | undefined {
@@ -195,7 +226,32 @@ export function annotateEditableElements(html: string, page = 'index.html'): str
   return result
 }
 
-function replaceElementTextById(
+function declaredEditableAttribute(rawTag: string): {
+  declared: boolean
+  attribute?: EditableAttributeName
+} {
+  const match = READ_EDIT_ATTRIBUTE_RE.exec(rawTag)
+  if (!match) return { declared: false }
+  const value = match[1] || match[2] || match[3]
+  return {
+    declared: true,
+    ...(isSafeEditableAttribute(value) ? { attribute: value } : {}),
+  }
+}
+
+export function isEditableAttributeForTag(
+  tagName: unknown,
+  attribute: EditableAttributeName,
+): boolean {
+  if (typeof tagName !== 'string') return false
+  const tag = tagName.toLowerCase()
+  if (attribute === 'content') return tag === 'meta'
+  if (attribute === 'alt') return tag === 'img'
+  if (attribute === 'placeholder') return tag === 'input' || tag === 'textarea'
+  return !['base', 'embed', 'iframe', 'link', 'object', 'script', 'style', 'template'].includes(tag)
+}
+
+function replaceElementValueById(
   html: string,
   id: string,
   updated: string,
@@ -210,6 +266,28 @@ function replaceElementTextById(
   if (!opening) return { html, replaced: false }
 
   const tagName = opening[1]
+  const declaredAttribute = declaredEditableAttribute(opening[0])
+  if (declaredAttribute.declared) {
+    const attribute = declaredAttribute.attribute
+    if (!attribute || !isEditableAttributeForTag(tagName, attribute)) {
+      return { html, replaced: false }
+    }
+    const attributePattern = new RegExp(
+      `(\\s)${escapeRegExp(attribute)}\\s*=\\s*(?:"[^"]*"|'[^']*'|[^\\s>]+)`,
+      'i',
+    )
+    if (!attributePattern.test(opening[0])) return { html, replaced: false }
+    const escapedUpdated = escapeHtmlText(updated)
+    const replacement = opening[0].replace(
+      attributePattern,
+      (_match, leadingSpace: string) => `${leadingSpace}${attribute}="${escapedUpdated}"`,
+    )
+    return {
+      html: html.slice(0, opening.index) + replacement + html.slice(opening.index + opening[0].length),
+      replaced: true,
+    }
+  }
+
   const contentStart = opening.index + opening[0].length
   const matchingTag = new RegExp(`<\\/?${escapeRegExp(tagName)}\\b[^>]*>`, 'gi')
   matchingTag.lastIndex = contentStart
@@ -240,9 +318,9 @@ export function mergeInlineEdit(
   nodeId?: string,
 ): InlineTextEdit[] {
   const trimmed = (original || '').trim()
-  if (!trimmed || trimmed === updated) return edits
-  const next = edits.map((edit) => ({ ...edit }))
   const safeNodeId = isSafeInlineEditId(nodeId) ? nodeId : undefined
+  if ((!trimmed && !safeNodeId) || trimmed === updated) return edits
+  const next = edits.map((edit) => ({ ...edit }))
 
   if (safeNodeId) {
     const targeted = next.find((edit) => editNodeId(edit) === safeNodeId)
@@ -267,7 +345,11 @@ export function mergeInlineEdit(
     if (safeNodeId) existing.nodeId = safeNodeId
     return next
   }
-  next.push({ ...(safeNodeId ? { nodeId: safeNodeId } : {}), original: trimmed, updated })
+  next.push({
+    ...(safeNodeId ? { nodeId: safeNodeId } : {}),
+    ...(trimmed ? { original: trimmed } : {}),
+    updated,
+  })
   return next
 }
 
@@ -289,7 +371,7 @@ export function applyInlineEditsToHtmlWithReport(
     if (!edit || typeof edit.updated !== 'string') continue
     const nodeId = editNodeId(edit)
     if (nodeId) {
-      const targeted = replaceElementTextById(result, nodeId, edit.updated)
+      const targeted = replaceElementValueById(result, nodeId, edit.updated)
       result = targeted.html
       if (targeted.replaced) continue
       unmatchedNodeIds.add(nodeId)

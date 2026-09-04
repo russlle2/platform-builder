@@ -76,7 +76,37 @@ test('rejects malformed expressions, synthetic proof, fixed claims, and sensitiv
   assert.match(errors, /unsupported template expression/i);
   assert.match(errors, /testimonial/i);
   assert.match(errors, /hard-coded offer price/i);
-  assert.match(errors, /guaranteed outcome/i);
+  assert.match(errors, /unsupported outcome/i);
   assert.match(errors, /hard-coded external/i);
+  assert.match(errors, /sensitive health information/i);
+});
+
+test('rejects adversarial sample identity, medical outcomes, proof, and sensitive intake copy', () => {
+  const pages = new Map([
+    [
+      'index.html',
+      `<main>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p>Jane Doe can be reached at care@example.org or 212-555-0119.</p>
+        <p>Our approach treats depression and provides instant relief.</p>
+        <section id="member-rated-results"><h2>Independently verified recognition</h2></section>
+        <form><label>Trauma history<textarea name="history"></textarea></label></form>
+        <a href="mailto:{{EMAIL}}">Email</a>
+      </main>`,
+    ],
+  ]);
+  const result = validateTemplateContract(pages, [
+    { name: 'BUSINESS_NAME', default: 'Practice' },
+    { name: 'EMAIL' },
+  ]);
+
+  assert.equal(result.pass, false);
+  const errors = result.errors.join('\n');
+  assert.match(errors, /placeholder practitioner name/i);
+  assert.match(errors, /placeholder email/i);
+  assert.match(errors, /placeholder phone/i);
+  assert.match(errors, /unsupported outcome claim/i);
+  assert.match(errors, /unsupported absolute efficacy claim/i);
+  assert.match(errors, /unverified credential or recognition claim/i);
   assert.match(errors, /sensitive health information/i);
 });

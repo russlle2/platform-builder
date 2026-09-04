@@ -274,62 +274,6 @@ export interface OpenAIBatchRecord {
   error_file_id?: string | null;
 }
 
-export class OpenAIRepairBatchClient {
-  readonly apiKey: string;
-  readonly baseUrl: string;
-
-  constructor(apiKey: string, baseUrl = 'https://api.openai.com/v1') {
-    if (!apiKey.trim()) throw new Error('An API key is required only when the explicit cloud lane is enabled');
-    this.apiKey = apiKey;
-    this.baseUrl = baseUrl.replace(/\/$/, '');
-  }
-
-  async #request(path: string, init: RequestInit = {}): Promise<Response> {
-    const headers = new Headers(init.headers);
-    headers.set('authorization', `Bearer ${this.apiKey}`);
-    const response = await fetch(`${this.baseUrl}${path}`, { ...init, headers });
-    if (!response.ok) {
-      const detail = (await response.text()).slice(0, 2_000);
-      throw new Error(`OpenAI API ${response.status}: ${detail}`);
-    }
-    return response;
-  }
-
-  async uploadJsonl(filename: string, jsonl: string): Promise<string> {
-    if (!jsonl.trim()) throw new Error('Cannot upload an empty repair batch');
-    const form = new FormData();
-    form.set('purpose', 'batch');
-    form.set('file', new Blob([jsonl], { type: 'application/jsonl' }), filename);
-    const result = await (await this.#request('/files', { method: 'POST', body: form })).json() as { id?: string };
-    if (!result.id) throw new Error('OpenAI file upload returned no id');
-    return result.id;
-  }
-
-  async create(inputFileId: string): Promise<OpenAIBatchRecord> {
-    const response = await this.#request('/batches', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        input_file_id: inputFileId,
-        endpoint: '/v1/responses',
-        completion_window: LEGACY_MODEL_POLICY.completionWindow,
-        metadata: { pipeline: 'daily-clarity-legacy-rehab-v1' },
-      }),
-    });
-    return response.json() as Promise<OpenAIBatchRecord>;
-  }
-
-  async retrieve(batchId: string): Promise<OpenAIBatchRecord> {
-    if (!/^batch_[A-Za-z0-9_-]+$/.test(batchId)) throw new Error('Invalid batch id');
-    return (await this.#request(`/batches/${batchId}`)).json() as Promise<OpenAIBatchRecord>;
-  }
-
-  async downloadFile(fileId: string): Promise<string> {
-    if (!/^file-[A-Za-z0-9_-]+$/.test(fileId)) throw new Error('Invalid file id');
-    return (await this.#request(`/files/${fileId}/content`)).text();
-  }
-}
-
 export function parseBatchOutput(jsonl: string): Map<string, StructuredRepairPatch> {
   const patches = new Map<string, StructuredRepairPatch>();
   for (const [index, line] of jsonl.split(/\r?\n/).entries()) {

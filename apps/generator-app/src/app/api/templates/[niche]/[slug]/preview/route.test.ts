@@ -19,7 +19,11 @@ const compiledCss = ':root{--dc-theme-color_bg:#fff;--dc-theme-color_cta:#f00}bo
 describe('template preview compiler theme CSS', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mocks.getTemplate.mockResolvedValue({ pages: ['index.html'], fields: [] })
+    mocks.getTemplate.mockResolvedValue({
+      pages: ['index.html'],
+      files: ['index.html', 'assets/css/styles.css'],
+      fields: [],
+    })
     mocks.readTemplateFile.mockImplementation(async (
       _niche: string,
       _template: string,

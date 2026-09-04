@@ -25,11 +25,15 @@ import {
   stableStringify,
 } from './contracts.js';
 import { canonicalDesignHash, createDedupeFingerprint } from './dedupe.js';
+import type { HomepageDonor } from './homepage-donor.js';
 import {
   LEGACY_COMPATIBILITY_SCRIPT,
+  cssBackgroundSlotId,
   detectFoundation,
+  inlineStylesheetPath,
   repairPage,
   repairStylesheet,
+  resolveStaticSelectorTargets,
   type BackgroundSelector,
   type HtmlNode,
 } from './repair.js';
@@ -73,6 +77,7 @@ const REPAIR_STYLESHEET = [
   '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}',
   'body :is(nav,header,[class*="nav"],[class*="row"],[class*="flex"]){flex-wrap:wrap!important}',
   'body :is(.grid,[class*="-grid"],[class*="grid-"]){grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))!important}',
+  'body>svg[aria-hidden]{inset-inline:1px!important;margin-inline:auto!important;max-width:calc(100vw - 2px)!important}',
   'table{display:block;max-width:100%;overflow-x:auto}pre,code{white-space:pre-wrap;overflow-wrap:anywhere}}',
 ].join('');
 const REPAIR_IMAGE = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Calm abstract placeholder"><defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#dce8e2"/><stop offset="1" stop-color="#b9cfc5"/></linearGradient></defs><rect width="1600" height="1000" fill="url(#g)"/><circle cx="1250" cy="220" r="310" fill="#fff" opacity=".2"/></svg>';
@@ -495,15 +500,23 @@ function separatePageContent(pages: Readonly<Record<string, string>>): Separated
       const imageId = getAttr(node, 'data-dc-image-id');
       if (!imageId) return;
       const src = getAttr(node, 'src');
+      const srcset = getAttr(node, 'srcset');
+      if (src || srcset) {
+        const attribute = src ? 'src' as const : 'srcset' as const;
+        images.push({
+          slotId: imageId,
+          page,
+          kind: 'image',
+          source: src ?? srcset!,
+          attribute,
+          ...(src && srcset ? { srcset } : {}),
+        });
+      }
       if (src) {
-        images.push({ slotId: imageId, page, kind: 'image', source: src, attribute: 'src' });
         setAttr(node, 'src', `__DC_IMAGE_${imageId}__`);
       }
-      const srcset = getAttr(node, 'srcset');
       if (srcset) {
-        const slotId = `${imageId}_srcset`;
-        images.push({ slotId, page, kind: 'image', source: srcset, attribute: 'srcset' });
-        setAttr(node, 'srcset', `__DC_IMAGE_${slotId}__`);
+        setAttr(node, 'srcset', `__DC_SRCSET_${imageId}__`);
       }
       const style = getAttr(node, 'style');
       if (style && /background(?:-image)?\s*:[^;]*url\(/i.test(style)) {
@@ -551,6 +564,7 @@ function separatePageContent(pages: Readonly<Record<string, string>>): Separated
 function separateTheme(
   styles: Readonly<Record<string, string>>,
   previousPreset?: ThemePreset,
+  editableCssBackgroundPages: ReadonlyMap<string, readonly string[]> = new Map<string, readonly string[]>(),
 ): SeparatedTheme {
   const designStyles: Record<string, string> = {};
   const tokens: ThemeToken[] = [];
@@ -593,6 +607,7 @@ function separateTheme(
     });
     let correctedTextColors = 0;
     let declarationIndex = 0;
+    let backgroundImageIndex = 0;
     root.walkAtRules('import', (rule) => {
       if (/fonts\.(?:googleapis|gstatic)\.com/i.test(rule.params)) {
         fontImports.add(`@import ${rule.params};`);
@@ -628,19 +643,23 @@ function separateTheme(
       });
 
       if (/^background(?:-image)?$/i.test(declaration.prop)) {
-        let imageIndex = 0;
         declaration.value = declaration.value.replace(BACKGROUND_URL_RE, (_full, _quote, url: string) => {
           const source = url.trim();
-          if (/^data:image/i.test(source)) return _full;
-          const id = `css_${sha256(`${file}:${currentDeclaration}:image:${imageIndex++}`).slice(0, 16)}`;
-          images.push({
-            slotId: id,
-            page: file,
-            kind: 'background',
-            source,
-            selector: declaration.parent?.type === 'rule' ? declaration.parent.selector : undefined,
-            attribute: 'css-url',
-          });
+          if (!source || /^data:image/i.test(source)) return _full;
+          const id = cssBackgroundSlotId(file, backgroundImageIndex++);
+          const targetPages = editableCssBackgroundPages.get(id);
+          if (!targetPages?.length) return _full;
+          for (const page of targetPages) {
+            images.push({
+              slotId: id,
+              page,
+              kind: 'background',
+              source,
+              stylesheet: file,
+              selector: declaration.parent?.type === 'rule' ? declaration.parent.selector : undefined,
+              attribute: 'css-url',
+            });
+          }
           return `url("__DC_IMAGE_${id}__")`;
         });
       }
@@ -679,13 +698,14 @@ export function applyContentPreset(
       else if (entry) restoreChildren(node, entry.html);
       const imageId = getAttr(node, 'data-dc-image-id');
       if (!imageId) return;
-      for (const image of preset.images.filter((item) => item.page === page && (item.slotId === imageId || item.slotId.startsWith(`${imageId}_`)))) {
+      for (const image of preset.images.filter((item) => item.page === page && item.slotId === imageId)) {
         if (image.attribute === 'src') setAttr(node, 'src', image.source);
         else if (image.attribute === 'srcset') setAttr(node, 'srcset', image.source);
         else if (image.attribute === 'style') {
           const style = getAttr(node, 'style') ?? '';
           setAttr(node, 'style', style.replace(`__DC_IMAGE_${image.slotId}__`, image.source));
         }
+        if (image.srcset !== undefined) setAttr(node, 'srcset', image.srcset);
       }
     });
     output[page] = serialize(document as never);
@@ -702,8 +722,16 @@ export function applyThemePreset(
   const output: Record<string, string> = {};
   for (const file of Object.keys(designStyles).sort()) {
     let css = designStyles[file]!;
-    for (const image of images.filter((item) => item.page === file && item.attribute === 'css-url')) {
-      css = css.split(`__DC_IMAGE_${image.slotId}__`).join(cssEscapeString(image.source));
+    const stylesheetImages = new Map<string, string>();
+    for (const image of images.filter((item) => (item.stylesheet ?? item.page) === file && item.attribute === 'css-url')) {
+      const previous = stylesheetImages.get(image.slotId);
+      if (previous !== undefined && previous !== image.source) {
+        throw new Error(`Conflicting baseline sources for CSS background slot ${image.slotId} in ${file}`);
+      }
+      stylesheetImages.set(image.slotId, image.source);
+    }
+    for (const [slotId, source] of stylesheetImages) {
+      css = css.split(`__DC_IMAGE_${slotId}__`).join(cssEscapeString(source));
     }
     // A template may externalize one stylesheet per legacy page. Prefix only
     // the variables referenced by this file instead of copying the complete
@@ -748,6 +776,194 @@ function localTarget(owner: string, reference: string): string | undefined {
     : posix.normalize(posix.join(posix.dirname(owner), decoded));
 }
 
+function importedStylesheetReference(params: string): string | undefined {
+  return params.match(/^(?:url\()?\s*(['"]?)(.*?)\1\s*\)?(?:\s+.*)?$/i)?.[2]?.trim() || undefined;
+}
+
+function linkedStylesheets(
+  page: string,
+  html: string,
+  styles: Readonly<Record<string, string>>,
+): Set<string> {
+  const stylesByLowerPath = new Map(Object.keys(styles).map((path) => [normalizePath(path).toLowerCase(), path]));
+  const linked = new Set<string>();
+  const pending: string[] = [];
+  const addReference = (owner: string, reference: string | undefined): void => {
+    const target = reference ? localTarget(owner, reference) : undefined;
+    const actual = target ? stylesByLowerPath.get(normalizePath(target).toLowerCase()) : undefined;
+    if (!actual || linked.has(actual)) return;
+    linked.add(actual);
+    pending.push(actual);
+  };
+
+  const document = parse(html) as unknown as HtmlNode;
+  walk(document, (node) => {
+    if (node.tagName === 'link') {
+      const rel = (getAttr(node, 'rel') ?? '').toLowerCase().split(/\s+/);
+      if (rel.includes('stylesheet')) addReference(page, getAttr(node, 'href'));
+      return;
+    }
+    if (node.tagName !== 'style') return;
+    try {
+      const root = postcss.parse(textContent(node), { from: page });
+      root.walkAtRules('import', (rule) => addReference(page, importedStylesheetReference(rule.params)));
+    } catch {
+      // A malformed inline stylesheet cannot safely establish applicability.
+    }
+  });
+
+  while (pending.length > 0) {
+    const stylesheet = pending.pop()!;
+    try {
+      const root = postcss.parse(styles[stylesheet]!, { from: stylesheet });
+      root.walkAtRules('import', (rule) => addReference(stylesheet, importedStylesheetReference(rule.params)));
+    } catch {
+      // repairStylesheet already records malformed CSS; keep this resolver closed.
+    }
+  }
+  return linked;
+}
+
+interface CssBackgroundBindingResult {
+  boundSlotIds: Set<string>;
+  pagesBySlot: Map<string, readonly string[]>;
+  imageIds: string[];
+  boundTargets: number;
+  unsupportedSlots: number;
+  multipleMatchSlots: number;
+  conflictingSlots: number;
+  unmatchedSlots: number;
+}
+
+/**
+ * Bind a CSS image slot only when every applicable static selector resolves to
+ * at most one real element per page and no element is claimed by two slots.
+ * Unbound CSS keeps its literal URL in the design and is never advertised as
+ * editable. A shared stylesheet may reuse one slot ID across pages because
+ * persisted image swaps are page-scoped.
+ */
+function bindCssBackgroundTargets(
+  pages: Record<string, string>,
+  styles: Readonly<Record<string, string>>,
+  backgrounds: readonly BackgroundSelector[],
+): CssBackgroundBindingResult {
+  const documents = new Map<string, HtmlNode>();
+  const applicable = new Map<string, Set<string>>();
+  for (const [page, html] of Object.entries(pages)) {
+    const document = parse(html) as unknown as HtmlNode;
+    // Remove IDs emitted by the former last-compound heuristic before proving
+    // the target again. Native image and inline-background IDs are retained.
+    walk(document, (node) => {
+      const existing = getAttr(node, 'data-dc-image-id');
+      const inlineBackground = /background(?:-image)?\s*:[^;]*url\(/i.test(getAttr(node, 'style') ?? '');
+      if (
+        existing && /^(?:css|img)_[a-f0-9]{18}$/.test(existing) &&
+        !['img', 'source'].includes(node.tagName ?? '') && !inlineBackground
+      ) removeAttr(node, 'data-dc-image-id');
+    });
+    documents.set(page, document);
+    applicable.set(page, linkedStylesheets(page, serialize(document as never), styles));
+  }
+
+  const bySlot = new Map<string, BackgroundSelector[]>();
+  for (const background of backgrounds) {
+    const entries = bySlot.get(background.slotId) ?? [];
+    entries.push(background);
+    bySlot.set(background.slotId, entries);
+  }
+
+  const unsafe = new Set<string>();
+  const unsupported = new Set<string>();
+  const multiple = new Set<string>();
+  const conflicts = new Set<string>();
+  const targetsBySlot = new Map<string, Array<{ page: string; node: HtmlNode }>>();
+  for (const [slotId, entries] of bySlot) {
+    const stylesheet = entries[0]!.stylesheet;
+    if (entries.some((entry) => entry.stylesheet !== stylesheet)) {
+      unsafe.add(slotId);
+      conflicts.add(slotId);
+      continue;
+    }
+    const targets: Array<{ page: string; node: HtmlNode }> = [];
+    for (const [page, document] of documents) {
+      if (!applicable.get(page)?.has(stylesheet)) continue;
+      const pageTargets = new Set<HtmlNode>();
+      for (const entry of entries) {
+        const matches = resolveStaticSelectorTargets(document, entry.selector);
+        if (!matches) {
+          unsafe.add(slotId);
+          unsupported.add(slotId);
+          break;
+        }
+        for (const match of matches) pageTargets.add(match);
+      }
+      if (unsafe.has(slotId)) break;
+      if (pageTargets.size > 1) {
+        unsafe.add(slotId);
+        multiple.add(slotId);
+        break;
+      }
+      const target = [...pageTargets][0];
+      if (target) targets.push({ page, node: target });
+    }
+    targetsBySlot.set(slotId, targets);
+  }
+
+  const slotsByNode = new Map<HtmlNode, Set<string>>();
+  for (const [slotId, targets] of targetsBySlot) {
+    if (unsafe.has(slotId)) continue;
+    for (const { node } of targets) {
+      const existing = getAttr(node, 'data-dc-image-id');
+      const inlineBackground = /background(?:-image)?\s*:[^;]*url\(/i.test(getAttr(node, 'style') ?? '');
+      if (existing || ['img', 'source'].includes(node.tagName ?? '') || inlineBackground) {
+        unsafe.add(slotId);
+        conflicts.add(slotId);
+        continue;
+      }
+      const slots = slotsByNode.get(node) ?? new Set<string>();
+      slots.add(slotId);
+      slotsByNode.set(node, slots);
+    }
+  }
+  for (const slots of slotsByNode.values()) {
+    const safe = [...slots].filter((slotId) => !unsafe.has(slotId));
+    if (safe.length < 2) continue;
+    for (const slotId of safe) {
+      unsafe.add(slotId);
+      conflicts.add(slotId);
+    }
+  }
+
+  const boundSlotIds = new Set<string>();
+  const pagesBySlot = new Map<string, readonly string[]>();
+  const imageIds: string[] = [];
+  let boundTargets = 0;
+  const changedPages = new Set<string>();
+  for (const [slotId, targets] of targetsBySlot) {
+    if (unsafe.has(slotId) || targets.length === 0) continue;
+    boundSlotIds.add(slotId);
+    pagesBySlot.set(slotId, targets.map(({ page }) => page).sort());
+    for (const { page, node } of targets) {
+      setAttr(node, 'data-dc-image-id', slotId);
+      imageIds.push(slotId);
+      boundTargets += 1;
+      changedPages.add(page);
+    }
+  }
+  for (const page of changedPages) pages[page] = serialize(documents.get(page)! as never);
+
+  return {
+    boundSlotIds,
+    pagesBySlot,
+    imageIds,
+    boundTargets,
+    unsupportedSlots: unsupported.size,
+    multipleMatchSlots: multiple.size,
+    conflictingSlots: conflicts.size,
+    unmatchedSlots: [...bySlot.keys()].filter((slotId) => !unsafe.has(slotId) && (targetsBySlot.get(slotId)?.length ?? 0) === 0).length,
+  };
+}
+
 function relativeReference(owner: string, target: string): string {
   return posix.relative(posix.dirname(owner), target) || posix.basename(target);
 }
@@ -790,6 +1006,15 @@ function repairLocalReferences(
       const rel = (getAttr(node, 'rel') ?? '').toLowerCase().split(/\s+/);
       for (const name of ['src', 'poster', 'href', 'action', 'formaction', 'xlink:href'] as const) {
         const value = getAttr(node, name);
+        if (value === undefined) continue;
+        const visualReference = (node.tagName === 'img' || node.tagName === 'source' || name === 'poster')
+          && (name === 'src' || name === 'poster');
+        if (visualReference && (!value.trim() || value.trim() === '#')) {
+          setAttr(node, name, relativeReference(page, REPAIR_IMAGE_PATH));
+          repaired += 1;
+          issues.push({ code: 'empty-image-reference-repaired', severity: 'warning', file: page, message: 'Replaced an empty or fragment-only image reference with the local editable placeholder.', resolved: true });
+          continue;
+        }
         if (!value) continue;
         const target = localTarget(page, value);
         if (!target) continue;
@@ -823,12 +1048,17 @@ function repairLocalReferences(
       const srcset = getAttr(node, 'srcset');
       if (srcset) {
         const candidates = srcset.split(',').map((candidate) => candidate.trim().split(/\s+/, 1)[0]!).filter(Boolean);
-        if (candidates.some((candidate) => {
+        if (candidates.some((candidate) => candidate === '#' || !candidate || (() => {
           const target = localTarget(page, candidate);
           return target && !known.has(target.toLowerCase());
-        })) {
-          removeAttr(node, 'srcset');
+        })())) {
+          if (node.tagName === 'img' || node.tagName === 'source') {
+            setAttr(node, 'srcset', relativeReference(page, REPAIR_IMAGE_PATH));
+          } else {
+            removeAttr(node, 'srcset');
+          }
           repaired += 1;
+          issues.push({ code: 'invalid-srcset-repaired', severity: 'warning', file: page, message: 'Replaced an unresolved image candidate set with the local editable placeholder.', resolved: true });
         }
       }
     });
@@ -952,13 +1182,17 @@ function externalizeInlineStyles(
       if (node.tagName !== 'style') return;
       const styleIndex = index++;
       const css = textContent(node);
+      // Browser-derived safety rules must stay inline. Re-externalizing this
+      // block on a resumed remediation pass can make its deterministic filename
+      // import itself, silently discarding the earlier rules.
+      if (getAttr(node, 'id') === 'dc-a11y-contrast-overrides') return;
       if (/^\s*@import\s+url\(["']?\.dc-inline-[a-f0-9]+\.css["']?\)\s*;?\s*$/i.test(css)) return;
-      const directory = page.includes('/') ? page.slice(0, page.lastIndexOf('/') + 1) : '';
       // Count already-externalized style nodes as occupied positions. Without
       // that, adding a later remediation style on a second compiler pass can
       // reuse :0 and overwrite the page's original stylesheet.
-      const filename = `.dc-inline-${sha256(`${page}:${styleIndex}`).slice(0, 16)}.css`;
-      styles[`${directory}${filename}`] = css;
+      const stylesheetPath = inlineStylesheetPath(page, styleIndex);
+      const filename = stylesheetPath.slice(stylesheetPath.lastIndexOf('/') + 1);
+      styles[stylesheetPath] = css;
       node.childNodes = [{ nodeName: '#text', value: `@import url("${filename}");`, parentNode: node }];
       changed += 1;
     });
@@ -997,14 +1231,31 @@ function buildReceipt(input: {
     return matches.length === 1;
   }).length;
   const uniqueEditIds = new Set(input.editIds);
-  const uniqueImageIds = new Set(input.imageIds);
+  const reportedImageIds = new Set(input.imageIds);
+  const imageIdsByPage = Object.entries(input.pages).map(([page, html]) => ({
+    page,
+    ids: [...html.matchAll(/\bdata-dc-image-id\s*=\s*["']([^"']+)["']/gi)].map((match) => match[1]!),
+  }));
+  const duplicateImageIdPages = imageIdsByPage
+    .filter(({ ids }) => new Set(ids).size !== ids.length)
+    .map(({ page }) => page);
+  const actualImageIds = new Set(imageIdsByPage.flatMap(({ ids }) => ids));
+  const unreportedImageIds = [...actualImageIds].filter((id) => !reportedImageIds.has(id));
   const blockingIssues = input.issues.filter((issue) => !issue.resolved && (issue.severity === 'error' || issue.severity === 'critical'));
   const checks: QualityCheck[] = [
     { code: 'publication-contract', pass: contract.pass, detail: contract.pass ? `${contract.tokens.length} supported personalization tokens` : contract.errors.join('; ') },
     { code: 'active-content-safety', pass: unsafeMarkup.length === 0, detail: unsafeMarkup.length ? `Unsafe active markup remains in ${unsafeMarkup.join(', ')}` : 'Only the audited local compatibility runtime remains' },
     { code: 'compatibility-runtime', pass: runtimePages === Object.keys(input.pages).length, detail: `${runtimePages}/${Object.keys(input.pages).length} pages install exactly one runtime` },
     { code: 'stable-edit-ids', pass: input.editIds.length > 0 && uniqueEditIds.size === input.editIds.length, detail: `${uniqueEditIds.size} unique editable text IDs` },
-    { code: 'stable-image-ids', pass: uniqueImageIds.size === input.imageIds.length, detail: `${uniqueImageIds.size} unique image IDs` },
+    {
+      code: 'stable-image-ids',
+      pass: duplicateImageIdPages.length === 0 && unreportedImageIds.length === 0,
+      detail: duplicateImageIdPages.length
+        ? `Duplicate image IDs within ${duplicateImageIdPages.join(', ')}`
+        : unreportedImageIds.length
+          ? `Unreported image IDs: ${unreportedImageIds.join(', ')}`
+          : `${actualImageIds.size} stable page-scoped image IDs`,
+    },
     { code: 'resolved-blockers', pass: blockingIssues.length === 0, detail: blockingIssues.length ? blockingIssues.map((issue) => issue.code).join(', ') : 'No unresolved deterministic blockers' },
   ];
   const failed = checks.some((check) => !check.pass);
@@ -1025,7 +1276,7 @@ function buildReceipt(input: {
  * Deterministically repairs one immutable legacy source tree and emits a v3
  * design/content/theme composition. No filesystem reads or writes occur here.
  */
-export function repairLegacyTemplate(input: LegacyTemplateInput): RepairResult {
+export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDonor?: HomepageDonor }): RepairResult {
   const files = new Map<string, string | Uint8Array>();
   for (const [path, value] of input.files) files.set(normalizePath(path), value);
   const rawManifest = input.manifest ?? parseJson(files.get('template.json')) ?? {};
@@ -1041,9 +1292,23 @@ export function repairLegacyTemplate(input: LegacyTemplateInput): RepairResult {
   rehabilitateDuplicateInnerPages(htmlSources, input.niche, issues, transformations);
   if (!htmlSources.has('index.html') && htmlSources.size > 0) {
     const fallback = [...htmlSources.entries()].sort(([a], [b]) => a.localeCompare(b))[0]!;
-    htmlSources.set('index.html', adaptLegacyPageShell(fallback[1], 'home', input.niche, extractRoleSourceExcerpt(fallback[1])));
-    issues.push({ code: 'homepage-reconstructed', severity: 'warning', file: 'index.html', message: `Reconstructed the missing homepage with the vetted home adapter inside the safe source shell from ${fallback[0]}; the immutable original remains archived.`, resolved: true });
-    transformations.push({ rule: 'reconstruct-missing-homepage', file: 'index.html', count: 1, detail: `${fallback[0]}:home-role-adapter` });
+    const donor = input.homepageDonor;
+    if (donor && (donor.niche !== input.niche || donor.legacySlug === input.slug || sha256(donor.html) !== donor.contentHash)) {
+      throw new Error(`Invalid homepage donor for ${input.niche}/${input.slug}`);
+    }
+    const shell = donor?.html ?? fallback[1];
+    htmlSources.set('index.html', adaptLegacyPageShell(shell, 'home', input.niche, extractRoleSourceExcerpt(fallback[1])));
+    const source = donor ? `${donor.niche}/${donor.legacySlug}/index.html` : fallback[0];
+    const strategy = donor ? 'nearest safe same-niche design' : 'same-template page fallback';
+    issues.push({ code: 'homepage-reconstructed', severity: 'warning', file: 'index.html', message: `Reconstructed the missing homepage from the ${strategy} (${source}) with the vetted home adapter; the immutable original remains archived.`, resolved: true });
+    transformations.push({
+      rule: 'reconstruct-missing-homepage',
+      file: 'index.html',
+      count: 1,
+      detail: donor
+        ? `${source}:home-role-adapter;donorTree=${donor.sourceTreeHash};donorPage=${donor.contentHash};score=${donor.selectionScore}`
+        : `${source}:home-role-adapter`,
+    });
   }
   if (htmlSources.size === 0) {
     const neutral = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{BUSINESS_NAME}}</title></head><body><main><h1>{{BUSINESS_NAME}}</h1><p>Ask about current services and availability.</p><a href="mailto:{{EMAIL}}">Get in touch</a></main></body></html>';
@@ -1080,22 +1345,38 @@ export function repairLegacyTemplate(input: LegacyTemplateInput): RepairResult {
       fields: normalizedFields,
       pageNames,
       ...(foundation ? { foundation } : {}),
-      backgroundSelectors,
     });
     repairedPages[path] = result.html;
     pageFields.push(result.fields);
     editIds.push(...result.editIds);
     imageIds.push(...result.imageIds);
+    backgroundSelectors.push(...result.backgroundSelectors);
     issues.push(...result.issues);
     transformations.push(...result.transformations);
   }
   externalizeInlineStyles(repairedPages, repairedStyles, transformations);
   repairLocalReferences(repairedPages, repairedStyles, [...files.keys()], issues, transformations);
+  const cssBackgroundBindings = bindCssBackgroundTargets(repairedPages, repairedStyles, backgroundSelectors);
+  imageIds.push(...cssBackgroundBindings.imageIds);
+  if (backgroundSelectors.length > 0) {
+    transformations.push({
+      rule: 'bind-css-background-edit-slots',
+      file: '*',
+      count: cssBackgroundBindings.boundTargets,
+      detail: [
+        `editableSlots=${cssBackgroundBindings.boundSlotIds.size}`,
+        `unsupported=${cssBackgroundBindings.unsupportedSlots}`,
+        `multiple=${cssBackgroundBindings.multipleMatchSlots}`,
+        `conflicts=${cssBackgroundBindings.conflictingSlots}`,
+        `unmatched=${cssBackgroundBindings.unmatchedSlots}`,
+      ].join(';'),
+    });
+  }
   const canonicalFields = mergeFields(pageFields);
   manifest.placeholders = canonicalFields.map((field) => `{{${field.name}}}`);
 
   const separatedContent = separatePageContent(repairedPages);
-  const separatedTheme = separateTheme(repairedStyles, previousThemePreset);
+  const separatedTheme = separateTheme(repairedStyles, previousThemePreset, cssBackgroundBindings.pagesBySlot);
   transformations.push(...separatedTheme.corrections);
   const presetImages = [...separatedContent.images, ...separatedTheme.images]
     .sort((a, b) => `${a.page}:${a.slotId}`.localeCompare(`${b.page}:${b.slotId}`));

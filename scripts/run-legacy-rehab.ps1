@@ -10,7 +10,7 @@ param(
     [string]$WorkRoot,
 
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$')]
-    [string]$RuleVersion = 'legacy-rehab-1.0.14',
+    [string]$RuleVersion = 'legacy-rehab-1.0.15',
 
     [ValidateRange(100, 10000)]
     [int]$PilotSize = 100,
@@ -33,11 +33,196 @@ param(
     [ValidateRange(1, 60)]
     [int]$RetryDelayMinutes = 2,
 
+    [string]$PnpmPath,
+
+    [switch]$Preflight,
+
+    [switch]$UsePersistedPath,
+
+    [switch]$CloudRepair,
+
     [switch]$Json
 )
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+if ($UsePersistedPath -and -not $Preflight) {
+    throw '-UsePersistedPath is only valid with -Preflight.'
+}
+if ($CloudRepair -and $Preflight) {
+    throw '-CloudRepair cannot be used with -Preflight.'
+}
+if ($CloudRepair -and $Command -notin @('pilot', 'run')) {
+    throw '-CloudRepair is only valid with the pilot or run command.'
+}
+
+function Get-PersistedWindowsPath {
+    $segments = @(
+        [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::Machine),
+        [Environment]::GetEnvironmentVariable('Path', [EnvironmentVariableTarget]::User)
+    ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+
+    if ($segments.Count -eq 0) {
+        throw 'The persisted Windows user and machine PATH values are both empty.'
+    }
+    return ($segments | ForEach-Object { $_.Trim(';') }) -join ';'
+}
+
+function Get-ExpectedPnpmVersion {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackageJsonPath
+    )
+
+    $packageDocument = Get-Content -LiteralPath $PackageJsonPath -Raw | ConvertFrom-Json
+    $packageManager = [string]$packageDocument.packageManager
+    if ($packageManager -notmatch '^pnpm@(?<Version>[0-9]+(?:\.[0-9]+){2}(?:[-+][A-Za-z0-9.-]+)?)$') {
+        throw "Repository packageManager must pin an exact pnpm version: $packageManager"
+    }
+    return $Matches.Version
+}
+
+function Test-PackageManagerCandidate {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Executable,
+
+        [string[]]$PrefixArguments = @(),
+
+        [Parameter(Mandatory = $true)]
+        [string]$ExpectedVersion,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Kind,
+
+        [Parameter(Mandatory = $true)]
+        [string]$WorkingDirectory
+    )
+
+    Push-Location $WorkingDirectory
+    try {
+        $versionOutput = & $Executable @PrefixArguments '--version' 2>&1
+        $exitCode = $LASTEXITCODE
+    }
+    finally {
+        Pop-Location
+    }
+    $versionLines = @($versionOutput | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    $actualVersion = if ($versionLines.Count -gt 0) { $versionLines[-1].Trim() } else { '' }
+    if ($exitCode -ne 0) {
+        throw "$Kind failed its version probe with exit code ${exitCode}: $($versionLines -join ' ')"
+    }
+    if ($actualVersion -ne $ExpectedVersion) {
+        throw "$Kind resolved pnpm $actualVersion, but the repository requires pnpm $ExpectedVersion."
+    }
+
+    return [pscustomobject]@{
+        Executable = $Executable
+        PrefixArguments = @($PrefixArguments)
+        Version = $actualVersion
+        Kind = $Kind
+    }
+}
+
+function Resolve-LegacyRehabPackageManager {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$PackageJsonPath,
+
+        [string]$ExplicitPnpmPath
+    )
+
+    $expectedVersion = Get-ExpectedPnpmVersion -PackageJsonPath $PackageJsonPath
+    $repositoryRoot = Split-Path -Parent $PackageJsonPath
+    if (-not [string]::IsNullOrWhiteSpace($ExplicitPnpmPath)) {
+        $expandedPath = [Environment]::ExpandEnvironmentVariables($ExplicitPnpmPath)
+        $resolvedPath = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $expandedPath -ErrorAction Stop).Path)
+        if (-not (Test-Path -LiteralPath $resolvedPath -PathType Leaf)) {
+            throw "Explicit pnpm path is not a file: $resolvedPath"
+        }
+        return Test-PackageManagerCandidate `
+            -Executable $resolvedPath `
+            -ExpectedVersion $expectedVersion `
+            -Kind 'explicit pnpm executable' `
+            -WorkingDirectory $repositoryRoot
+    }
+
+    $candidateErrors = New-Object System.Collections.Generic.List[string]
+    foreach ($commandName in @('pnpm.cmd', 'pnpm')) {
+        $command = Get-Command $commandName -CommandType Application, ExternalScript -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $command) {
+            continue
+        }
+        try {
+            return Test-PackageManagerCandidate `
+                -Executable $command.Source `
+                -ExpectedVersion $expectedVersion `
+                -Kind "PATH $commandName" `
+                -WorkingDirectory $repositoryRoot
+        }
+        catch {
+            [void]$candidateErrors.Add($_.Exception.Message)
+        }
+    }
+
+    foreach ($commandName in @('corepack.cmd', 'corepack.exe', 'corepack')) {
+        $command = Get-Command $commandName -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+        if (-not $command) {
+            continue
+        }
+        try {
+            return Test-PackageManagerCandidate `
+                -Executable $command.Source `
+                -PrefixArguments @('pnpm') `
+                -ExpectedVersion $expectedVersion `
+                -Kind "Corepack ($commandName)" `
+                -WorkingDirectory $repositoryRoot
+        }
+        catch {
+            [void]$candidateErrors.Add($_.Exception.Message)
+        }
+    }
+
+    $detail = if ($candidateErrors.Count -gt 0) { ' ' + ($candidateErrors -join ' ') } else { '' }
+    throw "Neither a repository-compatible pnpm executable nor a working Corepack fallback was found.$detail"
+}
+
+function Invoke-LegacyRehabPackageManagerProbe {
+    param(
+        [Parameter(Mandatory = $true)]
+        [psobject]$PackageManager,
+
+        [Parameter(Mandatory = $true)]
+        [string]$RepositoryRoot
+    )
+
+    $cliArguments = @($PackageManager.PrefixArguments) + @(
+        '--dir', $RepositoryRoot,
+        '--filter', '@platform/template-factory',
+        'exec', 'tsx', 'src/legacy/cli.ts', '--help'
+    )
+    $cliOutput = & $PackageManager.Executable @cliArguments 2>&1
+    $cliExitCode = $LASTEXITCODE
+    $cliText = ($cliOutput | ForEach-Object { [string]$_ }) -join "`n"
+    if ($cliExitCode -ne 0 -or $cliText -notmatch 'Legacy Catalogue Rehabilitation Compiler') {
+        throw "The legacy compiler CLI preflight failed with exit code ${cliExitCode}: $cliText"
+    }
+
+    $factoryRoot = Join-Path $RepositoryRoot 'packages\template-factory'
+    $browserProbe = "import { existsSync } from 'node:fs'; import { chromium } from '@playwright/test'; const path = chromium.executablePath(); if (!existsSync(path)) { console.error('Missing Chromium: ' + path); process.exit(2); } console.log(path);"
+    $browserArguments = @($PackageManager.PrefixArguments) + @(
+        '--dir', $factoryRoot,
+        'exec', 'node', '--input-type=module', '--eval', $browserProbe
+    )
+    $browserOutput = & $PackageManager.Executable @browserArguments 2>&1
+    $browserExitCode = $LASTEXITCODE
+    $browserLines = @($browserOutput | ForEach-Object { [string]$_ } | Where-Object { -not [string]::IsNullOrWhiteSpace($_) })
+    if ($browserExitCode -ne 0 -or $browserLines.Count -eq 0) {
+        throw "The Playwright Chromium preflight failed with exit code ${browserExitCode}: $($browserLines -join ' ')"
+    }
+    return $browserLines[-1].Trim()
+}
 
 function Get-NormalizedFullPath {
     param(
@@ -152,6 +337,13 @@ if (-not (Test-Path -LiteralPath $packageJsonPath -PathType Leaf)) {
     throw "Repository package.json was not found at $packageJsonPath"
 }
 
+if ($UsePersistedPath) {
+    # Task Scheduler starts the action from the account's persisted environment,
+    # not from Codex's process-local dependency PATH. Exercise that exact lookup
+    # during installation without modifying the user's PATH.
+    $env:PATH = Get-PersistedWindowsPath
+}
+
 $resolvedSourceRoot = Get-NormalizedFullPath -Path $SourceRoot -MustExist
 if (-not (Test-Path -LiteralPath $resolvedSourceRoot -PathType Container)) {
     throw "Legacy source root is not a directory: $resolvedSourceRoot"
@@ -178,20 +370,31 @@ if ($resolvedWorkRoot.Equals([IO.Path]::GetPathRoot($resolvedWorkRoot), [StringC
     throw "Refusing to use a filesystem root as the rehabilitation work root: $resolvedWorkRoot"
 }
 
+$packageManager = Resolve-LegacyRehabPackageManager `
+    -PackageJsonPath $packageJsonPath `
+    -ExplicitPnpmPath $PnpmPath
+
+if ($Preflight) {
+    $chromiumPath = Invoke-LegacyRehabPackageManagerProbe `
+        -PackageManager $packageManager `
+        -RepositoryRoot $repositoryRoot
+    Write-Host 'Legacy rehabilitation preflight passed.'
+    Write-Host "Package manager: $($packageManager.Kind) -> pnpm $($packageManager.Version)"
+    Write-Host "Package-manager executable: $($packageManager.Executable)"
+    Write-Host "Playwright Chromium: $chromiumPath"
+    Write-Host 'No rehabilitation work-root files were created or modified by this preflight.'
+    return
+}
+
 [void](New-Item -ItemType Directory -Path $resolvedWorkRoot -Force)
 $runnerLogRoot = Join-Path $resolvedWorkRoot 'runner-logs'
 [void](New-Item -ItemType Directory -Path $runnerLogRoot -Force)
 
-$pnpmCommand = Get-Command 'pnpm.cmd' -ErrorAction SilentlyContinue
-if (-not $pnpmCommand) {
-    $pnpmCommand = Get-Command 'pnpm' -ErrorAction SilentlyContinue
-}
-if (-not $pnpmCommand) {
-    throw 'pnpm was not found on PATH. Install the repository package-manager version before running rehabilitation.'
-}
-
 $compilerArguments = @(
-    'templates:legacy',
+    '--silent',
+    '--dir', $repositoryRoot,
+    '--filter', '@platform/template-factory',
+    'exec', 'tsx', 'src/legacy/cli.ts',
     $Command,
     '--source', $resolvedSourceRoot,
     '--work-root', $resolvedWorkRoot,
@@ -215,6 +418,12 @@ if ($Command -eq 'promote') {
 if ($Json) {
     $compilerArguments += '--json'
 }
+if ($CloudRepair) {
+    # This opt-in is deliberately absent from the scheduled-task installer.
+    # OPENAI_API_KEY is inherited from the operator environment and is never
+    # placed in the process arguments, task definition, or runner log.
+    $compilerArguments += '--cloud-repair'
+}
 
 $effectiveMaxAttempts = $MaxAttempts
 if ($effectiveMaxAttempts -eq 0) {
@@ -230,7 +439,10 @@ Enable-LegacyRehabSleepPrevention -TemporaryRoot $resolvedWorkRoot
 try {
     for ($attempt = 1; $attempt -le $effectiveMaxAttempts; $attempt++) {
         $attemptHeader = "[$([DateTimeOffset]::Now.ToString('o'))] command=$Command attempt=$attempt/$effectiveMaxAttempts source=$resolvedSourceRoot work=$resolvedWorkRoot"
-        $attemptHeader | Tee-Object -FilePath $aggregateLogPath -Append
+        Add-Content -LiteralPath $aggregateLogPath -Value $attemptHeader
+        if (-not $Json) {
+            Write-Host $attemptHeader
+        }
 
         Push-Location $repositoryRoot
         try {
@@ -243,7 +455,8 @@ try {
             $previousErrorActionPreference = $ErrorActionPreference
             $ErrorActionPreference = 'Continue'
             try {
-                & $pnpmCommand.Path @compilerArguments 2> $nativeErrorPath | Tee-Object -FilePath $aggregateLogPath -Append
+                $packageManagerArguments = @($packageManager.PrefixArguments) + $compilerArguments
+                & $packageManager.Executable @packageManagerArguments 2> $nativeErrorPath | Tee-Object -FilePath $aggregateLogPath -Append
                 $finalExitCode = $LASTEXITCODE
             }
             finally {
@@ -251,7 +464,7 @@ try {
                     $nativeError = Get-Content -LiteralPath $nativeErrorPath -Raw
                     if ($finalExitCode -ne 0 -and -not [string]::IsNullOrWhiteSpace($nativeError)) {
                         Add-Content -LiteralPath $aggregateLogPath -Value $nativeError
-                        Write-Host $nativeError
+                        [Console]::Error.WriteLine($nativeError)
                     }
                     Remove-Item -LiteralPath $nativeErrorPath -Force
                 }
@@ -269,13 +482,22 @@ try {
         if (Test-IntentionalCancellationExitCode -ExitCode ([long]$finalExitCode)) {
             $intentionalCancellation = $true
             $cancelMessage = "Compiler cancellation was requested (exit $finalExitCode). The durable run remains resumable; automatic retry is suppressed."
-            $cancelMessage | Tee-Object -FilePath $aggregateLogPath -Append
+            Add-Content -LiteralPath $aggregateLogPath -Value $cancelMessage
+            if (-not $Json) {
+                Write-Host $cancelMessage
+            }
             break
         }
 
         if ($attempt -lt $effectiveMaxAttempts) {
             $retryMessage = "Compiler exited with code $finalExitCode. Retrying in $RetryDelayMinutes minute(s); run will resume from its durable ledger."
-            $retryMessage | Tee-Object -FilePath $aggregateLogPath -Append
+            Add-Content -LiteralPath $aggregateLogPath -Value $retryMessage
+            if ($Json) {
+                [Console]::Error.WriteLine($retryMessage)
+            }
+            else {
+                Write-Host $retryMessage
+            }
             Start-Sleep -Seconds ($RetryDelayMinutes * 60)
         }
     }
@@ -288,7 +510,9 @@ if ($intentionalCancellation) {
     # Task Scheduler treats any nonzero wrapper exit as a failure and applies
     # its restart policy. The compiler already recorded distinct exit 130 and
     # a cancelled, resumable run, so translate only at this scheduler boundary.
-    Write-Host "Legacy rehabilitation was intentionally cancelled. Runner log: $aggregateLogPath"
+    if (-not $Json) {
+        Write-Host "Legacy rehabilitation was intentionally cancelled. Runner log: $aggregateLogPath"
+    }
     exit 0
 }
 
@@ -297,5 +521,7 @@ if ($finalExitCode -ne 0) {
     exit $finalExitCode
 }
 
-Write-Host "Legacy rehabilitation command completed. Runner log: $aggregateLogPath"
+if (-not $Json) {
+    Write-Host "Legacy rehabilitation command completed. Runner log: $aggregateLogPath"
+}
 exit 0

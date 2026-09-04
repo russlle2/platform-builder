@@ -69,6 +69,11 @@ function mixHexColors(first: string, second: string, firstWeight: number): strin
   return `#${channels.join('')}`
 }
 
+export interface LivePreviewThemeControls {
+  colors: { primary: string; bg: string; text: string }
+  fonts: { heading: string; body: string; importUrl?: string }
+}
+
 export function buildCustomThemeCss(value: unknown, stylesheet = ''): string {
   const theme = sanitizeCustomTheme(value)
   if (!theme) return ''
@@ -94,4 +99,23 @@ export function buildCustomThemeCss(value: unknown, stylesheet = ''): string {
     `a,.btn,button { --pb-accent: ${theme.primary}; }`,
     compilerOverrides,
   ].filter(Boolean).join('\n')
+}
+
+/**
+ * Build the exact CSS used by server preview and deployment from the editor's
+ * control-state shape. Sending this complete stylesheet to the iframe keeps
+ * compiler-generated `--dc-theme-*` variables in sync during live updates.
+ */
+export function buildLivePreviewThemeCss(
+  controls: LivePreviewThemeControls,
+  stylesheet = '',
+): string {
+  return buildCustomThemeCss({
+    primary: controls.colors.primary,
+    background: controls.colors.bg,
+    text: controls.colors.text,
+    headingFont: controls.fonts.heading,
+    bodyFont: controls.fonts.body,
+    fontImportUrl: controls.fonts.importUrl,
+  }, stylesheet)
 }

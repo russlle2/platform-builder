@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest'
-import { buildCustomThemeCss, sanitizeCustomTheme } from './custom-theme'
+import {
+  buildCustomThemeCss,
+  buildLivePreviewThemeCss,
+  sanitizeCustomTheme,
+} from './custom-theme'
 
 const validTheme = {
   primary: '#0EA5E9',
@@ -29,6 +33,28 @@ describe('custom theme', () => {
     expect(css).toContain('--dc-theme-color_bg: #0f172a !important')
     expect(css).toContain('--dc-theme-color_cta: #0ea5e9 !important')
     expect(css).toContain("--dc-theme-font_heading: 'Inter', sans-serif !important")
+  })
+
+  it('builds live iframe CSS with the same compiler-token bridge as server output', () => {
+    const compiledCss = [
+      ':root{--dc-theme-color_bg:#fff;--dc-theme-color_cta:#f00;--dc-theme-font_heading:serif}',
+      'body{background:var(--dc-theme-color_bg)}',
+      '.btn{background:var(--dc-theme-color_cta)}',
+      'h1{font-family:var(--dc-theme-font_heading)}',
+    ].join('')
+    const liveCss = buildLivePreviewThemeCss({
+      colors: { primary: validTheme.primary, bg: validTheme.background, text: validTheme.text },
+      fonts: {
+        heading: validTheme.headingFont,
+        body: validTheme.bodyFont,
+        importUrl: validTheme.fontImportUrl,
+      },
+    }, compiledCss)
+
+    expect(liveCss).toBe(buildCustomThemeCss(validTheme, compiledCss))
+    expect(liveCss).toContain('--dc-theme-color_bg: #0f172a !important')
+    expect(liveCss).toContain('--dc-theme-color_cta: #0ea5e9 !important')
+    expect(liveCss).toContain("--dc-theme-font_heading: 'Inter', sans-serif !important")
   })
 
   it('rejects CSS and remote-import injection', () => {

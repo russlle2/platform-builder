@@ -3,6 +3,14 @@ import path from 'path'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
 import { inspectLaunchCatalog } from './launch-catalog-integrity'
+import {
+  LAUNCH_TEMPLATE_STORE,
+  REHAB_STAGING_EXPECTED_BY_NICHE,
+  REHAB_STAGING_EXPECTED_TOTAL,
+  loadRehabStagingCatalog,
+  resolveTemplateCatalogProfile,
+  type TemplateCatalogProfile,
+} from './catalog-profile'
 export { hydrateTemplate } from './template-hydration'
 
 export { NICHE_META, NICHE_SLUGS, getNicheSlugs }
@@ -115,9 +123,9 @@ function templateBaseUrl(): string | null {
 }
 
 /** Obtain a Netlify Blobs store, or null if the env is not configured. */
-function getBlobsStore() {
+function getBlobsStore(name = LAUNCH_TEMPLATE_STORE) {
   try {
-    return getStore({ name: 'templates', consistency: 'strong' })
+    return getStore({ name, consistency: 'strong' })
   } catch {
     return null
   }
@@ -130,13 +138,48 @@ const MANIFEST_RELATIVE = '_manifest.json'
 const MANIFEST_CACHE_TTL_MS = 5 * 60 * 1000
 const EMPTY_MANIFEST_CACHE_TTL_MS = 5 * 1000
 
-let _manifestPromise: Promise<ManifestShape> | null = null
-let _manifestExpiresAt = 0
+interface CatalogState {
+  profile: TemplateCatalogProfile
+  storeName: string
+  prefix: string
+  manifest: ManifestShape
+}
 
-function loadManifest(): Promise<ManifestShape> {
-  if (_manifestPromise && Date.now() < _manifestExpiresAt) return _manifestPromise
+let _catalogStatePromise: Promise<CatalogState> | null = null
+let _catalogStateExpiresAt = 0
+let _catalogStateProfile: TemplateCatalogProfile | null = null
 
-  const request = (async () => {
+function loadCatalogState(): Promise<CatalogState> {
+  const profile = resolveTemplateCatalogProfile(process.env)
+  if (
+    _catalogStatePromise
+    && _catalogStateProfile === profile.profile
+    && Date.now() < _catalogStateExpiresAt
+  ) return _catalogStatePromise
+
+  const request: Promise<CatalogState> = (async (): Promise<CatalogState> => {
+    if (profile.profile === 'rehab-staging') {
+      // This branch is intentionally Blob-only. It must never fall back to the
+      // launch filesystem, launch store, or public HTTP manifest.
+      const store = getBlobsStore(profile.storeName)
+      if (!store) {
+        console.error('[niche-registry] rehabilitation staging Blob store is unavailable')
+        return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
+      }
+      try {
+        const loaded = await loadRehabStagingCatalog(store)
+        return {
+          profile: loaded.profile,
+          storeName: loaded.storeName,
+          prefix: loaded.prefix,
+          manifest: loaded.manifest as ManifestShape,
+        }
+      } catch (error) {
+        console.error('[niche-registry] rehabilitation staging catalogue failed closed:', error)
+        return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
+      }
+    }
+
     // 1. Filesystem (local dev / build)
     const fsRoot = getFsRoot()
     if (fsRoot) {
@@ -144,7 +187,7 @@ function loadManifest(): Promise<ManifestShape> {
       try {
         if (fs.existsSync(p)) {
           const raw = fs.readFileSync(p, 'utf-8')
-          return JSON.parse(raw) as ManifestShape
+          return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: JSON.parse(raw) as ManifestShape }
         }
       } catch (err) {
         console.error('[niche-registry] failed reading manifest from fs:', err)
@@ -153,10 +196,10 @@ function loadManifest(): Promise<ManifestShape> {
 
     // 2. Netlify Blobs (production runtime)
     try {
-      const store = getBlobsStore()
+      const store = getBlobsStore(profile.storeName)
       if (store) {
         const data = await store.get('_manifest.json', { type: 'json' })
-        if (data) return data as ManifestShape
+        if (data) return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: data as ManifestShape }
       }
     } catch (err) {
       console.error('[niche-registry] failed reading manifest from Blobs:', err)
@@ -165,37 +208,39 @@ function loadManifest(): Promise<ManifestShape> {
     // 3. HTTP fallback (last resort)
     try {
       const baseUrl = templateBaseUrl()
-      if (!baseUrl) return {}
+      if (!baseUrl) return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
       const url = `${baseUrl}/_templates/${MANIFEST_RELATIVE}`
       const res = await fetch(url)
       if (res.ok) {
-        return (await res.json()) as ManifestShape
+        return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: await res.json() as ManifestShape }
       }
       console.error(`[niche-registry] manifest fetch ${url} -> ${res.status}`)
     } catch (err) {
       console.error('[niche-registry] failed fetching manifest:', err)
     }
 
-    return {}
+    return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
   })()
 
-  _manifestPromise = request
+  _catalogStatePromise = request
+  _catalogStateProfile = profile.profile
   // Keep concurrent callers on one request, but retry quickly after a missing
   // manifest and periodically refresh healthy Blob-backed catalogs.
-  _manifestExpiresAt = Number.POSITIVE_INFINITY
+  _catalogStateExpiresAt = Number.POSITIVE_INFINITY
   request.then(
-    (manifest) => {
-      if (_manifestPromise !== request) return
-      _manifestExpiresAt = Date.now() + (
-        Object.keys(manifest).length > 0
+    (state) => {
+      if (_catalogStatePromise !== request) return
+      _catalogStateExpiresAt = Date.now() + (
+        Object.keys(state.manifest).length > 0
           ? MANIFEST_CACHE_TTL_MS
           : EMPTY_MANIFEST_CACHE_TTL_MS
       )
     },
     () => {
-      if (_manifestPromise === request) {
-        _manifestPromise = null
-        _manifestExpiresAt = 0
+      if (_catalogStatePromise === request) {
+        _catalogStatePromise = null
+        _catalogStateExpiresAt = 0
+        _catalogStateProfile = null
       }
     },
   )
@@ -219,7 +264,8 @@ export function dedupeTemplatesForGallery(templates: readonly TemplateMeta[]): T
 }
 
 async function getCaches(): Promise<TemplateCaches> {
-  const manifest = await loadManifest()
+  const state = await loadCatalogState()
+  const manifest = state.manifest
   const all = new Map<string, TemplateMeta[]>()
   for (const nicheSlug of Object.keys(NICHE_META)) {
     const templates = manifest[nicheSlug] || []
@@ -233,15 +279,23 @@ async function getCaches(): Promise<TemplateCaches> {
     all.set(nicheSlug, publishable)
   }
 
-  const integrity = inspectLaunchCatalog(
-    [...all.entries()].map(([slug, templates]) => ({
-      slug,
-      templateCount: templates.length,
-    })),
-  )
+  const counts = [...all.entries()].map(([slug, templates]) => ({ slug, templateCount: templates.length }))
+  const integrity = state.profile === 'launch'
+    ? inspectLaunchCatalog(counts)
+    : (() => {
+        const actualByNiche = Object.fromEntries(counts.map(({ slug, templateCount }) => [slug, templateCount]))
+        const issues = Object.entries(REHAB_STAGING_EXPECTED_BY_NICHE)
+          .filter(([slug, expected]) => actualByNiche[slug] !== expected)
+          .map(([slug, expected]) => `${slug}: expected ${expected}, found ${actualByNiche[slug] ?? 0}`)
+        const actualTotal = Object.values(actualByNiche).reduce((sum, count) => sum + count, 0)
+        if (actualTotal !== REHAB_STAGING_EXPECTED_TOTAL) {
+          issues.push(`total: expected ${REHAB_STAGING_EXPECTED_TOTAL}, found ${actualTotal}`)
+        }
+        return { ready: issues.length === 0, issues }
+      })()
   if (!integrity.ready) {
     console.error(
-      `[niche-registry] launch catalog integrity failed; disabling the catalog: ${integrity.issues.join('; ')}`,
+      `[niche-registry] ${state.profile} catalog integrity failed; disabling the catalog: ${integrity.issues.join('; ')}`,
     )
     for (const nicheSlug of Object.keys(NICHE_META)) all.set(nicheSlug, [])
   }
@@ -392,6 +446,20 @@ export async function readTemplateFile(
   const templateKey = safeTemplateKey(template.dir, filePath)
   if (!templateKey) return null
 
+  const catalog = await loadCatalogState()
+  if (catalog.profile === 'rehab-staging') {
+    const key = safeTemplateKey(catalog.prefix, templateKey)
+    if (!key) return null
+    try {
+      const store = getBlobsStore(catalog.storeName)
+      if (!store) return null
+      const text = await store.get(key)
+      return typeof text === 'string' ? text : null
+    } catch {
+      return null
+    }
+  }
+
   // 1. Filesystem (local dev / build)
   const fsRoot = getFsRoot()
   if (fsRoot) {
@@ -407,7 +475,7 @@ export async function readTemplateFile(
 
   // 2. Netlify Blobs (production runtime)
   try {
-    const store = getBlobsStore()
+    const store = getBlobsStore(catalog.storeName)
     if (store) {
       const text = await store.get(templateKey)
       if (text !== null) return text
@@ -440,6 +508,20 @@ export async function readTemplateFileBuffer(
   const templateKey = safeTemplateKey(template.dir, filePath)
   if (!templateKey) return null
 
+  const catalog = await loadCatalogState()
+  if (catalog.profile === 'rehab-staging') {
+    const key = safeTemplateKey(catalog.prefix, templateKey)
+    if (!key) return null
+    try {
+      const store = getBlobsStore(catalog.storeName)
+      if (!store) return null
+      const value = await store.get(key, { type: 'arrayBuffer' })
+      return value instanceof ArrayBuffer ? Buffer.from(value) : null
+    } catch {
+      return null
+    }
+  }
+
   // 1. Filesystem (local dev / build)
   const fsRoot = getFsRoot()
   if (fsRoot) {
@@ -455,7 +537,7 @@ export async function readTemplateFileBuffer(
 
   // 2. Netlify Blobs (production runtime)
   try {
-    const store = getBlobsStore()
+    const store = getBlobsStore(catalog.storeName)
     if (store) {
       const buf = await store.get(templateKey, { type: 'arrayBuffer' })
       if (buf !== null) return Buffer.from(buf)

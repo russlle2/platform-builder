@@ -32,6 +32,37 @@ export interface LegacyLedgerOptions {
   busyTimeoutMs?: number;
 }
 
+export interface CloudRepairRecipeKey {
+  ruleVersion: string;
+  niche: string;
+  pageRole: string;
+  issueFingerprint: string;
+}
+
+export interface CloudRepairRecipeRecord extends CloudRepairRecipeKey {
+  status: 'pending' | 'completed' | 'failed';
+  attempt: 1 | 2;
+  ownerLaneId: string;
+  ownerRequestKey: string;
+  patch: unknown | null;
+  patchChecksum: string | null;
+  failureReason: string | null;
+  detail: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ClaimCloudRepairRecipeInput extends CloudRepairRecipeKey {
+  attempt: 1 | 2;
+  ownerLaneId: string;
+  ownerRequestKey: string;
+}
+
+export type ClaimCloudRepairRecipeResult = {
+  kind: 'claimed' | 'pending' | 'completed' | 'failed';
+  record: CloudRepairRecipeRecord;
+}
+
 export interface CreateRunInput {
   command: LegacyCommandName;
   ruleVersion: string;
@@ -162,6 +193,26 @@ function nowIso(): string {
 
 function json(value: unknown): string {
   return JSON.stringify(value ?? null);
+}
+
+function canonicalJson(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
+  if (value && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    return `{${Object.keys(record).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`).join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+function sha256(value: string): string {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function assertCloudRepairRecipeKey(key: CloudRepairRecipeKey): void {
+  if (!key.ruleVersion.trim() || key.ruleVersion.length > 200) throw new Error('Cloud recipe rule version is invalid');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(key.niche)) throw new Error('Cloud recipe niche is invalid');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(key.pageRole)) throw new Error('Cloud recipe page role is invalid');
+  if (!/^[a-f0-9]{16,128}$/i.test(key.issueFingerprint)) throw new Error('Cloud recipe issue fingerprint is invalid');
 }
 
 function auditFingerprint(kind: 'issue' | 'transformation', fields: readonly unknown[]): string {
@@ -311,6 +362,42 @@ function parseArtifact(row: SqlRow): LegacyArtifactRecord {
     byteSize: Number(row.byte_size),
     metadata: parsedJson(row.metadata_json),
     createdAt: String(row.created_at),
+  };
+}
+
+function parseCloudRepairRecipe(row: SqlRow | undefined): CloudRepairRecipeRecord | null {
+  if (!row) return null;
+  const patchJson = row.patch_json === null ? null : String(row.patch_json);
+  const patchChecksum = row.patch_checksum === null ? null : String(row.patch_checksum);
+  let patch: unknown | null = null;
+  if (String(row.status) === 'completed') {
+    if (!patchJson || !patchChecksum || !/^[a-f0-9]{64}$/.test(patchChecksum)) {
+      throw new Error('Completed cloud repair recipe is missing its checksummed patch');
+    }
+    patch = parsedJson(patchJson);
+    if (patch === null || sha256(canonicalJson(patch)) !== patchChecksum) {
+      throw new Error('Cloud repair recipe patch checksum mismatch');
+    }
+  } else if (patchJson !== null || patchChecksum !== null) {
+    throw new Error('Non-completed cloud repair recipe unexpectedly contains a patch');
+  }
+  const attempt = Number(row.attempt);
+  if (attempt !== 1 && attempt !== 2) throw new Error('Cloud repair recipe attempt is invalid');
+  return {
+    ruleVersion: String(row.rule_version),
+    niche: String(row.niche),
+    pageRole: String(row.page_role),
+    issueFingerprint: String(row.issue_fingerprint),
+    status: String(row.status) as CloudRepairRecipeRecord['status'],
+    attempt,
+    ownerLaneId: String(row.owner_lane_id),
+    ownerRequestKey: String(row.owner_request_key),
+    patch,
+    patchChecksum,
+    failureReason: row.failure_reason === null ? null : String(row.failure_reason),
+    detail: row.detail === null ? null : String(row.detail),
+    createdAt: String(row.created_at),
+    updatedAt: String(row.updated_at),
   };
 }
 
@@ -693,6 +780,36 @@ export class LegacyLedger {
       `);
       currentVersion = 4;
     }
+
+    // The recipe cache is an additive cloud-lane extension. Keeping it behind
+    // CREATE IF NOT EXISTS preserves schema-v4 compatibility while allowing an
+    // existing offline ledger to gain cross-run recipe reuse without a rule or
+    // emitted-artifact version change.
+    this.database.exec(`
+      CREATE TABLE IF NOT EXISTS cloud_repair_recipes (
+        rule_version TEXT NOT NULL,
+        niche TEXT NOT NULL,
+        page_role TEXT NOT NULL,
+        issue_fingerprint TEXT NOT NULL,
+        status TEXT NOT NULL CHECK (status IN ('pending', 'completed', 'failed')),
+        attempt INTEGER NOT NULL CHECK (attempt IN (1, 2)),
+        owner_lane_id TEXT NOT NULL,
+        owner_request_key TEXT NOT NULL,
+        patch_json TEXT,
+        patch_checksum TEXT,
+        failure_reason TEXT,
+        detail TEXT,
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL,
+        PRIMARY KEY (rule_version, niche, page_role, issue_fingerprint),
+        CHECK (
+          (status = 'completed' AND patch_json IS NOT NULL AND patch_checksum IS NOT NULL)
+          OR (status <> 'completed' AND patch_json IS NULL AND patch_checksum IS NULL)
+        )
+      );
+      CREATE INDEX IF NOT EXISTS cloud_repair_recipes_status_idx
+        ON cloud_repair_recipes(status, rule_version, niche, page_role);
+    `);
   }
 
   private transaction<T>(operation: () => T): T {
@@ -1589,6 +1706,155 @@ export class LegacyLedger {
     return Number((this.database.prepare(`
       SELECT id FROM artifacts WHERE kind = ? AND content_hash = ? AND relative_path = ?
     `).get(input.kind, input.contentHash, input.relativePath.replace(/\\/g, '/')) as SqlRow).id);
+  }
+
+  getCloudRepairRecipe(key: CloudRepairRecipeKey): CloudRepairRecipeRecord | null {
+    assertCloudRepairRecipeKey(key);
+    return parseCloudRepairRecipe(this.database.prepare(`
+      SELECT * FROM cloud_repair_recipes
+      WHERE rule_version = ? AND niche = ? AND page_role = ? AND issue_fingerprint = ?
+    `).get(key.ruleVersion, key.niche, key.pageRole, key.issueFingerprint) as SqlRow | undefined);
+  }
+
+  /**
+   * Claim the sole billable request for a structural repair recipe. SQLite's
+   * BEGIN IMMEDIATE makes this a cross-worker compare-and-set: one caller owns
+   * the request and every other caller receives a durable pending/completed
+   * record. A failed first attempt can be claimed once more; no third attempt
+   * can enter the table.
+   */
+  claimCloudRepairRecipe(input: ClaimCloudRepairRecipeInput): ClaimCloudRepairRecipeResult {
+    assertCloudRepairRecipeKey(input);
+    if (input.attempt !== 1 && input.attempt !== 2) throw new Error('Cloud recipe attempt must be 1 or 2');
+    if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,95}$/.test(input.ownerLaneId)) throw new Error('Cloud recipe owner lane id is invalid');
+    if (!input.ownerRequestKey.trim() || input.ownerRequestKey.length > 200) throw new Error('Cloud recipe owner request key is invalid');
+    return this.transaction(() => {
+      const existing = this.getCloudRepairRecipe(input);
+      if (!existing) {
+        const timestamp = nowIso();
+        this.database.prepare(`
+          INSERT INTO cloud_repair_recipes (
+            rule_version, niche, page_role, issue_fingerprint, status, attempt,
+            owner_lane_id, owner_request_key, patch_json, patch_checksum,
+            failure_reason, detail, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, 'pending', ?, ?, ?, NULL, NULL, NULL, NULL, ?, ?)
+        `).run(
+          input.ruleVersion,
+          input.niche,
+          input.pageRole,
+          input.issueFingerprint,
+          input.attempt,
+          input.ownerLaneId,
+          input.ownerRequestKey,
+          timestamp,
+          timestamp,
+        );
+        return { kind: 'claimed', record: this.getCloudRepairRecipe(input)! };
+      }
+      if (
+        existing.status === 'pending'
+        && existing.attempt === input.attempt
+        && existing.ownerLaneId === input.ownerLaneId
+        && existing.ownerRequestKey === input.ownerRequestKey
+      ) return { kind: 'claimed', record: existing };
+      if (existing.status === 'failed' && input.attempt === existing.attempt + 1 && input.attempt <= 2) {
+        this.database.prepare(`
+          UPDATE cloud_repair_recipes SET
+            status = 'pending', attempt = ?, owner_lane_id = ?, owner_request_key = ?,
+            patch_json = NULL, patch_checksum = NULL, failure_reason = NULL,
+            detail = NULL, updated_at = ?
+          WHERE rule_version = ? AND niche = ? AND page_role = ? AND issue_fingerprint = ?
+            AND status = 'failed' AND attempt = ?
+        `).run(
+          input.attempt,
+          input.ownerLaneId,
+          input.ownerRequestKey,
+          nowIso(),
+          input.ruleVersion,
+          input.niche,
+          input.pageRole,
+          input.issueFingerprint,
+          existing.attempt,
+        );
+        return { kind: 'claimed', record: this.getCloudRepairRecipe(input)! };
+      }
+      return { kind: existing.status, record: existing };
+    });
+  }
+
+  completeCloudRepairRecipe(input: CloudRepairRecipeKey & {
+    attempt: 1 | 2;
+    ownerRequestKey: string;
+    patch: unknown;
+  }): boolean {
+    assertCloudRepairRecipeKey(input);
+    const patchJson = canonicalJson(input.patch);
+    const patchChecksum = sha256(patchJson);
+    return this.transaction(() => {
+      const existing = this.getCloudRepairRecipe(input);
+      if (!existing) return false;
+      if (existing.status === 'completed') {
+        if (existing.patchChecksum !== patchChecksum) throw new Error('Cloud repair recipe completion conflicts with its durable patch');
+        return true;
+      }
+      const result = this.database.prepare(`
+        UPDATE cloud_repair_recipes SET
+          status = 'completed', patch_json = ?, patch_checksum = ?,
+          failure_reason = NULL, detail = NULL, updated_at = ?
+        WHERE rule_version = ? AND niche = ? AND page_role = ? AND issue_fingerprint = ?
+          AND status = 'pending' AND attempt = ? AND owner_request_key = ?
+      `).run(
+        patchJson,
+        patchChecksum,
+        nowIso(),
+        input.ruleVersion,
+        input.niche,
+        input.pageRole,
+        input.issueFingerprint,
+        input.attempt,
+        input.ownerRequestKey,
+      );
+      return Number(result.changes) === 1;
+    });
+  }
+
+  failCloudRepairRecipe(input: CloudRepairRecipeKey & {
+    attempt: 1 | 2;
+    ownerRequestKey: string;
+    reason: string;
+    detail?: string | null;
+  }): boolean {
+    assertCloudRepairRecipeKey(input);
+    const reason = input.reason.replace(/[\r\n\t]+/g, ' ').slice(0, 100);
+    const detail = input.detail?.replace(/[\0\r\n\t]+/g, ' ').slice(0, 1_000) ?? null;
+    if (!reason) throw new Error('Cloud recipe failure reason is required');
+    return this.transaction(() => {
+      const existing = this.getCloudRepairRecipe(input);
+      if (!existing) return false;
+      if (
+        existing.status === 'failed'
+        && existing.attempt === input.attempt
+        && existing.ownerRequestKey === input.ownerRequestKey
+      ) return true;
+      const result = this.database.prepare(`
+        UPDATE cloud_repair_recipes SET
+          status = 'failed', patch_json = NULL, patch_checksum = NULL,
+          failure_reason = ?, detail = ?, updated_at = ?
+        WHERE rule_version = ? AND niche = ? AND page_role = ? AND issue_fingerprint = ?
+          AND status = 'pending' AND attempt = ? AND owner_request_key = ?
+      `).run(
+        reason,
+        detail,
+        nowIso(),
+        input.ruleVersion,
+        input.niche,
+        input.pageRole,
+        input.issueFingerprint,
+        input.attempt,
+        input.ownerRequestKey,
+      );
+      return Number(result.changes) === 1;
+    });
   }
 
   /**

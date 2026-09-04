@@ -8,13 +8,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import path from 'path'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { existsSync } from 'fs'
-import {
-  buildDeployFiles,
-  sanitizeCustomerValues,
-  sanitizeInlineEditMap,
-  type InlineTextEdit,
-} from '@/lib/site-deploy'
-import { sanitizeImageSwapMap, type ImageSwap } from '@/lib/image-swaps'
+import { buildDeployFiles } from '@/lib/site-deploy'
 import { deploySiteFiles } from '@/lib/netlify'
 import { isAuthenticatedPortalOwnerForSlug } from '@/lib/portal-owner-auth'
 import { rateLimitByIp, jsonTooManyRequests, jsonUnauthorized, jsonForbidden } from '@/lib/server-auth'
@@ -25,25 +19,16 @@ import {
   verifyPortalTokenHash,
   type PortalSiteRow,
 } from '@/lib/portal-auth'
-import { sanitizeCustomTheme, type CustomTheme } from '@/lib/custom-theme'
-import type { CatalogRevisionPin } from '@/lib/catalog-revision'
-import { getColorScheme, getFontVariation, getStructureVariation } from '@/lib/templates/variations'
+import {
+  mergePortalSiteData,
+  preparePortalCustomizationUpdate,
+  type CustomerSiteData,
+} from '@/lib/customer-site-state'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
-interface SiteData {
-  niche?: string
-  template?: string
-  colorScheme?: string
-  fontVariation?: string
-  structureVariation?: string
-  customTheme?: CustomTheme | null
-  catalogRevision?: CatalogRevisionPin
-  customerValues?: Record<string, string>
-  inlineEdits?: Record<string, InlineTextEdit[]>
-  imageSwaps?: Record<string, ImageSwap[]>
-  imageOwner?: string
+interface SiteData extends CustomerSiteData {
   email?: string
   netlify_site_id?: string
   site_url?: string
@@ -203,30 +188,8 @@ export async function POST(req: NextRequest) {
   const token = getPortalTokenFromRequest(req, body)
   const supabase = getSupabase()
 
-  const incomingValues = sanitizeCustomerValues(body.customerValues)
-  const incomingInlineEdits = body.inlineEdits === undefined
-    ? undefined
-    : sanitizeInlineEditMap(body.inlineEdits)
-  const incomingImageSwaps = body.imageSwaps === undefined
-    ? undefined
-    : sanitizeImageSwapMap(body.imageSwaps)
-  const incomingColorScheme = typeof body.colorScheme === 'string'
-    ? getColorScheme(body.colorScheme).id
-    : undefined
-  const incomingFontVariation = typeof body.fontVariation === 'string'
-    ? getFontVariation(body.fontVariation).id
-    : undefined
-  const incomingStructureVariation = typeof body.structureVariation === 'string'
-    ? getStructureVariation(body.structureVariation).id
-    : undefined
-  const incomingCustomTheme = body.customTheme === undefined
-    ? undefined
-    : body.customTheme === null
-      ? null
-      : sanitizeCustomTheme(body.customTheme)
-  if (body.customTheme !== undefined && body.customTheme !== null && !incomingCustomTheme) {
-    return NextResponse.json({ error: 'Custom theme settings are invalid.' }, { status: 400 })
-  }
+  const update = preparePortalCustomizationUpdate(body, slug)
+  if (!update.ok) return NextResponse.json({ error: update.error }, { status: 400 })
 
   if (!supabase) {
     const local = await readLocalSite(slug)
@@ -245,17 +208,7 @@ export async function POST(req: NextRequest) {
     }
 
     const prevData: SiteData = local?.data || {}
-    const mergedData: SiteData = {
-      ...prevData,
-      customerValues: { ...(prevData.customerValues || {}), ...incomingValues },
-      ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
-      ...(incomingImageSwaps ? { imageSwaps: incomingImageSwaps } : {}),
-      ...(incomingColorScheme ? { colorScheme: incomingColorScheme } : {}),
-      ...(incomingFontVariation ? { fontVariation: incomingFontVariation } : {}),
-      ...(incomingStructureVariation ? { structureVariation: incomingStructureVariation } : {}),
-      ...(incomingCustomTheme !== undefined ? { customTheme: incomingCustomTheme } : {}),
-      imageOwner: slug,
-    }
+    const mergedData = mergePortalSiteData(prevData, update) as SiteData
     await writeLocalSite(slug, {
       slug,
       data: mergedData,
@@ -286,20 +239,10 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  const dataPatch: Partial<SiteData> = {
-    ...(incomingInlineEdits ? { inlineEdits: incomingInlineEdits } : {}),
-    ...(incomingImageSwaps ? { imageSwaps: incomingImageSwaps } : {}),
-    ...(incomingColorScheme ? { colorScheme: incomingColorScheme } : {}),
-    ...(incomingFontVariation ? { fontVariation: incomingFontVariation } : {}),
-    ...(incomingStructureVariation ? { structureVariation: incomingStructureVariation } : {}),
-    ...(incomingCustomTheme !== undefined ? { customTheme: incomingCustomTheme } : {}),
-    imageOwner: slug,
-  }
-
   const { data: mergedResult, error } = await supabase.rpc('merge_portal_site_data', {
     p_slug: slug,
-    p_customer_values: incomingValues,
-    p_data_patch: dataPatch,
+    p_customer_values: update.customerValues,
+    p_data_patch: update.dataPatch,
   })
 
   if (error || !mergedResult || typeof mergedResult !== 'object' || Array.isArray(mergedResult)) {

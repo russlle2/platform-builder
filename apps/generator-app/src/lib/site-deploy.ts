@@ -20,6 +20,7 @@ import {
 } from '@/lib/templates/niche-registry'
 import { buildVariationCSS } from '@/lib/templates/variations'
 import { buildCustomThemeCss, type CustomTheme } from '@/lib/custom-theme'
+import { combineTemplateThemeStylesheets } from '@/lib/template-preview-composition'
 import {
   assertCatalogRevision,
   type CatalogRevisionPin,
@@ -324,13 +325,17 @@ export async function buildDeployFiles(
 
   // Fetch shared assets + every page in parallel — each read is a CDN
   // round-trip in production, so serial loops blow up latency.
-  const [cssFile, ...rawPages] = await Promise.all([
-    readTemplateFile(niche, templateSlug, 'assets/css/styles.css'),
-    ...templateData.pages.map((page) => readTemplateFile(niche, templateSlug, page)),
+  const stylesheetPaths = [...new Set(templateData.files.filter((file) => /\.css$/i.test(file)))].sort()
+  const [rawPages, stylesheetValues] = await Promise.all([
+    Promise.all(templateData.pages.map((page) => readTemplateFile(niche, templateSlug, page))),
+    Promise.all(stylesheetPaths.map((file) => readTemplateFile(niche, templateSlug, file))),
   ])
+  const stylesheets = stylesheetPaths.map((path, index) => ({ path, css: stylesheetValues[index] }))
+  const cssFile = stylesheets.find((entry) => entry.path === 'assets/css/styles.css')?.css || null
+  const themeStylesheet = combineTemplateThemeStylesheets(stylesheets)
   const variationCSS = [
-    buildVariationCSS(colorScheme, fontVariation, structureVariation, cssFile || ''),
-    buildCustomThemeCss(customTheme, cssFile || ''),
+    buildVariationCSS(colorScheme, fontVariation, structureVariation, themeStylesheet),
+    buildCustomThemeCss(customTheme, themeStylesheet),
   ].filter(Boolean).join('\n')
   const contactScript = buildContactFormScript(slug)
 

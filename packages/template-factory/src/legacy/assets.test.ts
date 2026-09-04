@@ -35,6 +35,29 @@ test('asset rewrite leaves ordinary links and data images intact', async () => {
   }
 });
 
+test('asset vendor refuses a redirect hop that leaves the approved host allowlist', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-assets-redirect-'));
+  const originalFetch = globalThis.fetch;
+  let requests = 0;
+  globalThis.fetch = (async () => {
+    requests += 1;
+    return new Response(null, {
+      status: 302,
+      headers: { location: 'https://unapproved.example/redirected-image.jpg' },
+    });
+  }) as typeof fetch;
+  try {
+    const vendor = new AssetVendor(root);
+    await vendor.initialize();
+    const asset = await vendor.get('https://images.unsplash.com/photo-redirect-test');
+    assert.equal(asset.fallback, true);
+    assert.equal(requests, 1, 'the unapproved redirect destination must never be requested');
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('generated fallbacks use truthful first-party provenance and corrupted cache bytes are repaired', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-assets-fallback-'));
   const sourceUrl = 'https://images.unsplash.com/photo-cache-integrity?w=1200';

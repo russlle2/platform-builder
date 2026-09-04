@@ -25,6 +25,16 @@ export interface VisualAliasEvidence {
   desktopPerceptualHashDistance: number;
   mobilePerceptualHashDistance: number;
   domSimilarity: number;
+  /** Every corresponding page, compared independently at both viewports. */
+  pages: VisualAliasPageEvidence[];
+}
+
+export interface VisualAliasPageEvidence {
+  page: string;
+  desktopSsim: number;
+  mobileSsim: number;
+  desktopPerceptualHashDistance: number;
+  mobilePerceptualHashDistance: number;
 }
 
 export interface DedupeCandidate {
@@ -189,18 +199,34 @@ function presetCompatibility(design: CanonicalDesign, candidate: DedupeCandidate
   };
 }
 
-/** Fail-closed proof that a candidate's presets can target one canonical design. */
-export function checkCompositionCompatibility(
+/**
+ * Fail-closed proof that both presets can address the canonical design. This
+ * intentionally does not decide whether two different designs are equivalent;
+ * that decision belongs to the independent structural and render-evidence gate.
+ */
+function checkPresetCompatibility(
   canonical: DedupeCandidate,
   candidate: DedupeCandidate,
 ): CompositionCompatibility {
   const canonicalHash = canonicalDesignHash(canonical.design);
-  const candidateHash = canonicalDesignHash(candidate.design);
   const canonicalPreset = presetCompatibility(canonical.design, canonical);
   const candidatePreset = presetCompatibility(canonical.design, candidate);
   const issues = [...canonicalPreset.issues, ...candidatePreset.issues];
-  if (candidateHash !== canonicalHash) issues.unshift(`design:mismatch:${canonicalHash}:${candidateHash}`);
   return { ...candidatePreset, pass: issues.length === 0, designHash: canonicalHash, issues };
+}
+
+/** Fail-closed proof of exact design identity plus preset compatibility. */
+export function checkCompositionCompatibility(
+  canonical: DedupeCandidate,
+  candidate: DedupeCandidate,
+): CompositionCompatibility {
+  const compatibility = checkPresetCompatibility(canonical, candidate);
+  const candidateHash = canonicalDesignHash(candidate.design);
+  const issues = [...compatibility.issues];
+  if (candidateHash !== compatibility.designHash) {
+    issues.unshift(`design:mismatch:${compatibility.designHash}:${candidateHash}`);
+  }
+  return { ...compatibility, pass: issues.length === 0, issues };
 }
 
 function normalizeAttrs(node: HtmlNode): string {
@@ -443,8 +469,25 @@ export function createDedupeFingerprint(input: {
   return fingerprint;
 }
 
-export function satisfiesVisualAliasThresholds(evidence: VisualAliasEvidence): boolean {
-  return evidence.domSimilarity >= 0.98
+export function satisfiesVisualAliasThresholds(
+  evidence: VisualAliasEvidence,
+  expectedPages?: readonly string[],
+): boolean {
+  const observedPages = evidence.pages.map((page) => page.page);
+  const uniquePages = new Set(observedPages);
+  const expected = expectedPages ? [...expectedPages].sort() : [...uniquePages].sort();
+  const completePageSet = evidence.pages.length > 0
+    && uniquePages.size === evidence.pages.length
+    && stableStringify([...uniquePages].sort()) === stableStringify(expected);
+  const everyPagePasses = evidence.pages.every((page) => (
+    page.desktopSsim >= 0.995
+      && page.mobileSsim >= 0.995
+      && page.desktopPerceptualHashDistance <= 4
+      && page.mobilePerceptualHashDistance <= 4
+  ));
+  return completePageSet
+    && everyPagePasses
+    && evidence.domSimilarity >= 0.98
     && evidence.desktopSsim >= 0.995
     && evidence.mobileSsim >= 0.995
     && evidence.desktopPerceptualHashDistance <= 4
@@ -453,15 +496,16 @@ export function satisfiesVisualAliasThresholds(evidence: VisualAliasEvidence): b
 
 /**
  * A foundation marker is lineage evidence, not proof that two emitted
- * composition skeletons are interchangeable. Exact post-repair design
- * identity is still required; near irregular matches additionally require the
- * conservative two-viewport visual evidence gate and are later checked for
- * literal preset compatibility by buildDedupeClusters.
+ * composition skeletons are interchangeable. Foundation aliases require exact
+ * post-repair identity. Irregular designs with different exact hashes may only
+ * alias after matching niche/page roles, literal preset compatibility, and the
+ * conservative two-viewport visual evidence gate.
  */
 export function canAliasDesigns(
   left: DedupeFingerprint,
   right: DedupeFingerprint,
   evidence?: VisualAliasEvidence,
+  expectedPages?: readonly string[],
 ): { alias: boolean; reason: DedupeAlias['reason'] } {
   if (left.niche !== right.niche) {
     return { alias: false, reason: 'distinct' };
@@ -481,8 +525,11 @@ export function canAliasDesigns(
     return { alias: true, reason: 'exact-design' };
   }
   if (
-    evidence
-    && satisfiesVisualAliasThresholds(evidence)
+    !left.foundation
+    && !right.foundation
+    && evidence
+    && satisfiesVisualAliasThresholds(evidence, expectedPages)
+    && evidence.pages.length === left.pageRoles.length
   ) {
     return { alias: true, reason: 'verified-visual-equivalence' };
   }
@@ -515,10 +562,23 @@ export function buildDedupeClusters(
     } else if (evidenceProvider) {
       for (const existing of clusters) {
         const canonical = canonicalByClusterId.get(existing.id)!;
-        const composition = checkCompositionCompatibility(canonical, candidate);
+        // Avoid both an unnecessary render-evidence lookup and any possibility
+        // of cross-niche, cross-topology, or foundation visual aliasing.
+        if (
+          canonical.fingerprint.foundation
+          || candidate.fingerprint.foundation
+          || canonical.fingerprint.niche !== candidate.fingerprint.niche
+          || stableStringify(canonical.fingerprint.pageRoles) !== roleKey
+        ) continue;
+        const composition = checkPresetCompatibility(canonical, candidate);
         if (!composition.pass) continue;
         const evidence = evidenceProvider(canonical, candidate);
-        const decision = canAliasDesigns(canonical.fingerprint, candidate.fingerprint, evidence);
+        const decision = canAliasDesigns(
+          canonical.fingerprint,
+          candidate.fingerprint,
+          evidence,
+          Object.keys(canonical.design.pages),
+        );
         if (decision.alias) {
           cluster = existing;
           reason = decision.reason;
@@ -536,13 +596,11 @@ export function buildDedupeClusters(
       clusters.push(cluster);
       clusterByStrictKey.set(strictKey, cluster);
       canonicalByClusterId.set(cluster.id, candidate);
-    } else if (!clusterByStrictKey.has(strictKey)) {
-      // Cache later exact matches even when this candidate entered through the
-      // evidence lane, keeping the common path O(n).
-      clusterByStrictKey.set(strictKey, cluster);
     }
     const canonicalCandidate = canonicalByClusterId.get(cluster.id) ?? candidate;
-    const composition = checkCompositionCompatibility(canonicalCandidate, candidate);
+    const composition = reason === 'verified-visual-equivalence'
+      ? checkPresetCompatibility(canonicalCandidate, candidate)
+      : checkCompositionCompatibility(canonicalCandidate, candidate);
     if (!composition.pass) {
       throw new Error(`Unsafe alias ${candidate.fingerprint.legacySlug} -> ${cluster.canonicalLegacySlug}: ${composition.issues.join('; ')}`);
     }

@@ -1,0 +1,65 @@
+import type { TemplateMeta } from '../templates/niche-registry'
+
+export const COMPILER_V3_ROUTE_FIXTURE = {
+  meta: {
+    slug: 'legacy-route-fixture',
+    legacySlug: 'legacy-route-fixture',
+    name: 'Compiler v3 route fixture',
+    niche: 'wellness_coach',
+    nicheSlug: 'wellness_coach',
+    pages: ['index.html'],
+    files: [
+      'index.html',
+      'assets/css/styles.css',
+      'assets/css/secondary.css',
+      'assets/img/hero.svg',
+    ],
+    dir: 'wellness_coach/legacy-route-fixture',
+    fields: [
+      { name: 'BUSINESS_NAME', label: 'Business name', type: 'text', required: true },
+      { name: 'EMAIL', label: 'Email', type: 'email', required: true },
+    ],
+    snippet: 'A compiler-v3 route integration fixture.',
+    editable: true,
+    validation: {
+      status: 'passed',
+      contractVersion: 3,
+      tokens: ['BUSINESS_NAME', 'EMAIL'],
+    },
+    designId: 'design_route_fixture',
+    contentPresetId: 'content_route_fixture',
+    themePresetId: 'theme_route_fixture',
+    qualityReceipt: 'receipt_route_fixture',
+    canonicalLegacySlug: 'legacy-route-fixture',
+    disposition: 'canonical',
+  } satisfies TemplateMeta,
+  files: {
+    'index.html': [
+      '<!doctype html><html lang="en"><head><meta charset="utf-8">',
+      '<meta name="description" content="Original description" data-dc-edit-id="txt_meta_description" data-dc-edit-attribute="content">',
+      '<link rel="stylesheet" href="assets/css/styles.css">',
+      '<link rel="stylesheet" href="assets/css/secondary.css"></head><body>',
+      '<main><h1 data-dc-edit-id="txt_heading">{{BUSINESS_NAME}}</h1>',
+      '<p data-dc-edit-id="txt_intro">Original introduction</p>',
+      '<img data-dc-image-id="img_hero" data-dc-edit-id="txt_hero_alt" data-dc-edit-attribute="alt" src="assets/img/hero.svg" alt="Original hero description">',
+      '<a href="mailto:{{EMAIL}}">{{EMAIL}}</a></main></body></html>',
+    ].join(''),
+    'assets/css/styles.css': [
+      ':root{',
+      '--dc-theme-color_bg:#ffffff;',
+      '--dc-theme-color_text:#111111;',
+      '--dc-theme-color_primary:#225544;',
+      '--dc-theme-font_body:Arial,sans-serif;',
+      '--dc-theme-font_heading:Georgia,serif',
+      '}',
+      'body{background:var(--dc-theme-color_bg);color:var(--dc-theme-color_text);font-family:var(--dc-theme-font_body)}',
+      'h1{font-family:var(--dc-theme-font_heading)}',
+      '.btn{background:var(--dc-theme-color_primary)}',
+    ].join(''),
+    'assets/css/secondary.css': [
+      ':root{--dc-theme-color_secondary:#557766;--dc-theme-font_secondary:Tahoma,sans-serif}',
+      '.secondary-callout{background:var(--dc-theme-color_secondary);font-family:var(--dc-theme-font_secondary)}',
+    ].join(''),
+    'assets/img/hero.svg': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10" fill="#225544"/></svg>',
+  } as Record<string, string>,
+} as const

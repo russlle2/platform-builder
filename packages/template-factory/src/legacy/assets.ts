@@ -4,6 +4,7 @@ import { dirname, extname, join, posix, relative } from 'node:path';
 
 const MAX_ASSET_BYTES = 25 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 30_000;
+const MAX_APPROVED_REDIRECTS = 5;
 const GENERATED_ASSET_ORIGIN = 'local://dailyclarity/generated-asset';
 const GENERATED_ASSET_LICENSE = 'DailyClarity first-party generated placeholder';
 const APPROVED_HOSTS = new Set([
@@ -70,6 +71,29 @@ function truthfulFallbackRecord(record: VendedAsset): VendedAsset {
     licenseName: GENERATED_ASSET_LICENSE,
     licenseUrl: GENERATED_ASSET_ORIGIN,
   };
+}
+
+async function fetchApprovedAsset(
+  initial: URL,
+  init: Omit<RequestInit, 'redirect'>,
+): Promise<{ response: Response; finalUrl: URL }> {
+  let current = assertApprovedUrl(initial.toString());
+  for (let redirect = 0; redirect <= MAX_APPROVED_REDIRECTS; redirect += 1) {
+    const response = await fetch(current, { ...init, redirect: 'manual' });
+    if (response.status < 300 || response.status >= 400) {
+      const responseUrl = response.url ? assertApprovedUrl(response.url) : current;
+      return { response, finalUrl: responseUrl };
+    }
+    if (redirect === MAX_APPROVED_REDIRECTS) {
+      await response.body?.cancel().catch(() => undefined);
+      throw new Error(`Asset exceeded ${MAX_APPROVED_REDIRECTS} approved redirects`);
+    }
+    const location = response.headers.get('location');
+    await response.body?.cancel().catch(() => undefined);
+    if (!location) throw new Error(`Asset redirect HTTP ${response.status} has no location`);
+    current = assertApprovedUrl(new URL(location, current).toString());
+  }
+  throw new Error('Asset redirect handling reached an unreachable state');
 }
 
 async function cachedAssetMatches(objectRoot: string, asset: VendedAsset): Promise<boolean> {
@@ -288,19 +312,18 @@ export class AssetVendor {
     let fallback = false;
 
     try {
-      const response = await fetch(requested, {
-        redirect: 'follow',
+      const fetched = await fetchApprovedAsset(requested, {
         signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
         headers: {
           'User-Agent': 'DailyClarity-Template-Rehab/1.0 (+asset-vendoring)',
           Accept: requested.hostname === 'fonts.googleapis.com'
             ? 'text/css,*/*;q=0.1'
-            : 'image/avif,image/webp,image/*,*/*;q=0.1',
+          : 'image/avif,image/webp,image/*,*/*;q=0.1',
         },
       });
+      const { response, finalUrl: approvedFinalUrl } = fetched;
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      const final = assertApprovedUrl(response.url);
-      finalUrl = final.toString();
+      finalUrl = approvedFinalUrl.toString();
       contentType = response.headers.get('content-type') ?? 'application/octet-stream';
       const announcedSize = Number(response.headers.get('content-length') ?? '0');
       if (announcedSize > MAX_ASSET_BYTES) throw new Error(`Asset is larger than ${MAX_ASSET_BYTES} bytes`);

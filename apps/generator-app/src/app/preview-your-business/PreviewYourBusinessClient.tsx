@@ -6,7 +6,11 @@ import { useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
 import {
   type InlineEditMap,
+  VISUAL_EDITABLE_SELECTOR,
   buildCustomizationScope,
+  isEditableAttributeForTag,
+  isSafeEditableAttribute,
+  isSafeInlineEditId,
   mergeInlineEdit,
   applyInlineEditsToHtml,
   loadInlineEdits,
@@ -32,6 +36,7 @@ import type {
 import { computeClientReadiness } from '@/lib/client-readiness'
 import {
   CUSTOM_THEME_STORAGE_KEY,
+  buildLivePreviewThemeCss,
   sanitizeCustomTheme,
 } from '@/lib/custom-theme'
 import { ClientReadinessPanel } from '@/components/preview/ClientReadinessPanel'
@@ -320,6 +325,7 @@ export default function PreviewYourBusinessClient() {
   const imageSwapsRef = useRef<ImageSwapMap>({})
   const activeCustomizationScopeRef = useRef('')
   const currentPageRef = useRef('index.html')
+  const previewStylesheetRef = useRef('')
   currentPageRef.current = currentPage
 
   /* ---- Color & font customization ---- */
@@ -517,6 +523,7 @@ export default function PreviewYourBusinessClient() {
           )
         }
         const data = await res.json()
+        previewStylesheetRef.current = typeof data.css === 'string' ? data.css : ''
 
         let html = sanitizeTemplatePreviewHtml(data.html as string)
         const assetBase = `/api/templates/${ns}/${ts}/assets`
@@ -678,6 +685,34 @@ export default function PreviewYourBusinessClient() {
         )
         inlineEditsRef.current = { ...inlineEditsRef.current, [page]: pageEdits }
         saveInlineEdits(inlineEditsRef.current, activeCustomizationScopeRef.current)
+      }
+      if (e.data.type === 'editValueRequest') {
+        if (!isSafeInlineEditId(e.data.nodeId) || !isSafePreviewText(e.data.original)) return
+        const rawAttribute = e.data.attribute
+        if (rawAttribute !== '' && !isSafeEditableAttribute(rawAttribute)) return
+        const attribute = isSafeEditableAttribute(rawAttribute) ? rawAttribute : undefined
+        if (attribute && !isEditableAttributeForTag(e.data.tag, attribute)) return
+        const label = attribute
+          ? `Edit ${attribute.replace('-', ' ')} text`
+          : 'Edit text'
+        const updated = window.prompt(label, e.data.original)
+        if (updated === null || !isSafePreviewText(updated) || updated === e.data.original) return
+
+        const page = currentPageRef.current
+        const pageEdits = mergeInlineEdit(
+          inlineEditsRef.current[page] || [],
+          e.data.original,
+          updated,
+          e.data.nodeId,
+        )
+        inlineEditsRef.current = { ...inlineEditsRef.current, [page]: pageEdits }
+        saveInlineEdits(inlineEditsRef.current, activeCustomizationScopeRef.current)
+        iframeRef.current?.contentWindow?.postMessage({
+          type: 'editValueResponse',
+          nodeId: e.data.nodeId,
+          attribute: attribute || '',
+          text: updated,
+        }, '*')
       }
     }
     window.addEventListener('message', handleMessage)
@@ -882,6 +917,7 @@ export default function PreviewYourBusinessClient() {
             matched={matchedTemplate}
             readiness={clientReadiness}
             previewHtml={previewHtml}
+            previewStylesheet={previewStylesheetRef.current}
             previewLoading={previewLoading}
             previewError={previewError}
             demoRecord={demoRecord}
@@ -1314,8 +1350,8 @@ function MatchStep({
             <ul className="space-y-3">
               {[
                 'Your business info is already filled into this template',
-                'Double-click any text to edit it directly',
-                'Click any image to replace it with your own',
+                'Double-click text or an accessibility label to edit it',
+                'Click an image to replace it; double-click it to edit its alt text',
                 'Swap color palettes and fonts with one click',
                 'Browse other templates anytime — your info stays saved',
               ].map((item) => (
@@ -1398,6 +1434,7 @@ function EditorStep({
   matched,
   readiness,
   previewHtml,
+  previewStylesheet,
   previewLoading,
   previewError,
   demoRecord,
@@ -1423,6 +1460,7 @@ function EditorStep({
   matched: MatchedTemplate
   readiness: ReturnType<typeof computeClientReadiness>
   previewHtml: string | null
+  previewStylesheet: string
   previewLoading: boolean
   previewError: string | null
   demoRecord: boolean
@@ -1508,12 +1546,17 @@ function EditorStep({
 
   const applyCustomStyles = useCallback(() => {
     if (!customThemeActive) return
+    const css = buildLivePreviewThemeCss(
+      { colors: customColors, fonts: customFonts },
+      previewStylesheet,
+    )
+    if (!css) return
     const iframe = iframeRef.current
     iframe?.contentWindow?.postMessage(
-      { type: 'applyPreviewStyles', colors: customColors, fonts: customFonts },
+      { type: 'applyPreviewStyles', css },
       '*',
     )
-  }, [customColors, customFonts, customThemeActive, iframeRef])
+  }, [customColors, customFonts, customThemeActive, iframeRef, previewStylesheet])
 
   useEffect(() => {
     applyCustomStyles()
@@ -1534,7 +1577,7 @@ function EditorStep({
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold text-white">{matched.templateName}</h1>
-            <p className="text-sm text-slate-400">Double-click text to edit • Click images to replace</p>
+            <p className="text-sm text-slate-400">Double-click text or labels to edit • Click images to replace</p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
           <button
@@ -1884,14 +1927,54 @@ function Field({
 /* ================================================================== */
 
 function getIframeInjectionScript(): string {
+  const editableSelector = JSON.stringify(VISUAL_EDITABLE_SELECTOR)
   return `
 <script>
 (function(){
-  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div:not(:has(h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div,section,article)),section:not(:has(*)),article:not(:has(*))';
+  var editableSelectors = ${editableSelector};
+  var safeEditableAttributes = { content: true, alt: true, title: true, placeholder: true, 'aria-label': true };
   var supportsHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
+  var pendingImageClick = null;
+
+  function editIdFor(el) {
+    return el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '';
+  }
+
+  function requestPromptEdit(el, attribute) {
+    var nodeId = editIdFor(el);
+    if (!nodeId) return false;
+    if (attribute && !safeEditableAttributes[attribute]) return false;
+    if (pendingImageClick) {
+      clearTimeout(pendingImageClick);
+      pendingImageClick = null;
+    }
+    var original = attribute ? (el.getAttribute(attribute) || '') : (el.textContent || '');
+    window.parent.postMessage({
+      type: 'editValueRequest',
+      nodeId: nodeId,
+      attribute: attribute || '',
+      tag: el.tagName,
+      original: original
+    }, '*');
+    return true;
+  }
 
   function startEditing(el) {
     if (!el || el.isContentEditable) return;
+    if (el.tagName === 'SELECT') {
+      var selectedOption = el.options && el.options[el.selectedIndex];
+      if (selectedOption) requestPromptEdit(selectedOption, '');
+      return;
+    }
+    var editableAttribute = el.getAttribute('data-dc-edit-attribute') || el.getAttribute('data-pb-edit-attribute') || '';
+    if (editableAttribute) {
+      requestPromptEdit(el, editableAttribute);
+      return;
+    }
+    if (el.tagName === 'OPTION') {
+      requestPromptEdit(el, '');
+      return;
+    }
     var originalText = el.textContent;
     el.contentEditable = 'true';
     el.style.outline = '2px solid #3b82f6';
@@ -1905,7 +1988,7 @@ function getIframeInjectionScript(): string {
       el.style.outlineOffset = '';
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
-      window.parent.postMessage({ type: 'textEdited', nodeId: el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
+      window.parent.postMessage({ type: 'textEdited', nodeId: editIdFor(el), tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
   }
 
@@ -1957,13 +2040,22 @@ function getIframeInjectionScript(): string {
     if (!img) return;
     e.preventDefault();
     e.stopPropagation();
-    var src = img.currentSrc || img.src || '';
-    if (!src) {
-      var background = window.getComputedStyle(img).backgroundImage || '';
-      var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
-      src = backgroundMatch ? backgroundMatch[1] : '';
+    var requestImageSwap = function() {
+      pendingImageClick = null;
+      var src = img.currentSrc || img.src || '';
+      if (!src) {
+        var background = window.getComputedStyle(img).backgroundImage || '';
+        var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
+        src = backgroundMatch ? backgroundMatch[1] : '';
+      }
+      window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
+    };
+    if (img.hasAttribute('data-dc-edit-attribute') || img.hasAttribute('data-pb-edit-attribute')) {
+      if (pendingImageClick) clearTimeout(pendingImageClick);
+      pendingImageClick = setTimeout(requestImageSwap, 280);
+    } else {
+      requestImageSwap();
     }
-    window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
   });
 
   window.addEventListener('message', function(e) {
@@ -1986,6 +2078,9 @@ function getIframeInjectionScript(): string {
         if (slot.tagName === 'IMG') {
           slot.removeAttribute('srcset');
           slot.src = newSrc;
+        } else if (slot.tagName === 'SOURCE') {
+          if (slot.hasAttribute('srcset')) slot.srcset = newSrc;
+          else slot.src = newSrc;
         } else {
           slot.style.setProperty('background-image', 'url(' + newSrc + ')', 'important');
         }
@@ -1999,35 +2094,37 @@ function getIframeInjectionScript(): string {
         }
       }
     }
-    if (e.data.type === 'applyPreviewStyles') {
-      var colors = e.data.colors || {};
-      var fonts = e.data.fonts || {};
-      var isColor = function(value) { return typeof value === 'string' && /^#[0-9a-f]{6}$/i.test(value); };
-      var isFont = function(value) { return typeof value === 'string' && value.length <= 120 && /^[a-z0-9,'" -]+$/i.test(value); };
-      if (!isColor(colors.primary) || !isColor(colors.bg) || !isColor(colors.text) || !isFont(fonts.heading) || !isFont(fonts.body)) return;
-      if (typeof fonts.importUrl === 'string' && /^https:\\/\\/fonts\\.googleapis\\.com\\//.test(fonts.importUrl)) {
-        var link = document.getElementById('pb-google-fonts');
-        if (!link) {
-          link = document.createElement('link');
-          link.id = 'pb-google-fonts';
-          link.rel = 'stylesheet';
-          document.head.appendChild(link);
+    if (e.data.type === 'editValueResponse') {
+      var responseId = e.data.nodeId;
+      var responseAttribute = e.data.attribute;
+      var responseText = e.data.text;
+      if (typeof responseId !== 'string' || typeof responseText !== 'string' || responseText.length > 10000) return;
+      var editCandidates = document.querySelectorAll('[data-dc-edit-id],[data-pb-edit-id]');
+      var editTarget = null;
+      for (var eIndex = 0; eIndex < editCandidates.length; eIndex++) {
+        if (editIdFor(editCandidates[eIndex]) === responseId) {
+          editTarget = editCandidates[eIndex];
+          break;
         }
-        link.href = fonts.importUrl;
       }
+      if (!editTarget) return;
+      if (responseAttribute) {
+        var declared = editTarget.getAttribute('data-dc-edit-attribute') || editTarget.getAttribute('data-pb-edit-attribute') || '';
+        if (!safeEditableAttributes[responseAttribute] || declared !== responseAttribute) return;
+        editTarget.setAttribute(responseAttribute, responseText);
+      } else {
+        editTarget.textContent = responseText;
+      }
+    }
+    if (e.data.type === 'applyPreviewStyles') {
+      if (typeof e.data.css !== 'string' || !e.data.css || e.data.css.length > 524288) return;
       var style = document.getElementById('pb-custom-styles');
       if (!style) {
         style = document.createElement('style');
         style.id = 'pb-custom-styles';
         document.head.appendChild(style);
       }
-      style.textContent = ':root{' +
-        '--pb-primary:' + colors.primary + ';--pb-bg:' + colors.bg + ';--pb-text:' + colors.text + ';' +
-        '--primary:' + colors.primary + '!important;--bg:' + colors.bg + '!important;--fg:' + colors.text + '!important;' +
-        '--pb-heading-font:' + fonts.heading + ';--pb-body-font:' + fonts.body + ';}' +
-        'body{background-color:' + colors.bg + '!important;color:' + colors.text + '!important;font-family:' + fonts.body + '!important;}' +
-        'h1,h2,h3,h4,h5,h6,.h1,.h2,.brand{font-family:' + fonts.heading + '!important;}' +
-        'a,.btn,button{--pb-accent:' + colors.primary + ';}';
+      style.textContent = e.data.css;
     }
   });
 

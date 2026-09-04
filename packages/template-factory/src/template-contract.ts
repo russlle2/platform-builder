@@ -102,9 +102,17 @@ const PERSONAL_DATA_PLACEHOLDERS: ReadonlyArray<{
   label: string;
   pattern: RegExp;
 }> = [
-  { label: 'placeholder email', pattern: /\bhello@example\.com\b/i },
-  { label: 'placeholder practitioner name', pattern: /\bDr\.\s+Morgan\s+Ellis\b/i },
-  { label: 'placeholder phone', pattern: /\(?555\)?[\s.-]*555[\s.-]*0100\b/i },
+  {
+    label: 'placeholder email',
+    pattern: /\b[A-Z0-9._%+-]+@(?:example\.(?:com|net|org)|example\.test)\b/i,
+  },
+  {
+    label: 'placeholder practitioner name',
+    pattern: /\b(?:Dr\.\s+Morgan\s+Ellis|Jane\s+Doe|John\s+Doe)\b/i,
+  },
+  { label: 'placeholder phone', pattern: /\(?\d{3}\)?[\s.-]*555[\s.-]*01\d{2}\b/i },
+  { label: 'placeholder street address', pattern: /\b(?:Your Address|123 Main (?:St(?:reet)?|Road|Rd\.?))\b/i },
+  { label: 'placeholder locality', pattern: /\bAnytown\b/i },
   { label: 'placeholder city', pattern: /\bYour City\b/i },
   { label: 'placeholder state', pattern: /\bYour State\b/i },
   {
@@ -113,26 +121,44 @@ const PERSONAL_DATA_PLACEHOLDERS: ReadonlyArray<{
   },
 ];
 
+/**
+ * Shared semantic safety vocabulary. These expressions deliberately have no
+ * global flag so they can be reused safely by both the repairer and the final
+ * publication boundary without RegExp lastIndex state leaking between pages.
+ */
+export const SENSITIVE_FORM_TEXT_RE = /\b(?:allerg(?:y|ies|ic)|pregnan(?:t|cy)|medications?|diagnos(?:is|ed|tic)|medical history|mental[- ]health history|symptoms?|health conditions?|suicid(?:e|al)|trauma history)\b/i;
+export const UNSUPPORTED_PROOF_TEXT_RE = /\b(?:proof\s*(?:&|and)\s*credibility|testimonials?|client (?:success )?stor(?:y|ies)|patient stor(?:y|ies)|(?:real )?client note|what (?:our )?(?:clients?|patients?) (?:say|share)|voices? from (?:the )?(?:cohort|community|clients?)|trusted by|featured in|real results|success stories)\b/i;
+export const UNSUPPORTED_PROOF_ATTRIBUTE_RE = /(?:^|[-_\s])(?:testimonials?|reviews?|quote|social[-_]?proof|success[-_]?stor(?:y|ies))(?:$|[-_\s])/i;
+export const UNSUPPORTED_CREDENTIAL_PROOF_RE = /\b(?:accredit(?:ed|ation)|award(?:ed|s)?|case stud(?:y|ies)|certification|featured (?:by|in)|independently verified|member rated|partner(?:ed|ship)|peer[- ]reviewed|published|recognition|verified)\b/i;
+export const UNSUPPORTED_OUTCOME_CLAIM_RE = /\b(?:guarantee(?:d|s)?|promise[sd]?)\s+(?:results?|outcomes?|bookings?|revenue|growth|healing|relief)|\b(?:cure|heal|reverse|eliminate|prevent|treat)(?:s|ed|ing)?\s+(?:anxiety|depression|disease|illness|pain|symptoms?|trauma|insomnia|headaches?|stress|medical conditions?)\b/i;
+export const UNSUPPORTED_PERCENT_RESULT_RE = /\b\d{1,3}(?:\.\d+)?%\s+(?:improvement|better|reduction|relief|success|results?)\b/i;
+export const UNSUPPORTED_ABSOLUTE_EFFICACY_RE = /\b(?:(?:clinically|scientifically) proven|(?:instant|permanent) (?:relief|results?)|(?:works?|effective) (?:every time|for everyone))\b/i;
+export const UNSUPPORTED_CREDENTIAL_CLAIM_RE = /\b(?:independently verified|member[- ]rated|peer[- ]reviewed|featured (?:by|in)|award(?:ed|-winning)?|accredited|recognized by|certified by)\b/i;
+export const HARD_CODED_OFFER_PRICE_RE = /(?:[$£€]\s*\d[\d,.]*(?:\s*(?:USD|EUR|GBP))?|\b\d[\d,.]*\s*(?:USD|EUR|GBP)\b)/i;
+
+const UNSUPPORTED_PROOF_MARKUP_RE = /\b(?:class|id|data-[\w-]+)\s*=\s*["'][^"']*(?:testimonials?|reviews?|quote|social[-_]?proof|success[-_]?stor(?:y|ies))[^"']*["']/i;
+
 const PUBLICATION_RISK_PATTERNS: ReadonlyArray<{
   label: string;
   pattern: RegExp;
 }> = [
   {
     label: 'unverified testimonial or review content',
-    pattern: /\btestimonials?\b|\bclient (?:success )?stor(?:y|ies)\b|\bwhat (?:our )?(?:clients?|patients?) (?:say|share)\b|\bvoices? from (?:the )?(?:cohort|community|clients?)\b|class\s*=\s*["'][^"']*\b(?:testimonial|review|quote)\b/i,
+    pattern: new RegExp(`${UNSUPPORTED_PROOF_TEXT_RE.source}|${UNSUPPORTED_PROOF_MARKUP_RE.source}`, 'i'),
   },
-  { label: 'hard-coded offer price', pattern: />\s*[^<]{0,120}\$\s*\d/i },
+  { label: 'hard-coded offer price', pattern: HARD_CODED_OFFER_PRICE_RE },
   {
     label: 'unverified percentage result',
-    pattern: />\s*[^<]{0,120}\b\d{1,3}(?:\.\d+)?%\b/i,
+    pattern: UNSUPPORTED_PERCENT_RESULT_RE,
   },
   {
-    label: 'guaranteed outcome claim',
-    pattern: /\bguaranteed?\s+(?:results?|outcomes?|bookings?|revenue|growth|healing)\b/i,
+    label: 'unsupported outcome claim',
+    pattern: UNSUPPORTED_OUTCOME_CLAIM_RE,
   },
+  { label: 'unsupported absolute efficacy claim', pattern: UNSUPPORTED_ABSOLUTE_EFFICACY_RE },
+  { label: 'unverified credential or recognition claim', pattern: UNSUPPORTED_CREDENTIAL_CLAIM_RE },
 ];
 
-const SENSITIVE_FORM_RE = /\b(?:allerg(?:y|ies|ic)|pregnan(?:t|cy)|medications?|diagnos(?:is|ed|tic)|medical history|mental[- ]health history|symptoms?|health conditions?)\b/i;
 const LITERAL_EMAIL_RE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i;
 const LITERAL_PHONE_RE = /(?:^|[^\w])(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?:\s*(?:x|ext\.?)\s*[\d]+)?(?:$|[^\w])/i;
 
@@ -197,7 +223,7 @@ export function validateTemplateContract(
     }
 
     for (const form of visibleMarkup.match(/<form\b[\s\S]*?<\/form>/gi) ?? []) {
-      if (SENSITIVE_FORM_RE.test(form)) {
+      if (SENSITIVE_FORM_TEXT_RE.test(form)) {
         errors.push(`${page}: form solicits sensitive health information`);
         break;
       }

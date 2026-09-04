@@ -11,6 +11,14 @@ import {
 } from './contracts.js';
 import {
   CORE_PERSONALIZATION_TOKENS,
+  SENSITIVE_FORM_TEXT_RE,
+  UNSUPPORTED_ABSOLUTE_EFFICACY_RE,
+  UNSUPPORTED_CREDENTIAL_CLAIM_RE,
+  UNSUPPORTED_CREDENTIAL_PROOF_RE,
+  UNSUPPORTED_OUTCOME_CLAIM_RE,
+  UNSUPPORTED_PERCENT_RESULT_RE,
+  UNSUPPORTED_PROOF_ATTRIBUTE_RE,
+  UNSUPPORTED_PROOF_TEXT_RE,
   extractTemplateTokens,
   isCorePersonalizationToken,
 } from '../template-contract.js';
@@ -30,6 +38,7 @@ export interface BackgroundSelector {
   stylesheet: string;
   selector: string;
   source: string;
+  slotId: string;
 }
 
 export interface StylesheetRepairResult {
@@ -44,6 +53,7 @@ export interface PageRepairResult {
   fields: CanonicalField[];
   editIds: string[];
   imageIds: string[];
+  backgroundSelectors: BackgroundSelector[];
   issues: RepairIssue[];
   transformations: Transformation[];
 }
@@ -55,7 +65,6 @@ export interface RepairPageOptions {
   fields: readonly CanonicalField[];
   pageNames: readonly string[];
   foundation?: string;
-  backgroundSelectors?: readonly BackgroundSelector[];
 }
 
 const TEXT_TAGS = new Set([
@@ -67,11 +76,15 @@ const NON_CONTENT_TEXT_ANCESTORS = new Set(['script', 'style', 'svg', 'template'
 const NON_EDITABLE_ELEMENTS = new Set(['script', 'style', 'svg', 'template']);
 const REMOVED_ELEMENTS = new Set(['frame', 'frameset', 'iframe', 'object', 'embed']);
 const URL_ATTRS = new Set(['action', 'formaction', 'href', 'poster', 'src', 'xlink:href']);
-const SENSITIVE_FORM = /\b(?:allerg(?:y|ies|ic)|pregnan(?:t|cy)|medications?|diagnos(?:is|ed|tic)|medical history|mental[- ]health history|symptoms?|health conditions?|suicid(?:e|al)|trauma history)\b/i;
-const PROOF_TEXT = /\b(?:testimonials?|client (?:success )?stor(?:y|ies)|patient stor(?:y|ies)|(?:real )?client note|what (?:our )?(?:clients?|patients?) (?:say|share)|voices? from (?:the )?(?:cohort|community|clients?)|trusted by|featured in|real results|success stories)\b/i;
-const PROOF_ATTR = /(?:^|[-_\s])(?:testimonials?|reviews?|quote|social[-_]?proof|success[-_]?stor(?:y|ies))(?:$|[-_\s])/i;
-const CLAIM_TEXT = /\b(?:guarantee(?:d|s)?|promise[sd]?)\s+(?:results?|outcomes?|bookings?|revenue|growth|healing|relief)|\b(?:cure|heal|reverse|eliminate|prevent|treat)(?:s|ed|ing)?\s+(?:anxiety|depression|disease|illness|pain|symptoms?|trauma|insomnia|headaches?|stress|medical conditions?)\b/i;
-const PERCENT_RESULT = /\b\d{1,3}(?:\.\d+)?%\s+(?:improvement|better|reduction|relief|success|results?)\b/i;
+const SENSITIVE_FORM = SENSITIVE_FORM_TEXT_RE;
+const PROOF_TEXT = UNSUPPORTED_PROOF_TEXT_RE;
+const PROOF_ATTR = UNSUPPORTED_PROOF_ATTRIBUTE_RE;
+const SYNTHETIC_BADGE_SIGNAL = UNSUPPORTED_CREDENTIAL_PROOF_RE;
+const CLAIM_TEXT = new RegExp(
+  `${UNSUPPORTED_OUTCOME_CLAIM_RE.source}|${UNSUPPORTED_ABSOLUTE_EFFICACY_RE.source}|${UNSUPPORTED_CREDENTIAL_CLAIM_RE.source}`,
+  'i',
+);
+const PERCENT_RESULT = UNSUPPORTED_PERCENT_RESULT_RE;
 const PRICE = /(?:[$£€]\s*\d[\d,.]*(?:\s*(?:USD|EUR|GBP))?|\b\d[\d,.]*\s*(?:USD|EUR|GBP)\b)/gi;
 const THEME_COLOR = /#[0-9a-f]{3,8}\b|rgba?\([^)]*\)|hsla?\([^)]*\)/i;
 const EMAIL = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
@@ -354,8 +367,11 @@ function isProofContainer(node: HtmlNode): boolean {
     getAttr(node, 'title'),
     getAttr(node, 'aria-labelledby'),
     getAttr(node, 'alt'),
+    getAttr(node, 'data-tip'),
+    getAttr(node, 'data-tooltip'),
+    getAttr(node, 'data-title'),
   ].filter(Boolean).join(' ');
-  if (PROOF_TEXT.test(accessibleSignal) || PROOF_ATTR.test(accessibleSignal)) return true;
+  if (PROOF_TEXT.test(accessibleSignal) || PROOF_ATTR.test(accessibleSignal) || SYNTHETIC_BADGE_SIGNAL.test(accessibleSignal)) return true;
 
   // A quote class is an explicit generated-proof signal, but searching through
   // an arbitrary div can once again select an entire page wrapper. Restrict the
@@ -369,8 +385,15 @@ function isProofContainer(node: HtmlNode): boolean {
         // a general content wrapper.
         if (child.tagName === 'section') continue;
         if (hasClassOrId(child, PROOF_ATTR)) return true;
-        const childSignal = [getAttr(child, 'aria-label'), getAttr(child, 'title'), getAttr(child, 'alt')].filter(Boolean).join(' ');
-        if (PROOF_TEXT.test(childSignal) || PROOF_ATTR.test(childSignal)) return true;
+        const childSignal = [
+          getAttr(child, 'aria-label'),
+          getAttr(child, 'title'),
+          getAttr(child, 'alt'),
+          getAttr(child, 'data-tip'),
+          getAttr(child, 'data-tooltip'),
+          getAttr(child, 'data-title'),
+        ].filter(Boolean).join(' ');
+        if (PROOF_TEXT.test(childSignal) || PROOF_ATTR.test(childSignal) || SYNTHETIC_BADGE_SIGNAL.test(childSignal)) return true;
         if (hasExplicitProofDescendant(child)) return true;
       }
       return false;
@@ -384,7 +407,10 @@ function isProofContainer(node: HtmlNode): boolean {
   // may search descendants, while vocabulary-only evidence must be direct.
   const signalText = (node.childNodes ?? []).map((child) => {
     if (child.nodeName === '#text') return child.value ?? '';
-    return /^(?:h[1-6]|p|blockquote|figcaption)$/.test(child.tagName ?? '') ? textContent(child) : '';
+    return /^(?:h[1-6]|p|blockquote|figcaption|small|strong)$/.test(child.tagName ?? '')
+      || (child.tagName === 'div' && (child.childNodes ?? []).every((nested) => nested.nodeName === '#text'))
+      ? textContent(child)
+      : '';
   }).join(' ');
   return PROOF_TEXT.test(signalText.replace(/\s+/g, ' '));
 }
@@ -564,10 +590,14 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
 function normalizeAccessibility(document: HtmlNode): number {
   let count = 0;
   const explicitLabels = new Set<string>();
+  const nodesById = new Map<string, HtmlNode>();
   walk(document, (node) => {
-    if (node.tagName !== 'label') return;
-    const target = getAttr(node, 'for');
-    if (target) explicitLabels.add(target);
+    const id = getAttr(node, 'id');
+    if (id && !nodesById.has(id)) nodesById.set(id, node);
+    if (node.tagName === 'label') {
+      const target = getAttr(node, 'for');
+      if (target) explicitLabels.add(target);
+    }
   });
 
   const hasLabelAncestor = (node: HtmlNode): boolean => {
@@ -579,9 +609,57 @@ function normalizeAccessibility(document: HtmlNode): number {
     return false;
   };
   const accessibleControlName = (node: HtmlNode): string => {
-    const marker = getAttr(node, 'name') ?? getAttr(node, 'id') ?? node.tagName ?? 'field';
-    const normalized = marker.replace(/^q-/, '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (character) => character.toUpperCase()).trim();
-    return normalized || 'Form field';
+    const className = getAttr(node, 'class') ?? '';
+    const href = getAttr(node, 'href') ?? '';
+    if (node.tagName === 'a' && (/(?:^|\s)(?:brand|logo)(?:\s|$)/i.test(className) || /(?:^|\/)index\.html?(?:[?#]|$)/i.test(href))) {
+      return '{{BUSINESS_NAME}} home';
+    }
+    const hrefStem = href.split(/[?#]/, 1)[0]?.split('/').pop()?.replace(/\.html?$/i, '');
+    const marker = getAttr(node, 'name') ?? getAttr(node, 'id') ?? hrefStem ?? '';
+    const normalized = marker
+      .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+      .replace(/^q[-_\s]+/i, '')
+      .replace(/^(?:comp(?:onent)?|control|btn|button)[-_\s]+/i, '')
+      .replace(/[-_]+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .replace(/\b\w/g, (character) => character.toUpperCase())
+      .trim();
+    if (normalized) return normalized;
+    if (node.tagName === 'a' || /^link$/i.test(getAttr(node, 'role') ?? '')) return 'View information';
+    if (/^(?:button|switch)$/i.test(getAttr(node, 'role') ?? '') || node.tagName === 'button') return 'Interactive control';
+    return 'Form field';
+  };
+  const accessibleText = (node: HtmlNode, isRoot = true): string => {
+    if (!isRoot && getAttr(node, 'aria-hidden') === 'true') return '';
+    if (node.nodeName === '#text') return node.value ?? '';
+    return (node.childNodes ?? []).map((child) => accessibleText(child, false)).join(' ');
+  };
+  const hasReferencedName = (node: HtmlNode): boolean => (getAttr(node, 'aria-labelledby') ?? '')
+    .split(/\s+/)
+    .filter(Boolean)
+    .some((id) => {
+      const target = nodesById.get(id);
+      return Boolean(target && (accessibleText(target).trim() || getAttr(target, 'aria-label')?.trim() || getAttr(target, 'title')?.trim()));
+    });
+  const hasAccessibleName = (node: HtmlNode): boolean => Boolean(
+    getAttr(node, 'aria-label')?.trim()
+    || getAttr(node, 'title')?.trim()
+    || hasReferencedName(node)
+    || accessibleText(node).trim(),
+  );
+  const isPotentiallyFocusable = (node: HtmlNode): boolean => {
+    if (!node.tagName || getAttr(node, 'disabled') !== undefined || getAttr(node, 'hidden') !== undefined) return false;
+    const tabindex = getAttr(node, 'tabindex');
+    if (tabindex !== undefined && Number.parseInt(tabindex, 10) >= 0) return true;
+    if (getAttr(node, 'contenteditable') !== undefined && !/^false$/i.test(getAttr(node, 'contenteditable') ?? '')) return true;
+    if ((node.tagName === 'a' || node.tagName === 'area') && getAttr(node, 'href') !== undefined) return true;
+    if (['button', 'select', 'textarea', 'summary'].includes(node.tagName)) return true;
+    if (node.tagName === 'input' && !/^hidden$/i.test(getAttr(node, 'type') ?? 'text')) return true;
+    return (node.tagName === 'audio' || node.tagName === 'video') && getAttr(node, 'controls') !== undefined;
+  };
+  const containsFocusable = (node: HtmlNode): boolean => {
+    if (isPotentiallyFocusable(node)) return true;
+    return (node.childNodes ?? []).some(containsFocusable);
   };
   const stripRoleState = (node: HtmlNode): void => {
     for (const attribute of [
@@ -636,6 +714,17 @@ function normalizeAccessibility(document: HtmlNode): number {
 
   walk(document, (node) => {
     if (!node.tagName) return;
+    const ariaHidden = getAttr(node, 'aria-hidden');
+    if (ariaHidden !== undefined && !/^(?:true|false)$/i.test(ariaHidden)) {
+      removeAttr(node, 'aria-hidden');
+      count += 1;
+    } else if (/^true$/i.test(ariaHidden ?? '') && containsFocusable(node)) {
+      // A focusable descendant must not be hidden only from assistive
+      // technology. Scripts that managed legacy carousel/modal state are gone,
+      // so exposing the still-interactive content is the least destructive fix.
+      removeAttr(node, 'aria-hidden');
+      count += 1;
+    }
     if (node.tagName === 'ul' || node.tagName === 'ol') {
       const invalidChild = (node.childNodes ?? []).some((child) => {
         if (child.nodeName === '#text') return Boolean(child.value?.trim());
@@ -704,6 +793,16 @@ function normalizeAccessibility(document: HtmlNode): number {
       count += 1;
     }
 
+    const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    const nativeCommand = node.tagName === 'button'
+      || (node.tagName === 'a' && getAttr(node, 'href') !== undefined)
+      || (node.tagName === 'input' && /^(?:button|submit|reset|image)$/i.test(getAttr(node, 'type') ?? 'text'));
+    const ariaCommand = /^(?:button|checkbox|link|menuitem|menuitemcheckbox|menuitemradio|radio|switch)$/i.test(role);
+    if ((nativeCommand || ariaCommand) && !hasAccessibleName(node)) {
+      setAttr(node, 'aria-label', accessibleControlName(node));
+      count += 1;
+    }
+
     if (!['input', 'select', 'textarea'].includes(node.tagName)) return;
     if (node.tagName === 'input' && /^(?:hidden|submit|reset|button|image)$/i.test(getAttr(node, 'type') ?? 'text')) return;
     const id = getAttr(node, 'id');
@@ -743,17 +842,279 @@ function resolveInternalHref(href: string, pageNames: readonly string[]): string
   return replacement ? `${replacement}${suffix}` : undefined;
 }
 
-function matchesSimpleSelector(node: HtmlNode, selector: string): boolean {
-  if (!node.tagName) return false;
-  const last = selector.trim().split(/\s+|>|\+|~/).filter(Boolean).pop()?.replace(/::?[\w-]+(?:\([^)]*\))?/g, '');
-  if (!last || /\[/.test(last)) return false;
-  const idMatch = last.match(/#([\w-]+)/);
-  if (idMatch && getAttr(node, 'id') !== idMatch[1]) return false;
-  const classes = [...last.matchAll(/\.([\w-]+)/g)].map((match) => match[1]);
-  const actualClasses = new Set((getAttr(node, 'class') ?? '').split(/\s+/).filter(Boolean));
-  if (classes.some((className) => !actualClasses.has(className))) return false;
-  const tag = last.match(/^[a-z][\w-]*/i)?.[0];
-  return !tag || node.tagName === tag.toLowerCase();
+type StaticCombinator = ' ' | '>' | '+' | '~';
+
+interface StaticAttributeSelector {
+  name: string;
+  operator?: '=' | '~=' | '|=' | '^=' | '$=' | '*=';
+  value?: string;
+  insensitive: boolean;
+}
+
+interface StaticCompoundSelector {
+  tag?: string;
+  ids: string[];
+  classes: string[];
+  attributes: StaticAttributeSelector[];
+}
+
+interface StaticSelector {
+  compounds: StaticCompoundSelector[];
+  combinators: StaticCombinator[];
+}
+
+function splitSelectorList(selector: string): string[] | undefined {
+  const result: string[] = [];
+  let start = 0;
+  let bracketDepth = 0;
+  let parenthesisDepth = 0;
+  let quote = '';
+  for (let index = 0; index < selector.length; index += 1) {
+    const char = selector[index]!;
+    if (quote) {
+      if (char === quote && selector[index - 1] !== '\\') quote = '';
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      continue;
+    }
+    if (char === '[') bracketDepth += 1;
+    else if (char === ']') bracketDepth -= 1;
+    else if (char === '(') parenthesisDepth += 1;
+    else if (char === ')') parenthesisDepth -= 1;
+    else if (char === ',' && bracketDepth === 0 && parenthesisDepth === 0) {
+      const value = selector.slice(start, index).trim();
+      if (!value) return undefined;
+      result.push(value);
+      start = index + 1;
+    }
+    if (bracketDepth < 0 || parenthesisDepth < 0) return undefined;
+  }
+  if (quote || bracketDepth !== 0 || parenthesisDepth !== 0) return undefined;
+  const final = selector.slice(start).trim();
+  if (!final) return undefined;
+  result.push(final);
+  return result;
+}
+
+function selectorTokens(selector: string): { compounds: string[]; combinators: StaticCombinator[] } | undefined {
+  const compounds: string[] = [];
+  const combinators: StaticCombinator[] = [];
+  let buffer = '';
+  let bracketDepth = 0;
+  let quote = '';
+  let pendingDescendant = false;
+  const flush = (): boolean => {
+    const value = buffer.trim();
+    buffer = '';
+    if (!value) return false;
+    compounds.push(value);
+    return true;
+  };
+
+  for (let index = 0; index < selector.length; index += 1) {
+    const char = selector[index]!;
+    if (quote) {
+      buffer += char;
+      if (char === quote && selector[index - 1] !== '\\') quote = '';
+      continue;
+    }
+    if (char === '"' || char === "'") {
+      quote = char;
+      buffer += char;
+      continue;
+    }
+    if (char === '[') {
+      bracketDepth += 1;
+      buffer += char;
+      continue;
+    }
+    if (char === ']') {
+      bracketDepth -= 1;
+      if (bracketDepth < 0) return undefined;
+      buffer += char;
+      continue;
+    }
+    if (bracketDepth > 0) {
+      buffer += char;
+      continue;
+    }
+    // Dynamic states and pseudo-elements do not identify a clickable DOM box
+    // with sufficiently stable semantics for this compiler contract.
+    if (char === ':' || char === '\\' || char === ',') return undefined;
+    if (/\s/.test(char)) {
+      if (buffer.trim()) flush();
+      if (compounds.length === combinators.length + 1) pendingDescendant = true;
+      continue;
+    }
+    if (char === '>' || char === '+' || char === '~') {
+      if (buffer.trim()) flush();
+      if (compounds.length !== combinators.length + 1) return undefined;
+      combinators.push(char);
+      pendingDescendant = false;
+      continue;
+    }
+    if (pendingDescendant) {
+      if (compounds.length !== combinators.length + 1) return undefined;
+      combinators.push(' ');
+      pendingDescendant = false;
+    }
+    buffer += char;
+  }
+  if (quote || bracketDepth !== 0) return undefined;
+  if (buffer.trim()) flush();
+  if (compounds.length === 0 || combinators.length !== compounds.length - 1) return undefined;
+  return { compounds, combinators };
+}
+
+function readSelectorIdentifier(value: string, offset: number): { value: string; end: number } | undefined {
+  const match = value.slice(offset).match(/^[-_A-Za-z][-_A-Za-z0-9]*/);
+  return match ? { value: match[0], end: offset + match[0].length } : undefined;
+}
+
+function parseAttributeSelector(value: string): StaticAttributeSelector | undefined {
+  const match = value.match(
+    /^\s*([A-Za-z_:][A-Za-z0-9_.:-]*)\s*(?:(~=|\|=|\^=|\$=|\*=|=)\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=]+))\s*([iIsS])?)?\s*$/,
+  );
+  if (!match) return undefined;
+  const operator = match[2] as StaticAttributeSelector['operator'] | undefined;
+  const attribute: StaticAttributeSelector = {
+    name: match[1]!.toLowerCase(),
+    insensitive: match[6]?.toLowerCase() === 'i',
+  };
+  if (operator) {
+    attribute.operator = operator;
+    attribute.value = match[3] ?? match[4] ?? match[5] ?? '';
+  }
+  return attribute;
+}
+
+function parseCompoundSelector(value: string): StaticCompoundSelector | undefined {
+  let offset = 0;
+  let universal = false;
+  const result: StaticCompoundSelector = { ids: [], classes: [], attributes: [] };
+  if (value[offset] === '*') {
+    universal = true;
+    offset += 1;
+  }
+  else {
+    const tag = readSelectorIdentifier(value, offset);
+    if (tag) {
+      result.tag = tag.value.toLowerCase();
+      offset = tag.end;
+    }
+  }
+
+  while (offset < value.length) {
+    const marker = value[offset]!;
+    if (marker === '#' || marker === '.') {
+      const identifier = readSelectorIdentifier(value, offset + 1);
+      if (!identifier) return undefined;
+      (marker === '#' ? result.ids : result.classes).push(identifier.value);
+      offset = identifier.end;
+      continue;
+    }
+    if (marker === '[') {
+      let end = offset + 1;
+      let quote = '';
+      for (; end < value.length; end += 1) {
+        const char = value[end]!;
+        if (quote) {
+          if (char === quote && value[end - 1] !== '\\') quote = '';
+        } else if (char === '"' || char === "'") quote = char;
+        else if (char === ']') break;
+      }
+      if (end >= value.length || quote) return undefined;
+      const attribute = parseAttributeSelector(value.slice(offset + 1, end));
+      if (!attribute) return undefined;
+      result.attributes.push(attribute);
+      offset = end + 1;
+      continue;
+    }
+    return undefined;
+  }
+  return universal || result.tag || result.ids.length || result.classes.length || result.attributes.length ? result : undefined;
+}
+
+function parseStaticSelector(selector: string): StaticSelector | undefined {
+  const tokens = selectorTokens(selector.trim());
+  if (!tokens) return undefined;
+  const compounds = tokens.compounds.map(parseCompoundSelector);
+  if (compounds.some((compound) => !compound)) return undefined;
+  return { compounds: compounds as StaticCompoundSelector[], combinators: tokens.combinators };
+}
+
+function attributeMatches(actual: string | undefined, selector: StaticAttributeSelector): boolean {
+  if (actual === undefined) return false;
+  if (!selector.operator) return true;
+  const expected = selector.value ?? '';
+  const left = selector.insensitive ? actual.toLowerCase() : actual;
+  const right = selector.insensitive ? expected.toLowerCase() : expected;
+  if (selector.operator === '=') return left === right;
+  if (selector.operator === '~=') return left.split(/\s+/).includes(right);
+  if (selector.operator === '|=') return left === right || left.startsWith(`${right}-`);
+  if (selector.operator === '^=') return left.startsWith(right);
+  if (selector.operator === '$=') return left.endsWith(right);
+  return left.includes(right);
+}
+
+function compoundMatches(node: HtmlNode, selector: StaticCompoundSelector): boolean {
+  if (!node.tagName || (selector.tag && node.tagName !== selector.tag)) return false;
+  const nodeId = getAttr(node, 'id');
+  if (selector.ids.some((id) => id !== nodeId)) return false;
+  const classes = new Set((getAttr(node, 'class') ?? '').split(/\s+/).filter(Boolean));
+  if (selector.classes.some((className) => !classes.has(className))) return false;
+  return selector.attributes.every((attribute) => attributeMatches(getAttr(node, attribute.name), attribute));
+}
+
+function previousElementSiblings(node: HtmlNode): HtmlNode[] {
+  const siblings = node.parentNode?.childNodes ?? [];
+  const index = siblings.indexOf(node);
+  return index < 1 ? [] : siblings.slice(0, index).filter((candidate) => Boolean(candidate.tagName));
+}
+
+function staticSelectorMatches(node: HtmlNode, selector: StaticSelector, index = selector.compounds.length - 1): boolean {
+  if (!compoundMatches(node, selector.compounds[index]!)) return false;
+  if (index === 0) return true;
+  const combinator = selector.combinators[index - 1]!;
+  if (combinator === '>') {
+    return Boolean(node.parentNode?.tagName && staticSelectorMatches(node.parentNode, selector, index - 1));
+  }
+  if (combinator === '+') {
+    const siblings = previousElementSiblings(node);
+    const previous = siblings[siblings.length - 1];
+    return Boolean(previous && staticSelectorMatches(previous, selector, index - 1));
+  }
+  if (combinator === '~') {
+    return previousElementSiblings(node).some((previous) => staticSelectorMatches(previous, selector, index - 1));
+  }
+  let ancestor = node.parentNode;
+  while (ancestor) {
+    if (ancestor.tagName && staticSelectorMatches(ancestor, selector, index - 1)) return true;
+    ancestor = ancestor.parentNode;
+  }
+  return false;
+}
+
+/** Resolve a deliberately static CSS subset, returning undefined when unsafe or unsupported. */
+export function resolveStaticSelectorTargets(document: HtmlNode, selector: string): HtmlNode[] | undefined {
+  const parsed = parseStaticSelector(selector);
+  if (!parsed) return undefined;
+  const targets: HtmlNode[] = [];
+  walk(document, (node) => {
+    if (node.tagName && staticSelectorMatches(node, parsed)) targets.push(node);
+  });
+  return targets;
+}
+
+export function cssBackgroundSlotId(stylesheet: string, imageIndex: number): string {
+  return `css_${sha256(`${stylesheet}:background-image:${imageIndex}`).slice(0, 18)}`;
+}
+
+export function inlineStylesheetPath(page: string, styleIndex: number): string {
+  const directory = page.includes('/') ? page.slice(0, page.lastIndexOf('/') + 1) : '';
+  return `${directory}.dc-inline-${sha256(`${page}:${styleIndex}`).slice(0, 16)}.css`;
 }
 
 function fieldDefaultMap(fields: readonly CanonicalField[]): Map<string, string> {
@@ -926,7 +1287,6 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
 function annotateEditableNodes(
   document: HtmlNode,
   file: string,
-  backgroundSelectors: readonly BackgroundSelector[],
 ): { editIds: string[]; imageIds: string[] } {
   const editIds: string[] = [];
   const imageIds: string[] = [];
@@ -971,8 +1331,7 @@ function annotateEditableNodes(
     }
 
     const inlineBackground = /background(?:-image)?\s*:[^;]*url\(/i.test(getAttr(node, 'style') ?? '');
-    const selectorBackground = backgroundSelectors.some((entry) => matchesSimpleSelector(node, entry.selector));
-    if (node.tagName === 'img' || node.tagName === 'source' || inlineBackground || selectorBackground) {
+    if (node.tagName === 'img' || node.tagName === 'source' || inlineBackground) {
       imageIds.push(mark(node, 'image'));
     }
     for (const child of node.childNodes ?? []) visit(child, editableAncestor || shouldEdit);
@@ -1045,6 +1404,7 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
   }
 
   let unsafe = 0;
+  let backgroundImageIndex = 0;
   root.walkDecls((declaration) => {
     if (/expression\s*\(|url\(\s*(['"]?)\s*(?:javascript:|data:text\/html)/i.test(declaration.value)) {
       declaration.remove();
@@ -1055,9 +1415,13 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
       for (const match of declaration.value.matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/gi)) {
         const source = match[2]?.trim();
         const selector = declaration.parent?.type === 'rule' ? declaration.parent.selector : undefined;
-        if (source && selector) {
-          for (const individual of selector.split(',').map((value) => value.trim()).filter(Boolean)) {
-            backgrounds.push({ stylesheet: file, selector: individual, source });
+        if (source && !/^data:image/i.test(source)) {
+          const slotId = cssBackgroundSlotId(file, backgroundImageIndex++);
+          const individualSelectors = selector ? splitSelectorList(selector) : undefined;
+          if (individualSelectors) {
+            for (const individual of individualSelectors) {
+              backgrounds.push({ stylesheet: file, selector: individual, source, slotId });
+            }
           }
         }
       }
@@ -1107,7 +1471,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const document = parse(expressionResult.html, { sourceCodeLocationInfo: false }) as unknown as HtmlNode;
   const issues = [...expressionResult.issues];
   const transformations = [...expressionResult.transformations];
-  const pageBackgrounds = [...(options.backgroundSelectors ?? [])];
+  const pageBackgrounds: BackgroundSelector[] = [];
   transformations.push(...restoreKnownLiterals(document, options.fields, options.file));
 
   const removals = new Set<HtmlNode>();
@@ -1263,7 +1627,8 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
         ? retainFoundationThemeOverrides(css)
         : { css, removed: 0 };
       if (foundationTheme.removed) transformations.push({ rule: 'align-foundation-variation', file: options.file, count: foundationTheme.removed });
-      const repaired = repairStylesheet(foundationTheme.css, `${options.file}#inline-style-${inlineStyles++}`);
+      const styleIndex = inlineStyles++;
+      const repaired = repairStylesheet(foundationTheme.css, inlineStylesheetPath(options.file, styleIndex));
       replaceWithText(node, repaired.css);
       pageBackgrounds.push(...repaired.backgrounds);
       issues.push(...repaired.issues);
@@ -1341,7 +1706,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const body = findElement(document, 'body') ?? document;
   appendHtml(body, `<script defer src="${COMPATIBILITY_SCRIPT_PATH}" data-dc-runtime="compatibility-v1"></script>`);
 
-  const annotated = annotateEditableNodes(document, options.file, pageBackgrounds);
+  const annotated = annotateEditableNodes(document, options.file);
   const outputHtml = serialize(document as never);
   const fields = canonicalFieldsForTokens(extractTemplateTokens(outputHtml), options.fields);
 
@@ -1350,6 +1715,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     fields,
     editIds: annotated.editIds,
     imageIds: annotated.imageIds,
+    backgroundSelectors: pageBackgrounds,
     issues,
     transformations,
   };

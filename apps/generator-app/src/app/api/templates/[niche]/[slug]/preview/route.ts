@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readTemplateFile, hydrateTemplate, getTemplate } from '@/lib/templates/niche-registry'
-import { buildVariationCSS } from '@/lib/templates/variations'
-import { buildCustomThemeCss, type CustomTheme } from '@/lib/custom-theme'
+import { readTemplateFile, getTemplate } from '@/lib/templates/niche-registry'
+import { type CustomTheme } from '@/lib/custom-theme'
+import {
+  combineTemplateThemeStylesheets,
+  composeTemplatePreview,
+} from '@/lib/template-preview-composition'
 
 export async function POST(
   req: NextRequest,
@@ -30,32 +33,32 @@ export async function POST(
     return NextResponse.json({ error: 'Template page not found' }, { status: 404 })
   }
 
-  const [html, cssFile] = await Promise.all([
+  const stylesheetPaths = [...new Set(template.files.filter((file) => /\.css$/i.test(file)))].sort()
+  const [html, ...stylesheetValues] = await Promise.all([
     readTemplateFile(niche, slug, page),
-    readTemplateFile(niche, slug, 'assets/css/styles.css'),
+    ...stylesheetPaths.map((file) => readTemplateFile(niche, slug, file)),
   ])
   if (!html) {
     return NextResponse.json({ error: 'Template file not found' }, { status: 404 })
   }
 
-  const hydrated = hydrateTemplate(
+  const stylesheets = stylesheetPaths.map((path, index) => ({
+    path,
+    css: stylesheetValues[index],
+  }))
+  const cssFile = stylesheets.find((entry) => entry.path === 'assets/css/styles.css')?.css || null
+  const res = NextResponse.json(composeTemplatePreview({
     html,
-    values && typeof values === 'object' && !Array.isArray(values) ? values : {},
-    template.fields,
-  )
-
-  // Build variation CSS overrides
-  const variationCSS = [
-    buildVariationCSS(colorScheme, fontVariation, structureVariation, cssFile || ''),
-    buildCustomThemeCss(customTheme, cssFile || ''),
-  ].filter(Boolean).join('\n')
-
-  const res = NextResponse.json({
-    html: hydrated,
-    css: cssFile || null,
-    variationCSS: variationCSS || null,
+    css: cssFile,
+    themeStylesheet: combineTemplateThemeStylesheets(stylesheets),
     page,
-  })
+    fields: template.fields,
+    values: values && typeof values === 'object' && !Array.isArray(values) ? values : {},
+    colorScheme,
+    fontVariation,
+    structureVariation,
+    customTheme,
+  }))
   // Personalized HTML can contain contact details and must never enter a shared cache.
   res.headers.set('Cache-Control', 'private, no-store')
   res.headers.set('Netlify-CDN-Cache-Control', 'no-store')

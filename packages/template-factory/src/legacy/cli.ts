@@ -10,6 +10,9 @@ import {
   resolveLegacyConfig,
 } from './config.js';
 import { LegacyLedger } from './ledger.js';
+import { NativeOpenAIBatchClient } from './openai-batch-client.js';
+import type { CloudRepairBatchClient } from './cloud-lane.js';
+import { reapOrphanedStaging } from './staging.js';
 import {
   LEGACY_CANCEL_EXIT_CODE,
   LEGACY_COMMANDS,
@@ -45,6 +48,7 @@ Options:
   --chromium-workers <count>   Browser workers (default: 4)
   --ai-dollar-cap <usd>        Hard model spend cap (default: 25)
   --ai-token-cap <count>       Hard aggregate model token cap (default: 1000000)
+  --cloud-repair               Explicitly enable the capped OpenAI fragment-repair lane
   --resume                     Resume the newest matching interrupted pilot/full run
   --dry-run                    Required for promote; never mutates publication state
   --json                       Emit machine-readable output
@@ -57,6 +61,8 @@ export interface LegacyCliDependencies {
   cwd?: string;
   io?: LegacyCliIo;
   signal?: AbortSignal;
+  /** Offline tests and controlled callers can inject a client without a credential. */
+  cloudRepairClient?: CloudRepairBatchClient;
 }
 
 function optionValue(argv: string[], index: number, inlineValue: string | undefined, option: string): [string, number] {
@@ -87,7 +93,7 @@ export function parseLegacyArgs(argv: string[]): ParsedLegacyArgs {
     throw new Error(command ? `Unknown command: ${command}` : 'A command is required');
   }
 
-  const flags: LegacyCliFlags = { resume: false, dryRun: false, json: false };
+  const flags: LegacyCliFlags = { resume: false, dryRun: false, json: false, cloudRepair: false };
   for (let index = 1; index < argv.length; index += 1) {
     const argument = argv[index];
     if (argument === '--resume') {
@@ -100,6 +106,10 @@ export function parseLegacyArgs(argv: string[]): ParsedLegacyArgs {
     }
     if (argument === '--json') {
       flags.json = true;
+      continue;
+    }
+    if (argument === '--cloud-repair') {
+      flags.cloudRepair = true;
       continue;
     }
 
@@ -125,6 +135,9 @@ export function parseLegacyArgs(argv: string[]): ParsedLegacyArgs {
 
   if (flags.resume && command !== 'run' && command !== 'pilot') {
     throw new Error('--resume is only valid with the pilot or run command');
+  }
+  if (flags.cloudRepair && command !== 'run' && command !== 'pilot') {
+    throw new Error('--cloud-repair is only valid with the pilot or run command');
   }
   if (flags.pilotSize !== undefined && flags.pilotSize < MINIMUM_LEGACY_PILOT_SIZE) {
     throw new Error(`--pilot-size must be at least ${MINIMUM_LEGACY_PILOT_SIZE}`);
@@ -280,7 +293,24 @@ export async function runLegacyCli(argv: string[], dependencies: LegacyCliDepend
     chromiumWorkers: parsed.flags.chromiumWorkers,
     aiDollarCapUsd: parsed.flags.aiDollarCapUsd,
     aiTokenCap: parsed.flags.aiTokenCap,
+    cloudRepair: parsed.flags.cloudRepair,
   });
+
+  let cloudRepairClient: CloudRepairBatchClient | undefined;
+  if (config.cloudRepair) {
+    cloudRepairClient = dependencies.cloudRepairClient;
+    if (!cloudRepairClient) {
+      // This is the sole credential-reading boundary, reached only after the
+      // operator supplied --cloud-repair. The value is never persisted,
+      // returned, or included in diagnostics.
+      const apiKey = (dependencies.env ?? process.env).OPENAI_API_KEY?.trim();
+      if (!apiKey) {
+        io.stderr('--cloud-repair requires OPENAI_API_KEY or an injected cloud repair client.');
+        return 2;
+      }
+      cloudRepairClient = new NativeOpenAIBatchClient(apiKey);
+    }
+  }
 
   try {
     await ensureWorkLayout(config);
@@ -333,12 +363,30 @@ export async function runLegacyCli(argv: string[], dependencies: LegacyCliDepend
 
     const releaseCompilerLock = await acquireCompilerLock(config.workRoot);
     try {
+      // The exclusive writer lock makes every tree in the dedicated transient
+      // staging directory orphaned. Reap crash leftovers before any resumed
+      // lease can create new staging work; immutable candidates and the
+      // content-addressed promotion cache live outside this directory.
+      await reapOrphanedStaging(config);
       await assertReadableSource(config);
       throwIfLegacyCancelled(dependencies.signal);
       ledger.releaseExpiredLeases();
       let run = (parsed.command === 'run' || parsed.command === 'pilot') && parsed.flags.resume
         ? ledger.findResumableRun(parsed.command, config.sourceRoot, config.ruleVersion)
         : null;
+      if (run && !parsed.flags.cloudRepair) {
+        let priorCloudRepair = false;
+        try {
+          const priorOptions = JSON.parse(run.optionsJson) as { cloudRepair?: unknown };
+          priorCloudRepair = priorOptions.cloudRepair === true;
+        } catch {
+          // Never infer renewed cloud authority from unreadable historical
+          // options. The ordinary run audit remains responsible for them.
+        }
+        if (priorCloudRepair) {
+          throw new Error('This resumable run used cloud repair; repeat --cloud-repair so pending batches can be reconciled explicitly.');
+        }
+      }
       // Holding the compiler lock proves there is no other live writer. Close
       // stale "running" rows left by power loss, Task Scheduler termination,
       // or Ctrl+C while preserving the one exact run selected for resume.
@@ -363,6 +411,7 @@ export async function runLegacyCli(argv: string[], dependencies: LegacyCliDepend
         ledger,
         runId: run.id,
         signal: dependencies.signal,
+        ...(cloudRepairClient ? { cloudRepairClient } : {}),
       };
 
       try {

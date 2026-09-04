@@ -33,6 +33,15 @@ describe('site customization safety', () => {
     )
   })
 
+  it('deploys compiler-declared attribute edits by stable ID', () => {
+    const html = '<img src="/hero.jpg" alt="Original hero" data-dc-edit-id="hero-alt" data-dc-edit-attribute="alt">'
+    expect(applyPageCustomizationsForDeploy(html, [{
+      nodeId: 'hero-alt',
+      original: 'Original hero',
+      updated: 'Founder & client',
+    }], undefined)).toContain('alt="Founder &amp; client"')
+  })
+
   it('fails deployment when stable text or image targets disappear', () => {
     const html = '<p>Same</p><p>Same</p><img src="/same.jpg"><img src="/same.jpg">'
     expect(() => applyPageCustomizationsForDeploy(

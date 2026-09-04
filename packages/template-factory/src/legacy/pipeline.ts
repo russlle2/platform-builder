@@ -1,5 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { createRequire } from 'node:module';
 import {
   appendFile,
   copyFile,
@@ -25,21 +26,43 @@ import { applyContentPreset, applyThemePreset, repairLegacyTemplate } from './co
 import type { HtmlNode } from './repair.js';
 import {
   type CatalogTemplate,
+  type CanonicalField,
   type CanonicalDesign,
   type ContentPreset,
   type DedupeFingerprint,
   type RepairResult,
   type ThemePreset,
+  normalizeFields,
   sha256,
   stableStringify,
 } from './contracts.js';
 import {
   buildDedupeClusters,
+  canAliasDesigns,
+  createDedupeFingerprint,
   domSimilarity,
+  satisfiesVisualAliasThresholds,
   type DedupeCandidate,
+  type DedupeCluster,
   type VisualAliasEvidence,
 } from './dedupe.js';
 import { createNeutralFallbackFiles } from './fallback.js';
+import {
+  applyCloudRepairPatches,
+  executeCloudRepairLane,
+  planCloudRepairFragments,
+} from './cloud-repair-integration.js';
+import {
+  loadFoundationRegistry,
+  planFoundationAlignment,
+  type FoundationAlignmentPlan,
+  type FoundationRegistry,
+} from './foundation-alignment.js';
+import {
+  loadHomepageDonor,
+  selectNearestHomepageDonor,
+  type HomepageDonor,
+} from './homepage-donor.js';
 import {
   assertWorkPath,
   atomicWriteFile,
@@ -69,6 +92,7 @@ import type {
   LegacyCommandContext,
   LegacyCommandOutcome,
   LegacyCommandServices,
+  LegacyPageRecord,
   LegacyRenderRecord,
   LegacyTemplateRecord,
   LeasedTemplate,
@@ -80,6 +104,8 @@ import {
 } from './types.js';
 
 const TEXT_EXTENSIONS = new Set(['.css', '.html', '.htm', '.js', '.mjs', '.cjs', '.json', '.svg', '.txt', '.md']);
+const FOUNDATIONS_ROOT = fileURLToPath(new URL('../../foundations/', import.meta.url));
+const FOUNDATION_MARKER_RE = /<!--\s*FOUNDATION:/i;
 const SAFE_RELATIVE_SEGMENT = /^(?!\.{1,2}$)[A-Za-z0-9._-]+$/;
 const ACTIVE_MARKUP_RE = /<\/?(?:iframe|frame|frameset|object|embed)\b|<script\b(?![^>]*\bsrc=["']assets\/js\/dc-compat\.js["'])|\son[a-z]+\s*=|(?:href|src|action)\s*=\s*["']\s*(?:javascript:|vbscript:|data:text\/html)/i;
 
@@ -142,6 +168,178 @@ export function composeCatalogTemplateText(
     ...Object.entries(applyContentPreset(design.pages, contentPreset)),
     ...Object.entries(applyThemePreset(design.styles, themePreset, contentPreset.images)),
   ]);
+}
+
+export interface ComposedVisualAliasArtifact {
+  files: Map<string, string | Uint8Array>;
+  fields: ContractField[];
+  fingerprint: DedupeFingerprint;
+}
+
+function parseObjectDocument(value: string | Uint8Array | undefined, label: string): Record<string, unknown> {
+  if (typeof value !== 'string') throw new Error(`${label} is missing from the candidate artifact`);
+  const parsed = JSON.parse(value) as unknown;
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`${label} is not a JSON object`);
+  }
+  return parsed as Record<string, unknown>;
+}
+
+/**
+ * Resolve a visually equivalent irregular source onto the selected canonical
+ * design without losing that source's copy, image, color, or font presets.
+ * The result is only a candidate: callers must run the complete static and
+ * two-viewport browser gates before making it current.
+ */
+export function composeVisualAliasArtifactFiles(input: {
+  canonical: DedupeCandidate;
+  candidate: DedupeCandidate;
+  canonicalFiles?: ReadonlyMap<string, string | Uint8Array>;
+  sourceFiles: ReadonlyMap<string, string | Uint8Array>;
+  sourceArtifactHash: string;
+}): ComposedVisualAliasArtifact {
+  const { canonical, candidate } = input;
+  if (canonical.fingerprint.legacySlug === candidate.fingerprint.legacySlug) {
+    throw new Error('A visual alias must have a different canonical source');
+  }
+  if (canonical.design.niche !== candidate.design.niche) {
+    throw new Error('A visual alias cannot cross niches');
+  }
+  const canonicalPages = Object.keys(canonical.design.pages).sort();
+  const candidatePages = Object.keys(candidate.design.pages).sort();
+  if (!sameStringSet(canonicalPages, candidatePages)) {
+    throw new Error('A visual alias must retain the same page paths');
+  }
+
+  const files = new Map(input.sourceFiles);
+  // Bring across canonical-only support files (for example icon sprites or
+  // fonts) without overwriting assets selected by this legacy slug's image or
+  // theme presets. Page/style bytes and metadata are rebuilt below.
+  for (const [path, value] of input.canonicalFiles ?? []) {
+    if (
+      /\.html?$/i.test(path)
+      || /\.css$/i.test(path)
+      || path === 'template.json'
+      || path === 'fields.json'
+      || path.startsWith('.dailyclarity/')
+    ) continue;
+    if (!files.has(path)) files.set(path, value);
+  }
+  for (const path of [...Object.keys(candidate.design.pages), ...Object.keys(candidate.design.styles)]) {
+    files.delete(path);
+  }
+  for (const [path, value] of composeCatalogTemplateText(
+    canonical.design,
+    candidate.contentPreset,
+    candidate.themePreset,
+  )) files.set(path, value);
+
+  const fingerprint = createDedupeFingerprint({
+    legacySlug: candidate.fingerprint.legacySlug,
+    niche: candidate.fingerprint.niche,
+    pages: canonical.design.pages,
+    styles: canonical.design.styles,
+    pageRoles: canonical.design.pageRoles,
+    contentHash: candidate.contentPreset.hash,
+    themeHash: candidate.themePreset.hash,
+  });
+  const catalogTemplateBase = {
+    legacySlug: candidate.catalogTemplate.legacySlug,
+    designId: canonical.design.id,
+    contentPresetId: candidate.contentPreset.id,
+    themePresetId: candidate.themePreset.id,
+    niche: candidate.catalogTemplate.niche,
+  };
+  const templateDocument = parseObjectDocument(files.get('template.json'), 'template.json');
+  const rehabilitation = parseObjectDocument(
+    files.get('.dailyclarity/rehabilitation.json'),
+    '.dailyclarity/rehabilitation.json',
+  );
+  const priorStaticReceipt = parseObjectDocument(
+    files.get('.dailyclarity/quality-receipt.json'),
+    '.dailyclarity/quality-receipt.json',
+  );
+  if (
+    typeof priorStaticReceipt.id !== 'string'
+    || typeof priorStaticReceipt.ruleVersion !== 'string'
+    || typeof priorStaticReceipt.sourceHash !== 'string'
+  ) throw new Error('The candidate static receipt has incomplete lineage');
+  const fieldsDocument = parseObjectDocument(files.get('fields.json'), 'fields.json');
+  if (!Array.isArray(fieldsDocument.fields)) throw new Error('fields.json has no canonical fields array');
+  const fields = fieldsDocument.fields as ContractField[];
+  if (fields.some((field) => !field || typeof field !== 'object' || typeof field.name !== 'string')) {
+    throw new Error('fields.json contains an invalid canonical field');
+  }
+
+  const templateDocumentBase: Record<string, unknown> = {
+    ...templateDocument,
+    pages: canonicalPages,
+    pageRoles: canonical.design.pageRoles,
+    designId: canonical.design.id,
+    contentPresetId: candidate.contentPreset.id,
+    themePresetId: candidate.themePreset.id,
+  };
+  delete templateDocumentBase.qualityReceipt;
+  files.set('template.json', `${JSON.stringify(templateDocumentBase, null, 2)}\n`);
+  files.set('.dailyclarity/catalog-v3.json', `${JSON.stringify(catalogTemplateBase, null, 2)}\n`);
+  files.set('.dailyclarity/design.json', `${JSON.stringify(canonical.design, null, 2)}\n`);
+  files.set('.dailyclarity/content-preset.json', `${JSON.stringify(candidate.contentPreset, null, 2)}\n`);
+  files.set('.dailyclarity/theme-preset.json', `${JSON.stringify(candidate.themePreset, null, 2)}\n`);
+  files.set('.dailyclarity/fingerprint.json', `${JSON.stringify(fingerprint, null, 2)}\n`);
+  const nextRehabilitation = {
+    ...rehabilitation,
+    visualAliasComposition: {
+      version: 1,
+      canonicalLegacySlug: canonical.fingerprint.legacySlug,
+      canonicalDesignId: canonical.design.id,
+      priorDesignId: candidate.design.id,
+      priorArtifactHash: input.sourceArtifactHash,
+      priorStaticReceiptId: priorStaticReceipt.id,
+      contentPresetId: candidate.contentPreset.id,
+      themePresetId: candidate.themePreset.id,
+    },
+  };
+  files.set('.dailyclarity/rehabilitation.json', `${JSON.stringify(nextRehabilitation, null, 2)}\n`);
+  files.delete('.dailyclarity/quality-receipt.json');
+
+  // The local receipt is deliberately a deterministic static-preflight
+  // receipt. Browser-final evidence is written separately after the immutable
+  // tree has rendered, avoiding any receipt/artifact hash cycle.
+  const staticVerification = verifyStaticArtifact(files, fields);
+  const receiptBase = {
+    scope: 'visual-alias-composition-static-preflight',
+    legacySlug: candidate.fingerprint.legacySlug,
+    ruleVersion: priorStaticReceipt.ruleVersion,
+    status: staticVerification.passed ? 'passed' as const : 'failed' as const,
+    checks: [{
+      code: 'visual-alias-composition-static',
+      pass: staticVerification.passed,
+      detail: staticVerification.passed
+        ? 'Canonical design and legacy content/theme presets compose safely and byte-exactly'
+        : staticVerification.errors.map((error) => `${error.code}${error.page ? `:${error.page}` : ''}:${error.detail}`).join('; '),
+    }],
+    issueCounts: {
+      info: 0,
+      warning: 0,
+      error: staticVerification.errors.length,
+      critical: 0,
+    },
+    sourceHash: priorStaticReceipt.sourceHash,
+    artifactHash: artifactTree(files).hash,
+    artifactHashScope: 'pre-receipt-composition-payload',
+    supersedes: priorStaticReceipt.id,
+    canonicalLegacySlug: canonical.fingerprint.legacySlug,
+    designId: canonical.design.id,
+    contentPresetId: candidate.contentPreset.id,
+    themePresetId: candidate.themePreset.id,
+  };
+  const staticReceiptId = `receipt_${sha256(stableStringify(receiptBase)).slice(0, 24)}`;
+  const catalogTemplate: CatalogTemplate = { ...catalogTemplateBase, qualityReceipt: staticReceiptId };
+  files.set('template.json', `${JSON.stringify({ ...templateDocumentBase, qualityReceipt: staticReceiptId }, null, 2)}\n`);
+  files.set('.dailyclarity/catalog-v3.json', `${JSON.stringify(catalogTemplate, null, 2)}\n`);
+  files.set('.dailyclarity/quality-receipt.json', `${JSON.stringify({ id: staticReceiptId, ...receiptBase }, null, 2)}\n`);
+
+  return { files, fields, fingerprint };
 }
 
 async function logEvent(
@@ -387,6 +585,106 @@ async function readSourceFiles(inventory: LegacyTemplateInventory): Promise<Map<
     files.set(file.relativePath, TEXT_EXTENSIONS.has(extname(file.relativePath).toLowerCase()) ? bytes.toString('utf8') : bytes);
   }
   return files;
+}
+
+interface PreparedFoundationInput {
+  files: Map<string, string | Uint8Array>;
+  fields: unknown;
+  plan?: FoundationAlignmentPlan;
+}
+
+function authoritativeFoundationFields(rawFields: unknown, plan: FoundationAlignmentPlan): unknown {
+  const byName = new Map(normalizeFields(rawFields).map((field) => [field.name, field]));
+  for (const [name, value] of Object.entries(plan.identity)) {
+    if (typeof value !== 'string' || !value.trim()) continue;
+    const captured = normalizeFields({ fields: [{ name, default: value }] })[0];
+    if (!captured) throw new Error(`Foundation identity field ${name} cannot be canonicalized`);
+    const previous = byName.get(captured.name);
+    const next: CanonicalField = {
+      ...captured,
+      ...(previous ? {
+        label: previous.label,
+        type: previous.type,
+        ...(previous.sourceName ? { sourceName: previous.sourceName } : {}),
+      } : {}),
+      // The value observed in the hash-bound structural slot is authoritative.
+      // Stale fields.json defaults are common in this cohort and must not drive
+      // literal replacement on sibling pages.
+      default: value.trim(),
+    };
+    byName.set(next.name, next);
+  }
+  return {
+    contractVersion: 3,
+    fields: [...byName.values()].sort((left, right) => left.name.localeCompare(right.name, 'en')),
+  };
+}
+
+function foundationAlignmentMetadata(
+  plan: FoundationAlignmentPlan,
+  sourceTreeHash: string,
+): Record<string, unknown> {
+  const restoredTokens = [...new Set(plan.slots.flatMap((slot) => slot.tokens))].sort();
+  const capturedIdentityFields = Object.keys(plan.identity).sort();
+  return {
+    version: plan.version,
+    foundationId: plan.foundationId,
+    foundationSha256: plan.foundationSha256,
+    registrySha256: plan.registrySha256,
+    sourceTreeSha256: sourceTreeHash,
+    sourceIndexSha256: plan.sourceSha256,
+    sourceStructureSha256: plan.sourceStructureSha256,
+    normalizedSourceSha256: plan.normalizedSourceSha256,
+    canonicalAlignedSha256: plan.alignedSha256,
+    identityAlignedSha256: plan.identityAlignedSha256,
+    roundTripSha256: plan.roundTripSha256,
+    slotCount: plan.slots.length,
+    identityAlignedSlotCount: plan.identityAlignedSlots.length,
+    restoredTokens,
+    capturedIdentityFields,
+    capturedIdentitySha256: sha256(stableStringify(plan.identity)),
+    editorialContentCount: plan.editorialContent.length,
+    editorialContentSha256: sha256(stableStringify(plan.editorialContent)),
+    themeDeclarationCount: plan.theme.declarations.length,
+    themeColorCount: plan.theme.colors.length,
+    themeFontCount: plan.theme.fonts.length,
+    sourceThemeSha256: sha256(stableStringify(plan.theme)),
+    sourceUnchanged: plan.sourceUnchanged,
+    editorialPreserved: plan.editorialPreservedInIdentityAlignment,
+  };
+}
+
+function prepareFoundationInput(
+  inventory: LegacyTemplateInventory,
+  sourceFiles: ReadonlyMap<string, string | Uint8Array>,
+  registry?: FoundationRegistry,
+): PreparedFoundationInput {
+  const files = new Map(sourceFiles);
+  if (!inventory.foundation) return { files, fields: inventory.rawFields };
+  if (!registry) throw new Error(`Foundation registry is required for ${inventory.key}`);
+  const indexHtml = files.get('index.html');
+  if (typeof indexHtml !== 'string' || !FOUNDATION_MARKER_RE.test(indexHtml)) {
+    throw new Error(`Foundation-marked template ${inventory.key} has no readable marked index.html`);
+  }
+  const plan = planFoundationAlignment({
+    sourceHtml: indexHtml,
+    declaredNiche: inventory.niche,
+    registry,
+    sourceName: `${inventory.key}/index.html`,
+    stylesheets: Object.fromEntries([...files.entries()]
+      .filter(([path, value]) => /\.css$/i.test(path) && typeof value === 'string')
+      .map(([path, value]) => [path, value as string])),
+  });
+  const expectedFoundationId = `foundation:${inventory.foundation.niche}:${inventory.foundation.layoutFamily}`;
+  if (plan.foundationId !== expectedFoundationId) {
+    throw new Error(`Inventory foundation ${expectedFoundationId} disagrees with ${plan.foundationId}`);
+  }
+  files.set('index.html', plan.identityAlignedHtml);
+  return {
+    files,
+    fields: authoritativeFoundationFields(inventory.rawFields, plan),
+    plan,
+  };
 }
 
 function localReferenceErrors(
@@ -771,23 +1069,44 @@ export async function repairOne(
   context: LegacyCommandContext,
   lease: LeasedTemplate,
   vendor: AssetVendor,
+  homepageDonor?: HomepageDonor,
+  foundationRegistry?: FoundationRegistry,
 ): Promise<'repaired' | 'neutral_fallback' | 'failed' | 'cancelled'> {
   try {
+    if (context.config.cloudRepair && !context.cloudRepairClient) {
+      throw new Error('Cloud repair was enabled without an explicitly authorized client');
+    }
     const before = await inventoryLegacyTemplate(context.config.sourceRoot, lease.niche as never, lease.legacySlug);
     if (before.sourceTreeHash !== lease.sourceHash) {
       throw new Error(`Source changed after inventory: expected ${lease.sourceHash}, found ${before.sourceTreeHash}`);
     }
     const inputFiles = await readSourceFiles(before);
+    const preparedInput = prepareFoundationInput(before, inputFiles, foundationRegistry);
+    const alignmentMetadata = preparedInput.plan
+      ? foundationAlignmentMetadata(preparedInput.plan, before.sourceTreeHash)
+      : undefined;
+    if (preparedInput.plan && alignmentMetadata) {
+      context.ledger.addTransformation({
+        templateId: lease.id,
+        runId: context.runId,
+        ruleCode: 'align-checked-in-foundation',
+        ruleVersion: context.config.ruleVersion,
+        beforeHash: preparedInput.plan.sourceSha256,
+        afterHash: preparedInput.plan.identityAlignedSha256,
+        details: alignmentMetadata,
+      });
+    }
     // Vendor before preset extraction so content/theme presets contain local,
     // durable references. Run a second pass after repair as a fail-closed net.
-    const sourceAssets = await vendorRemoteAssets(inputFiles, vendor);
+    const sourceAssets = await vendorRemoteAssets(preparedInput.files, vendor);
     const primaryRepair: RepairResult = repairLegacyTemplate({
       slug: lease.legacySlug,
       niche: lease.niche,
       files: sourceAssets.files,
       manifest: before.rawManifest,
-      fields: before.rawFields,
+      fields: preparedInput.fields,
       ruleVersion: context.config.ruleVersion,
+      ...(homepageDonor ? { homepageDonor } : {}),
     });
     const primaryVended = await vendorRemoteAssets(primaryRepair.files, vendor);
     const primaryAssets = [...new Map([...sourceAssets.assets, ...primaryVended.assets]
@@ -802,13 +1121,112 @@ export async function repairOne(
     let allAssets = primaryAssets;
     let allAssetWarnings = primaryAssetWarnings;
     let usedNeutralFallback = false;
+    let usedCloudRepair = false;
+    let cloudRepairAttempts = 0;
+    const cloudLaneIds: string[] = [];
+
+    if (!verification.passed && context.config.cloudRepair && context.cloudRepairClient) {
+      for (const attempt of [1, 2] as const) {
+        const plan = planCloudRepairFragments({
+          files: vended.files,
+          errors: verification.errors,
+          niche: lease.niche,
+          pageRoles: repaired.manifest.pageRoles,
+          templateId: lease.id,
+          attempt,
+        });
+        if (!plan.eligible) {
+          await logEvent(context, 'template.cloud_repair_ineligible', {
+            niche: lease.niche,
+            legacySlug: lease.legacySlug,
+            attempt,
+            reason: plan.reason,
+          });
+          break;
+        }
+
+        cloudRepairAttempts = attempt;
+        const laneId = `repair-${lease.id}-${digest(`${context.runId}\0${lease.sourceHash}\0${context.config.ruleVersion}`).slice(0, 20)}-a${attempt}`;
+        cloudLaneIds.push(laneId);
+        const outcomes = await executeCloudRepairLane({
+          config: context.config,
+          ledger: context.ledger,
+          client: context.cloudRepairClient,
+          runId: context.runId,
+          laneId,
+          fragments: plan.fragments,
+          signal: context.signal,
+          onPoll: () => {
+            if (!context.ledger.renewLease(lease.id, lease.leaseToken, 15 * 60_000)) {
+              throw new Error(`Cloud repair lease expired for ${lease.legacySlug}`);
+            }
+            context.ledger.heartbeatRun(context.runId);
+          },
+        });
+        const applied = applyCloudRepairPatches(vended.files, plan, outcomes);
+        if (applied.appliedMembers > 0) {
+          // Model output is never trusted as a final artifact. Re-vendor first,
+          // then rebuild IDs, presets, manifests, and receipts deterministically
+          // and require the ordinary static gate again.
+          const patchedSource = await vendorRemoteAssets(applied.files, vendor);
+          const candidateRepair = repairLegacyTemplate({
+            slug: lease.legacySlug,
+            niche: lease.niche,
+            files: patchedSource.files,
+            manifest: before.rawManifest,
+            fields: preparedInput.fields,
+            ruleVersion: context.config.ruleVersion,
+            ...(homepageDonor ? { homepageDonor } : {}),
+          });
+          const candidateVended = await vendorRemoteAssets(candidateRepair.files, vendor);
+          const candidateAssets = [...new Map([
+            ...allAssets,
+            ...patchedSource.assets,
+            ...candidateVended.assets,
+          ].map((asset) => [asset.sourceUrl, asset])).values()];
+          candidateVended.files.set('.dailyclarity/assets.json', assetLicenseManifest(candidateAssets));
+          const candidateVerification = verifyStaticArtifact(candidateVended.files, candidateRepair.fields);
+          context.ledger.addTransformation({
+            templateId: lease.id,
+            runId: context.runId,
+            ruleCode: 'apply-validated-cloud-fragment-patch',
+            ruleVersion: context.config.ruleVersion,
+            beforeHash: repaired.qualityReceipt.artifactHash,
+            afterHash: candidateRepair.qualityReceipt.artifactHash,
+            details: {
+              laneId,
+              attempt,
+              fragments: applied.appliedMembers,
+              passedDeterministicRecompile: candidateVerification.passed,
+            },
+          });
+          repaired = candidateRepair;
+          vended = candidateVended;
+          verification = candidateVerification;
+          allAssets = candidateAssets;
+          allAssetWarnings = [
+            ...allAssetWarnings,
+            ...patchedSource.warnings,
+            ...candidateVended.warnings,
+          ];
+          if (verification.passed) {
+            usedCloudRepair = true;
+            break;
+          }
+        }
+
+        const mayRetry = outcomes.some((outcome) => outcome.kind === 'retry' || outcome.kind === 'patch');
+        if (!mayRetry || attempt === 2) break;
+      }
+    }
 
     // A deterministic, niche-specific neutral template is the terminal safety
     // net. It lets every slug remain usable even when an irregular source is
     // too malformed to rehabilitate mechanically, while the immutable source
     // and the original failure evidence remain available for audit.
-    if (!primaryVerification.passed) {
-      const fallbackReason = primaryVerification.errors
+    if (!verification.passed) {
+      const fallbackBeforeHash = repaired.qualityReceipt.artifactHash;
+      const fallbackReason = verification.errors
         .map((error) => `${error.code}${error.page ? ` (${error.page})` : ''}: ${error.detail}`)
         .join('; ');
       const fallbackRepair = repairLegacyTemplate({
@@ -836,7 +1254,7 @@ export async function repairOne(
         runId: context.runId,
         ruleCode: 'apply-neutral-fallback',
         ruleVersion: context.config.ruleVersion,
-        beforeHash: primaryRepair.qualityReceipt.artifactHash,
+        beforeHash: fallbackBeforeHash,
         afterHash: fallbackRepair.qualityReceipt.artifactHash,
         details: {
           reason: fallbackReason,
@@ -850,10 +1268,25 @@ export async function repairOne(
       version: 1,
       ruleVersion: context.config.ruleVersion,
       sourceHash: lease.sourceHash,
-      repairMode: usedNeutralFallback ? 'neutral_fallback' : 'primary',
+      repairMode: usedNeutralFallback ? 'neutral_fallback' : usedCloudRepair ? 'cloud_fragment' : 'primary',
       primaryRepairPassed: primaryVerification.passed,
       primaryFailureCodes: [...new Set(primaryVerification.errors.map((error) => error.code))].sort(),
+      cloudRepair: {
+        enabled: context.config.cloudRepair,
+        attempted: cloudRepairAttempts > 0,
+        attempts: cloudRepairAttempts,
+        laneIds: cloudLaneIds,
+        passed: usedCloudRepair,
+      },
       sourcePreserved: true,
+      foundationAlignment: alignmentMetadata ?? null,
+      homepageDonor: homepageDonor ? {
+        legacySlug: homepageDonor.legacySlug,
+        niche: homepageDonor.niche,
+        contentHash: homepageDonor.contentHash,
+        sourceTreeHash: homepageDonor.sourceTreeHash,
+        selectionScore: homepageDonor.selectionScore,
+      } : null,
     }, null, 2)}\n`);
 
     for (const transformation of [
@@ -873,7 +1306,7 @@ export async function repairOne(
       });
     }
     for (const item of [
-      ...primaryRepair.issues.map((issue) => ({ ...issue, resolved: issue.resolved || usedNeutralFallback })),
+      ...primaryRepair.issues.map((issue) => ({ ...issue, resolved: issue.resolved || usedNeutralFallback || usedCloudRepair })),
       ...(repaired === primaryRepair ? [] : repaired.issues),
     ]) {
       context.ledger.addIssue({
@@ -908,9 +1341,13 @@ export async function repairOne(
         fingerprint: digest(`${error.code}\0${error.page ?? ''}\0${error.detail.replace(/\d+/g, '#')}`),
         details: {
           page: error.page,
-          resolution: usedNeutralFallback ? 'neutral_fallback' : undefined,
+          resolution: usedNeutralFallback
+            ? 'neutral_fallback'
+            : usedCloudRepair
+              ? 'cloud_fragment'
+              : undefined,
         },
-        resolved: usedNeutralFallback,
+        resolved: usedNeutralFallback || usedCloudRepair,
       });
     }
 
@@ -974,6 +1411,8 @@ export async function repairOne(
       files: vended.files.size,
       assets: allAssets.length,
       neutralFallback: usedNeutralFallback,
+      cloudRepair: usedCloudRepair,
+      cloudRepairAttempts,
     });
     return usedNeutralFallback ? 'neutral_fallback' : 'repaired';
   } catch (error) {
@@ -1015,13 +1454,25 @@ export async function repairOne(
 
 async function repairTemplates(
   context: LegacyCommandContext,
+  inventory: CatalogInventory,
   allowedSlugs?: readonly string[],
 ): Promise<RepairSummary> {
   checkCancellation(context);
   const vendor = new AssetVendor(join(context.config.workRoot, 'asset-cache'));
   await vendor.initialize();
+  const foundationRegistry = inventory.templates.some((template) => Boolean(template.foundation))
+    ? await loadFoundationRegistry(FOUNDATIONS_ROOT)
+    : undefined;
   checkCancellation(context);
   const allowed = allowedSlugs ? [...new Set(allowedSlugs)] : undefined;
+  const homepageDonors = new Map<string, HomepageDonor>();
+  for (const target of inventory.templates
+    .filter((template) => (!allowed || allowed.includes(template.slug)) && !template.pages.some((page) => page.name === 'index.html'))
+    .sort((left, right) => left.slug.localeCompare(right.slug))) {
+    checkCancellation(context);
+    const selection = selectNearestHomepageDonor(target, inventory.templates);
+    if (selection) homepageDonors.set(target.slug, await loadHomepageDonor(selection));
+  }
   let repaired = 0;
   let neutralFallbacks = 0;
   const ownerPrefix = `${process.pid}-${context.runId}`;
@@ -1040,7 +1491,13 @@ async function repairTemplates(
       });
       const lease = leases[0];
       if (!lease) break;
-      const result = await repairOne(context, lease, vendor);
+      const result = await repairOne(
+        context,
+        lease,
+        vendor,
+        homepageDonors.get(lease.legacySlug),
+        foundationRegistry,
+      );
       if (result === 'repaired' || result === 'neutral_fallback') repaired += 1;
       if (result === 'neutral_fallback') neutralFallbacks += 1;
       if (repaired % 25 === 0) context.ledger.heartbeatRun(context.runId);
@@ -1074,6 +1531,33 @@ function parseOverflow(evidence: RenderEvidence): number | null {
   return value ? Number(value) : null;
 }
 
+function recordRenderEvidence(
+  context: LegacyCommandContext,
+  target: { templateId: number; pageId: number; artifactHash: string },
+  evidence: RenderEvidence,
+): void {
+  context.ledger.upsertRender({
+    templateId: target.templateId,
+    pageId: target.pageId,
+    runId: context.runId,
+    artifactHash: target.artifactHash,
+    ruleVersion: context.config.ruleVersion,
+    viewport: evidence.viewport,
+    width: LEGACY_VIEWPORTS[evidence.viewport].width,
+    height: LEGACY_VIEWPORTS[evidence.viewport].height,
+    status: evidence.passed ? 'passed' : 'failed',
+    screenshotHash: evidence.screenshotSha256,
+    perceptualHash: evidence.perceptualHash,
+    consoleErrors: evidence.issues.filter((issue) => issue.code === 'console_error' || issue.code === 'page_exception').length,
+    failedRequests: evidence.issues.filter((issue) => issue.code === 'failed_request' || issue.code === 'broken_images').length,
+    axeCritical: evidence.issues.filter((issue) => issue.code.startsWith('axe_') && issue.severity === 'critical').length,
+    axeSerious: evidence.issues.filter((issue) => issue.code.startsWith('axe_') && issue.severity === 'serious').length,
+    horizontalOverflowPx: parseOverflow(evidence),
+    artifactPath: evidence.failureScreenshotPath ?? evidence.thumbnailPath,
+    error: evidence.passed ? null : evidence.issues.map((issue) => `${issue.code}: ${issue.detail}`).join('; '),
+  });
+}
+
 export function hasCompletePassingRenderMatrix(
   evidence: readonly Pick<RenderEvidence, 'page' | 'viewport' | 'passed'>[],
   expectedPages: readonly string[],
@@ -1089,6 +1573,191 @@ export function hasCompletePassingRenderMatrix(
     if (!item.passed || !expected.delete(key)) return false;
   }
   return expected.size === 0;
+}
+
+export interface FinalPageEvidenceMatrixIssue {
+  code: 'manifest_page_matrix' | 'ledger_page_matrix' | 'render_page_matrix' | 'receipt_page_matrix';
+  detail: string;
+  recoveryStage: 'repair_pending' | 'render_pending';
+}
+
+/**
+ * Reconcile the four independently persisted descriptions of a template's
+ * page QA. A passing status alone is insufficient: the emitted manifest,
+ * current static ledger rows, current artifact-scoped renders, and signed
+ * receipt must describe the exact same page x viewport matrix.
+ */
+export function validateFinalPageEvidenceMatrix(input: {
+  manifestPages: unknown;
+  ledgerPages: readonly Pick<LegacyPageRecord, 'id' | 'relativePath' | 'stage'>[];
+  renders: readonly Pick<LegacyRenderRecord,
+    'pageId' | 'viewport' | 'width' | 'height' | 'status' | 'screenshotHash' | 'perceptualHash'
+    | 'consoleErrors' | 'failedRequests' | 'axeCritical' | 'axeSerious' | 'horizontalOverflowPx'>[];
+  receiptPages: unknown;
+}): FinalPageEvidenceMatrixIssue[] {
+  const issues: FinalPageEvidenceMatrixIssue[] = [];
+  const add = (
+    code: FinalPageEvidenceMatrixIssue['code'],
+    detail: string,
+    recoveryStage: FinalPageEvidenceMatrixIssue['recoveryStage'],
+  ): void => { issues.push({ code, detail, recoveryStage }); };
+
+  if (!Array.isArray(input.manifestPages) || input.manifestPages.length === 0) {
+    add('manifest_page_matrix', 'emitted template manifest has no page list', 'repair_pending');
+    return issues;
+  }
+  const manifestPages: string[] = [];
+  for (const value of input.manifestPages) {
+    if (typeof value !== 'string') {
+      add('manifest_page_matrix', 'emitted template manifest contains a non-string page', 'repair_pending');
+      continue;
+    }
+    try {
+      const page = normalizeRelativePath(value);
+      if (!/\.html?$/i.test(page)) {
+        add('manifest_page_matrix', `emitted template manifest declares a non-HTML page: ${page}`, 'repair_pending');
+      } else {
+        manifestPages.push(page);
+      }
+    } catch (error) {
+      add(
+        'manifest_page_matrix',
+        `emitted template manifest has an unsafe page: ${error instanceof Error ? error.message : String(error)}`,
+        'repair_pending',
+      );
+    }
+  }
+  const manifestSet = new Set(manifestPages);
+  if (manifestSet.size !== manifestPages.length) {
+    add('manifest_page_matrix', 'emitted template manifest repeats a page', 'repair_pending');
+  }
+  if (issues.some((issue) => issue.code === 'manifest_page_matrix')) return issues;
+
+  const staticPages = input.ledgerPages.filter((page) => page.stage === 'static-passed');
+  const ledgerByPath = new Map<string, Pick<LegacyPageRecord, 'id' | 'relativePath' | 'stage'>>();
+  for (const page of staticPages) {
+    const normalized = (() => {
+      try { return normalizeRelativePath(page.relativePath); } catch { return page.relativePath; }
+    })();
+    if (ledgerByPath.has(normalized)) {
+      add('ledger_page_matrix', `current static ledger repeats ${normalized}`, 'repair_pending');
+    }
+    ledgerByPath.set(normalized, page);
+  }
+  const missingLedgerPages = manifestPages.filter((page) => !ledgerByPath.has(page));
+  const extraLedgerPages = [...ledgerByPath.keys()].filter((page) => !manifestSet.has(page));
+  if (missingLedgerPages.length > 0 || extraLedgerPages.length > 0) {
+    add(
+      'ledger_page_matrix',
+      `emitted/static page sets differ (missing=${missingLedgerPages.join(',') || 'none'}; extra=${extraLedgerPages.join(',') || 'none'})`,
+      'repair_pending',
+    );
+  }
+  if (issues.some((issue) => issue.code === 'ledger_page_matrix')) return issues;
+
+  const pageById = new Map([...ledgerByPath.entries()].map(([page, record]) => [record.id, page]));
+  const viewports = Object.keys(LEGACY_VIEWPORTS) as Array<keyof typeof LEGACY_VIEWPORTS>;
+  const expectedKeys = new Set(manifestPages.flatMap((page) => viewports.map((viewport) => `${page}\0${viewport}`)));
+  const renderByKey = new Map<string, (typeof input.renders)[number]>();
+  for (const render of input.renders) {
+    const page = pageById.get(render.pageId);
+    const viewport = viewports.find((candidate) => candidate === render.viewport);
+    if (!page || !viewport) {
+      add('render_page_matrix', `current render contains an unexpected page/viewport (${render.pageId}/${render.viewport})`, 'render_pending');
+      continue;
+    }
+    const key = `${page}\0${viewport}`;
+    if (renderByKey.has(key)) {
+      add('render_page_matrix', `current render matrix repeats ${page}/${viewport}`, 'render_pending');
+      continue;
+    }
+    renderByKey.set(key, render);
+    const expectedViewport = LEGACY_VIEWPORTS[viewport];
+    if (
+      render.width !== expectedViewport.width
+      || render.height !== expectedViewport.height
+      || render.status !== 'passed'
+      || render.consoleErrors !== 0
+      || render.failedRequests !== 0
+      || render.axeCritical !== 0
+      || render.axeSerious !== 0
+      || (render.horizontalOverflowPx ?? 0) > 1
+      || !render.screenshotHash
+      || !render.perceptualHash
+    ) {
+      add('render_page_matrix', `current render is not passing for ${page}/${viewport}`, 'render_pending');
+    }
+  }
+  for (const key of expectedKeys) {
+    if (!renderByKey.has(key)) {
+      const [page, viewport] = key.split('\0');
+      add('render_page_matrix', `current render matrix is missing ${page}/${viewport}`, 'render_pending');
+    }
+  }
+  if (renderByKey.size !== expectedKeys.size) {
+    add(
+      'render_page_matrix',
+      `current render matrix has ${renderByKey.size}/${expectedKeys.size} unique expected entries`,
+      'render_pending',
+    );
+  }
+
+  if (!Array.isArray(input.receiptPages)) {
+    add('receipt_page_matrix', 'final quality receipt has no page evidence array', 'render_pending');
+    return issues;
+  }
+  const receiptKeys = new Set<string>();
+  for (const value of input.receiptPages) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      add('receipt_page_matrix', 'final quality receipt contains malformed page evidence', 'render_pending');
+      continue;
+    }
+    const evidence = value as Record<string, unknown>;
+    if (typeof evidence.page !== 'string' || typeof evidence.viewport !== 'string') {
+      add('receipt_page_matrix', 'final quality receipt contains unaddressable page evidence', 'render_pending');
+      continue;
+    }
+    let page: string;
+    try { page = normalizeRelativePath(evidence.page); } catch {
+      add('receipt_page_matrix', `final quality receipt contains an unsafe page: ${String(evidence.page)}`, 'render_pending');
+      continue;
+    }
+    const key = `${page}\0${evidence.viewport}`;
+    if (!expectedKeys.has(key)) {
+      add('receipt_page_matrix', `final quality receipt has unexpected evidence for ${page}/${evidence.viewport}`, 'render_pending');
+      continue;
+    }
+    if (receiptKeys.has(key)) {
+      add('receipt_page_matrix', `final quality receipt repeats ${page}/${evidence.viewport}`, 'render_pending');
+      continue;
+    }
+    receiptKeys.add(key);
+    const render = renderByKey.get(key);
+    if (
+      evidence.passed !== true
+      || !render
+      || evidence.screenshotSha256 !== render.screenshotHash
+      || evidence.perceptualHash !== render.perceptualHash
+      || !Array.isArray(evidence.issues)
+      || evidence.issues.length !== 0
+    ) {
+      add('receipt_page_matrix', `final quality receipt does not match current render evidence for ${page}/${evidence.viewport}`, 'render_pending');
+    }
+  }
+  for (const key of expectedKeys) {
+    if (!receiptKeys.has(key)) {
+      const [page, viewport] = key.split('\0');
+      add('receipt_page_matrix', `final quality receipt is missing ${page}/${viewport}`, 'render_pending');
+    }
+  }
+  if (receiptKeys.size !== expectedKeys.size) {
+    add(
+      'receipt_page_matrix',
+      `final quality receipt has ${receiptKeys.size}/${expectedKeys.size} unique expected entries`,
+      'render_pending',
+    );
+  }
+  return issues;
 }
 
 async function writeFinalReceipt(
@@ -1245,17 +1914,19 @@ async function rematerializeRenderFallback(
       values.push(item);
       evidenceByPage.set(item.page, values);
     }
-    let changedPages = 0;
     for (const [page, values] of evidenceByPage) {
       const html = inputFiles.get(page);
       if (typeof html !== 'string') continue;
       const updated = addAccessibilityOverrides(html, values);
       if (updated !== html) {
         inputFiles.set(page, updated);
-        changedPages += 1;
       }
     }
-    if (changedPages === 0) return false;
+    // Some browser failures (invalid accessible names, aria-hidden focus, and
+    // fragment-only image sources) are repaired by the deterministic HTML pass
+    // rather than by an injected style. Re-run composition even when there was
+    // no viewport CSS to add; the content-addressed artifact comparison keeps
+    // this restart-safe and the bounded caller prevents infinite retries.
   }
 
   const repaired = repairLegacyTemplate({
@@ -1406,26 +2077,11 @@ async function renderPendingBatch(
     onEvidence: (item) => {
       const lookup = pageLookup.get(`${item.key}\0${item.page}`);
       if (!lookup) throw new Error(`Render evidence has no ledger page: ${item.key}/${item.page}`);
-      context.ledger.upsertRender({
+      recordRenderEvidence(context, {
         templateId: lookup.template.id,
         pageId: lookup.pageId,
-        runId: context.runId,
         artifactHash: lookup.artifactHash,
-        ruleVersion: context.config.ruleVersion,
-        viewport: item.viewport,
-        width: LEGACY_VIEWPORTS[item.viewport].width,
-        height: LEGACY_VIEWPORTS[item.viewport].height,
-        status: item.passed ? 'passed' : 'failed',
-        screenshotHash: item.screenshotSha256,
-        perceptualHash: item.perceptualHash,
-        consoleErrors: item.issues.filter((issue) => issue.code === 'console_error' || issue.code === 'page_exception').length,
-        failedRequests: item.issues.filter((issue) => issue.code === 'failed_request' || issue.code === 'broken_images').length,
-        axeCritical: item.issues.filter((issue) => issue.code.startsWith('axe_') && issue.severity === 'critical').length,
-        axeSerious: item.issues.filter((issue) => issue.code.startsWith('axe_') && issue.severity === 'serious').length,
-        horizontalOverflowPx: parseOverflow(item),
-        artifactPath: item.failureScreenshotPath ?? item.thumbnailPath,
-        error: item.passed ? null : item.issues.map((issue) => `${issue.code}: ${issue.detail}`).join('; '),
-      });
+      }, item);
       renderedEvidenceCount += 1;
       if (renderedEvidenceCount % 25 === 0) context.ledger.heartbeatRun(context.runId);
     },
@@ -1453,16 +2109,25 @@ async function renderPendingBatch(
     const passed = sameStringSet(repairedPages, expectedPages)
       && hasCompletePassingRenderMatrix(values, expectedPages);
 
-    if (!passed && remediationDepth < 3) {
+    if (!passed && remediationDepth < 5) {
       const failedIssues = values.filter((item) => !item.passed).flatMap((item) => item.issues);
-      const onlyDeterministicStyleIssues = failedIssues.length > 0 && failedIssues.every((issue) =>
-        issue.code === 'axe_color-contrast' || issue.code === 'axe_link-in-text-block',
-      );
+      const deterministicPrimaryIssue = (code: string): boolean => code === 'axe_color-contrast'
+        || code === 'axe_link-in-text-block'
+        || code === 'axe_aria-command-name'
+        || code === 'axe_aria-toggle-field-name'
+        || code === 'axe_link-name'
+        || code === 'axe_button-name'
+        || code === 'axe_aria-hidden-focus'
+        || code === 'broken_images'
+        || code === 'horizontal_overflow';
+      const onlyDeterministicPrimaryIssues = failedIssues.length > 0
+        && failedIssues.every((issue) => deterministicPrimaryIssue(issue.code));
       let remediated = false;
-      // A second deterministic style pass is a bounded safety net for state
-      // that can change after an ancestor opacity correction. The third and
-      // final remediation remains the audited neutral fallback.
-      if (remediationDepth < 2 && onlyDeterministicStyleIssues) {
+      // Multiple bounded passes cover state that can change after ancestor
+      // opacity correction and allow static semantic/image repairs discovered
+      // only in a hydrated browser. The fifth and final remediation remains the
+      // audited neutral fallback for genuinely irreparable pages.
+      if (remediationDepth < 4 && onlyDeterministicPrimaryIssues) {
         remediated = await rematerializeRenderFallback(context, template, values, 'accessibility');
       }
       if (!remediated) {
@@ -1600,23 +2265,40 @@ async function buildVisualAliasEvidence(
   context: LegacyCommandContext,
   candidates: readonly DedupeCandidate[],
   templates: readonly LegacyTemplateRecord[],
+  excludedPairKeys: ReadonlySet<string> = new Set(),
 ): Promise<Map<string, VisualAliasEvidence>> {
   checkCancellation(context);
   const result = new Map<string, VisualAliasEvidence>();
   const templateBySlug = new Map(templates.map((template) => [template.legacySlug, template]));
-  const homeRenders = new Map<string, Map<string, ReturnType<LegacyCommandContext['ledger']['listRenders']>[number]>>();
+  const renderMatrices = new Map<string, Map<string, Map<string, LegacyRenderRecord>>>();
 
   for (const candidate of candidates) {
     if (candidate.fingerprint.foundation) continue;
     const template = templateBySlug.get(candidate.fingerprint.legacySlug);
     if (!template) continue;
-    const pages = context.ledger.listPages(template.id);
-    const home = pages.find((page) => page.role === 'home')
-      ?? pages.find((page) => page.relativePath === 'index.html');
-    if (!home) continue;
+    const expectedPages = Object.keys(candidate.design.pages).sort();
+    const pages = context.ledger.listPages(template.id)
+      .filter((page) => page.stage === 'static-passed');
+    if (
+      pages.length !== expectedPages.length
+      || !sameStringSet(pages.map((page) => page.relativePath), expectedPages)
+    ) continue;
+    const pageById = new Map(pages.map((page) => [page.id, page.relativePath]));
     const renders = context.ledger.listRenders(template.id)
-      .filter((render) => render.pageId === home.id && render.status === 'passed');
-    homeRenders.set(candidate.fingerprint.legacySlug, new Map(renders.map((render) => [render.viewport, render])));
+      .filter((render) => render.status === 'passed');
+    const matrix = new Map<string, Map<string, LegacyRenderRecord>>();
+    for (const render of renders) {
+      const page = pageById.get(render.pageId);
+      if (!page) continue;
+      const byViewport = matrix.get(page) ?? new Map<string, LegacyRenderRecord>();
+      byViewport.set(render.viewport, render);
+      matrix.set(page, byViewport);
+    }
+    if (!expectedPages.every((page) => {
+      const byViewport = matrix.get(page);
+      return byViewport?.has('desktop') && byViewport.has('mobile');
+    })) continue;
+    renderMatrices.set(candidate.fingerprint.legacySlug, matrix);
   }
 
   const groups = new Map<string, DedupeCandidate[]>();
@@ -1635,6 +2317,7 @@ async function buildVisualAliasEvidence(
       const leftMarkup = designMarkup(left);
       for (let rightIndex = leftIndex + 1; rightIndex < group.length; rightIndex += 1) {
         const right = group[rightIndex]!;
+        if (excludedPairKeys.has(aliasPairKey(left.fingerprint.legacySlug, right.fingerprint.legacySlug))) continue;
         if (left.fingerprint.exactDesignHash === right.fingerprint.exactDesignHash) continue;
         const similarity = domSimilarity(leftMarkup, designMarkup(right));
         if (similarity >= 0.98) comparisons.push([left, right, similarity]);
@@ -1649,33 +2332,50 @@ async function buildVisualAliasEvidence(
       cursor += 1;
       if (!comparison) break;
       const [left, right, similarity] = comparison;
-      const leftRenders = homeRenders.get(left.fingerprint.legacySlug);
-      const rightRenders = homeRenders.get(right.fingerprint.legacySlug);
-      const leftDesktop = leftRenders?.get('desktop');
-      const rightDesktop = rightRenders?.get('desktop');
-      const leftMobile = leftRenders?.get('mobile');
-      const rightMobile = rightRenders?.get('mobile');
-      if (
-        !leftDesktop?.perceptualHash || !rightDesktop?.perceptualHash
-        || !leftMobile?.perceptualHash || !rightMobile?.perceptualHash
-        || !leftDesktop.artifactPath || !rightDesktop.artifactPath
-        || !leftMobile.artifactPath || !rightMobile.artifactPath
-      ) continue;
-
-      const desktopDistance = hammingDistance(leftDesktop.perceptualHash, rightDesktop.perceptualHash);
-      const mobileDistance = hammingDistance(leftMobile.perceptualHash, rightMobile.perceptualHash);
-      const [desktopSsim, mobileSsim] = desktopDistance <= 4 && mobileDistance <= 4
-        ? await Promise.all([
-          thumbnailSsim(leftDesktop.artifactPath, rightDesktop.artifactPath),
-          thumbnailSsim(leftMobile.artifactPath, rightMobile.artifactPath),
-        ])
-        : [0, 0];
+      const leftRenders = renderMatrices.get(left.fingerprint.legacySlug);
+      const rightRenders = renderMatrices.get(right.fingerprint.legacySlug);
+      const comparedPages = Object.keys(left.design.pages).sort();
+      if (!leftRenders || !rightRenders || !sameStringSet(comparedPages, Object.keys(right.design.pages))) continue;
+      const pageEvidence = await Promise.all(comparedPages.map(async (page) => {
+        const leftDesktop = leftRenders.get(page)?.get('desktop');
+        const rightDesktop = rightRenders.get(page)?.get('desktop');
+        const leftMobile = leftRenders.get(page)?.get('mobile');
+        const rightMobile = rightRenders.get(page)?.get('mobile');
+        if (
+          !leftDesktop?.perceptualHash || !rightDesktop?.perceptualHash
+          || !leftMobile?.perceptualHash || !rightMobile?.perceptualHash
+          || !leftDesktop.artifactPath || !rightDesktop.artifactPath
+          || !leftMobile.artifactPath || !rightMobile.artifactPath
+        ) return null;
+        const desktopPerceptualHashDistance = hammingDistance(leftDesktop.perceptualHash, rightDesktop.perceptualHash);
+        const mobilePerceptualHashDistance = hammingDistance(leftMobile.perceptualHash, rightMobile.perceptualHash);
+        const [desktopSsim, mobileSsim] = desktopPerceptualHashDistance <= 4 && mobilePerceptualHashDistance <= 4
+          ? await Promise.all([
+            thumbnailSsim(leftDesktop.artifactPath, rightDesktop.artifactPath),
+            thumbnailSsim(leftMobile.artifactPath, rightMobile.artifactPath),
+          ])
+          : [0, 0];
+        return {
+          page,
+          desktopSsim,
+          mobileSsim,
+          desktopPerceptualHashDistance,
+          mobilePerceptualHashDistance,
+        };
+      }));
+      if (pageEvidence.some((page) => page === null)) continue;
+      const completePageEvidence = pageEvidence.filter((page): page is NonNullable<typeof page> => page !== null);
+      const desktopSsim = Math.min(...completePageEvidence.map((page) => page.desktopSsim));
+      const mobileSsim = Math.min(...completePageEvidence.map((page) => page.mobileSsim));
+      const desktopDistance = Math.max(...completePageEvidence.map((page) => page.desktopPerceptualHashDistance));
+      const mobileDistance = Math.max(...completePageEvidence.map((page) => page.mobilePerceptualHashDistance));
       const evidence: VisualAliasEvidence = {
         domSimilarity: similarity,
         desktopSsim,
         mobileSsim,
         desktopPerceptualHashDistance: desktopDistance,
         mobilePerceptualHashDistance: mobileDistance,
+        pages: completePageEvidence,
       };
       result.set(aliasPairKey(left.fingerprint.legacySlug, right.fingerprint.legacySlug), evidence);
       const leftTemplate = templateBySlug.get(left.fingerprint.legacySlug)!;
@@ -1688,13 +2388,14 @@ async function buildVisualAliasEvidence(
         desktopSsim,
         mobileSsim,
         maxPhashDistance: Math.max(desktopDistance, mobileDistance),
-        decision: desktopSsim >= 0.995 && mobileSsim >= 0.995 && desktopDistance <= 4 && mobileDistance <= 4
+        decision: satisfiesVisualAliasThresholds(evidence, comparedPages)
           ? 'passing'
           : 'distinct',
         evidence: {
           left: left.fingerprint.legacySlug,
           right: right.fingerprint.legacySlug,
           viewports: ['desktop', 'mobile'],
+          pages: completePageEvidence,
         },
       });
     }
@@ -1703,12 +2404,391 @@ async function buildVisualAliasEvidence(
   return result;
 }
 
-async function composeCatalog(
+export interface VisualAliasCertificationPlan {
+  canonical: DedupeCandidate;
+  candidate: DedupeCandidate;
+  canonicalTemplate: LegacyTemplateRecord;
+  template: LegacyTemplateRecord;
+  evidence: VisualAliasEvidence;
+}
+
+export interface VisualAliasCertificationResult {
+  pairKey: string;
+  legacySlug: string;
+  passed: boolean;
+  artifactHash?: string;
+  qualityReceipt?: string;
+  issues: string[];
+}
+
+interface PreparedVisualAlias {
+  plan: VisualAliasCertificationPlan;
+  pairKey: string;
+  sourceArtifactHash: string;
+  artifactHash: string;
+  files: Map<string, string | Uint8Array>;
+  fields: ContractField[];
+  directory: string;
+  taskKey: string;
+  pages: string[];
+}
+
+async function writeTransientVisualAlias(
   context: LegacyCommandContext,
-  allowedSlugs?: readonly string[],
-): Promise<CatalogV3Document> {
-  checkCancellation(context);
-  const allowed = allowedSlugs ? new Set(allowedSlugs) : null;
+  files: ReadonlyMap<string, string | Uint8Array>,
+  directory: string,
+): Promise<void> {
+  const stagingRoot = resolve(context.config.artifactRoot, '.staging');
+  if (!isWithin(stagingRoot, directory) || resolve(directory) === stagingRoot) {
+    throw new Error(`Visual-alias staging target escaped its dedicated root: ${directory}`);
+  }
+  await mkdir(directory, { recursive: true });
+  for (const [rawPath, value] of files) {
+    const path = normalizeRelativePath(rawPath);
+    const output = resolve(directory, ...path.split('/'));
+    if (!isWithin(directory, output)) throw new Error(`Visual-alias file escaped staging: ${path}`);
+    await atomicWriteFile(context.config, output, value);
+  }
+}
+
+function recordVisualAliasCompositionDecision(
+  context: LegacyCommandContext,
+  plan: VisualAliasCertificationPlan,
+  result: VisualAliasCertificationResult,
+): void {
+  context.ledger.upsertDedupeCluster({
+    niche: plan.candidate.fingerprint.niche,
+    structuralHash: digest(`visual-comparison\0${result.pairKey}`),
+    canonicalTemplateId: plan.canonicalTemplate.id,
+    method: 'visual-threshold',
+    domSimilarity: plan.evidence.domSimilarity,
+    desktopSsim: plan.evidence.desktopSsim,
+    mobileSsim: plan.evidence.mobileSsim,
+    maxPhashDistance: Math.max(
+      plan.evidence.desktopPerceptualHashDistance,
+      plan.evidence.mobilePerceptualHashDistance,
+    ),
+    decision: result.passed ? 'passing' : 'distinct',
+    evidence: {
+      left: plan.canonical.fingerprint.legacySlug,
+      right: plan.candidate.fingerprint.legacySlug,
+      viewports: ['desktop', 'mobile'],
+      composedAliasQa: {
+        passed: result.passed,
+        artifactHash: result.artifactHash ?? null,
+        qualityReceipt: result.qualityReceipt ?? null,
+        issues: result.issues,
+      },
+    },
+  });
+}
+
+/**
+ * Render and certify the actual canonical-design + alias-preset composition.
+ * A failed composition leaves the already verified source artifact current and
+ * merely rejects this pair; a passing composition is atomically promoted to a
+ * new candidate hash with its own current render matrix and receipt.
+ */
+export async function certifyVisualAliasCompositions(
+  context: LegacyCommandContext,
+  plans: readonly VisualAliasCertificationPlan[],
+  renderTasks: typeof renderTemplateTasks = renderTemplateTasks,
+): Promise<VisualAliasCertificationResult[]> {
+  const prepared: PreparedVisualAlias[] = [];
+  const results: VisualAliasCertificationResult[] = [];
+  const canonicalArtifactFiles = new Map<number, Map<string, string | Uint8Array>>();
+
+  for (const plan of plans) {
+    checkCancellation(context);
+    const pairKey = aliasPairKey(
+      plan.canonical.fingerprint.legacySlug,
+      plan.candidate.fingerprint.legacySlug,
+    );
+    const decision = canAliasDesigns(
+      plan.canonical.fingerprint,
+      plan.candidate.fingerprint,
+      plan.evidence,
+      Object.keys(plan.canonical.design.pages),
+    );
+    if (!decision.alias || decision.reason !== 'verified-visual-equivalence') {
+      throw new Error(`Visual-alias certification received an ineligible pair: ${pairKey}`);
+    }
+    if (
+      plan.template.legacySlug !== plan.candidate.fingerprint.legacySlug
+      || plan.canonicalTemplate.legacySlug !== plan.canonical.fingerprint.legacySlug
+    ) throw new Error(`Visual-alias certification template identity mismatch: ${pairKey}`);
+
+    let canonicalFiles = canonicalArtifactFiles.get(plan.canonicalTemplate.id);
+    if (!canonicalFiles) {
+      const record = artifactForTemplate(context, plan.canonicalTemplate);
+      if (!record) throw new Error(`Canonical artifact is missing for ${pairKey}`);
+      const canonicalRoot = resolve(context.config.workRoot, record.relativePath);
+      if (!isWithin(context.config.workRoot, canonicalRoot)) throw new Error(`Canonical artifact escaped the work root: ${pairKey}`);
+      await validateRecordedArtifact(canonicalRoot, record.contentHash);
+      canonicalFiles = await readArtifactFiles(canonicalRoot);
+      canonicalArtifactFiles.set(plan.canonicalTemplate.id, canonicalFiles);
+    }
+
+    const sourceArtifact = artifactForTemplate(context, plan.template);
+    if (!sourceArtifact || sourceArtifact.contentHash !== plan.template.resultHash) {
+      throw new Error(`Current candidate artifact is missing for ${pairKey}`);
+    }
+    const sourceRoot = resolve(context.config.workRoot, sourceArtifact.relativePath);
+    if (!isWithin(context.config.workRoot, sourceRoot)) throw new Error(`Candidate artifact escaped the work root: ${pairKey}`);
+    await validateRecordedArtifact(sourceRoot, sourceArtifact.contentHash);
+    const sourceFiles = await readArtifactFiles(sourceRoot);
+
+    let composed: ComposedVisualAliasArtifact;
+    try {
+      composed = composeVisualAliasArtifactFiles({
+        canonical: plan.canonical,
+        candidate: plan.candidate,
+        canonicalFiles,
+        sourceFiles,
+        sourceArtifactHash: sourceArtifact.contentHash,
+      });
+    } catch (error) {
+      const result = {
+        pairKey,
+        legacySlug: plan.template.legacySlug,
+        passed: false,
+        issues: [`composition: ${error instanceof Error ? error.message : String(error)}`],
+      } satisfies VisualAliasCertificationResult;
+      results.push(result);
+      recordVisualAliasCompositionDecision(context, plan, result);
+      continue;
+    }
+    const verification = verifyStaticArtifact(composed.files, composed.fields);
+    const tree = artifactTree(composed.files);
+    if (!verification.passed) {
+      const result = {
+        pairKey,
+        legacySlug: plan.template.legacySlug,
+        passed: false,
+        artifactHash: tree.hash,
+        issues: verification.errors.map((error) => `static:${error.code}${error.page ? `:${error.page}` : ''}:${error.detail}`),
+      } satisfies VisualAliasCertificationResult;
+      results.push(result);
+      recordVisualAliasCompositionDecision(context, plan, result);
+      continue;
+    }
+
+    const directory = assertWorkPath(
+      context.config,
+      join(
+        context.config.artifactRoot,
+        '.staging',
+        `visual-alias-${plan.template.id}-${tree.hash.slice(0, 16)}-${randomUUID()}`,
+      ),
+    );
+    await writeTransientVisualAlias(context, composed.files, directory);
+    prepared.push({
+      plan,
+      pairKey,
+      sourceArtifactHash: sourceArtifact.contentHash,
+      artifactHash: tree.hash,
+      files: composed.files,
+      fields: composed.fields,
+      directory,
+      taskKey: `visual-alias:${plan.template.id}:${tree.hash}`,
+      pages: Object.keys(plan.canonical.design.pages).sort(),
+    });
+  }
+
+  let rendered: RenderEvidence[] = [];
+  try {
+    const tasks = prepared.flatMap((item) => item.pages.map((page) => ({
+      key: item.taskKey,
+      niche: item.plan.template.niche,
+      slug: `${item.plan.template.legacySlug}--visual-${item.artifactHash.slice(0, 12)}`,
+      page,
+      templateDir: item.directory,
+    })));
+    if (tasks.length > 0) {
+      rendered = await renderTasks(context.config.artifactRoot, tasks, {
+        evidenceRoot: context.config.renderRoot,
+        workers: context.config.chromiumWorkers,
+        retries: 3,
+        recycleEvery: 1_000,
+        signal: context.signal,
+      });
+    }
+  } finally {
+    await Promise.all(prepared.map(async (item) => {
+      const stagingRoot = resolve(context.config.artifactRoot, '.staging');
+      if (!isWithin(stagingRoot, item.directory) || resolve(item.directory) === stagingRoot) {
+        throw new Error(`Refusing to remove unsafe visual-alias staging path: ${item.directory}`);
+      }
+      await rm(item.directory, { recursive: true, force: true });
+    }));
+  }
+
+  const renderedByKey = new Map<string, RenderEvidence[]>();
+  for (const evidence of rendered) {
+    const values = renderedByKey.get(evidence.key) ?? [];
+    values.push(evidence);
+    renderedByKey.set(evidence.key, values);
+  }
+
+  for (const item of prepared) {
+    checkCancellation(context);
+    const evidence = renderedByKey.get(item.taskKey) ?? [];
+    if (!hasCompletePassingRenderMatrix(evidence, item.pages)) {
+      const result = {
+        pairKey: item.pairKey,
+        legacySlug: item.plan.template.legacySlug,
+        passed: false,
+        artifactHash: item.artifactHash,
+        issues: evidence.length > 0
+          ? evidence.filter((value) => !value.passed)
+            .flatMap((value) => value.issues.map((issue) => `browser:${value.page}:${value.viewport}:${issue.code}:${issue.detail}`))
+          : ['browser:complete two-viewport render evidence was not returned'],
+      } satisfies VisualAliasCertificationResult;
+      results.push(result);
+      recordVisualAliasCompositionDecision(context, item.plan, result);
+      context.ledger.addIssue({
+        templateId: item.plan.template.id,
+        runId: context.runId,
+        code: 'visual_alias_composition_rejected',
+        severity: 'warning',
+        message: 'The canonical design with this source preset did not pass complete browser QA; the original passing design remains distinct.',
+        fingerprint: digest(`visual_alias_composition_rejected\0${item.pairKey}\0${item.artifactHash}`),
+        details: { canonicalLegacySlug: item.plan.canonicalTemplate.legacySlug, issues: result.issues },
+        resolved: true,
+      });
+      continue;
+    }
+
+    const latest = context.ledger.getTemplate(item.plan.template.id);
+    if (
+      !latest
+      || latest.resultHash !== item.sourceArtifactHash
+      || !['verified', 'complete'].includes(latest.stage)
+    ) throw new Error(`Visual-alias source changed before certification commit: ${item.pairKey}`);
+    const compositionLease = context.ledger.leaseTemplates({
+      stages: [latest.stage],
+      legacySlugs: [latest.legacySlug],
+      claimedStage: 'clustered',
+      owner: `${process.pid}-${context.runId}-visual-compose`,
+      limit: 1,
+      leaseMs: 24 * 60 * 60_000,
+      maxAttempts: 3,
+      runId: context.runId,
+    })[0];
+    if (!compositionLease) throw new Error(`Could not lease visual-alias candidate: ${item.pairKey}`);
+
+    const artifact = await materializeArtifact(context, compositionLease, item.files);
+    if (artifact.treeHash !== item.artifactHash) throw new Error(`Visual-alias bytes changed after browser QA: ${item.pairKey}`);
+    if (!context.ledger.completeTemplateLease({
+      templateId: compositionLease.id,
+      leaseToken: compositionLease.leaseToken,
+      stage: 'render_pending',
+      resultHash: artifact.treeHash,
+    })) throw new Error(`Visual-alias composition lease expired: ${item.pairKey}`);
+
+    const previousPages = new Map(context.ledger.listPages(compositionLease.id)
+      .map((page) => [page.relativePath, page]));
+    const pageIds = new Map<string, number>();
+    for (const page of item.pages) {
+      const html = item.files.get(page);
+      if (typeof html !== 'string') throw new Error(`Visual-alias page disappeared: ${item.pairKey}/${page}`);
+      const prior = previousPages.get(page);
+      pageIds.set(page, context.ledger.upsertPage({
+        templateId: compositionLease.id,
+        relativePath: page,
+        role: item.plan.canonical.design.pageRoles[page] ?? prior?.role ?? 'other',
+        sourceHash: prior?.sourceHash ?? digest(`visual-alias-generated\0${page}`),
+        resultHash: digest(html),
+        stage: 'static-passed',
+      }));
+    }
+
+    const renderLease = context.ledger.leaseTemplates({
+      stages: ['render_pending'],
+      legacySlugs: [latest.legacySlug],
+      claimedStage: 'rendering',
+      owner: `${process.pid}-${context.runId}-visual-receipt`,
+      limit: 1,
+      leaseMs: 24 * 60 * 60_000,
+      maxAttempts: 3,
+      runId: context.runId,
+    })[0];
+    if (!renderLease) throw new Error(`Could not lease visual-alias receipt commit: ${item.pairKey}`);
+    for (const value of evidence) {
+      const pageId = pageIds.get(value.page);
+      if (!pageId) throw new Error(`Visual-alias evidence has no current page: ${item.pairKey}/${value.page}`);
+      recordRenderEvidence(context, {
+        templateId: renderLease.id,
+        pageId,
+        artifactHash: artifact.treeHash,
+      }, value);
+    }
+    const receipt = await writeFinalReceipt(context, renderLease, evidence);
+    context.ledger.addArtifact({
+      runId: context.runId,
+      templateId: renderLease.id,
+      kind: 'quality-receipt',
+      contentHash: receipt.id.replace(/^receipt_/, ''),
+      relativePath: relative(context.config.workRoot, receipt.path),
+      byteSize: (await stat(receipt.path)).size,
+      metadata: {
+        passed: true,
+        visualAliasComposition: true,
+        canonicalLegacySlug: item.plan.canonicalTemplate.legacySlug,
+      },
+    });
+    context.ledger.addTransformation({
+      templateId: renderLease.id,
+      runId: context.runId,
+      ruleCode: 'materialize-verified-visual-alias',
+      ruleVersion: context.config.ruleVersion,
+      beforeHash: item.sourceArtifactHash,
+      afterHash: artifact.treeHash,
+      details: {
+        canonicalLegacySlug: item.plan.canonicalTemplate.legacySlug,
+        canonicalDesignId: item.plan.canonical.design.id,
+        contentPresetId: item.plan.candidate.contentPreset.id,
+        themePresetId: item.plan.candidate.themePreset.id,
+        evidence: item.plan.evidence,
+      },
+    });
+    if (!context.ledger.completeTemplateLease({
+      templateId: renderLease.id,
+      leaseToken: renderLease.leaseToken,
+      stage: 'verified',
+      resultHash: artifact.treeHash,
+      qualityReceipt: receipt.id,
+      resolveIssues: true,
+    })) throw new Error(`Visual-alias render lease expired: ${item.pairKey}`);
+
+    const result = {
+      pairKey: item.pairKey,
+      legacySlug: item.plan.template.legacySlug,
+      passed: true,
+      artifactHash: artifact.treeHash,
+      qualityReceipt: receipt.id,
+      issues: [],
+    } satisfies VisualAliasCertificationResult;
+    results.push(result);
+    recordVisualAliasCompositionDecision(context, item.plan, result);
+    await logEvent(context, 'template.visual_alias_certified', {
+      niche: item.plan.template.niche,
+      legacySlug: item.plan.template.legacySlug,
+      canonicalLegacySlug: item.plan.canonicalTemplate.legacySlug,
+      priorArtifactHash: item.sourceArtifactHash,
+      artifactHash: artifact.treeHash,
+      receipt: receipt.id,
+      renders: evidence.length,
+    });
+  }
+
+  return results.sort((left, right) => left.legacySlug.localeCompare(right.legacySlug));
+}
+
+async function loadCatalogCandidates(
+  context: LegacyCommandContext,
+  allowed: ReadonlySet<string> | null,
+): Promise<{ templates: LegacyTemplateRecord[]; candidates: DedupeCandidate[] }> {
   const templates = context.ledger.listTemplates({ stages: ['verified', 'complete'] })
     .filter((template) => !allowed || allowed.has(template.legacySlug));
   const candidates: DedupeCandidate[] = [];
@@ -1753,14 +2833,73 @@ async function composeCatalog(
     ]);
     candidates.push({ catalogTemplate, design, fingerprint, contentPreset, themePreset });
   }
-  const visualEvidence = await buildVisualAliasEvidence(context, candidates, templates);
-  const clusters = buildDedupeClusters(
-    candidates,
-    (canonical, candidate) => visualEvidence.get(aliasPairKey(
-      canonical.fingerprint.legacySlug,
-      candidate.fingerprint.legacySlug,
-    )),
-  );
+  return { templates, candidates };
+}
+
+async function composeCatalog(
+  context: LegacyCommandContext,
+  allowedSlugs?: readonly string[],
+): Promise<CatalogV3Document> {
+  checkCancellation(context);
+  const allowed = allowedSlugs ? new Set(allowedSlugs) : null;
+  const rejectedVisualPairs = new Set<string>();
+  let templates: LegacyTemplateRecord[] = [];
+  let candidates: DedupeCandidate[] = [];
+  let clusters: DedupeCluster[] = [];
+
+  // A visual match is only provisional until the exact canonical design plus
+  // the proposed source presets passes the same full QA matrix as every other
+  // candidate. Passing compositions become immutable current artifacts and
+  // are then reloaded as exact designs; failed compositions remain distinct.
+  while (true) {
+    checkCancellation(context);
+    ({ templates, candidates } = await loadCatalogCandidates(context, allowed));
+    const visualEvidence = await buildVisualAliasEvidence(
+      context,
+      candidates,
+      templates,
+      rejectedVisualPairs,
+    );
+    clusters = buildDedupeClusters(
+      candidates,
+      (canonical, candidate) => visualEvidence.get(aliasPairKey(
+        canonical.fingerprint.legacySlug,
+        candidate.fingerprint.legacySlug,
+      )),
+    );
+    const candidateBySlug = new Map(candidates.map((candidate) => [candidate.fingerprint.legacySlug, candidate]));
+    const templateBySlug = new Map(templates.map((template) => [template.legacySlug, template]));
+    const plans: VisualAliasCertificationPlan[] = [];
+    for (const cluster of clusters) {
+      const canonical = candidateBySlug.get(cluster.canonicalLegacySlug);
+      const canonicalTemplate = templateBySlug.get(cluster.canonicalLegacySlug);
+      if (!canonical || !canonicalTemplate) throw new Error(`Visual-alias canonical is missing: ${cluster.canonicalLegacySlug}`);
+      for (const alias of cluster.aliases.filter((item) => item.reason === 'verified-visual-equivalence')) {
+        const candidate = candidateBySlug.get(alias.legacySlug);
+        const template = templateBySlug.get(alias.legacySlug);
+        const pairKey = aliasPairKey(cluster.canonicalLegacySlug, alias.legacySlug);
+        const evidence = visualEvidence.get(pairKey);
+        if (!candidate || !template || !evidence) throw new Error(`Visual-alias evidence plan is incomplete: ${pairKey}`);
+        plans.push({ canonical, candidate, canonicalTemplate, template, evidence });
+      }
+    }
+    if (plans.length === 0) break;
+
+    const certifications = await certifyVisualAliasCompositions(context, plans);
+    let changedArtifact = false;
+    let newlyRejected = false;
+    for (const certification of certifications) {
+      if (certification.passed) changedArtifact = true;
+      else if (!rejectedVisualPairs.has(certification.pairKey)) {
+        rejectedVisualPairs.add(certification.pairKey);
+        newlyRejected = true;
+      }
+    }
+    if (!changedArtifact && !newlyRejected) {
+      throw new Error('Visual-alias certification made no progress');
+    }
+  }
+
   const aliases: CatalogV3Alias[] = [];
   const gallery: Record<string, string[]> = {};
   for (const cluster of clusters) {
@@ -2056,6 +3195,7 @@ async function auditPilotEvidence(
     }
 
     const artifact = artifactForTemplate(context, template);
+    let emittedManifestPages: unknown;
     if (!artifact) {
       addTemplateIssue(slug, `${slug}: missing current candidate artifact`, 'repair_pending');
     } else {
@@ -2072,6 +3212,25 @@ async function auditPilotEvidence(
           await validateRecordedArtifact(artifactRoot, artifact.contentHash);
         } catch (error) {
           addTemplateIssue(slug, `${slug}: current candidate artifact failed integrity validation (${error instanceof Error ? error.message : String(error)})`, 'repair_pending');
+        }
+        try {
+          const manifestPath = resolve(artifactRoot, 'template.json');
+          if (!isWithin(artifactRoot, manifestPath)) throw new Error('template manifest escaped its artifact root');
+          const manifestDetails = await lstat(manifestPath).catch(() => null);
+          if (!manifestDetails?.isFile() || manifestDetails.isSymbolicLink()) {
+            throw new Error('template manifest is not a safe regular file');
+          }
+          const manifest = JSON.parse(await readFile(manifestPath, 'utf8')) as unknown;
+          if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+            throw new Error('template manifest is not an object');
+          }
+          emittedManifestPages = (manifest as Record<string, unknown>).pages;
+        } catch (error) {
+          addTemplateIssue(
+            slug,
+            `${slug}: unreadable emitted template manifest (${error instanceof Error ? error.message : String(error)})`,
+            'repair_pending',
+          );
         }
         try {
           const metadataDetails = await lstat(metadataPath).catch(() => null);
@@ -2097,29 +3256,12 @@ async function auditPilotEvidence(
       }
     }
 
-    const pages = context.ledger.listPages(template.id).filter((page) => page.stage === 'static-passed');
-    if (pages.length === 0) addTemplateIssue(slug, `${slug}: no current static-passed pages`, 'repair_pending');
-    const renders = context.ledger.listRenders(template.id);
-    const renderByPageAndViewport = new Map(renders.map((render) => [`${render.pageId}\0${render.viewport}`, render]));
-    for (const page of pages) {
-      for (const viewport of Object.keys(LEGACY_VIEWPORTS)) {
-        const evidence = renderByPageAndViewport.get(`${page.id}\0${viewport}`);
-        if (!evidence) {
-          addTemplateIssue(slug, `${slug}/${page.relativePath}/${viewport}: missing current render evidence`);
-        } else if (
-          evidence.status !== 'passed'
-          || evidence.consoleErrors !== 0
-          || evidence.failedRequests !== 0
-          || evidence.axeCritical !== 0
-          || evidence.axeSerious !== 0
-          || (evidence.horizontalOverflowPx ?? 0) > 1
-          || !evidence.screenshotHash
-          || !evidence.perceptualHash
-        ) {
-          addTemplateIssue(slug, `${slug}/${page.relativePath}/${viewport}: current render evidence is not passing`);
-        }
-      }
+    const pages = context.ledger.listPages(template.id);
+    if (!pages.some((page) => page.stage === 'static-passed')) {
+      addTemplateIssue(slug, `${slug}: no current static-passed pages`, 'repair_pending');
     }
+    const renders = context.ledger.listRenders(template.id);
+    let receiptPages: unknown;
 
     if (template.qualityReceipt) {
       const receiptHash = template.qualityReceipt.replace(/^receipt_/, '');
@@ -2150,7 +3292,9 @@ async function auditPilotEvidence(
               ruleVersion?: unknown;
               sourcePreserved?: unknown;
               checks?: { static?: unknown; desktop?: unknown; mobile?: unknown; criticalDefects?: unknown; seriousDefects?: unknown };
+              pages?: unknown;
             };
+            receiptPages = document.pages;
             const { id: recordedId, ...receiptBody } = parsed as Record<string, unknown>;
             const computedId = `receipt_${sha256(stableStringify(receiptBody)).slice(0, 24)}`;
             if (
@@ -2175,6 +3319,20 @@ async function auditPilotEvidence(
             addTemplateIssue(slug, `${slug}: unreadable final quality receipt (${error instanceof Error ? error.message : String(error)})`);
           }
         }
+      }
+    }
+    if (artifact) {
+      for (const matrixIssue of validateFinalPageEvidenceMatrix({
+        manifestPages: emittedManifestPages,
+        ledgerPages: pages,
+        renders,
+        receiptPages,
+      })) {
+        addTemplateIssue(
+          slug,
+          `${slug}: ${matrixIssue.code}: ${matrixIssue.detail}`,
+          matrixIssue.recoveryStage,
+        );
       }
     }
   }
@@ -2414,7 +3572,7 @@ async function pilotCommand(context: LegacyCommandContext): Promise<LegacyComman
   const inventory = await inventoryStage(context);
   const selected = selectStratifiedPilot(inventory.templates, context.config.pilotSize);
   const slugs = selected.map((template) => template.slug);
-  const repair = await repairTemplates(context, slugs);
+  const repair = await repairTemplates(context, inventory, slugs);
   const render = await renderPendingTemplates(context, slugs);
   const failures = repair.staticFailed + render.failedTemplates;
   const catalog = failures === 0 ? await composeCatalog(context, slugs) : null;
@@ -2469,7 +3627,7 @@ async function runCommand(context: LegacyCommandContext): Promise<LegacyCommandO
       ?? `${currentPilotEvidence.fallbackSlugs.length} pilot template(s) use a neutral fallback`;
     throw new Error(`Pilot authorization is no longer backed by complete current evidence: ${detail}`);
   }
-  const repair = await repairTemplates(context);
+  const repair = await repairTemplates(context, inventory);
   const render = await renderPendingTemplates(context);
   const failed = context.ledger.listTemplates({ stages: ['failed'] });
   if (failed.length > 0) {
@@ -2534,11 +3692,27 @@ async function mirrorTree(source: string, target: string, signal?: AbortSignal):
   }
 }
 
+export function rehabStagingUploaderArgs(root: string): string[] {
+  return ['--dry-run', '--root', root, '--rehab-v3-staging'];
+}
+
+export function rehabCustomizationVerifierArgs(root: string, workers = 8): string[] {
+  return [
+    '--root',
+    root,
+    '--workers',
+    String(Math.max(1, Math.min(64, Math.trunc(workers)))),
+    '--max-diagnostics',
+    '100',
+    '--json',
+  ];
+}
+
 async function runUploaderDryRun(root: string, signal?: AbortSignal): Promise<string> {
   throwIfLegacyCancelled(signal);
   const script = fileURLToPath(new URL('../../../../apps/generator-app/scripts/upload-templates-to-blobs.mjs', import.meta.url));
   return new Promise<string>((resolvePromise, reject) => {
-    const child = spawn(process.execPath, [script, '--dry-run', '--root', root], {
+    const child = spawn(process.execPath, [script, ...rehabStagingUploaderArgs(root)], {
       cwd: resolve(dirname(script), '..'),
       env: process.env,
       stdio: ['ignore', 'pipe', 'pipe'],
@@ -2564,6 +3738,74 @@ async function runUploaderDryRun(root: string, signal?: AbortSignal): Promise<st
     child.on('close', (code) => finish(() => code === 0
       ? resolvePromise(output)
       : reject(new Error(`Uploader dry-run exited ${code}:\n${output.slice(-8_000)}`))));
+  });
+}
+
+interface PromotionCustomizationVerification {
+  pass: boolean;
+  root: string;
+  catalogTemplates: number;
+  scannedTemplates: number;
+  pages: number;
+  stylesheets: number;
+  contentEntries: number;
+  imageSlots: number;
+  themeTokens: number;
+  diagnosticCount: number;
+  diagnostics: Array<{ code: string; detail: string; template?: string; page?: string; targetId?: string }>;
+  diagnosticsTruncated: number;
+}
+
+async function runCustomizationVerifier(
+  root: string,
+  workers: number,
+  signal?: AbortSignal,
+): Promise<PromotionCustomizationVerification> {
+  throwIfLegacyCancelled(signal);
+  const script = fileURLToPath(new URL('../../../../apps/generator-app/scripts/verify-rehab-customization.ts', import.meta.url));
+  const require = createRequire(import.meta.url);
+  const tsxCli = require.resolve('tsx/cli');
+  return new Promise<PromotionCustomizationVerification>((resolvePromise, reject) => {
+    const child = spawn(process.execPath, [tsxCli, script, ...rehabCustomizationVerifierArgs(root, workers)], {
+      cwd: resolve(dirname(script), '..'),
+      env: process.env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+      windowsHide: true,
+    });
+    let stdout = '';
+    let stderr = '';
+    let settled = false;
+    const finish = (operation: () => void): void => {
+      if (settled) return;
+      settled = true;
+      signal?.removeEventListener('abort', onAbort);
+      operation();
+    };
+    const appendBounded = (current: string, chunk: unknown): string => `${current}${String(chunk)}`.slice(-2_000_000);
+    const onAbort = (): void => {
+      child.kill();
+      const reason = signal?.reason;
+      finish(() => reject(reason instanceof Error ? reason : new Error('Customization verification cancelled')));
+    };
+    signal?.addEventListener('abort', onAbort, { once: true });
+    child.stdout.on('data', (chunk) => { stdout = appendBounded(stdout, chunk); });
+    child.stderr.on('data', (chunk) => { stderr = appendBounded(stderr, chunk); });
+    child.on('error', (error) => finish(() => reject(error)));
+    child.on('close', (code) => finish(() => {
+      if (code !== 0) {
+        reject(new Error(`Customization verifier exited ${code}:\n${`${stdout}\n${stderr}`.trim().slice(-8_000)}`));
+        return;
+      }
+      try {
+        const result = JSON.parse(stdout) as PromotionCustomizationVerification;
+        if (!result || result.pass !== true || result.diagnosticCount !== 0) {
+          throw new Error('Customization verifier returned a non-passing result');
+        }
+        resolvePromise(result);
+      } catch (error) {
+        reject(new Error(`Customization verifier returned invalid JSON: ${error instanceof Error ? error.message : String(error)}`));
+      }
+    }));
   });
 }
 
@@ -2645,7 +3887,7 @@ export function validatePromotionSourceState(input: {
   }
 }
 
-async function validatePromotionComposition(
+export async function validatePromotionComposition(
   context: LegacyCommandContext,
   template: LegacyTemplateRecord,
   mapping: CatalogV3Alias,
@@ -2829,6 +4071,21 @@ async function promoteCommand(context: LegacyCommandContext): Promise<LegacyComm
   const uploaderOutput = await runUploaderDryRun(stagingRoot, context.signal);
   checkCancellation(context);
   if (!/\b0 quarantined\b/i.test(uploaderOutput)) throw new Error(`Uploader did not confirm zero quarantined templates:\n${uploaderOutput.slice(-8_000)}`);
+  const customizationVerification = await runCustomizationVerifier(
+    stagingRoot,
+    context.config.staticWorkers,
+    context.signal,
+  );
+  checkCancellation(context);
+  if (
+    customizationVerification.catalogTemplates !== templates.length
+    || customizationVerification.scannedTemplates !== templates.length
+  ) {
+    throw new Error(
+      `Customization verifier coverage mismatch: `
+      + `${customizationVerification.scannedTemplates}/${customizationVerification.catalogTemplates}/${templates.length}`,
+    );
+  }
   const finalInventory = await inventoryLegacyCatalog(context.config.sourceRoot, {
     workers: context.config.staticWorkers,
     signal: context.signal,
@@ -2851,6 +4108,7 @@ async function promoteCommand(context: LegacyCommandContext): Promise<LegacyComm
     sourceTemplates: templates.length,
     aliases: aliases.length,
     uploaderOutput,
+    customizationVerification,
     rollout: ['staging', 'one canary batch per niche', 'immutable assets', 'manifest switch last', 'retain prior manifest for rollback'],
   };
   await atomicWriteFile(context.config, planPath, `${JSON.stringify(plan, null, 2)}\n`);

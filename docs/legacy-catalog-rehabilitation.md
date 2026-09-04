@@ -35,7 +35,8 @@ template-rehab/
 ├── artifacts/
 │   ├── candidates/               immutable, content-addressed template outputs
 │   ├── receipts/                 browser-backed quality receipts
-│   └── promotion/                staging-only catalogue mirrors
+│   ├── promotion/                staging-only catalogue mirrors
+│   └── .staging/                 transient atomic-write trees, reaped on restart
 ├── blobs/sha256/                 de-duplicated emitted file content
 ├── renders/
 │   ├── thumbnails/               compact passing evidence
@@ -45,7 +46,7 @@ template-rehab/
 └── runner-logs/                  PowerShell runner output
 ```
 
-The ledger tracks runs, templates, pages, issues, transformations, renders, dedupe clusters, aliases, artifacts, and model usage. Jobs carry a source hash, rule version, attempts, stage, lease owner/expiry, and terminal disposition. Writes are atomic; leases make an interrupted `run --resume` safe to continue. A work-root lock also enforces one compiler writer at a time, detects a live owner by PID, and safely clears stale locks after an interrupted process.
+The ledger tracks runs, templates, pages, issues, transformations, renders, dedupe clusters, aliases, artifacts, reusable cloud recipes, and model usage. Jobs carry a source hash, rule version, attempts, stage, lease owner/expiry, and terminal disposition. Writes are atomic; leases make an interrupted `run --resume` safe to continue. A work-root lock also enforces one compiler writer at a time, detects a live owner by PID, safely clears stale locks, and reaps only the dedicated transient `.staging` directory after an interrupted process. Content-addressed candidates and promotion caches are never reaped.
 
 The pipeline proceeds in this order:
 
@@ -53,7 +54,7 @@ The pipeline proceeds in this order:
 2. Repair deterministically with `parse5`, PostCSS, the known foundations, page-role adapters, claim/form/script safety rules, canonical manifests, and local asset vendoring. When legacy generation duplicated one inner page across several filenames, each copy is rebuilt through its own semantic role adapter rather than preserving mislabeled content.
 3. If a candidate still cannot pass static safety, substitute a vetted niche-specific neutral template with the same page set. The original source and the reason remain in the audit lineage.
 4. Render every emitted page at 1440×900 and 390×844 in isolated Chromium contexts. External requests are blocked. The gate checks page and console errors, requests, links/assets, visible structure, overflow, forms, accessibility, sentinel hydration, ID-targeted editing, and computed theme changes.
-5. Separate canonical design, content preset, and theme preset. A foundation marker identifies one of 60 trusted lineage families, but it is not by itself proof of design equivalence. Foundation variants alias only when their post-repair design/composition hash and editable slot contracts match exactly. Incompatible variants remain distinct designs. Irregular variants alias only when page roles and niche match and all strict DOM/SSIM/perceptual-hash thresholds pass.
+5. Separate canonical design, content preset, and theme preset. A foundation marker identifies one of 60 trusted lineage families, but it is not by itself proof of design equivalence. Foundation variants alias only when their post-repair design/composition hash and editable slot contracts match exactly. Incompatible variants remain distinct designs. Irregular variants alias only when page roles and niche match and every corresponding page passes DOM similarity plus desktop and mobile SSIM/perceptual-hash thresholds. A homepage-only resemblance can never alias a multi-page site.
 6. Emit one quality receipt and one catalogue mapping for every source slug.
 
 Passing aliases do not erase content. Each legacy slug retains its own content/theme preset and lineage while the public gallery displays one representative for each canonical `designId`. This fail-closed policy can legitimately produce more than 60 public designs from the 60 foundation families; preserving every editable text and image slot takes precedence over an artificially small gallery count.
@@ -76,7 +77,7 @@ pnpm templates:legacy report --source $source --work-root $work
 pnpm templates:legacy promote --dry-run --source $source --work-root $work
 ```
 
-The PowerShell runner supplies those paths on every invocation, prevents automatic system sleep while work is active, writes an operator log, and retries a failed full run three times by default. A retry always includes `--resume`.
+The PowerShell runner supplies those paths on every invocation, validates the exact pnpm version pinned by the repository, prevents automatic system sleep while work is active, writes an operator log, and retries a failed full run three times by default. A retry always includes `--resume`. It prefers `pnpm` on `PATH` and otherwise runs the pinned version through Corepack.
 
 ```powershell
 .\scripts\run-legacy-rehab.ps1 -Command inventory
@@ -85,7 +86,10 @@ The PowerShell runner supplies those paths on every invocation, prevents automat
 .\scripts\run-legacy-rehab.ps1 -Command status -Json
 .\scripts\run-legacy-rehab.ps1 -Command report
 .\scripts\run-legacy-rehab.ps1 -Command promote
+.\scripts\run-legacy-rehab.ps1 -Command status -Preflight -UsePersistedPath
 ```
+
+The last command is a non-mutating scheduler preflight. It reconstructs the persisted User + Machine `PATH`, validates pnpm, loads the compiler CLI, and confirms the configured Playwright Chromium binary exists without creating or changing rehabilitation work-root files.
 
 `promote` is automatically constrained to `--dry-run`; neither the runner nor compiler has a live-publish command. Use the same `-RuleVersion`, source, and work root for inventory, pilot, run, report, and dry-run promotion. Changing the rule version intentionally creates a new processing identity and requires a new pilot.
 
@@ -103,7 +107,7 @@ First run inventory and the 100-template pilot interactively. Only after the pil
 .\scripts\install-legacy-rehab-task.ps1
 ```
 
-Preview mode does not register anything. To register it deliberately:
+Preview mode does not register anything. The installer first runs the non-mutating preflight against the persisted Windows environment and refuses registration if the scheduled action could not resolve the pinned package manager, compiler CLI, or Chromium. To register it deliberately:
 
 ```powershell
 .\scripts\install-legacy-rehab-task.ps1 -Install
@@ -136,17 +140,19 @@ type CatalogTemplate = {
 
 Every editable text node has a deterministic `data-dc-edit-id`; every image and meaningful CSS background has a deterministic `data-dc-image-id`. Preview, checkout, portal persistence, deployment generation, and later editing target those IDs first. Existing catalogue-v2 drafts remain compatible through original-string/source fallback fields.
 
-“Complete” therefore means more than rendering: each slug must resolve to a passing canonical design or passing alias, and its IDs must survive composition and persistence. Browser QA performs ID-targeted text and theme mutation checks and requires image slots to remain unique, local, and renderable; application tests cover ID-based text/image persistence through preview, checkout, portal storage, and deployment generation. A neutral fallback is also fully ID-editable; it exists to preserve coverage without publishing unsafe or broken legacy content.
+The complete-source census binds 713 stylesheet-background controls and all 55 inline-style backgrounds to one real page element apiece. Another 159 stylesheet backgrounds remain intentionally fixed because their selectors are pseudo/dynamic, multi-target, conflicting, or stale; all 159 are ornamental pattern layers (`pattern.svg` or its local placeholder), and none is photo, editorial, hero, or Unsplash content. Responsive `<img>` and `<source>` elements use one slot per actual element, preserve their original `src`/`srcset` composition, and switch safely to a customer-selected source. The largest emitted page uses 131 of the 250 persisted text-edit slots and 7 of the 50 image slots.
+
+“Complete” therefore means more than rendering: each slug must resolve to a passing canonical design or passing alias, and its IDs must survive composition and persistence. Browser QA performs ID-targeted text and theme mutation checks and requires image slots to remain unique, local, and renderable. The promotion gate then batches a sentinel edit into every advertised text/image slot of every staged page and proves the same payload through the application sanitizer, preview helper, checkout revision pin, portal persistence, deployment generator, and theme mapper. A neutral fallback is also fully ID-editable; it exists to preserve coverage without publishing unsafe or broken legacy content.
 
 ## Model and token policy
 
 Inventory, parsing, repair rules, asset rewriting, rendering, accessibility checks, hashing, and deduplication use zero OpenAI tokens. The normal pipeline is deterministic and can complete with the neutral fallback even when no API key is present.
 
-The isolated cloud-repair module is reserved for unresolved DOM fragments only. The normal CLI commands do not call an external model automatically; enabling that lane requires an explicit operator integration and credential. It is not permission to send whole templates. The module enforces:
+The isolated cloud-repair module is reserved for unresolved DOM fragments only. The normal CLI commands do not call an external model automatically. An operator must explicitly pass `--cloud-repair` to the TypeScript CLI (or `-CloudRepair` to the PowerShell runner) on a `pilot` or `run` invocation and provide `OPENAI_API_KEY` in that process environment. The flag is deliberately absent from the scheduled-task installer, and the credential is never written to command arguments, task definitions, compiler state, or logs. Opting in is not permission to send whole templates. The module enforces:
 
 - model `gpt-5.6-terra` through Responses batch requests;
 - structured JSON patch operations against supplied node IDs;
-- one reusable recipe per matching issue fingerprint;
+- one durable, checksummed recipe per repair-rule version, niche, page role, and matching issue fingerprint; concurrent workers coalesce behind one billable owner and revalidate every target before reuse;
 - no more than two attempts per fragment;
 - no more than 1,000,000 total tokens and no more than $25 accounted spend;
 - deterministic neutral fallback when either ceiling would be crossed.
@@ -177,7 +183,9 @@ Do not launch a second compiler against the same ledger. The scheduled task is c
 
 ## Promotion, publication, and rollback
 
-`promote --dry-run` is a staging validator, not a deployment command. It refuses to proceed unless all 5,486 source templates have terminal passing mappings and receipts, materializes a content-addressed staging mirror, and invokes the existing uploader in dry-run mode. The required result is zero quarantined candidates. No production manifest or blob is changed.
+`promote --dry-run` is a staging validator, not a deployment command. It refuses to proceed unless all 5,486 source templates have terminal passing mappings and receipts, materializes a content-addressed staging mirror, invokes the uploader in dry-run mode, and runs the whole-catalogue customer-customization verifier. The required result is zero quarantined candidates and zero customization diagnostics. No production manifest or blob is changed.
+
+The uploader has a separate, explicit `--rehab-v3-staging` publication profile for the later authorized staging step. It requires the complete explicit promotion root, rejects `--only` and `--force`, and refuses any real write unless `CONTEXT` identifies a non-production deploy. Rehabilitation objects live only in the `templates-rehab-staging` Blob store beneath `catalogs/<catalog-sha256>/`. Every object is read back and its actual bytes are re-hashed; `_catalog-v3.json` and `_manifest.json` are likewise verified before `_active.json` is switched as the final write. The runtime selects that store only from the server-side `DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE=rehab-staging` setting; it rejects that profile in production and never falls back to the launch filesystem, `templates` store, or public HTTP path.
 
 The later, separately authorized launch sequence is:
 

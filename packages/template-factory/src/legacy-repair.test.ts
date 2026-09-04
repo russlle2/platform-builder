@@ -17,6 +17,7 @@ import {
   satisfiesVisualAliasThresholds,
 } from './legacy/dedupe.js';
 import { normalizeFields } from './legacy/contracts.js';
+import { resolveStaticSelectorTargets, type HtmlNode } from './legacy/repair.js';
 
 const SOURCE_HTML = `<!doctype html>
 <html lang="en"><head>
@@ -105,6 +106,30 @@ test('repairs unsafe legacy markup, claims, prices, forms, links, and personaliz
   assert.match(html, /@import url\("\.dc-inline-[a-f0-9]+\.css"\)/);
   assert.ok([...result.files.keys()].some((path) => /^\.dc-inline-[a-f0-9]+\.css$/.test(path)));
   assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
+});
+
+test('removes generated proof regions and tooltip-only badges without deleting benign tooltips', () => {
+  const result = repairLegacyTemplate({
+    slug: 'tooltip-proof-signals',
+    niche: 'aromatherapy',
+    files: new Map([['index.html', `<!doctype html><html><head><title>{{BUSINESS_NAME}}</title></head><body><main>
+      <button data-tip="Local aromatherapy studio, open by appointment">Details</button>
+      <section><h2>Services</h2><p>Original service copy remains.</p>
+        <div class="cred">
+          <div>Proof &amp; Credibility</div>
+          <div class="badge" data-tip="Featured in a lifestyle column"><span>Bloom Journal</span></div>
+          <div class="badge" data-tip="Natural products certification verified by an independent lab"><span>Green Lab</span></div>
+          <div class="badge" data-tip="Local business award for sensory services"><span>Community Picks</span></div>
+        </div>
+      </section>
+      <a href="mailto:{{EMAIL}}">Contact</a>
+    </main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+  assert.match(html, /Original service copy remains/);
+  assert.match(html, /data-tip="Local \{\{BUSINESS_NAME\}\}, open by appointment"/);
+  assert.doesNotMatch(html, /Proof &amp; Credibility|Bloom Journal|Green Lab|Community Picks/i);
+  assert.match(html, /data-dc-safe-replacement="proof"/);
 });
 
 test('preserves a page wrapper while replacing nested proof and normalizing escaped tokens', () => {
@@ -310,6 +335,41 @@ test('normalizes legacy accessibility semantics and root-relative CSS assets', (
   assert.ok(result.transformations.some((item) => item.rule === 'normalize-accessibility-semantics'));
 });
 
+test('repairs unnamed commands, hidden focus, fragment images, and mobile decorative overflow without replacing primary copy', () => {
+  const result = repairLegacyTemplate({
+    slug: 'browser-primary-repairs',
+    niche: 'aromatherapy',
+    files: new Map<string, string | Uint8Array>([
+      ['index.html', `<!doctype html><html><head><title>{{BUSINESS_NAME}}</title></head><body>
+        <a class="brand" href="index.html"><svg aria-hidden="true"><text>{{BUSINESS_NAME}}</text></svg></a>
+        <main><h1>{{BUSINESS_NAME}}</h1><p>This original service introduction is intentionally long enough to remain visible and must survive deterministic browser remediation unchanged.</p>
+        <div id="compSwitchServices" role="button" tabindex="0"><span aria-hidden="true">decorative</span></div>
+        <div id="billingToggle" role="switch" tabindex="0"></div>
+        <section class="signup" aria-hidden="true"><a href="contact.html">Contact the practice</a></section>
+        <img src="#" alt="Editorial placeholder"><picture><source srcset="#"><img src="" alt="Second editorial placeholder"></picture>
+        <a href="mailto:{{EMAIL}}">Email the practice</a></main>
+        <svg class="page-motif" aria-hidden="true" style="position:absolute;left:6%;width:520px"></svg>
+      </body></html>`],
+      ['contact.html', '<!doctype html><html><body><main><h1>Contact {{BUSINESS_NAME}}</h1><p>Contact information and an editable introduction for the practice.</p><a href="mailto:{{EMAIL}}">Email</a></main></body></html>'],
+      ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+    ]),
+  });
+  const html = String(result.files.get('index.html'));
+  assert.match(html, /class="brand"[^>]*aria-label="\{\{BUSINESS_NAME\}\} home"/);
+  assert.match(html, /id="compSwitchServices"[^>]*aria-label="Switch Services"/);
+  assert.match(html, /id="billingToggle"[^>]*aria-label="Billing Toggle"/);
+  assert.match(html, /<section class="signup"><a href="contact\.html"/);
+  assert.doesNotMatch(html, /class="signup"[^>]*aria-hidden/);
+  assert.equal((html.match(/src="assets\/img\/dc-placeholder\.svg"/g) ?? []).length, 2);
+  assert.match(html, /srcset="assets\/img\/dc-placeholder\.svg"/);
+  assert.match(String(result.files.get('assets/css/dc-repair.css')), /body>svg\[aria-hidden\].*max-width:calc\(100vw - 2px\)/);
+  assert.match(html, /original service introduction/);
+  assert.ok(result.issues.some((issue) => issue.code === 'empty-image-reference-repaired' && issue.resolved));
+
+  const replay = repairLegacyTemplate({ slug: result.manifest.legacySlug, niche: result.manifest.niche, files: result.files });
+  assert.equal(replay.files.get('index.html'), result.files.get('index.html'));
+});
+
 test('recovers CSS serialized with literal line-break escapes before theme extraction', () => {
   const result = repairLegacyTemplate({
     slug: 'escaped-css-lines',
@@ -382,6 +442,80 @@ test('emits a reversible design/content/theme composition', () => {
   assert.ok(result.themePreset.tokens.some((token) => token.kind === 'font'));
 });
 
+test('resolves the static selector subset without approximating dynamic targets', () => {
+  const document = parse(`<!doctype html><html><body>
+    <main class="shell"><i class="lead"></i><section class="panel">
+      <div id="target" class="target" data-role="hero featured" lang="en-US" data-key="prefix-NEEDLE-end"></div>
+    </section></main>
+    <i class="anchor"></i><div id="general" class="general"></div>
+  </body></html>`) as unknown as HtmlNode;
+  const ids = (selector: string) => resolveStaticSelectorTargets(document, selector)?.map((node) => node.attrs?.find((attr) => attr.name === 'id')?.value);
+
+  assert.deepEqual(ids('.shell > .lead + .panel .target'), ['target']);
+  assert.deepEqual(ids('.anchor ~ .general'), ['general']);
+  assert.deepEqual(ids('[data-role~="featured"][lang|="en"][data-key^="prefix-"][data-key$="-end"][data-key*="needle" i]'), ['target']);
+  assert.equal(resolveStaticSelectorTargets(document, '.target::before'), undefined);
+  assert.equal(resolveStaticSelectorTargets(document, '.target:hover'), undefined);
+  assert.equal(resolveStaticSelectorTargets(document, '.escaped\\:class'), undefined);
+});
+
+test('advertises only page-scoped CSS backgrounds with one proven DOM target', () => {
+  const css = [
+    '[data-art="attribute"]{background-image:url("https://images.unsplash.com/attribute")}',
+    '.shell > .lead + .panel .target{background:url("https://images.unsplash.com/combinator") center/cover}',
+    '.anchor ~ .general{background-image:url("https://images.unsplash.com/sibling")}',
+    '.pseudo::before{background-image:url("https://images.unsplash.com/pseudo")}',
+    '.repeat{background-image:url("https://images.unsplash.com/repeated")}',
+    '.missing{background-image:url("https://images.unsplash.com/missing")}',
+    '.conflict{background-image:url("https://images.unsplash.com/conflict-one")}',
+    '[data-conflict]{background-image:url("https://images.unsplash.com/conflict-two")}',
+  ].join('\n');
+  const result = repairLegacyTemplate({
+    slug: 'css-background-contract',
+    niche: 'wellness_coach',
+    files: new Map<string, string>([
+      ['index.html', `<!doctype html><html><head><link rel="stylesheet" href="styles.css"></head><body><main>
+        <h1>{{BUSINESS_NAME}}</h1><section data-art="attribute">Attribute artwork</section>
+        <div class="shell"><i class="lead"></i><section class="panel"><div class="target">Combination artwork</div></section></div>
+        <i class="anchor"></i><div class="general">Sibling artwork</div><div class="pseudo">Pseudo artwork</div>
+        <div class="repeat">First repeated target</div><div class="repeat">Second repeated target</div>
+        <div class="conflict" data-conflict>Conflicting artwork</div><a href="mailto:{{EMAIL}}">Contact</a>
+      </main></body></html>`],
+      ['about.html', `<!doctype html><html><head><link rel="stylesheet" href="styles.css"></head><body><main>
+        <h1>About {{BUSINESS_NAME}}</h1><section data-art="attribute">Shared attribute artwork</section>
+        <a href="mailto:{{EMAIL}}">Contact</a>
+      </main></body></html>`],
+      ['styles.css', css],
+      ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+    ]),
+  });
+  const cssImages = result.contentPreset.images.filter((image) => image.attribute === 'css-url');
+  const uniqueSlots = new Set(cssImages.map((image) => image.slotId));
+
+  assert.equal(cssImages.length, 4, JSON.stringify(cssImages, null, 2));
+  assert.equal(uniqueSlots.size, 3);
+  assert.deepEqual(cssImages.filter((image) => image.source.endsWith('/attribute')).map((image) => image.page).sort(), ['about.html', 'index.html']);
+  assert.ok(cssImages.every((image) => image.stylesheet === 'styles.css'));
+  for (const image of cssImages) {
+    const html = String(result.files.get(image.page));
+    assert.equal((html.match(new RegExp(`data-dc-image-id="${image.slotId}"`, 'g')) ?? []).length, 1);
+  }
+
+  const designCss = result.design.styles['styles.css']!;
+  assert.equal((designCss.match(/__DC_IMAGE_css_/g) ?? []).length, 3);
+  assert.match(designCss, /images\.unsplash\.com\/pseudo/);
+  assert.match(designCss, /images\.unsplash\.com\/repeated/);
+  assert.match(designCss, /images\.unsplash\.com\/missing/);
+  assert.match(designCss, /images\.unsplash\.com\/conflict-one/);
+  assert.match(designCss, /images\.unsplash\.com\/conflict-two/);
+  assert.equal(applyThemePreset(result.design.styles, result.themePreset, result.contentPreset.images)['styles.css'], result.files.get('styles.css'));
+  assert.equal(applyContentPreset(result.design.pages, result.contentPreset)['index.html'], result.files.get('index.html'));
+  const binding = result.transformations.find((item) => item.rule === 'bind-css-background-edit-slots');
+  assert.equal(binding?.count, 4);
+  assert.match(binding?.detail ?? '', /editableSlots=3;unsupported=1;multiple=1;conflicts=2;unmatched=1/);
+  assert.equal(result.qualityReceipt.checks.find((check) => check.code === 'stable-image-ids')?.pass, true);
+});
+
 test('applies only stylesheet-local theme variables to avoid quadratic artifact growth', () => {
   const preset = {
     id: 'theme-size-test',
@@ -431,6 +565,33 @@ test('keeps nested image and alt slots independently editable and exactly recomp
   };
   assert.deepEqual(checkCompositionCompatibility(candidate, candidate).issues, []);
   assert.equal(buildDedupeClusters([candidate]).length, 1);
+});
+
+test('uses one real element slot for responsive img and source candidates', () => {
+  const result = repairLegacyTemplate({
+    slug: 'responsive-image-slots',
+    niche: 'wellness_coach',
+    files: new Map<string, string>([
+      ['index.html', `<!doctype html><html><body><main><h1>{{BUSINESS_NAME}}</h1><picture>
+        <source media="(min-width: 50rem)" srcset="https://images.example.test/wide.webp 1x, https://images.example.test/wide-2x.webp 2x">
+        <img src="https://images.example.test/hero.webp" srcset="https://images.example.test/hero.webp 1x, https://images.example.test/hero-2x.webp 2x" alt="A calm workspace">
+      </picture><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`],
+      ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+    ]),
+  });
+  const html = String(result.files.get('index.html'));
+  const elementIds = [...html.matchAll(/<(?:source|img)\b[^>]*data-dc-image-id="([^"]+)"/g)].map((match) => match[1]!);
+  const responsiveImages = result.contentPreset.images.filter((image) => image.page === 'index.html' && image.kind === 'image');
+
+  assert.equal(elementIds.length, 2);
+  assert.equal(new Set(elementIds).size, 2);
+  assert.equal(responsiveImages.length, 2);
+  assert.deepEqual(new Set(responsiveImages.map((image) => image.slotId)), new Set(elementIds));
+  assert.ok(responsiveImages.every((image) => !image.slotId.endsWith('_srcset')));
+  assert.equal(responsiveImages.find((image) => image.attribute === 'srcset')?.source, 'https://images.example.test/wide.webp 1x, https://images.example.test/wide-2x.webp 2x');
+  assert.equal(responsiveImages.find((image) => image.attribute === 'src')?.srcset, 'https://images.example.test/hero.webp 1x, https://images.example.test/hero-2x.webp 2x');
+  assert.equal(applyContentPreset(result.design.pages, result.contentPreset)['index.html'], html);
+  assert.equal(result.qualityReceipt.checks.find((check) => check.code === 'stable-image-ids')?.pass, true);
 });
 
 test('composition compatibility follows editable attributes nested inside a parent content slot', () => {
@@ -517,12 +678,18 @@ test('a later remediation style cannot overwrite an existing externalized styles
   const imports = [...String(second.files.get('index.html')).matchAll(/@import url\("(\.dc-inline-[a-f0-9]+\.css)"\)/g)]
     .map((match) => match[1]!);
 
-  assert.equal(new Set(imports).size, 2);
+  assert.equal(new Set(imports).size, 1);
   assert.ok(imports.includes(originalImport));
   assert.match(String(second.files.get(originalImport)), /\.card\s*\{/);
-  const remediationImport = imports.find((path) => path !== originalImport);
-  assert.ok(remediationImport);
-  assert.match(String(second.files.get(remediationImport)), /\.card\s*\{color:var\(--dc-theme-color_/);
+  assert.match(String(second.files.get('index.html')), /<style id="dc-a11y-contrast-overrides">\.card\{color:#111827!important}<\/style>/);
+  assert.doesNotMatch(String(second.files.get('index.html')), /dc-a11y-contrast-overrides[^<]*@import/i);
+
+  const third = repairLegacyTemplate({
+    slug: second.manifest.legacySlug,
+    niche: second.manifest.niche,
+    files: second.files,
+  });
+  assert.equal(third.files.get('index.html'), second.files.get('index.html'));
 });
 
 test('reconstructs a missing homepage without losing the source page', () => {
@@ -688,8 +855,9 @@ test('irregular near matches stay distinct without strict structural or render e
   files.set('assets/css/styles.css', changedCss);
   const right = repairLegacyTemplate({ slug: 'irregular-b', niche: 'wellness_coach', files });
   assert.equal(canAliasDesigns(left.fingerprint, right.fingerprint).alias, false);
-  assert.equal(satisfiesVisualAliasThresholds({ domSimilarity: 0.98, desktopSsim: 0.995, mobileSsim: 0.995, desktopPerceptualHashDistance: 4, mobilePerceptualHashDistance: 4 }), true);
-  assert.equal(satisfiesVisualAliasThresholds({ domSimilarity: 0.979, desktopSsim: 1, mobileSsim: 1, desktopPerceptualHashDistance: 0, mobilePerceptualHashDistance: 0 }), false);
+  const pageEvidence = [{ page: 'index.html', desktopSsim: 0.995, mobileSsim: 0.995, desktopPerceptualHashDistance: 4, mobilePerceptualHashDistance: 4 }];
+  assert.equal(satisfiesVisualAliasThresholds({ domSimilarity: 0.98, desktopSsim: 0.995, mobileSsim: 0.995, desktopPerceptualHashDistance: 4, mobilePerceptualHashDistance: 4, pages: pageEvidence }), true);
+  assert.equal(satisfiesVisualAliasThresholds({ domSimilarity: 0.979, desktopSsim: 1, mobileSsim: 1, desktopPerceptualHashDistance: 0, mobilePerceptualHashDistance: 0, pages: pageEvidence }), false);
   assert.equal(domSimilarity('<main><h1>A</h1><p>B</p></main>', '<main><h1>Different</h1><p>Copy</p></main>'), 1);
 });
 

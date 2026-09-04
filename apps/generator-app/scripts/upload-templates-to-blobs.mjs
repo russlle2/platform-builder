@@ -4,7 +4,9 @@
  *
  * Walks ../../platform-builder/<niche>/<slug>/ directories and uploads every
  * template file to the Netlify Blobs "templates" store, keyed as
- * "<niche>/<slug>/<filename>". Also builds and uploads the manifest JSON.
+ * "<niche>/<slug>/<filename>". The explicit rehabilitation profile instead
+ * uses the isolated "templates-rehab-staging" store and hash-prefixed keys.
+ * Also builds and uploads the manifest JSON.
  *
  * Designed to run in GitHub Actions where platform-builder/ is checked out.
  * Auth is read from NETLIFY_AUTH_TOKEN + NETLIFY_SITE_ID env vars.
@@ -77,6 +79,49 @@ function loadLaunchCatalogContract() {
 }
 
 export const LAUNCH_CATALOG_CONTRACT = loadLaunchCatalogContract()
+
+function loadRehabCatalogContract() {
+  const contractPath = path.join(
+    APP_ROOT,
+    'src',
+    'lib',
+    'templates',
+    'rehab-catalog-contract.json',
+  )
+  const parsed = JSON.parse(readFileSync(contractPath, 'utf-8'))
+  if (
+    parsed?.contractVersion !== 3 ||
+    !Number.isInteger(parsed.totalTemplates) ||
+    parsed.totalTemplates < 1 ||
+    !parsed.templatesByNiche ||
+    typeof parsed.templatesByNiche !== 'object' ||
+    Array.isArray(parsed.templatesByNiche)
+  ) {
+    throw new Error('Rehabilitation catalogue contract is malformed')
+  }
+  const templatesByNiche = {}
+  for (const [slug, count] of Object.entries(parsed.templatesByNiche)) {
+    if (!/^[a-z_][a-z0-9_]*$/.test(slug) || !Number.isInteger(count) || count < 1) {
+      throw new Error(`Rehabilitation catalogue contract has an invalid niche entry: ${slug}`)
+    }
+    templatesByNiche[slug] = count
+  }
+  const calculatedTotal = Object.values(templatesByNiche).reduce((sum, count) => sum + count, 0)
+  if (calculatedTotal !== parsed.totalTemplates) {
+    throw new Error(
+      `Rehabilitation catalogue contract totals ${calculatedTotal} templates, not ${parsed.totalTemplates}`,
+    )
+  }
+  return Object.freeze({
+    contractVersion: 3,
+    totalTemplates: parsed.totalTemplates,
+    templatesByNiche: Object.freeze(templatesByNiche),
+  })
+}
+
+export const REHAB_STAGING_CATALOG_CONTRACT = loadRehabCatalogContract()
+export const REHAB_STAGING_STORE_NAME = 'templates-rehab-staging'
+export const REHAB_STAGING_ACTIVE_KEY = '_active.json'
 
 const SUPPORTED_CATALOG_CONTRACT_VERSIONS = new Set([2, 3])
 const SHA256_RE = /^[a-f0-9]{64}$/
@@ -203,13 +248,22 @@ export function normalizeOnlySelector(rawSelector) {
 }
 
 export function parseUploadArgs(argv) {
-  const options = { force: false, dryRun: false, only: [], root: undefined, help: false }
+  const options = {
+    force: false,
+    dryRun: false,
+    rehabV3Staging: false,
+    only: [],
+    root: undefined,
+    help: false,
+  }
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i]
     if (arg === '--force') {
       options.force = true
     } else if (arg === '--dry-run') {
       options.dryRun = true
+    } else if (arg === '--rehab-v3-staging') {
+      options.rehabV3Staging = true
     } else if (arg === '--help' || arg === '-h') {
       options.help = true
     } else if (arg === '--only') {
@@ -231,6 +285,15 @@ export function parseUploadArgs(argv) {
     }
   }
   options.only = [...new Set(options.only)]
+  if (options.rehabV3Staging && !options.root) {
+    throw new Error('--rehab-v3-staging requires an explicit --root directory')
+  }
+  if (options.rehabV3Staging && options.only.length > 0) {
+    throw new Error('--rehab-v3-staging requires a complete catalogue and cannot be combined with --only')
+  }
+  if (options.rehabV3Staging && options.force) {
+    throw new Error('--rehab-v3-staging uses immutable catalog-hash paths and cannot be combined with --force')
+  }
   return options
 }
 
@@ -257,9 +320,11 @@ const INTAKE_TOKENS = new Set([
   'CTA_LABEL', 'PRIMARY_CTA_LABEL',
 ])
 const PERSONAL_DATA_PATTERNS = [
-  ['placeholder email', /\bhello@example\.com\b/i],
-  ['placeholder practitioner name', /\bDr\.\s+Morgan\s+Ellis\b/i],
-  ['placeholder phone', /\(?555\)?[\s.-]*555[\s.-]*0100\b/i],
+  ['placeholder email', /\b[A-Z0-9._%+-]+@(?:example\.(?:com|net|org)|example\.test)\b/i],
+  ['placeholder practitioner name', /\b(?:Dr\.\s+Morgan\s+Ellis|Jane\s+Doe|John\s+Doe)\b/i],
+  ['placeholder phone', /\(?\d{3}\)?[\s.-]*555[\s.-]*01\d{2}\b/i],
+  ['placeholder street address', /\b(?:Your Address|123 Main (?:St(?:reet)?|Road|Rd\.?))\b/i],
+  ['placeholder locality', /\bAnytown\b/i],
   ['placeholder city', /\bYour City\b/i],
   ['placeholder state', /\bYour State\b/i],
   [
@@ -270,13 +335,15 @@ const PERSONAL_DATA_PATTERNS = [
 const PUBLICATION_RISK_PATTERNS = [
   [
     'unverified testimonial or review content',
-    /\btestimonials?\b|\bclient (?:success )?stor(?:y|ies)\b|\bwhat (?:our )?(?:clients?|patients?) (?:say|share)\b|\bvoices? from (?:the )?(?:cohort|community|clients?)\b|class\s*=\s*["'][^"']*\b(?:testimonial|review|quote)\b/i,
+    /\b(?:proof\s*(?:&|and)\s*credibility|testimonials?|client (?:success )?stor(?:y|ies)|patient stor(?:y|ies)|(?:real )?client note|what (?:our )?(?:clients?|patients?) (?:say|share)|voices? from (?:the )?(?:cohort|community|clients?)|trusted by|featured in|real results|success stories)\b|\b(?:class|id|data-[\w-]+)\s*=\s*["'][^"']*(?:testimonials?|reviews?|quote|social[-_]?proof|success[-_]?stor(?:y|ies))[^"']*["']/i,
   ],
-  ['hard-coded offer price', />\s*[^<]{0,120}\$\s*\d/i],
-  ['unverified percentage result', />\s*[^<]{0,120}\b\d{1,3}(?:\.\d+)?%\b/i],
-  ['guaranteed outcome claim', /\bguaranteed?\s+(?:results?|outcomes?|bookings?|revenue|growth|healing)\b/i],
+  ['hard-coded offer price', /(?:[$£€]\s*\d[\d,.]*(?:\s*(?:USD|EUR|GBP))?|\b\d[\d,.]*\s*(?:USD|EUR|GBP)\b)/i],
+  ['unverified percentage result', /\b\d{1,3}(?:\.\d+)?%\s+(?:improvement|better|reduction|relief|success|results?)\b/i],
+  ['unsupported outcome claim', /\b(?:guarantee(?:d|s)?|promise[sd]?)\s+(?:results?|outcomes?|bookings?|revenue|growth|healing|relief)|\b(?:cure|heal|reverse|eliminate|prevent|treat)(?:s|ed|ing)?\s+(?:anxiety|depression|disease|illness|pain|symptoms?|trauma|insomnia|headaches?|stress|medical conditions?)\b/i],
+  ['unsupported absolute efficacy claim', /\b(?:(?:clinically|scientifically) proven|(?:instant|permanent) (?:relief|results?)|(?:works?|effective) (?:every time|for everyone))\b/i],
+  ['unverified credential or recognition claim', /\b(?:independently verified|member[- ]rated|peer[- ]reviewed|featured (?:by|in)|award(?:ed|-winning)?|accredited|recognized by|certified by)\b/i],
 ]
-const SENSITIVE_FORM_RE = /\b(?:allerg(?:y|ies|ic)|pregnan(?:t|cy)|medications?|diagnos(?:is|ed|tic)|medical history|mental[- ]health history|symptoms?|health conditions?)\b/i
+const SENSITIVE_FORM_RE = /\b(?:allerg(?:y|ies|ic)|pregnan(?:t|cy)|medications?|diagnos(?:is|ed|tic)|medical history|mental[- ]health history|symptoms?|health conditions?|suicid(?:e|al)|trauma history)\b/i
 const LITERAL_EMAIL_RE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/i
 const LITERAL_PHONE_RE = /(?:^|[^\w])(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}(?:\s*(?:x|ext\.?)[\s\d]+)?(?:$|[^\w])/i
 const DEPLOYABLE_EXTENSIONS = new Set([
@@ -398,6 +465,7 @@ function printHelp() {
 
 Options:
   --dry-run                    Validate and print the upload plan; never writes
+  --rehab-v3-staging           Use the isolated rehabilitation staging store and active pointer
   --only <niche[/slug]>         Restrict by niche or complete template; repeatable
   --root <directory>            Read a specific local template-library root
   --force                      Overwrite selected objects already in Blobs
@@ -409,7 +477,9 @@ Examples:
 
 Partial uploads merge into the last validated remote manifest. A selected
 template is always uploaded as a complete directory. Existing objects are
-skipped only when their recorded SHA-256 matches the local file.`)
+skipped only when their recorded SHA-256 matches the local file.
+Rehabilitation staging requires a complete explicit root, forbids --only and
+--force, and permits writes only in an explicit non-production context.`)
 }
 
 // ---------- field parsing (mirrors build-template-manifest.mjs) ----------
@@ -985,12 +1055,89 @@ export function reconcileCatalogV3Manifest(manifest, catalog) {
   return { pass: true, errors: [], manifest: reconciled }
 }
 
-function applyCatalogV3DocumentFromRoot(root, manifest) {
+/**
+ * Validate a rehabilitation staging catalogue without weakening the immutable
+ * 60-template launch contract used by every normal dry-run and real upload.
+ */
+export function validateRehabV3StagingCatalogManifest(manifest, catalog) {
+  const reconciliation = reconcileCatalogV3Manifest(manifest, catalog)
+  const errors = [...reconciliation.errors]
+  const countsByNiche = {}
+  let totalTemplates = 0
+  const reconciledManifest = reconciliation.manifest || manifest
+
+  if (!reconciledManifest || typeof reconciledManifest !== 'object' || Array.isArray(reconciledManifest)) {
+    errors.push('rehabilitation staging manifest is missing or malformed')
+  } else {
+    for (const [niche, expected] of Object.entries(REHAB_STAGING_CATALOG_CONTRACT.templatesByNiche)) {
+      const templates = reconciledManifest[niche]
+      if (!Array.isArray(templates)) {
+        errors.push(`rehabilitation staging ${niche}: manifest entry is malformed`)
+        countsByNiche[niche] = 0
+        continue
+      }
+      countsByNiche[niche] = templates.length
+      totalTemplates += templates.length
+      if (templates.length !== expected) {
+        errors.push(`rehabilitation staging ${niche}: expected ${expected}, found ${templates.length}`)
+      }
+      templates.forEach((template, index) => {
+        if (template?.validation?.contractVersion !== 3 || !hasValidationStamp(template)) {
+          errors.push(`rehabilitation staging ${niche}[${index}]: a complete v3 validation stamp is required`)
+        }
+        if (
+          template?.slug !== template?.legacySlug ||
+          template?.nicheSlug !== niche ||
+          template?.dir !== `${niche}/${template?.legacySlug}`
+        ) {
+          errors.push(`rehabilitation staging ${niche}[${index}]: runtime slug/directory identity is invalid`)
+        }
+      })
+    }
+    for (const niche of Object.keys(reconciledManifest)) {
+      if (!Object.hasOwn(REHAB_STAGING_CATALOG_CONTRACT.templatesByNiche, niche)) {
+        errors.push(`rehabilitation staging ${niche}: unexpected niche`)
+        const templates = reconciledManifest[niche]
+        countsByNiche[niche] = Array.isArray(templates) ? templates.length : 0
+        totalTemplates += countsByNiche[niche]
+      }
+    }
+  }
+
+  if (totalTemplates !== REHAB_STAGING_CATALOG_CONTRACT.totalTemplates) {
+    errors.push(
+      `rehabilitation staging total is invalid: ` +
+      `expected=${REHAB_STAGING_CATALOG_CONTRACT.totalTemplates} local=${totalTemplates}`,
+    )
+  }
+  if (catalog?.sourceTemplates !== totalTemplates) {
+    errors.push(
+      `rehabilitation staging source count is invalid: ` +
+      `declared=${String(catalog?.sourceTemplates)} local=${totalTemplates}`,
+    )
+  }
+  if (catalog?.sourceTemplates !== REHAB_STAGING_CATALOG_CONTRACT.totalTemplates) {
+    errors.push(
+      `rehabilitation staging authoritative source count is invalid: ` +
+      `expected=${REHAB_STAGING_CATALOG_CONTRACT.totalTemplates} declared=${String(catalog?.sourceTemplates)}`,
+    )
+  }
+
+  return {
+    pass: errors.length === 0,
+    errors,
+    manifest: errors.length === 0 ? reconciliation.manifest : null,
+    totalTemplates,
+    countsByNiche,
+  }
+}
+
+function applyCatalogV3DocumentFromRoot(root, manifest, { rehabV3Staging = false } = {}) {
   const hasV3Templates = Object.values(manifest).some(
     (templates) => templates.some((template) => template.validation?.contractVersion === 3),
   )
   const catalogPath = path.join(root, '_catalog-v3.json')
-  if (!hasV3Templates && !existsSync(catalogPath)) return manifest
+  if (!hasV3Templates && !existsSync(catalogPath) && !rehabV3Staging) return manifest
   if (!existsSync(catalogPath)) {
     throw new Error('Catalog v3 templates require the authoritative _catalog-v3.json document')
   }
@@ -1001,7 +1148,9 @@ function applyCatalogV3DocumentFromRoot(root, manifest) {
   } catch {
     throw new Error('Authoritative _catalog-v3.json is malformed')
   }
-  const result = reconcileCatalogV3Manifest(manifest, catalog)
+  const result = rehabV3Staging
+    ? validateRehabV3StagingCatalogManifest(manifest, catalog)
+    : reconcileCatalogV3Manifest(manifest, catalog)
   if (!result.pass) {
     throw new Error(`Authoritative _catalog-v3.json failed validation:\n  - ${result.errors.join('\n  - ')}`)
   }
@@ -1241,8 +1390,220 @@ export function uploadMetadataForFile(key, sha256, manifest) {
 export function hasMatchingUploadMetadata(remote, expected) {
   return Boolean(
     remote?.metadata?.sha256 === expected.sha256 &&
-    remote.metadata.contractVersion === expected.contractVersion,
+    remote.metadata.contractVersion === expected.contractVersion &&
+    (expected.catalogHash === undefined || remote.metadata.catalogHash === expected.catalogHash),
   )
+}
+
+export function assertRehabStagingUploadEnvironment(env) {
+  const context = String(env.CONTEXT || env.NETLIFY_CONTEXT || '').trim().toLowerCase()
+  if (context === 'production' || context === 'prod') {
+    throw new Error('Rehabilitation staging publication is forbidden in production context')
+  }
+  if (!['deploy-preview', 'branch-deploy', 'dev', 'development', 'test'].includes(context)) {
+    throw new Error(
+      'Rehabilitation staging publication requires an explicit non-production CONTEXT ' +
+      '(deploy-preview, branch-deploy, dev, development, or test)',
+    )
+  }
+  return context
+}
+
+export function rehabStagingCatalogPrefix(catalogHash) {
+  if (!SHA256_RE.test(catalogHash)) {
+    throw new Error('Rehabilitation catalogue hash must be a lowercase SHA-256 digest')
+  }
+  return `catalogs/${catalogHash}`
+}
+
+export function createRehabStagingActivePointer({ catalogHash, manifestHash, activatedAt = new Date().toISOString() }) {
+  if (!SHA256_RE.test(catalogHash) || !SHA256_RE.test(manifestHash)) {
+    throw new Error('Rehabilitation active pointer requires valid catalogue and manifest hashes')
+  }
+  if (!Number.isFinite(Date.parse(activatedAt))) {
+    throw new Error('Rehabilitation active pointer activation time is invalid')
+  }
+  const prefix = rehabStagingCatalogPrefix(catalogHash)
+  return {
+    version: 1,
+    profile: 'rehab-staging',
+    catalogHash,
+    catalogKey: `${prefix}/_catalog-v3.json`,
+    manifestHash,
+    manifestKey: `${prefix}/_manifest.json`,
+    sourceTemplates: REHAB_STAGING_CATALOG_CONTRACT.totalTemplates,
+    activatedAt,
+  }
+}
+
+export function verifyRehabStagingActivePointer(expected, actual) {
+  const errors = []
+  if (!actual || typeof actual !== 'object' || Array.isArray(actual)) {
+    errors.push('active pointer readback is missing or malformed')
+  } else {
+    for (const field of [
+      'version', 'profile', 'catalogHash', 'catalogKey', 'manifestHash',
+      'manifestKey', 'sourceTemplates', 'activatedAt',
+    ]) {
+      if (actual[field] !== expected[field]) errors.push(`active pointer readback differs at ${field}`)
+    }
+  }
+  return { pass: errors.length === 0, errors }
+}
+
+function rehabManifestFileKeys(manifest) {
+  const keys = new Set()
+  for (const templates of Object.values(manifest)) {
+    for (const template of templates) {
+      for (const file of template.files) {
+        const key = `${template.dir}/${file}`
+        if (keys.has(key)) throw new Error(`Rehabilitation staging manifest repeats file ${key}`)
+        keys.add(key)
+      }
+    }
+  }
+  return keys
+}
+
+function bytesFromStoreValue(value) {
+  if (typeof value === 'string') return Buffer.from(value)
+  if (value instanceof ArrayBuffer) return Buffer.from(value)
+  if (ArrayBuffer.isView(value)) return Buffer.from(value.buffer, value.byteOffset, value.byteLength)
+  return null
+}
+
+/**
+ * Publish one immutable rehabilitation snapshot. All template objects and both
+ * hash-bound catalogue documents are written and read back before `_active.json`
+ * is switched. The supplied store must be the dedicated staging store.
+ */
+export async function publishRehabStagingCatalog({
+  store,
+  files,
+  manifest,
+  catalogBytes,
+  activatedAt,
+  onProgress = () => {},
+}) {
+  const rawCatalog = Buffer.from(catalogBytes)
+  let catalog
+  try {
+    catalog = JSON.parse(rawCatalog.toString('utf8'))
+  } catch {
+    throw new Error('Authoritative rehabilitation catalogue is malformed JSON')
+  }
+  const validation = validateRehabV3StagingCatalogManifest(manifest, catalog)
+  if (!validation.pass) {
+    throw new Error(`Rehabilitation staging publish plan failed validation:\n  - ${validation.errors.join('\n  - ')}`)
+  }
+
+  const expectedFiles = rehabManifestFileKeys(manifest)
+  const suppliedByKey = new Map()
+  for (const file of files) {
+    if (!file || typeof file.key !== 'string' || typeof file.read !== 'function') {
+      throw new Error('Rehabilitation staging upload contains a malformed file record')
+    }
+    if (suppliedByKey.has(file.key)) throw new Error(`Rehabilitation staging upload repeats ${file.key}`)
+    suppliedByKey.set(file.key, file)
+  }
+  const missing = [...expectedFiles].filter((key) => !suppliedByKey.has(key))
+  const extra = [...suppliedByKey.keys()].filter((key) => !expectedFiles.has(key))
+  if (missing.length || extra.length) {
+    throw new Error(
+      `Rehabilitation staging file set differs from the manifest ` +
+      `(missing=${missing.slice(0, 5).join(',') || 'none'}; extra=${extra.slice(0, 5).join(',') || 'none'})`,
+    )
+  }
+
+  const catalogHash = createHash('sha256').update(rawCatalog).digest('hex')
+  const prefix = rehabStagingCatalogPrefix(catalogHash)
+  const manifestHash = manifestDigest(manifest)
+  let uploaded = 0
+  let skipped = 0
+  let processed = 0
+
+  for (const key of [...expectedFiles].sort()) {
+    const file = suppliedByKey.get(key)
+    const content = Buffer.from(await file.read())
+    const sha256 = createHash('sha256').update(content).digest('hex')
+    const metadata = { ...uploadMetadataForFile(key, sha256, manifest), catalogHash }
+    const objectKey = `${prefix}/${key}`
+    const existing = await store.getMetadata(objectKey)
+    if (existing) {
+      if (!hasMatchingUploadMetadata(existing, metadata)) {
+        throw new Error(`Immutable rehabilitation object has conflicting metadata: ${objectKey}`)
+      }
+      skipped += 1
+    } else {
+      await store.set(objectKey, content, { metadata })
+      uploaded += 1
+    }
+    const readback = await store.getMetadata(objectKey)
+    if (!hasMatchingUploadMetadata(readback, metadata)) {
+      throw new Error(`Rehabilitation object metadata readback failed: ${objectKey}`)
+    }
+    const contentReadback = bytesFromStoreValue(await store.get(objectKey, { type: 'arrayBuffer' }))
+    if (
+      !contentReadback
+      || createHash('sha256').update(contentReadback).digest('hex') !== sha256
+    ) {
+      throw new Error(`Rehabilitation object content readback failed: ${objectKey}`)
+    }
+    processed += 1
+    onProgress({ processed, total: expectedFiles.size, uploaded, skipped, key: objectKey })
+  }
+
+  const catalogKey = `${prefix}/_catalog-v3.json`
+  const priorCatalog = bytesFromStoreValue(await store.get(catalogKey))
+  if (priorCatalog && createHash('sha256').update(priorCatalog).digest('hex') !== catalogHash) {
+    throw new Error(`Immutable rehabilitation catalogue object conflicts at ${catalogKey}`)
+  }
+  if (!priorCatalog) {
+    await store.set(catalogKey, rawCatalog, {
+      metadata: { sha256: catalogHash, catalogHash, contractVersion: 3 },
+    })
+  }
+  const catalogReadback = bytesFromStoreValue(await store.get(catalogKey))
+  if (!catalogReadback || createHash('sha256').update(catalogReadback).digest('hex') !== catalogHash) {
+    throw new Error('Rehabilitation catalogue readback hash is invalid')
+  }
+
+  const manifestKey = `${prefix}/_manifest.json`
+  const priorManifest = await store.get(manifestKey, { type: 'json' })
+  if (priorManifest && manifestDigest(priorManifest) !== manifestHash) {
+    throw new Error(`Immutable rehabilitation manifest object conflicts at ${manifestKey}`)
+  }
+  if (!priorManifest) await store.setJSON(manifestKey, manifest)
+  const manifestReadback = await store.get(manifestKey, { type: 'json' })
+  const readbackValidation = validateRehabV3StagingCatalogManifest(manifestReadback, catalog)
+  const manifestReadbackErrors = [...readbackValidation.errors]
+  if (manifestDigest(manifestReadback) !== manifestHash) manifestReadbackErrors.push('manifest digest mismatch')
+  if (manifestReadbackErrors.length > 0) {
+    throw new Error(
+      `Rehabilitation manifest readback verification failed:\n  - ` +
+      `${manifestReadbackErrors.join('\n  - ')}`,
+    )
+  }
+
+  const pointer = createRehabStagingActivePointer({ catalogHash, manifestHash, activatedAt })
+  // This is the only mutable write and must remain the final operation.
+  await store.setJSON(REHAB_STAGING_ACTIVE_KEY, pointer)
+  const pointerReadback = await store.get(REHAB_STAGING_ACTIVE_KEY, { type: 'json' })
+  const pointerVerification = verifyRehabStagingActivePointer(pointer, pointerReadback)
+  if (!pointerVerification.pass) {
+    throw new Error(`Rehabilitation active pointer readback failed:\n  - ${pointerVerification.errors.join('\n  - ')}`)
+  }
+
+  return {
+    catalogHash,
+    manifestHash,
+    prefix,
+    pointer,
+    uploaded,
+    skipped,
+    files: expectedFiles.size,
+    sourceTemplates: validation.totalTemplates,
+  }
 }
 
 function validateSelectedTemplates(files) {
@@ -1278,7 +1639,7 @@ function validateSelectedTemplates(files) {
   return templateKeys.size
 }
 
-export async function main(argv = process.argv.slice(2), env = process.env) {
+export async function main(argv = process.argv.slice(2), env = process.env, dependencies = {}) {
   const options = parseUploadArgs(argv)
   if (options.help) {
     printHelp()
@@ -1326,12 +1687,30 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     console.warn(`[upload-templates] Quarantined templates:\n  - ${preview}${suffix}`)
   }
 
-  manifest = applyCatalogV3DocumentFromRoot(PLATFORM_BUILDER_ROOT, manifest)
-  const localCatalogIntegrity = assertLaunchCatalogManifest(manifest, 'Local validated catalog')
-  console.log(
-    `[upload-templates] Launch inventory verified: ${localCatalogIntegrity.totalTemplates} templates ` +
-    `across ${Object.keys(localCatalogIntegrity.countsByNiche).length} niches.`,
-  )
+  if (options.rehabV3Staging && rejectedTemplates.length > 0) {
+    throw new Error(
+      `Rehabilitation staging validation requires zero quarantined templates; found ${rejectedTemplates.length}`,
+    )
+  }
+  manifest = applyCatalogV3DocumentFromRoot(PLATFORM_BUILDER_ROOT, manifest, {
+    rehabV3Staging: options.rehabV3Staging,
+  })
+  if (options.rehabV3Staging) {
+    const stagingCounts = Object.fromEntries(
+      Object.entries(manifest).map(([niche, templates]) => [niche, templates.length]),
+    )
+    const stagingTotal = Object.values(stagingCounts).reduce((sum, count) => sum + count, 0)
+    console.log(
+      `[upload-templates] Rehabilitation staging inventory verified: ${stagingTotal} v3 templates ` +
+      `across ${Object.values(stagingCounts).filter((count) => count > 0).length} populated niches.`,
+    )
+  } else {
+    const localCatalogIntegrity = assertLaunchCatalogManifest(manifest, 'Local validated catalog')
+    console.log(
+      `[upload-templates] Launch inventory verified: ${localCatalogIntegrity.totalTemplates} templates ` +
+      `across ${Object.keys(localCatalogIntegrity.countsByNiche).length} niches.`,
+    )
+  }
 
   const selectedNiches = options.only.length > 0
     ? new Set(options.only.map((selector) => selector.split('/')[0]))
@@ -1361,7 +1740,11 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     throw new Error(`--only selector matched no publishable templates: ${unmatchedSelectors.join(', ')}`)
   }
 
-  const files = publishableFiles.filter(({ key }) => matchesOnlySelector(key, options.only))
+  const selectedFiles = publishableFiles.filter(({ key }) => matchesOnlySelector(key, options.only))
+  const stagingExpectedFiles = options.rehabV3Staging ? rehabManifestFileKeys(manifest) : null
+  const files = stagingExpectedFiles
+    ? selectedFiles.filter(({ key }) => stagingExpectedFiles.has(key))
+    : selectedFiles
   if (files.length === 0) throw new Error('No template files matched the upload plan')
 
   const validatedTemplates = validateSelectedTemplates(files)
@@ -1379,11 +1762,52 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     return { dryRun: true, files: files.length, bytes: totalBytes, totalTemplates }
   }
 
+  if (options.rehabV3Staging) assertRehabStagingUploadEnvironment(env)
   if (!env.NETLIFY_AUTH_TOKEN || !env.NETLIFY_SITE_ID) {
     throw new Error('NETLIFY_AUTH_TOKEN and NETLIFY_SITE_ID must be set for a real upload')
   }
 
-  const store = getStore({
+  const getStoreImplementation = dependencies.getStore || getStore
+  if (options.rehabV3Staging) {
+    const store = getStoreImplementation({
+      name: REHAB_STAGING_STORE_NAME,
+      consistency: 'strong',
+      siteID: env.NETLIFY_SITE_ID,
+      token: env.NETLIFY_AUTH_TOKEN,
+    })
+    const catalogBytes = await fsp.readFile(path.join(PLATFORM_BUILDER_ROOT, '_catalog-v3.json'))
+    const result = await publishRehabStagingCatalog({
+      store,
+      files: files.map(({ full, key }) => ({ key, read: () => fsp.readFile(full) })),
+      manifest,
+      catalogBytes,
+      onProgress: ({ processed, total, uploaded, skipped }) => {
+        if (processed % 100 === 0 || processed === total) {
+          console.log(
+            `[upload-templates] Rehabilitation staging progress: ${processed} / ${total} ` +
+            `(uploaded=${uploaded} skipped=${skipped})`,
+          )
+        }
+      },
+    })
+    console.log(
+      `[upload-templates] Rehabilitation staging active pointer switched last ` +
+      `(catalog=${result.catalogHash} templates=${result.sourceTemplates}).`,
+    )
+    return {
+      dryRun: false,
+      files: result.files,
+      bytes: totalBytes,
+      totalTemplates,
+      uploaded: result.uploaded,
+      skipped: result.skipped,
+      catalogHash: result.catalogHash,
+      manifestHash: result.manifestHash,
+      storeName: REHAB_STAGING_STORE_NAME,
+    }
+  }
+
+  const store = getStoreImplementation({
     name: 'templates',
     consistency: 'strong',
     siteID: env.NETLIFY_SITE_ID,

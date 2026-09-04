@@ -7,7 +7,7 @@ export interface CatalogRevisionPin {
   qualityReceipt: string
 }
 
-interface CatalogRevisionSource {
+export interface CatalogRevisionSource {
   validation?: { contractVersion?: number } | null
   designId?: unknown
   contentPresetId?: unknown

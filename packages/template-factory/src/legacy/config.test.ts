@@ -22,6 +22,8 @@ test('config keeps durable output separate from the immutable source', async () 
 
     assert.equal(config.aiDollarCapUsd, 25);
     assert.equal(config.aiTokenCap, 1_000_000);
+    assert.equal(config.cloudRepair, false);
+    assert.equal(resolveLegacyConfig({ cwd: scratch, sourceRoot, workRoot, cloudRepair: true }).cloudRepair, true);
     assert.throws(
       () => resolveLegacyConfig({ cwd: scratch, sourceRoot, workRoot, pilotSize: 99 }),
       /pilotSize must be at least 100/,

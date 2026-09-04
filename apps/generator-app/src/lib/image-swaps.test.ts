@@ -130,6 +130,34 @@ describe('image swap safety', () => {
       '<section style="background-image:url(/assets/hero.jpg);background-image:url(https://cdn.example/hero.webp)!important" data-dc-image-id="legacy-hero"></section>',
     )
   })
+
+  it('applies compiler CSS-background slots through the shared preview/deploy helper', () => {
+    const slotId = 'css_0123456789abcdefab'
+    const result = applyImageSwapsToHtmlWithReport(
+      `<section class="hero" data-dc-image-id="${slotId}"></section>`,
+      [{ slotId, updated: 'https://cdn.example/customer-hero.webp' }],
+      'index.html',
+    )
+
+    expect(result.unmatchedSlotIds).toEqual([])
+    expect(result.html).toContain('style="background-image:url(https://cdn.example/customer-hero.webp)!important"')
+    expect(result.html).toContain(`data-dc-image-id="${slotId}"`)
+  })
+
+  it('targets responsive img and source elements by their real element slot', () => {
+    const img = applyImageSwapsToHtml(
+      '<img data-dc-image-id="img_responsive" src="old.webp" srcset="old.webp 1x, old-2x.webp 2x">',
+      [{ slotId: 'img_responsive', updated: 'https://cdn.example/new.webp' }],
+    )
+    expect(img).toBe('<img src="https://cdn.example/new.webp" data-dc-image-id="img_responsive">')
+
+    const source = applyImageSwapsToHtmlWithReport(
+      '<source data-dc-image-id="source_responsive" media="(min-width: 50rem)" srcset="wide.webp 1x, wide-2x.webp 2x">',
+      [{ slotId: 'source_responsive', updated: 'https://cdn.example/new-wide.webp' }],
+    )
+    expect(source.unmatchedSlotIds).toEqual([])
+    expect(source.html).toBe('<source media="(min-width: 50rem)" srcset="https://cdn.example/new-wide.webp" data-dc-image-id="source_responsive">')
+  })
 })
 
 describe('scoped image swap persistence', () => {

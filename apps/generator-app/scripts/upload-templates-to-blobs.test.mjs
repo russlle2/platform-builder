@@ -6,15 +6,22 @@ import path from 'node:path'
 import test from 'node:test'
 import {
   LAUNCH_CATALOG_CONTRACT,
+  REHAB_STAGING_ACTIVE_KEY,
+  REHAB_STAGING_CATALOG_CONTRACT,
+  REHAB_STAGING_STORE_NAME,
+  assertRehabStagingUploadEnvironment,
   hasMatchingUploadMetadata,
+  main,
   manifestDigest,
   matchesOnlySelector,
   mergeValidatedManifest,
   normalizeOnlySelector,
   parseUploadArgs,
+  publishRehabStagingCatalog,
   reconcileCatalogV3Manifest,
   uploadMetadataForFile,
   validateLaunchCatalogManifest,
+  validateRehabV3StagingCatalogManifest,
   validateUploadContract,
   validateV3QualityReceipt,
   verifyPublishedManifest,
@@ -186,6 +193,210 @@ function v3ManifestEntry(niche, slug, overrides = {}) {
   }
 }
 
+function completeRehabPublishPlan() {
+  const manifest = {}
+  const mappings = []
+  const gallery = {}
+  const files = []
+  for (const [niche, count] of Object.entries(REHAB_STAGING_CATALOG_CONTRACT.templatesByNiche)) {
+    manifest[niche] = []
+    gallery[niche] = []
+    for (let index = 0; index < count; index++) {
+      const slug = `${niche}-${String(index).padStart(4, '0')}`
+      const mapping = {
+        legacySlug: slug,
+        niche,
+        designId: `design_${slug}`,
+        contentPresetId: `content_${slug}`,
+        themePresetId: `theme_${slug}`,
+        qualityReceipt: `receipt_${slug}`,
+        canonicalLegacySlug: slug,
+        disposition: 'canonical',
+      }
+      const key = `${niche}/${slug}/index.html`
+      manifest[niche].push({
+        ...v3ManifestEntry(niche, slug),
+        ...mapping,
+        pages: ['index.html'],
+        files: ['index.html'],
+        fields: [{ name: 'BUSINESS_NAME', label: 'Business name', type: 'text' }],
+      })
+      mappings.push(mapping)
+      gallery[niche].push(slug)
+      files.push({ key, read: async () => Buffer.from(key) })
+    }
+  }
+  const catalog = {
+    contractVersion: 3,
+    ruleVersion: 'test-rule',
+    generatedAt: '2026-09-03T12:00:00.000Z',
+    sourceTemplates: REHAB_STAGING_CATALOG_CONTRACT.totalTemplates,
+    canonicalDesigns: REHAB_STAGING_CATALOG_CONTRACT.totalTemplates,
+    templates: mappings,
+    gallery,
+  }
+  return { manifest, catalog, files, catalogBytes: Buffer.from(`${JSON.stringify(catalog)}\n`) }
+}
+
+class MemoryBlobStore {
+  constructor({ failSetKey, corruptGetKey } = {}) {
+    this.values = new Map()
+    this.metadata = new Map()
+    this.writes = []
+    this.failSetKey = failSetKey
+    this.corruptGetKey = corruptGetKey
+  }
+
+  async get(key, options = {}) {
+    const value = this.values.get(key)
+    if (value === undefined) return null
+    if (key === this.corruptGetKey && options.type === 'arrayBuffer') {
+      return Buffer.from('corrupt-readback')
+    }
+    if (options.type === 'json') {
+      if (typeof value === 'string' || Buffer.isBuffer(value)) return JSON.parse(String(value))
+      return structuredClone(value)
+    }
+    return value
+  }
+
+  async getMetadata(key) {
+    const metadata = this.metadata.get(key)
+    return metadata ? { metadata: { ...metadata } } : null
+  }
+
+  async set(key, value, options = {}) {
+    if (key === this.failSetKey) throw new Error(`injected write failure for ${key}`)
+    this.writes.push({ method: 'set', key })
+    this.values.set(key, Buffer.from(value))
+    this.metadata.set(key, { ...(options.metadata || {}) })
+  }
+
+  async setJSON(key, value) {
+    if (key === this.failSetKey) throw new Error(`injected write failure for ${key}`)
+    this.writes.push({ method: 'setJSON', key })
+    this.values.set(key, structuredClone(value))
+  }
+}
+
+async function writeRehabStagingTemplate(root, {
+  niche,
+  slug,
+  designId,
+  canonicalLegacySlug,
+  disposition,
+}) {
+  const templateDir = path.join(root, niche, slug)
+  await mkdir(path.join(templateDir, '.dailyclarity'), { recursive: true })
+  const contentPresetId = `content_${slug}`
+  const themePresetId = `theme_${slug}`
+  const trackedFiles = new Map([
+    [
+      'index.html',
+      '<!doctype html><html><body><main><h1>{{BUSINESS_NAME}}</h1>' +
+        '<a href="mailto:{{EMAIL}}">Email</a></main></body></html>',
+    ],
+    [
+      'template.json',
+      `${JSON.stringify({
+        contractVersion: 3,
+        slug,
+        legacySlug: slug,
+        niche,
+        pages: ['index.html'],
+        designId,
+        contentPresetId,
+        themePresetId,
+      }, null, 2)}\n`,
+    ],
+  ])
+  for (const [relativePath, value] of trackedFiles) {
+    await writeFile(path.join(templateDir, relativePath), value)
+  }
+  const records = [...trackedFiles]
+    .map(([relativePath, value]) => ({
+      path: relativePath,
+      sha256: createHash('sha256').update(value).digest('hex'),
+      bytes: Buffer.byteLength(value),
+    }))
+    .sort((left, right) => left.path.localeCompare(right.path))
+  const treeHash = manifestDigest(records)
+  const tree = { version: 1, treeHash, files: records }
+  const receiptBody = {
+    version: 1,
+    legacySlug: slug,
+    niche,
+    sourceHash: createHash('sha256').update(`source:${niche}/${slug}`).digest('hex'),
+    artifactHash: treeHash,
+    ruleVersion: 'legacy-rehab-test',
+    generatedAt: '2026-09-03T12:00:00.000Z',
+    checks: {
+      static: 'passed',
+      desktop: 'passed',
+      mobile: 'passed',
+      criticalDefects: 0,
+      seriousDefects: 0,
+    },
+    pages: ['desktop', 'mobile'].map((viewport) => ({
+      page: 'index.html',
+      viewport,
+      passed: true,
+      screenshotSha256: createHash('sha256').update(`${slug}:${viewport}`).digest('hex'),
+      perceptualHash: createHash('sha256').update(`phash:${slug}:${viewport}`).digest('hex').slice(0, 16),
+      editSlots: 2,
+      imageSlots: 0,
+      issues: [],
+    })),
+  }
+  const receipt = signedReceipt(receiptBody)
+  await writeFile(
+    path.join(templateDir, '.dailyclarity', 'artifact-tree.json'),
+    JSON.stringify(tree),
+  )
+  await writeFile(
+    path.join(templateDir, '.dailyclarity', 'final-quality-receipt.json'),
+    JSON.stringify(receipt),
+  )
+  return {
+    legacySlug: slug,
+    niche,
+    designId,
+    contentPresetId,
+    themePresetId,
+    qualityReceipt: receipt.id,
+    canonicalLegacySlug,
+    disposition,
+  }
+}
+
+async function writeRehabStagingRoot(root) {
+  const canonical = await writeRehabStagingTemplate(root, {
+    niche: 'aromatherapy',
+    slug: 'canonical',
+    designId: 'design_shared',
+    canonicalLegacySlug: 'canonical',
+    disposition: 'canonical',
+  })
+  const alias = await writeRehabStagingTemplate(root, {
+    niche: 'aromatherapy',
+    slug: 'alias',
+    designId: 'design_shared',
+    canonicalLegacySlug: 'canonical',
+    disposition: 'alias',
+  })
+  const catalog = {
+    contractVersion: 3,
+    ruleVersion: 'legacy-rehab-test',
+    generatedAt: '2026-09-03T12:00:00.000Z',
+    sourceTemplates: 2,
+    canonicalDesigns: 1,
+    templates: [canonical, alias],
+    gallery: { aromatherapy: ['canonical'] },
+  }
+  await writeFile(path.join(root, '_catalog-v3.json'), JSON.stringify(catalog))
+  return catalog
+}
+
 test('parses repeatable selectors, force, and dry-run without side effects', () => {
   assert.deepEqual(
     parseUploadArgs([
@@ -200,6 +411,7 @@ test('parses repeatable selectors, force, and dry-run without side effects', () 
     {
       force: true,
       dryRun: true,
+      rehabV3Staging: false,
       only: [
         'aromatherapy/template-one',
         'sound_bath/template-two',
@@ -358,6 +570,143 @@ test('blob metadata follows each template contract and forces v2-to-v3 rewrites'
   )
 })
 
+test('rehabilitation v3 staging dry-run rejects an undersized catalogue', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'dc-uploader-rehab-staging-'))
+  try {
+    await writeRehabStagingRoot(root)
+    await assert.rejects(
+      main(['--dry-run', '--root', root, '--rehab-v3-staging'], {}),
+      /expected 1292, found 2|expected=5486/i,
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('rehabilitation staging mode requires a complete explicit root and non-production context', async () => {
+  assert.equal(parseUploadArgs(['--root', '.', '--rehab-v3-staging']).rehabV3Staging, true)
+  assert.throws(
+    () => parseUploadArgs(['--dry-run', '--rehab-v3-staging']),
+    /requires an explicit --root directory/,
+  )
+  assert.throws(
+    () => parseUploadArgs(['--root', '.', '--rehab-v3-staging', '--only', 'aromatherapy']),
+    /complete catalogue.*--only/i,
+  )
+  assert.throws(
+    () => parseUploadArgs(['--root', '.', '--rehab-v3-staging', '--force']),
+    /immutable.*--force/i,
+  )
+  assert.throws(
+    () => assertRehabStagingUploadEnvironment({ CONTEXT: 'production' }),
+    /forbidden in production/i,
+  )
+  assert.throws(
+    () => assertRehabStagingUploadEnvironment({}),
+    /explicit non-production context/i,
+  )
+  assert.equal(assertRehabStagingUploadEnvironment({ CONTEXT: 'deploy-preview' }), 'deploy-preview')
+  assert.equal(REHAB_STAGING_STORE_NAME, 'templates-rehab-staging')
+
+  const root = await mkdtemp(path.join(tmpdir(), 'dc-uploader-rehab-normal-mode-'))
+  try {
+    await writeRehabStagingRoot(root)
+    await assert.rejects(
+      main(['--dry-run', '--root', root], {}),
+      /failed launch catalog integrity/,
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('rehabilitation staging publication writes immutable data before switching the active pointer', async () => {
+  const plan = completeRehabPublishPlan()
+  const validation = validateRehabV3StagingCatalogManifest(plan.manifest, plan.catalog)
+  assert.equal(validation.pass, true, validation.errors.join('\n'))
+  assert.equal(validation.totalTemplates, 5_486)
+  const store = new MemoryBlobStore()
+
+  const result = await publishRehabStagingCatalog({
+    store,
+    ...plan,
+    activatedAt: '2026-09-03T14:00:00.000Z',
+  })
+
+  assert.equal(result.sourceTemplates, 5_486)
+  assert.equal(result.files, 5_486)
+  assert.equal(result.uploaded, 5_486)
+  assert.equal(store.writes.at(-1).key, REHAB_STAGING_ACTIVE_KEY)
+  assert.equal(store.writes.at(-1).method, 'setJSON')
+  assert.ok(store.writes.every(({ key }, index) => (
+    index === store.writes.length - 1 || key.startsWith(`${result.prefix}/`)
+  )))
+  assert.ok(store.writes.findIndex(({ key }) => key === `${result.prefix}/_catalog-v3.json`) < store.writes.length - 1)
+  assert.ok(store.writes.findIndex(({ key }) => key === `${result.prefix}/_manifest.json`) < store.writes.length - 1)
+  assert.equal(store.values.has('_manifest.json'), false)
+})
+
+test('rehabilitation staging publication preserves the prior pointer after an asset failure', async () => {
+  const plan = completeRehabPublishPlan()
+  const catalogHash = createHash('sha256').update(plan.catalogBytes).digest('hex')
+  const firstKey = [...plan.files].sort((left, right) => left.key.localeCompare(right.key))[0].key
+  const failingStorageKey = `catalogs/${catalogHash}/${firstKey}`
+  const store = new MemoryBlobStore({ failSetKey: failingStorageKey })
+  const priorPointer = { version: 1, profile: 'rehab-staging', catalogHash: 'f'.repeat(64) }
+  store.values.set(REHAB_STAGING_ACTIVE_KEY, priorPointer)
+
+  await assert.rejects(
+    publishRehabStagingCatalog({ store, ...plan }),
+    /injected write failure/i,
+  )
+
+  assert.deepEqual(store.values.get(REHAB_STAGING_ACTIVE_KEY), priorPointer)
+  assert.equal(store.writes.some(({ key }) => key === REHAB_STAGING_ACTIVE_KEY), false)
+})
+
+test('rehabilitation staging publication verifies asset bytes before switching the active pointer', async () => {
+  const plan = completeRehabPublishPlan()
+  const catalogHash = createHash('sha256').update(plan.catalogBytes).digest('hex')
+  const firstKey = [...plan.files].sort((left, right) => left.key.localeCompare(right.key))[0].key
+  const corruptStorageKey = `catalogs/${catalogHash}/${firstKey}`
+  const store = new MemoryBlobStore({ corruptGetKey: corruptStorageKey })
+  const priorPointer = { version: 1, profile: 'rehab-staging', catalogHash: 'f'.repeat(64) }
+  store.values.set(REHAB_STAGING_ACTIVE_KEY, priorPointer)
+
+  await assert.rejects(
+    publishRehabStagingCatalog({ store, ...plan }),
+    /object content readback failed/i,
+  )
+
+  assert.deepEqual(store.values.get(REHAB_STAGING_ACTIVE_KEY), priorPointer)
+  assert.equal(store.writes.some(({ key }) => key === REHAB_STAGING_ACTIVE_KEY), false)
+})
+
+test('rehabilitation staging mode rejects authoritative count and mapping mismatches', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'dc-uploader-rehab-mismatch-'))
+  try {
+    const catalog = await writeRehabStagingRoot(root)
+    await writeFile(
+      path.join(root, '_catalog-v3.json'),
+      JSON.stringify({ ...catalog, sourceTemplates: 3 }),
+    )
+    await assert.rejects(
+      main(['--dry-run', '--root', root, '--rehab-v3-staging'], {}),
+      /source count does not match local manifest|source count is invalid/,
+    )
+
+    const mismatched = structuredClone(catalog)
+    mismatched.templates[1].qualityReceipt = 'receipt_wrong'
+    await writeFile(path.join(root, '_catalog-v3.json'), JSON.stringify(mismatched))
+    await assert.rejects(
+      main(['--dry-run', '--root', root, '--rehab-v3-staging'], {}),
+      /qualityReceipt does not match verified template/,
+    )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('upload contract fails closed on zero-token, fake-data, and stale-field output', () => {
   const valid = validateUploadContract(
     { 'index.html': '<h1>{{BUSINESS_NAME}}</h1><p>{{OWNER_NAME}}</p><a href="mailto:{{EMAIL}}">Email us</a>' },
@@ -395,6 +744,34 @@ test('upload contract rejects malformed tokens, fabricated proof, fixed prices, 
   assert.match(errors, /testimonial/i)
   assert.match(errors, /hard-coded offer price/i)
   assert.match(errors, /hard-coded external/i)
+  assert.match(errors, /sensitive health information/i)
+})
+
+test('upload boundary independently rejects adversarial sample identity, medical claims, proof, and intake copy', () => {
+  const result = validateUploadContract(
+    {
+      'index.html': `<main>
+        <h1>{{BUSINESS_NAME}}</h1>
+        <p>Jane Doe can be reached at care@example.org or 212-555-0119.</p>
+        <p>Our method treats depression and provides instant relief.</p>
+        <section id="member-rated-results"><h2>Independently verified recognition</h2></section>
+        <p>Sessions cost 750 EUR.</p>
+        <form><label>Trauma history<textarea name="history"></textarea></label></form>
+        <a href="mailto:{{EMAIL}}">Email</a>
+      </main>`,
+    },
+    [{ name: 'BUSINESS_NAME' }, { name: 'EMAIL' }],
+  )
+
+  assert.equal(result.pass, false)
+  const errors = result.errors.join('\n')
+  assert.match(errors, /placeholder practitioner name/i)
+  assert.match(errors, /placeholder email/i)
+  assert.match(errors, /placeholder phone/i)
+  assert.match(errors, /unsupported outcome/i)
+  assert.match(errors, /unsupported absolute efficacy/i)
+  assert.match(errors, /unverified credential or recognition/i)
+  assert.match(errors, /hard-coded offer price/i)
   assert.match(errors, /sensitive health information/i)
 })
 

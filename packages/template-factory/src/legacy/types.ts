@@ -1,10 +1,10 @@
 export const LEGACY_SCHEMA_VERSION = 4;
-export const DEFAULT_LEGACY_RULE_VERSION = 'legacy-rehab-1.0.14';
+export const DEFAULT_LEGACY_RULE_VERSION = 'legacy-rehab-1.0.15';
 export const DEFAULT_AI_DOLLAR_CAP_USD = 25;
 export const DEFAULT_AI_TOKEN_CAP = 1_000_000;
 export const LEGACY_CANCEL_EXIT_CODE = 130;
 export const MINIMUM_LEGACY_PILOT_SIZE = 100;
-export const LEGACY_PILOT_GATE_VERSION = 4;
+export const LEGACY_PILOT_GATE_VERSION = 5;
 
 export class LegacyCancellationError extends Error {
   constructor(message = 'Legacy catalogue rehabilitation was cancelled') {
@@ -78,6 +78,8 @@ export interface LegacyCompilerConfig {
   chromiumWorkers: number;
   aiDollarCapUsd: number;
   aiTokenCap: number;
+  /** Explicit operator opt-in. There is intentionally no environment default. */
+  cloudRepair: boolean;
 }
 
 export interface LegacyCliFlags {
@@ -90,6 +92,7 @@ export interface LegacyCliFlags {
   chromiumWorkers?: number;
   aiDollarCapUsd?: number;
   aiTokenCap?: number;
+  cloudRepair?: boolean;
   resume: boolean;
   dryRun: boolean;
   json: boolean;
@@ -304,6 +307,8 @@ export interface LegacyCommandContext {
   ledger: import('./ledger.js').LegacyLedger;
   runId: string;
   signal?: AbortSignal;
+  /** Present only for an explicitly enabled cloud-repair invocation. */
+  cloudRepairClient?: import('./cloud-lane.js').CloudRepairBatchClient;
 }
 
 export interface LegacyCommandServices {

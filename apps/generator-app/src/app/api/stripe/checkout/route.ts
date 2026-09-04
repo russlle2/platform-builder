@@ -8,14 +8,12 @@ import { getPlan, normalizePlanKey } from '@/lib/plans'
 import { getTrustedSiteOrigin } from '@/lib/site-origin'
 import { sanitizeImageSwapMap } from '@/lib/image-swaps'
 import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
-import { sanitizeCustomTheme } from '@/lib/custom-theme'
 import {
   chunkJsonToMetadata,
   sanitizeCustomerValues,
-  sanitizeInlineEditMap,
 } from '@/lib/site-deploy'
 import { getTemplate } from '@/lib/templates/niche-registry'
-import { snapshotCatalogRevision } from '@/lib/catalog-revision'
+import { buildCheckoutTemplateState } from '@/lib/customer-site-state'
 import { createStripeClient } from '@/lib/stripe-client'
 import {
   TEMPLATE_CHECKOUT_TYPE,
@@ -112,10 +110,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       )
     }
-    // Never trust a client-provided catalogue identity. Snapshot the audited
-    // v3 design + per-slug presets from the server manifest at purchase time.
-    const catalogRevision = snapshotCatalogRevision(selectedTemplate)
-
     const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
     const cookieImageOwner = verifyUploadSessionValue(
       req.cookies.get(UPLOAD_SESSION_COOKIE)?.value,
@@ -174,19 +168,22 @@ export async function POST(req: NextRequest) {
     }
 
     checkoutIntentId = randomUUID()
-    const checkoutPayload = {
+    // Never trust a client-provided catalogue identity. The durable checkout
+    // state snapshots the audited server-side v3 design + per-slug presets.
+    const checkoutPayload = buildCheckoutTemplateState({
       template: templateSlug,
       niche: nicheSlug,
-      colorScheme: typeof colorScheme === 'string' ? colorScheme : 'original',
-      fontVariation: typeof fontVariation === 'string' ? fontVariation : 'original',
-      structureVariation: typeof structureVariation === 'string' ? structureVariation : 'original',
-      customTheme: sanitizeCustomTheme(customTheme),
+      templateRevision: selectedTemplate,
+      colorScheme,
+      fontVariation,
+      structureVariation,
+      customTheme,
       customerValues: safeCustomerValues,
-      inlineEdits: sanitizeInlineEditMap(inlineEdits),
+      inlineEdits,
       imageSwaps: safeImageSwaps,
       imageOwner: imageSession.imageOwner,
-      ...(catalogRevision ? { catalogRevision } : {}),
-    }
+    })
+    const catalogRevision = checkoutPayload.catalogRevision
     const { error: intentError } = await supabase.from('checkout_intents').insert({
       id: checkoutIntentId,
       slug: resolvedSlug,

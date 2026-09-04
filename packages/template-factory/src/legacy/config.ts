@@ -23,6 +23,7 @@ export interface ResolveLegacyConfigOptions {
   chromiumWorkers?: number;
   aiDollarCapUsd?: number;
   aiTokenCap?: number;
+  cloudRepair?: boolean;
 }
 
 function finitePositiveInteger(value: number | undefined, fallback: number, name: string): number {
@@ -91,6 +92,7 @@ export function resolveLegacyConfig(options: ResolveLegacyConfigOptions = {}): L
     chromiumWorkers: finitePositiveInteger(options.chromiumWorkers, 4, 'chromiumWorkers'),
     aiDollarCapUsd: finitePositiveNumber(options.aiDollarCapUsd, DEFAULT_AI_DOLLAR_CAP_USD, 'aiDollarCapUsd'),
     aiTokenCap: finitePositiveInteger(options.aiTokenCap, DEFAULT_AI_TOKEN_CAP, 'aiTokenCap'),
+    cloudRepair: options.cloudRepair === true,
   };
 }
 

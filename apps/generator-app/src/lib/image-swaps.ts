@@ -105,7 +105,8 @@ function annotateImageSegment(
   OPEN_TAG_RE.lastIndex = 0
   return segment.replace(OPEN_TAG_RE, (full, tag: string, rawAttrs: string) => {
     const existingId = readImageId(rawAttrs)
-    const isImage = tag.toLowerCase() === 'img'
+    const element = tag.toLowerCase()
+    const isImage = element === 'img' || (element === 'source' && /\s(?:src|srcset)\s*=/i.test(rawAttrs))
     const hasInlineBackground = /\bstyle\s*=\s*(?:"[^"]*\bbackground(?:-image)?\s*:[^"]*url\s*\(|'[^']*\bbackground(?:-image)?\s*:[^']*url\s*\()/i.test(rawAttrs)
     if (!existingId && !isImage && !hasInlineBackground) return full
 
@@ -278,7 +279,8 @@ function replaceImageSlot(
 
   let replacement = match[0]
   const safeUpdated = escapeHtmlAttribute(updated)
-  if (match[1].toLowerCase() === 'img') {
+  const element = match[1].toLowerCase()
+  if (element === 'img') {
     replacement = replacement.replace(/\s+srcset\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
     if (/\ssrc\s*=/i.test(replacement)) {
       replacement = replacement.replace(
@@ -287,6 +289,20 @@ function replaceImageSlot(
       )
     } else {
       replacement = replacement.replace(/\s*\/?\s*>$/, ` src="${safeUpdated}">`)
+    }
+  } else if (element === 'source') {
+    if (/\ssrcset\s*=/i.test(replacement)) {
+      replacement = replacement.replace(
+        /(\s)srcset\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/i,
+        `$1srcset="${safeUpdated}"`,
+      )
+    } else if (/\ssrc\s*=/i.test(replacement)) {
+      replacement = replacement.replace(
+        /(\s)src\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/i,
+        `$1src="${safeUpdated}"`,
+      )
+    } else {
+      replacement = replacement.replace(/\s*\/?\s*>$/, ` srcset="${safeUpdated}">`)
     }
   } else if (/\bstyle\s*=/i.test(replacement)) {
     replacement = replacement.replace(

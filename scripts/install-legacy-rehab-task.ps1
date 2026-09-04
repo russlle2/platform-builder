@@ -9,7 +9,7 @@ param(
     [string]$WorkRoot,
 
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$')]
-    [string]$RuleVersion = 'legacy-rehab-1.0.14',
+    [string]$RuleVersion = 'legacy-rehab-1.0.15',
 
     [ValidateRange(1, 64)]
     [int]$StaticWorkers = 8,
@@ -22,6 +22,8 @@ param(
 
     [ValidateRange(1, 60)]
     [int]$RestartDelayMinutes = 5,
+
+    [string]$PnpmPath,
 
     [switch]$Install,
 
@@ -121,6 +123,38 @@ if (-not $powerShellCommand) {
     throw 'Neither powershell.exe nor pwsh.exe was found.'
 }
 
+$resolvedPnpmPath = $null
+if (-not [string]::IsNullOrWhiteSpace($PnpmPath)) {
+    $resolvedPnpmPath = Get-NormalizedTaskPath -Path $PnpmPath -MustExist
+    if (-not (Test-Path -LiteralPath $resolvedPnpmPath -PathType Leaf)) {
+        throw "Explicit pnpm path is not a file: $resolvedPnpmPath"
+    }
+}
+
+# Validate the exact environment available to an interactive Task Scheduler
+# action. Codex may prepend a process-local pnpm to PATH; a scheduled task does
+# not inherit it, so the runner must prove its stable Corepack fallback here.
+$preflightArguments = @(
+    '-NoLogo',
+    '-NoProfile',
+    '-ExecutionPolicy', 'Bypass',
+    '-File', $runnerPath,
+    '-Command', 'status',
+    '-SourceRoot', $resolvedSourceRoot,
+    '-WorkRoot', $resolvedWorkRoot,
+    '-RuleVersion', $RuleVersion,
+    '-Preflight',
+    '-UsePersistedPath'
+)
+if ($resolvedPnpmPath) {
+    $preflightArguments += @('-PnpmPath', $resolvedPnpmPath)
+}
+
+& $powerShellCommand.Path @preflightArguments
+if ($LASTEXITCODE -ne 0) {
+    throw "Scheduled-task preflight failed with exit code $LASTEXITCODE. No task was registered."
+}
+
 $taskArgumentValues = @(
     '-NoLogo',
     '-NoProfile',
@@ -136,6 +170,9 @@ $taskArgumentValues = @(
     # still retries a full run three times when MaxAttempts is omitted.
     '-MaxAttempts', '1'
 )
+if ($resolvedPnpmPath) {
+    $taskArgumentValues += @('-PnpmPath', $resolvedPnpmPath)
+}
 $taskArguments = ($taskArgumentValues | ForEach-Object { Get-TaskArgument -Value $_ }) -join ' '
 
 $taskIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name

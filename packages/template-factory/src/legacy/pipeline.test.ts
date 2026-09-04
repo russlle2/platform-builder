@@ -12,7 +12,10 @@ import {
   composeCatalogTemplateText,
   hasCompletePassingRenderMatrix,
   materializeArtifact,
+  rehabCustomizationVerifierArgs,
+  rehabStagingUploaderArgs,
   repairOne,
+  validateFinalPageEvidenceMatrix,
   validatePromotionSourceState,
   validatePilotGateAuthorization,
   verifyStaticArtifact,
@@ -36,6 +39,18 @@ function artifactContext(
   };
 }
 
+test('promotion invokes the uploader with the isolated rehabilitation staging profile', () => {
+  const root = join(tmpdir(), 'rehab-promotion-staging');
+  assert.deepEqual(
+    rehabStagingUploaderArgs(root),
+    ['--dry-run', '--root', root, '--rehab-v3-staging'],
+  );
+  assert.deepEqual(
+    rehabCustomizationVerifierArgs(root, 8),
+    ['--root', root, '--workers', '8', '--max-diagnostics', '100', '--json'],
+  );
+});
+
 test('render completion requires one passing result per page and viewport', () => {
   const complete = [
     { page: 'index.html', viewport: 'desktop' as const, passed: true },
@@ -56,6 +71,87 @@ test('render completion requires one passing result per page and viewport', () =
     ...complete.slice(0, 3),
     { ...complete[3]!, passed: false },
   ], ['index.html', 'about.html']), false);
+});
+
+test('final evidence requires exact manifest, ledger, render, and receipt page matrices', () => {
+  const ledgerPages = [
+    { id: 11, relativePath: 'index.html', stage: 'static-passed' },
+    { id: 12, relativePath: 'about.html', stage: 'static-passed' },
+    { id: 13, relativePath: 'retired.html', stage: 'superseded' },
+  ];
+  const makeRender = (pageId: number, viewport: 'desktop' | 'mobile') => ({
+    pageId,
+    viewport,
+    width: viewport === 'desktop' ? 1440 : 390,
+    height: viewport === 'desktop' ? 900 : 844,
+    status: 'passed' as const,
+    screenshotHash: `${pageId}-${viewport}-screenshot`,
+    perceptualHash: `${pageId}-${viewport}-phash`,
+    consoleErrors: 0,
+    failedRequests: 0,
+    axeCritical: 0,
+    axeSerious: 0,
+    horizontalOverflowPx: 0,
+  });
+  const renders = [
+    makeRender(11, 'desktop'),
+    makeRender(11, 'mobile'),
+    makeRender(12, 'desktop'),
+    makeRender(12, 'mobile'),
+  ];
+  const pageById = new Map(ledgerPages.map((page) => [page.id, page.relativePath]));
+  const receiptPages = renders.map((render) => ({
+    page: pageById.get(render.pageId),
+    viewport: render.viewport,
+    passed: true,
+    screenshotSha256: render.screenshotHash,
+    perceptualHash: render.perceptualHash,
+    issues: [],
+  }));
+  const valid = {
+    manifestPages: ['index.html', 'about.html'],
+    ledgerPages,
+    renders,
+    receiptPages,
+  };
+
+  assert.deepEqual(validateFinalPageEvidenceMatrix(valid), []);
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    manifestPages: ['index.html', 'about.html', 'missing.html'],
+  }).some((issue) => issue.code === 'ledger_page_matrix' && issue.recoveryStage === 'repair_pending'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    renders: renders.slice(0, 3),
+  }).some((issue) => issue.code === 'render_page_matrix'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    renders: renders.map((render, index) => index === 0 ? { ...render, width: 1439 } : render),
+  }).some((issue) => issue.code === 'render_page_matrix'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    receiptPages: receiptPages.slice(0, 3),
+  }).some((issue) => issue.code === 'receipt_page_matrix'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    receiptPages: receiptPages.map((receipt, index) => index === 0
+      ? { ...receipt, screenshotSha256: 'stale-screenshot' }
+      : receipt),
+  }).some((issue) => issue.code === 'receipt_page_matrix'));
+});
+
+test('static final-output gate independently rejects unsafe semantic copy', () => {
+  const html = '<!doctype html><html><body><main><h1 data-dc-edit-id="heading">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="claim">Our method treats depression and provides instant relief.</p><form data-dc-standard-form="safe"><label>Trauma history<textarea name="history"></textarea></label></form><a href="mailto:{{EMAIL}}">Email</a></main><script src="assets/js/dc-compat.js"></script></body></html>';
+  const result = verifyStaticArtifact(
+    new Map<string, string | Uint8Array>([['index.html', html], ['assets/js/dc-compat.js', '']]),
+    [{ name: 'BUSINESS_NAME' }, { name: 'EMAIL' }],
+  );
+
+  assert.equal(result.passed, false);
+  const details = result.errors.filter((error) => error.code === 'publication_contract').map((error) => error.detail).join('\n');
+  assert.match(details, /unsupported outcome claim/i);
+  assert.match(details, /unsupported absolute efficacy claim/i);
+  assert.match(details, /sensitive health information/i);
 });
 
 test('third-attempt cancellation retains its lease for resumable run recovery', async () => {

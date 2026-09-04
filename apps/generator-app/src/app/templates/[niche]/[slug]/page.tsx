@@ -5,7 +5,11 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
   type InlineTextEdit,
+  VISUAL_EDITABLE_SELECTOR,
   buildCustomizationScope,
+  isEditableAttributeForTag,
+  isSafeEditableAttribute,
+  isSafeInlineEditId,
   mergeInlineEdit,
   applyInlineEditsToHtml,
   loadInlineEdits,
@@ -75,15 +79,60 @@ const nicheLabels: Record<string, string> = {
 
 /* ---------- Script injected into preview iframe for editing + nav ---------- */
 function getIframeInjectionScript(): string {
+  const editableSelector = JSON.stringify(VISUAL_EDITABLE_SELECTOR)
   return `
 <script>
 (function(){
   /* ---- Inline text editing ---- */
-  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div:not(:has(h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,div,section,article)),section:not(:has(*)),article:not(:has(*))';
+  var editableSelectors = ${editableSelector};
+  var safeEditableAttributes = { content: true, alt: true, title: true, placeholder: true, 'aria-label': true };
+  var pendingImageClick = null;
+
+  function editIdFor(el) {
+    return el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '';
+  }
+
+  function requestPromptEdit(el, attribute) {
+    var nodeId = editIdFor(el);
+    if (!nodeId) return false;
+    if (attribute && !safeEditableAttributes[attribute]) return false;
+    if (pendingImageClick) {
+      clearTimeout(pendingImageClick);
+      pendingImageClick = null;
+    }
+    window.parent.postMessage({
+      type: 'editValueRequest',
+      nodeId: nodeId,
+      attribute: attribute || '',
+      tag: el.tagName,
+      original: attribute ? (el.getAttribute(attribute) || '') : (el.textContent || '')
+    }, '*');
+    return true;
+  }
 
   document.addEventListener('dblclick', function(e) {
     var el = e.target.closest(editableSelectors);
     if (!el || el.isContentEditable) return;
+    if (el.tagName === 'SELECT') {
+      var selectedOption = el.options && el.options[el.selectedIndex];
+      if (selectedOption) requestPromptEdit(selectedOption, '');
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    var editableAttribute = el.getAttribute('data-dc-edit-attribute') || el.getAttribute('data-pb-edit-attribute') || '';
+    if (editableAttribute) {
+      requestPromptEdit(el, editableAttribute);
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+    if (el.tagName === 'OPTION') {
+      requestPromptEdit(el, '');
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
     var originalText = el.textContent;
     el.contentEditable = 'true';
     el.style.outline = '2px solid #3b82f6';
@@ -99,7 +148,7 @@ function getIframeInjectionScript(): string {
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
       // Notify parent of the edit (include the pre-edit text so it can persist)
-      window.parent.postMessage({ type: 'textEdited', nodeId: el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
+      window.parent.postMessage({ type: 'textEdited', nodeId: editIdFor(el), tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
 
     e.preventDefault();
@@ -134,14 +183,23 @@ function getIframeInjectionScript(): string {
     if (!img) return;
     e.preventDefault();
     e.stopPropagation();
-    var src = img.currentSrc || img.src || '';
-    if (!src) {
-      var background = window.getComputedStyle(img).backgroundImage || '';
-      var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
-      src = backgroundMatch ? backgroundMatch[1] : '';
+    var requestImageSwap = function() {
+      pendingImageClick = null;
+      var src = img.currentSrc || img.src || '';
+      if (!src) {
+        var background = window.getComputedStyle(img).backgroundImage || '';
+        var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
+        src = backgroundMatch ? backgroundMatch[1] : '';
+      }
+      // Ask parent to open file picker
+      window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
+    };
+    if (img.hasAttribute('data-dc-edit-attribute') || img.hasAttribute('data-pb-edit-attribute')) {
+      if (pendingImageClick) clearTimeout(pendingImageClick);
+      pendingImageClick = setTimeout(requestImageSwap, 280);
+    } else {
+      requestImageSwap();
     }
-    // Ask parent to open file picker
-    window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
   });
 
   // Listen for image swap response from parent
@@ -165,6 +223,9 @@ function getIframeInjectionScript(): string {
         if (slot.tagName === 'IMG') {
           slot.removeAttribute('srcset');
           slot.src = newSrc;
+        } else if (slot.tagName === 'SOURCE') {
+          if (slot.hasAttribute('srcset')) slot.srcset = newSrc;
+          else slot.src = newSrc;
         } else {
           slot.style.setProperty('background-image', 'url(' + newSrc + ')', 'important');
         }
@@ -176,6 +237,28 @@ function getIframeInjectionScript(): string {
           imgs[i].src = newSrc;
           break;
         }
+      }
+    }
+    if (e.data.type === 'editValueResponse') {
+      var responseId = e.data.nodeId;
+      var responseAttribute = e.data.attribute;
+      var responseText = e.data.text;
+      if (typeof responseId !== 'string' || typeof responseText !== 'string' || responseText.length > 10000) return;
+      var editCandidates = document.querySelectorAll('[data-dc-edit-id],[data-pb-edit-id]');
+      var editTarget = null;
+      for (var eIndex = 0; eIndex < editCandidates.length; eIndex++) {
+        if (editIdFor(editCandidates[eIndex]) === responseId) {
+          editTarget = editCandidates[eIndex];
+          break;
+        }
+      }
+      if (!editTarget) return;
+      if (responseAttribute) {
+        var declared = editTarget.getAttribute('data-dc-edit-attribute') || editTarget.getAttribute('data-pb-edit-attribute') || '';
+        if (!safeEditableAttributes[responseAttribute] || declared !== responseAttribute) return;
+        editTarget.setAttribute(responseAttribute, responseText);
+      } else {
+        editTarget.textContent = responseText;
       }
     }
   });
@@ -419,6 +502,37 @@ export default function TemplateCustomizePage({
         setInlineEdits(next)
         inlineEditsRef.current = next
         saveInlineEdits(next, activeCustomizationScopeRef.current)
+      }
+
+      if (e.data.type === 'editValueRequest') {
+        if (!isSafeInlineEditId(e.data.nodeId) || !isSafePreviewText(e.data.original)) return
+        const rawAttribute = e.data.attribute
+        if (rawAttribute !== '' && !isSafeEditableAttribute(rawAttribute)) return
+        const attribute = isSafeEditableAttribute(rawAttribute) ? rawAttribute : undefined
+        if (attribute && !isEditableAttributeForTag(e.data.tag, attribute)) return
+        const label = attribute
+          ? `Edit ${attribute.replace('-', ' ')} text`
+          : 'Edit text'
+        const updated = window.prompt(label, e.data.original)
+        if (updated === null || !isSafePreviewText(updated) || updated === e.data.original) return
+
+        const page = currentPageRef.current
+        const pageEdits = mergeInlineEdit(
+          inlineEditsRef.current[page] || [],
+          e.data.original,
+          updated,
+          e.data.nodeId,
+        )
+        const next = { ...inlineEditsRef.current, [page]: pageEdits }
+        setInlineEdits(next)
+        inlineEditsRef.current = next
+        saveInlineEdits(next, activeCustomizationScopeRef.current)
+        iframeRef.current?.contentWindow?.postMessage({
+          type: 'editValueResponse',
+          nodeId: e.data.nodeId,
+          attribute: attribute || '',
+          text: updated,
+        }, '*')
       }
     }
 
@@ -1096,7 +1210,7 @@ function PreviewStep({
           <h1 className="text-3xl font-bold text-white">{template.name}</h1>
           <p className="text-slate-400">
             Supported business fields have been populated across the template pages.
-            <span className="text-blue-300 ml-1">Double-click text to edit &bull; Click images to swap</span>
+            <span className="text-blue-300 ml-1">Double-click text or labels to edit &bull; Click images to swap</span>
           </p>
         </div>
         <div className="flex gap-3 flex-wrap">
@@ -1301,11 +1415,11 @@ function PreviewStep({
       <div className="flex flex-wrap items-center gap-6 px-6 py-3 rounded-xl bg-slate-800/60 border border-white/5 text-xs text-slate-400">
         <span className="flex items-center gap-2">
           <span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-400/60" />
-          <strong className="text-slate-300">Double-click</strong> any text to edit inline
+          <strong className="text-slate-300">Double-click</strong> text or accessibility labels to edit
         </span>
         <span className="flex items-center gap-2">
           <span className="inline-block w-2.5 h-2.5 rounded-sm bg-violet-400/60" />
-          <strong className="text-slate-300">Click</strong> any image to swap or replace it
+          <strong className="text-slate-300">Click</strong> an image to replace it; double-click for alt text
         </span>
         <span className="flex items-center gap-2">
           <span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-400/60" />

@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   INLINE_EDITS_KEY,
+  VISUAL_EDITABLE_SELECTOR,
   annotateEditableElements,
   applyInlineEditsToHtml,
   applyInlineEditsToHtmlWithReport,
   buildCustomizationScope,
+  isEditableAttributeForTag,
   loadInlineEdits,
   mergeInlineEdit,
   sanitizeStoredInlineEditMap,
@@ -48,6 +50,83 @@ describe('inline edit targeting', () => {
       '<h1 data-dc-edit-id="duplicate">One</h1>' +
       '<p data-dc-edit-id="dc-edit-index-0002">Two</p>',
     )
+  })
+
+  it('preserves compiler IDs for additional text roles without shifting v2 ordinals', () => {
+    const html = '<head><title data-dc-edit-id="page-title">Page title</title></head><h1>Heading</h1><table><caption data-dc-edit-id="table-caption">Summary</caption></table><select><option data-dc-edit-id="first-option">Choice</option></select>'
+    const annotated = annotateEditableElements(html)
+
+    expect(annotated).toContain('<title data-dc-edit-id="page-title">Page title</title>')
+    expect(annotated).toContain('<h1 data-dc-edit-id="dc-edit-index-0001">Heading</h1>')
+    expect(annotated).toContain('<caption data-dc-edit-id="table-caption">Summary</caption>')
+    expect(annotated).toContain('<option data-dc-edit-id="first-option">Choice</option>')
+    const edited = applyInlineEditsToHtml(annotated, [
+      { nodeId: 'page-title', updated: 'New page title' },
+      { nodeId: 'table-caption', updated: 'New summary' },
+      { nodeId: 'first-option', updated: 'New choice' },
+    ])
+    expect(edited).toContain('<title data-dc-edit-id="page-title">New page title</title>')
+    expect(edited).toContain('<caption data-dc-edit-id="table-caption">New summary</caption>')
+    expect(edited).toContain('<option data-dc-edit-id="first-option">New choice</option>')
+    expect(VISUAL_EDITABLE_SELECTOR).toContain('caption')
+    expect(VISUAL_EDITABLE_SELECTOR).toContain('option')
+    expect(VISUAL_EDITABLE_SELECTOR).toContain('select')
+    expect(VISUAL_EDITABLE_SELECTOR).toContain('[data-dc-edit-id][data-dc-edit-attribute]')
+  })
+
+  it.each([
+    {
+      name: 'meta content',
+      html: '<meta name="description" content="Old summary" data-dc-edit-id="meta-description" data-dc-edit-attribute="content">',
+      updated: 'New & <safe> "summary"',
+      expected: 'content="New &amp; &lt;safe&gt; &quot;summary&quot;"',
+    },
+    {
+      name: 'image alt text',
+      html: '<img src="hero.jpg" alt="Old hero" data-dc-edit-id="hero-alt" data-dc-edit-attribute="alt">',
+      updated: 'Founder & client',
+      expected: 'alt="Founder &amp; client"',
+    },
+    {
+      name: 'aria label',
+      html: '<button aria-label="Open menu" data-dc-edit-id="menu-label" data-dc-edit-attribute="aria-label"><svg></svg></button>',
+      updated: 'Open services',
+      expected: 'aria-label="Open services"',
+    },
+    {
+      name: 'title attribute',
+      html: '<abbr title="Frequently asked questions" data-dc-edit-id="faq-title" data-dc-edit-attribute="title">FAQ</abbr>',
+      updated: 'Common questions',
+      expected: 'title="Common questions"',
+    },
+    {
+      name: 'form placeholder',
+      html: '<input placeholder="Your name" data-dc-edit-id="name-placeholder" data-dc-edit-attribute="placeholder">',
+      updated: 'Preferred name',
+      expected: 'placeholder="Preferred name"',
+    },
+  ])('applies an ID-first $name edit to the declared safe attribute', ({ html, updated, expected }) => {
+    const nodeId = /data-dc-edit-id="([^"]+)"/.exec(html)?.[1]
+    const result = applyInlineEditsToHtmlWithReport(html, [{ nodeId, updated }])
+
+    expect(result.unmatchedNodeIds).toEqual([])
+    expect(result.html).toContain(expected)
+  })
+
+  it('fails closed when an edit marker declares a structural attribute', () => {
+    const html = '<a href="/safe" data-dc-edit-id="link-target" data-dc-edit-attribute="href">Visit</a>'
+    const result = applyInlineEditsToHtmlWithReport(html, [{
+      nodeId: 'link-target',
+      original: '/safe',
+      updated: 'javascript:alert(1)',
+    }])
+
+    expect(result.unmatchedNodeIds).toEqual(['link-target'])
+    expect(result.html).toContain('href="/safe"')
+    expect(result.html).not.toContain('javascript:')
+    expect(isEditableAttributeForTag('a', 'title')).toBe(true)
+    expect(isEditableAttributeForTag('div', 'content')).toBe(false)
+    expect(isEditableAttributeForTag('script', 'aria-label')).toBe(false)
   })
 
   it('persists edits whose rendered source uses HTML entities and escapes replacements', () => {
@@ -105,6 +184,13 @@ describe('inline edit targeting', () => {
       nodeId: 'dc-edit-index-0002',
       original: 'Same',
       updated: 'Final version',
+    }])
+  })
+
+  it('allows an ID-targeted attribute slot to be repopulated after it was cleared', () => {
+    expect(mergeInlineEdit([], '', 'Restored label', 'menu-label')).toEqual([{
+      nodeId: 'menu-label',
+      updated: 'Restored label',
     }])
   })
 
