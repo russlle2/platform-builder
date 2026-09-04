@@ -10,6 +10,7 @@ import { existsSync } from 'fs'
 import path from 'path'
 import sharp from 'sharp'
 import { isDraftImageOwner } from './image-owner'
+import type { ImageSwap } from './image-swaps'
 
 export const CUSTOMER_IMAGES_BUCKET = 'customer-images'
 
@@ -357,10 +358,10 @@ export async function migrateImagesToSiteSlug(
 
 /** Rewrite image swap URLs from draft paths to site slug paths after migration. */
 export function rewriteImageSwapUrls(
-  imageSwaps: Record<string, { original: string; updated: string; originalRelative?: string }[]>,
+  imageSwaps: Record<string, ImageSwap[]>,
   draftOwner: string,
   siteSlug: string,
-): Record<string, { original: string; updated: string; originalRelative?: string }[]> {
+): Record<string, ImageSwap[]> {
   const from = normalizeImageOwner(draftOwner)
   const to = normalizeImageOwner(siteSlug)
   const out: typeof imageSwaps = {}

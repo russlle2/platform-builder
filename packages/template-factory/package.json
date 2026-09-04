@@ -7,13 +7,19 @@
     "generate": "tsx generate.mjs",
     "generate:foundations": "tsx src/generate-foundations.ts",
     "export:curated": "tsx src/curated-export.ts",
+    "legacy": "tsx src/legacy/cli.ts",
     "dry-run": "tsx generate.mjs --dry-run",
     "lint": "tsc --noEmit --incremental false --project tsconfig.json",
-    "test": "tsx --test src/*.test.ts"
+    "test": "tsx --test src/*.test.ts src/legacy/*.test.ts"
   },
   "dependencies": {
+    "@playwright/test": "^1.60.0",
     "@google/generative-ai": "^0.21.0",
-    "ollama": "^0.5.12"
+    "axe-core": "^4.11.1",
+    "ollama": "^0.5.12",
+    "parse5": "^8.0.0",
+    "postcss": "^8.5.28",
+    "sharp": "^0.35.4"
   },
   "devDependencies": {
     "@types/node": "^22.20.1",

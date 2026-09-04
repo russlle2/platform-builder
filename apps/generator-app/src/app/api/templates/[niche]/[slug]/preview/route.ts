@@ -46,8 +46,8 @@ export async function POST(
 
   // Build variation CSS overrides
   const variationCSS = [
-    buildVariationCSS(colorScheme, fontVariation, structureVariation),
-    buildCustomThemeCss(customTheme),
+    buildVariationCSS(colorScheme, fontVariation, structureVariation, cssFile || ''),
+    buildCustomThemeCss(customTheme, cssFile || ''),
   ].filter(Boolean).join('\n')
 
   const res = NextResponse.json({

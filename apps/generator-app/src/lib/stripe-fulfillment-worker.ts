@@ -23,6 +23,11 @@ import { sanitizeImageSwapMap, type ImageSwap } from '@/lib/image-swaps'
 import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
 import { isDraftImageOwner } from '@/lib/image-owner'
 import { sanitizeCustomTheme, type CustomTheme } from '@/lib/custom-theme'
+import {
+  catalogRevisionPinsEqual,
+  sanitizeCatalogRevisionPin,
+  type CatalogRevisionPin,
+} from '@/lib/catalog-revision'
 import { isManagedPlan, normalizePlanKey } from '@/lib/plans'
 import { createStripeClient } from '@/lib/stripe-client'
 import {
@@ -101,6 +106,7 @@ interface CheckoutIntentPayload {
   inlineEdits?: Record<string, InlineTextEdit[]>
   imageSwaps?: Record<string, ImageSwap[]>
   imageOwner?: string
+  catalogRevision?: unknown
 }
 
 async function handleCustomBuildCompleted(
@@ -200,7 +206,7 @@ async function handleCustomBuildCompleted(
  * Stripe retries the verified event. Retry-safe identifiers prevent duplicate
  * sites, orders, and manual-service tasks.
  */
-async function handleCheckoutCompleted(
+export async function handleCheckoutCompleted(
   supabase: SupabaseClient,
   session: Stripe.Checkout.Session,
 ) {
@@ -213,6 +219,12 @@ async function handleCheckoutCompleted(
   let fontVariation = meta.fontVariation || 'original'
   let structureVariation = meta.structureVariation || 'original'
   let customTheme: CustomTheme | null = null
+  const metadataCatalogRevision = unchunkJsonFromMetadata<unknown>('catalogRevision', meta, undefined)
+  let catalogRevision: CatalogRevisionPin | undefined
+  if (metadataCatalogRevision !== undefined && metadataCatalogRevision !== null) {
+    catalogRevision = sanitizeCatalogRevisionPin(metadataCatalogRevision) || undefined
+    if (!catalogRevision) throw new Error('Checkout catalogue revision pin is invalid.')
+  }
   let planKey = normalizePlanKey(meta.planKey) || 'basic'
 
   // Normalize stripe_customer_id — Stripe types it as string | Customer | DeletedCustomer | null
@@ -258,6 +270,14 @@ async function handleCheckoutCompleted(
     fontVariation = payload.fontVariation || 'original'
     structureVariation = payload.structureVariation || 'original'
     customTheme = sanitizeCustomTheme(payload.customTheme)
+    if (payload.catalogRevision !== undefined && payload.catalogRevision !== null) {
+      const intentCatalogRevision = sanitizeCatalogRevisionPin(payload.catalogRevision) || undefined
+      if (!intentCatalogRevision) throw new Error('Checkout intent catalogue revision pin is invalid.')
+      if (catalogRevision && !catalogRevisionPinsEqual(catalogRevision, intentCatalogRevision)) {
+        throw new Error('Checkout catalogue revision copies do not match.')
+      }
+      catalogRevision = intentCatalogRevision
+    }
     customerValues = payload.customerValues || {}
     inlineEdits = payload.inlineEdits || {}
     imageSwaps = sanitizeImageSwapMap(payload.imageSwaps)
@@ -363,6 +383,7 @@ async function handleCheckoutCompleted(
             site_url: netlifySiteUrl,
             stripe_session_id: session.id,
             checkout_intent_id: checkoutIntentId || null,
+            ...(catalogRevision ? { catalogRevision } : {}),
           },
           updated_at: new Date().toISOString(),
         }, { onConflict: 'slug' })
@@ -382,6 +403,7 @@ async function handleCheckoutCompleted(
         fontVariation,
         structureVariation,
         customTheme,
+        catalogRevision,
         inlineEdits,
         imageSwaps,
         slug,
@@ -433,6 +455,7 @@ async function handleCheckoutCompleted(
     fontVariation,
     structureVariation,
     customTheme,
+    ...(catalogRevision ? { catalogRevision } : {}),
     customerValues,
     inlineEdits,
     imageSwaps,

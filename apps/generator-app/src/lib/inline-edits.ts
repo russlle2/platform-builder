@@ -9,16 +9,27 @@
  */
 
 export interface InlineTextEdit {
-  /** Stable ID assigned from page name + editable-element ordinal. */
+  /** Stable v3 ID stored in `data-dc-edit-id`. */
+  nodeId?: string
+  /**
+   * Transitional v2 field. It is accepted on input and normalized to
+   * `nodeId`; new records are never written with it.
+   */
   id?: string
-  /** Rendered text before the user edited it (legacy fallback). */
-  original: string
+  /** Rendered text before the user edited it (v2 fallback). */
+  original?: string
   /** Replacement text the user typed. */
   updated: string
 }
 
 /** Map of page filename ("index.html") → its inline edits. */
 export type InlineEditMap = Record<string, InlineTextEdit[]>
+
+export interface InlineEditApplicationResult {
+  html: string
+  /** Stable v3 targets that were no longer present in the annotated page. */
+  unmatchedNodeIds: string[]
+}
 
 export const INLINE_EDITS_KEY = 'pb_inline_edits'
 const SCOPED_INLINE_EDITS_KEY = 'pb_inline_edits_by_scope_v1'
@@ -39,8 +50,11 @@ const EDITABLE_OPEN_TAG_RE = new RegExp(
   'gi',
 )
 const PROTECTED_BLOCK_RE = /<!--[\s\S]*?-->|<(script|style|noscript|template)\b[^>]*>[\s\S]*?<\/\1\s*>/gi
-const EXISTING_EDIT_ID_RE = /\sdata-pb-edit-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
-const SAFE_EDIT_ID_RE = /^pb-[a-z0-9-]{1,120}-\d{4,7}$/
+const EXISTING_DC_EDIT_ID_RE = /\sdata-dc-edit-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
+const EXISTING_PB_EDIT_ID_RE = /\sdata-pb-edit-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
+const READ_DC_EDIT_ID_RE = /\bdata-dc-edit-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
+const READ_PB_EDIT_ID_RE = /\bdata-pb-edit-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
+const SAFE_EDIT_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/
 
 function escapeHtmlText(value: string): string {
   return value
@@ -84,6 +98,18 @@ export function isSafeInlineEditId(value: unknown): value is string {
   return typeof value === 'string' && SAFE_EDIT_ID_RE.test(value)
 }
 
+function readEditId(rawAttrs: string): string | undefined {
+  const dc = READ_DC_EDIT_ID_RE.exec(rawAttrs)
+  const legacy = READ_PB_EDIT_ID_RE.exec(rawAttrs)
+  const value = dc?.[1] || dc?.[2] || dc?.[3] || legacy?.[1] || legacy?.[2] || legacy?.[3]
+  return isSafeInlineEditId(value) ? value : undefined
+}
+
+function editNodeId(edit: Pick<InlineTextEdit, 'nodeId' | 'id'>): string | undefined {
+  if (isSafeInlineEditId(edit.nodeId)) return edit.nodeId
+  return isSafeInlineEditId(edit.id) ? edit.id : undefined
+}
+
 /** Normalize session data before it can affect preview markup or editor state. */
 export function sanitizeStoredInlineEditMap(value: unknown): InlineEditMap {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
@@ -94,12 +120,18 @@ export function sanitizeStoredInlineEditMap(value: unknown): InlineEditMap {
     for (const raw of rawEdits.slice(0, MAX_EDITS_PER_PAGE)) {
       if (!raw || typeof raw !== 'object') continue
       const candidate = raw as Partial<InlineTextEdit>
-      if (typeof candidate.original !== 'string' || typeof candidate.updated !== 'string') continue
-      const original = candidate.original.replace(/\0/g, '').trim().slice(0, MAX_EDIT_LENGTH)
+      if (typeof candidate.updated !== 'string') continue
+      const original = typeof candidate.original === 'string'
+        ? candidate.original.replace(/\0/g, '').trim().slice(0, MAX_EDIT_LENGTH)
+        : undefined
       const updated = candidate.updated.replace(/\0/g, '').slice(0, MAX_EDIT_LENGTH)
-      if (!original || original === updated) continue
-      const id = isSafeInlineEditId(candidate.id) ? candidate.id : undefined
-      edits.push({ ...(id ? { id } : {}), original, updated })
+      // A record carrying the v3 field must never be reinterpreted as a v2
+      // text-only edit. Invalid IDs are discarded instead of being allowed to
+      // replace every matching string in the page.
+      if (candidate.nodeId !== undefined && !isSafeInlineEditId(candidate.nodeId)) continue
+      const nodeId = editNodeId(candidate)
+      if ((!nodeId && !original) || original === updated) continue
+      edits.push({ ...(nodeId ? { nodeId } : {}), ...(original ? { original } : {}), updated })
     }
     if (edits.length > 0) result[page] = edits
   }
@@ -108,20 +140,21 @@ export function sanitizeStoredInlineEditMap(value: unknown): InlineEditMap {
 
 function pageIdPrefix(page: string): string {
   const safePage = safeScopePart(page.replace(/\.html$/i, '')).replace(/[._]+/g, '-') || 'index'
-  return `pb-${safePage}`
+  return `dc-edit-${safePage}`
 }
 
 function annotateSegment(
   segment: string,
-  prefix: string,
-  nextOrdinal: () => number,
+  nextId: (existingId?: string) => string,
 ): string {
   EDITABLE_OPEN_TAG_RE.lastIndex = 0
   return segment.replace(EDITABLE_OPEN_TAG_RE, (full, tag: string, rawAttrs: string) => {
     if (/\/\s*>$/.test(full)) return full
-    const attrs = rawAttrs.replace(EXISTING_EDIT_ID_RE, '')
-    const ordinal = String(nextOrdinal()).padStart(4, '0')
-    return `<${tag}${attrs} data-pb-edit-id="${prefix}-${ordinal}">`
+    const existingId = readEditId(rawAttrs)
+    const attrs = rawAttrs
+      .replace(EXISTING_DC_EDIT_ID_RE, '')
+      .replace(EXISTING_PB_EDIT_ID_RE, '')
+    return `<${tag}${attrs} data-dc-edit-id="${nextId(existingId)}">`
   })
 }
 
@@ -133,9 +166,20 @@ function annotateSegment(
 export function annotateEditableElements(html: string, page = 'index.html'): string {
   const prefix = pageIdPrefix(page)
   let ordinal = 0
-  const nextOrdinal = () => {
+  const usedIds = new Set<string>()
+  const nextId = (existingId?: string) => {
     ordinal += 1
-    return ordinal
+    if (existingId && !usedIds.has(existingId)) {
+      usedIds.add(existingId)
+      return existingId
+    }
+    let candidate = `${prefix}-${String(ordinal).padStart(4, '0')}`
+    while (usedIds.has(candidate)) {
+      ordinal += 1
+      candidate = `${prefix}-${String(ordinal).padStart(4, '0')}`
+    }
+    usedIds.add(candidate)
+    return candidate
   }
   let cursor = 0
   let result = ''
@@ -143,11 +187,11 @@ export function annotateEditableElements(html: string, page = 'index.html'): str
   PROTECTED_BLOCK_RE.lastIndex = 0
   let protectedMatch: RegExpExecArray | null
   while ((protectedMatch = PROTECTED_BLOCK_RE.exec(html)) !== null) {
-    result += annotateSegment(html.slice(cursor, protectedMatch.index), prefix, nextOrdinal)
+    result += annotateSegment(html.slice(cursor, protectedMatch.index), nextId)
     result += protectedMatch[0]
     cursor = protectedMatch.index + protectedMatch[0].length
   }
-  result += annotateSegment(html.slice(cursor), prefix, nextOrdinal)
+  result += annotateSegment(html.slice(cursor), nextId)
   return result
 }
 
@@ -159,7 +203,7 @@ function replaceElementTextById(
   if (!isSafeInlineEditId(id)) return { html, replaced: false }
   const escapedId = escapeRegExp(id)
   const openingTag = new RegExp(
-    `<([A-Za-z][A-Za-z0-9:-]*)\\b[^>]*\\bdata-pb-edit-id\\s*=\\s*(["'])${escapedId}\\2[^>]*>`,
+    `<([A-Za-z][A-Za-z0-9:-]*)\\b[^>]*\\bdata-(?:dc|pb)-edit-id\\s*=\\s*(["'])${escapedId}\\2[^>]*>`,
     'i',
   )
   const opening = openingTag.exec(html)
@@ -193,35 +237,37 @@ export function mergeInlineEdit(
   edits: InlineTextEdit[],
   original: string,
   updated: string,
-  id?: string,
+  nodeId?: string,
 ): InlineTextEdit[] {
   const trimmed = (original || '').trim()
   if (!trimmed || trimmed === updated) return edits
   const next = edits.map((edit) => ({ ...edit }))
-  const safeId = isSafeInlineEditId(id) ? id : undefined
+  const safeNodeId = isSafeInlineEditId(nodeId) ? nodeId : undefined
 
-  if (safeId) {
-    const targeted = next.find((edit) => edit.id === safeId)
+  if (safeNodeId) {
+    const targeted = next.find((edit) => editNodeId(edit) === safeNodeId)
     if (targeted) {
       targeted.updated = updated
+      targeted.nodeId = safeNodeId
+      delete targeted.id
       return next
     }
   }
 
   // Legacy drafts did not have IDs. Keep their chaining semantics intact.
-  const chained = next.find((edit) => !edit.id && edit.updated.trim() === trimmed)
+  const chained = next.find((edit) => !editNodeId(edit) && edit.updated.trim() === trimmed)
   if (chained) {
     chained.updated = updated
-    if (safeId) chained.id = safeId
+    if (safeNodeId) chained.nodeId = safeNodeId
     return next
   }
-  const existing = next.find((edit) => !edit.id && edit.original.trim() === trimmed)
+  const existing = next.find((edit) => !editNodeId(edit) && edit.original?.trim() === trimmed)
   if (existing) {
     existing.updated = updated
-    if (safeId) existing.id = safeId
+    if (safeNodeId) existing.nodeId = safeNodeId
     return next
   }
-  next.push({ ...(safeId ? { id: safeId } : {}), original: trimmed, updated })
+  next.push({ ...(safeNodeId ? { nodeId: safeNodeId } : {}), original: trimmed, updated })
   return next
 }
 
@@ -230,27 +276,49 @@ export function mergeInlineEdit(
  * element and safely handle HTML entities; legacy edits retain exact-text
  * replacement behavior. All replacement text is escaped in both environments.
  */
+export function applyInlineEditsToHtmlWithReport(
+  html: string,
+  edits?: InlineTextEdit[],
+  page = 'index.html',
+): InlineEditApplicationResult {
+  let result = annotateEditableElements(html, page)
+  if (!edits || edits.length === 0) return { html: result, unmatchedNodeIds: [] }
+  const unmatchedNodeIds = new Set<string>()
+
+  for (const edit of edits) {
+    if (!edit || typeof edit.updated !== 'string') continue
+    const nodeId = editNodeId(edit)
+    if (nodeId) {
+      const targeted = replaceElementTextById(result, nodeId, edit.updated)
+      result = targeted.html
+      if (targeted.replaced) continue
+      unmatchedNodeIds.add(nodeId)
+      // Stable IDs are authoritative. Falling through to the v2 global text
+      // replacement can silently modify multiple duplicate nodes after a
+      // design revision, which is worse than leaving a stale edit unapplied.
+      continue
+    }
+    if (edit.nodeId !== undefined) {
+      // Direct callers may not have passed through the storage sanitizer.
+      // Preserve fail-closed semantics for malformed v3 records as well.
+      unmatchedNodeIds.add(String(edit.nodeId).slice(0, 128))
+      continue
+    }
+
+    const original = typeof edit.original === 'string' ? edit.original.trim() : ''
+    if (!original || original === edit.updated) continue
+    result = result.split(original).join(escapeHtmlText(edit.updated))
+  }
+  return { html: result, unmatchedNodeIds: [...unmatchedNodeIds] }
+}
+
+/** Apply edits for preview callers that do not need the diagnostic report. */
 export function applyInlineEditsToHtml(
   html: string,
   edits?: InlineTextEdit[],
   page = 'index.html',
 ): string {
-  let result = annotateEditableElements(html, page)
-  if (!edits || edits.length === 0) return result
-
-  for (const edit of edits) {
-    if (!edit || typeof edit.original !== 'string' || typeof edit.updated !== 'string') continue
-    if (edit.id) {
-      const targeted = replaceElementTextById(result, edit.id, edit.updated)
-      result = targeted.html
-      if (targeted.replaced) continue
-    }
-
-    const original = edit.original.trim()
-    if (!original || original === edit.updated) continue
-    result = result.split(original).join(escapeHtmlText(edit.updated))
-  }
-  return result
+  return applyInlineEditsToHtmlWithReport(html, edits, page).html
 }
 
 function readMap(key: string): InlineEditMap {

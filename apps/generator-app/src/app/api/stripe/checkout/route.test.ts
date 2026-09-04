@@ -96,4 +96,66 @@ describe('template checkout draft-image gate', () => {
     expect(mocks.createStripeClient).not.toHaveBeenCalled()
     expect(mocks.supabaseFrom).not.toHaveBeenCalled()
   })
+
+  it('snapshots the server-side v3 catalogue revision into the checkout intent', async () => {
+    const insertIntent = vi.fn().mockResolvedValue({ error: null })
+    const insertSlug = vi.fn().mockResolvedValue({ error: null })
+    const updateIntentEq = vi.fn().mockResolvedValue({ error: null })
+    mocks.supabaseFrom.mockImplementation((table: string) => {
+      if (table === 'checkout_intents') {
+        return { insert: insertIntent, update: vi.fn(() => ({ eq: updateIntentEq })) }
+      }
+      if (table === 'site_slugs') return { insert: insertSlug }
+      throw new Error(`Unexpected table ${table}`)
+    })
+    const createSession = vi.fn().mockResolvedValue({
+      id: 'cs_catalog_pin',
+      url: 'https://checkout.stripe.test/session',
+    })
+    mocks.createStripeClient.mockReturnValue({
+      prices: {
+        retrieve: vi.fn().mockResolvedValue({
+          id: 'price_basic',
+          active: true,
+          type: 'recurring',
+          recurring: { interval: 'month', interval_count: 1 },
+          unit_amount: 2_000,
+          currency: 'usd',
+        }),
+      },
+      checkout: {
+        sessions: { create: createSession },
+      },
+    })
+    mocks.getTemplate.mockResolvedValue({
+      slug: 'serene',
+      validation: { contractVersion: 3 },
+      designId: 'design_shared',
+      contentPresetId: 'content_serene',
+      themePresetId: 'theme_serene',
+      qualityReceipt: 'receipt_abc123',
+    })
+
+    const response = await checkoutPost(requestWithImages([]))
+    expect(response.status).toBe(200)
+    expect(insertIntent).toHaveBeenCalledWith(expect.objectContaining({
+      payload: expect.objectContaining({
+        catalogRevision: {
+          contractVersion: 3,
+          designId: 'design_shared',
+          contentPresetId: 'content_serene',
+          themePresetId: 'theme_serene',
+          qualityReceipt: 'receipt_abc123',
+        },
+      }),
+    }))
+    const stripePayload = createSession.mock.calls[0]?.[0]
+    expect(stripePayload.metadata.catalogRevision_n).toBe('1')
+    expect(JSON.parse(stripePayload.metadata.catalogRevision_0)).toMatchObject({
+      designId: 'design_shared',
+      contentPresetId: 'content_serene',
+      themePresetId: 'theme_serene',
+      qualityReceipt: 'receipt_abc123',
+    })
+  })
 })

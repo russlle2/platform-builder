@@ -3,6 +3,11 @@
 /* 10 color schemes · 10 font families · 10 structural layouts         */
 /* ------------------------------------------------------------------ */
 
+import {
+  buildCompilerThemeOverrides,
+  type CompilerColorPalette,
+} from '../compiler-theme'
+
 export interface ColorScheme {
   id: string
   name: string
@@ -397,6 +402,7 @@ export function buildVariationCSS(
   colorId: string,
   fontId: string,
   structureId: string,
+  stylesheet = '',
 ): string {
   const parts: string[] = []
 
@@ -424,6 +430,22 @@ export function buildVariationCSS(
   if (structure.css) {
     parts.push(structure.css)
   }
+
+  const colorPalette = Object.keys(color.vars).length > 0
+    ? {
+      background: color.vars['--bg'],
+      text: color.vars['--fg'],
+      muted: color.vars['--muted'],
+      primary: color.vars['--primary'],
+      accent: color.vars['--accent'],
+      card: color.vars['--card'],
+    } as CompilerColorPalette
+    : undefined
+  const compilerOverrides = buildCompilerThemeOverrides(stylesheet, {
+    ...(colorPalette ? { colors: colorPalette } : {}),
+    ...(font.family ? { fonts: { body: font.family, heading: font.family } } : {}),
+  })
+  if (compilerOverrides) parts.push(compilerOverrides)
 
   if (parts.length === 0) return ''
 

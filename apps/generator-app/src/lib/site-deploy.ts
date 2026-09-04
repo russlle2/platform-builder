@@ -21,13 +21,18 @@ import {
 import { buildVariationCSS } from '@/lib/templates/variations'
 import { buildCustomThemeCss, type CustomTheme } from '@/lib/custom-theme'
 import {
-  applyImageSwapsToHtml,
+  assertCatalogRevision,
+  type CatalogRevisionPin,
+} from '@/lib/catalog-revision'
+import {
+  applyImageSwapsToHtmlWithReport,
   sanitizeImageSwapMap,
   type ImageSwap,
 } from '@/lib/image-swaps'
 import {
   applyInlineEditsToHtml,
-  isSafeInlineEditId,
+  applyInlineEditsToHtmlWithReport,
+  sanitizeStoredInlineEditMap,
   type InlineTextEdit,
 } from '@/lib/inline-edits'
 
@@ -43,6 +48,8 @@ export interface BuildSiteOptions {
   structureVariation?: string
   /** Exact colors/fonts selected in the live editor. */
   customTheme?: CustomTheme | null
+  /** Server-snapshotted v3 design/content/theme receipt from checkout. */
+  catalogRevision?: CatalogRevisionPin | null
   /** Inline text edits keyed by page filename (e.g. "index.html"). */
   inlineEdits?: Record<string, InlineTextEdit[]>
   /** Image src replacements keyed by page filename. */
@@ -98,24 +105,7 @@ export type DeployFileContent = string | Buffer
 
 /** Normalize client-supplied inline edits before durable storage or deploy. */
 export function sanitizeInlineEditMap(value: unknown): Record<string, InlineTextEdit[]> {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
-  const result: Record<string, InlineTextEdit[]> = {}
-  for (const [page, rawEdits] of Object.entries(value)) {
-    if (!/^[A-Za-z0-9_-]+\.html$/.test(page) || !Array.isArray(rawEdits)) continue
-    const edits: InlineTextEdit[] = []
-    for (const raw of rawEdits.slice(0, MAX_INLINE_EDITS_PER_PAGE)) {
-      if (!raw || typeof raw !== 'object') continue
-      const candidate = raw as Partial<InlineTextEdit>
-      if (typeof candidate.original !== 'string' || typeof candidate.updated !== 'string') continue
-      const original = candidate.original.replace(/\0/g, '').trim().slice(0, MAX_INLINE_EDIT_LENGTH)
-      const updated = candidate.updated.replace(/\0/g, '').slice(0, MAX_INLINE_EDIT_LENGTH)
-      if (!original || original === updated) continue
-      const id = isSafeInlineEditId(candidate.id) ? candidate.id : undefined
-      edits.push({ ...(id ? { id } : {}), original, updated })
-    }
-    if (edits.length > 0) result[page] = edits
-  }
-  return result
+  return sanitizeStoredInlineEditMap(value)
 }
 
 export function sanitizeCustomerValues(value: unknown): Record<string, string> {
@@ -143,8 +133,10 @@ export function applyInlineTextEdits(
     ? edits
       .filter((edit) => (
         edit &&
-        typeof edit.original === 'string' &&
-        typeof edit.updated === 'string'
+        typeof edit.updated === 'string' &&
+        (typeof edit.nodeId === 'string' ||
+          typeof edit.id === 'string' ||
+          typeof edit.original === 'string')
       ))
       .slice(0, MAX_INLINE_EDITS_PER_PAGE)
       .map((edit) => ({
@@ -157,6 +149,36 @@ export function applyInlineTextEdits(
     boundedEdits,
     page,
   )
+}
+
+/**
+ * Apply persisted page customizations with strict v3 identity checks.
+ *
+ * Preview callers intentionally use the non-throwing wrappers so a stale edit
+ * can be repaired in the editor. Deployment must fail closed: publishing a
+ * page after silently applying a stale ID by duplicate text/URL would corrupt
+ * customer content in a way that is difficult to spot or undo.
+ */
+export function applyPageCustomizationsForDeploy(
+  html: string,
+  edits: InlineTextEdit[] | undefined,
+  swaps: ImageSwap[] | undefined,
+  page = 'index.html',
+): string {
+  const edited = applyInlineEditsToHtmlWithReport(html, edits, page)
+  const imaged = applyImageSwapsToHtmlWithReport(edited.html, swaps, page)
+  if (edited.unmatchedNodeIds.length > 0 || imaged.unmatchedSlotIds.length > 0) {
+    const details = [
+      edited.unmatchedNodeIds.length > 0
+        ? `text IDs: ${edited.unmatchedNodeIds.join(', ')}`
+        : '',
+      imaged.unmatchedSlotIds.length > 0
+        ? `image IDs: ${imaged.unmatchedSlotIds.join(', ')}`
+        : '',
+    ].filter(Boolean).join('; ')
+    throw new Error(`Cannot deploy ${page}: saved customization targets no longer exist (${details})`)
+  }
+  return imaged.html
 }
 
 export function buildContactFormScript(slug: string): string {
@@ -283,6 +305,7 @@ export async function buildDeployFiles(
     fontVariation = 'original',
     structureVariation = 'original',
     customTheme,
+    catalogRevision,
     inlineEdits,
     imageSwaps,
     slug,
@@ -291,6 +314,7 @@ export async function buildDeployFiles(
 
   const templateData = await getTemplate(niche, templateSlug)
   if (!templateData) return null
+  assertCatalogRevision(templateData, catalogRevision)
   const searchEngineFiles = buildSearchEngineFiles(siteUrl, templateData.pages)
   if (!searchEngineFiles) return null
 
@@ -298,16 +322,16 @@ export async function buildDeployFiles(
   const safeInlineEdits = sanitizeInlineEditMap(inlineEdits)
   const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
 
-  const variationCSS = [
-    buildVariationCSS(colorScheme, fontVariation, structureVariation),
-    buildCustomThemeCss(customTheme),
-  ].filter(Boolean).join('\n')
   // Fetch shared assets + every page in parallel — each read is a CDN
   // round-trip in production, so serial loops blow up latency.
   const [cssFile, ...rawPages] = await Promise.all([
     readTemplateFile(niche, templateSlug, 'assets/css/styles.css'),
     ...templateData.pages.map((page) => readTemplateFile(niche, templateSlug, page)),
   ])
+  const variationCSS = [
+    buildVariationCSS(colorScheme, fontVariation, structureVariation, cssFile || ''),
+    buildCustomThemeCss(customTheme, cssFile || ''),
+  ].filter(Boolean).join('\n')
   const contactScript = buildContactFormScript(slug)
 
   const deployFiles: Record<string, DeployFileContent> = {}
@@ -317,8 +341,12 @@ export async function buildDeployFiles(
     if (!rawHtml) return
 
     let html = hydrateTemplate(rawHtml, safeCustomerValues, templateData.fields)
-    html = applyInlineTextEdits(html, safeInlineEdits[page], page)
-    html = applyImageSwapsToHtml(html, safeImageSwaps[page])
+    html = applyPageCustomizationsForDeploy(
+      html,
+      safeInlineEdits[page],
+      safeImageSwaps[page],
+      page,
+    )
 
     const injectedStyles: string[] = []
     if (cssFile) injectedStyles.push(cssFile)

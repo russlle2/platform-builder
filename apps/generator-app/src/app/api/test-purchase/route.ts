@@ -10,6 +10,7 @@ import { sendOrderConfirmationEmail } from '@/lib/email'
 import { sanitizeCustomTheme, type CustomTheme } from '@/lib/custom-theme'
 import { isDraftImageOwner } from '@/lib/image-owner'
 import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
+import { snapshotCatalogRevision } from '@/lib/catalog-revision'
 
 /**
  * POST /api/test-purchase
@@ -88,6 +89,14 @@ export async function POST(req: Request) {
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '')
+  // Match production checkout semantics: derive the immutable v3 receipt
+  // from the server catalogue rather than accepting it from this request.
+  const selectedTemplate = templateSlug && niche
+    ? await getTemplate(niche, templateSlug)
+    : null
+  const catalogRevision = selectedTemplate
+    ? snapshotCatalogRevision(selectedTemplate)
+    : undefined
 
   const log: string[] = []
   let siteUrl = ''
@@ -168,6 +177,7 @@ export async function POST(req: Request) {
             slug: normalizedSlug,
             siteUrl,
             customTheme: sanitizeCustomTheme(customTheme),
+            catalogRevision,
           })
           if (deployFiles) {
             const deploy = await deploySiteFiles(siteId, deployFiles)
@@ -215,6 +225,7 @@ export async function POST(req: Request) {
               fontVariation,
               structureVariation,
               customTheme: sanitizeCustomTheme(customTheme),
+              ...(catalogRevision ? { catalogRevision } : {}),
               customerValues,
               inlineEdits,
               imageSwaps: resolvedImageSwaps,
@@ -246,7 +257,7 @@ export async function POST(req: Request) {
   } else {
     log.push('NETLIFY_ACCESS_TOKEN not set — skipping site provisioning')
     if (templateSlug && niche) {
-      const templateData = await getTemplate(niche, templateSlug)
+      const templateData = selectedTemplate
       if (templateData) {
         log.push(`Template "${templateData.name}" found with ${templateData.pages.length} pages — would deploy on purchase`)
       }

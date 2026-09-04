@@ -13,6 +13,7 @@ import { sanitizeImageSwapMap, type ImageSwap } from '@/lib/image-swaps'
 import { deploySiteFiles } from '@/lib/netlify'
 import { requireInternalAdminOrThrow } from '@/lib/server-auth'
 import type { CustomTheme } from '@/lib/custom-theme'
+import type { CatalogRevisionPin } from '@/lib/catalog-revision'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -24,6 +25,7 @@ interface SiteData {
   fontVariation?: string
   structureVariation?: string
   customTheme?: CustomTheme | null
+  catalogRevision?: CatalogRevisionPin
   customerValues?: Record<string, string>
   inlineEdits?: Record<string, InlineTextEdit[]>
   imageSwaps?: Record<string, ImageSwap[]>
@@ -123,6 +125,7 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     fontVariation: data.fontVariation,
     structureVariation: data.structureVariation,
     customTheme: data.customTheme,
+    catalogRevision: data.catalogRevision,
     inlineEdits: data.inlineEdits,
     imageSwaps: data.imageSwaps,
     slug,

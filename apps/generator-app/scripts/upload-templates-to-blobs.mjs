@@ -78,6 +78,20 @@ function loadLaunchCatalogContract() {
 
 export const LAUNCH_CATALOG_CONTRACT = loadLaunchCatalogContract()
 
+const SUPPORTED_CATALOG_CONTRACT_VERSIONS = new Set([2, 3])
+const SHA256_RE = /^[a-f0-9]{64}$/
+const SAFE_ARTIFACT_SEGMENT_RE = /^(?!\.{1,2}$)[A-Za-z0-9._-]+$/
+const ARTIFACT_TREE_EXCLUSIONS = new Set([
+  '.dailyclarity/artifact-tree.json',
+  '.dailyclarity/final-quality-receipt.json',
+])
+const V3_ID_PATTERNS = Object.freeze({
+  designId: /^design_[A-Za-z0-9_-]+$/,
+  contentPresetId: /^content_[A-Za-z0-9_-]+$/,
+  themePresetId: /^theme_[A-Za-z0-9_-]+$/,
+  qualityReceipt: /^receipt_[A-Za-z0-9_-]+$/,
+})
+
 /** Require the exact launch distribution after template validation/quarantine. */
 export function validateLaunchCatalogManifest(manifest) {
   const errors = []
@@ -92,6 +106,13 @@ export function validateLaunchCatalogManifest(manifest) {
     countsByNiche[niche] = actual
     if (!Array.isArray(templates)) errors.push(`${niche}: manifest entry is missing or malformed`)
     if (actual !== expected) errors.push(`${niche}: expected ${expected}, found ${actual}`)
+    if (Array.isArray(templates)) {
+      templates.forEach((template, index) => {
+        if (!hasValidationStamp(template)) {
+          errors.push(`${niche}[${index}]: template validation stamp is missing or malformed`)
+        }
+      })
+    }
   }
 
   for (const niche of Object.keys(source)) {
@@ -552,6 +573,13 @@ function parseTemplateMeta(templateDir, nicheSlug, relDir) {
       meta = JSON.parse(readFileSync(templateJsonPath, 'utf-8'))
     } catch { /* ignore */ }
   }
+  let finalReceipt = {}
+  const finalReceiptPath = path.join(templateDir, '.dailyclarity', 'final-quality-receipt.json')
+  if (existsSync(finalReceiptPath)) {
+    try {
+      finalReceipt = JSON.parse(readFileSync(finalReceiptPath, 'utf-8'))
+    } catch { /* validation below reports a malformed receipt */ }
+  }
 
   const slug = meta.slug || path.basename(templateDir)
   const pages = Array.isArray(meta.pages)
@@ -572,6 +600,7 @@ function parseTemplateMeta(templateDir, nicheSlug, relDir) {
 
   return {
     slug,
+    legacySlug: typeof meta.legacySlug === 'string' ? meta.legacySlug : slug,
     name: meta.name || slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
     niche: nicheSlug,
     nicheSlug,
@@ -585,7 +614,398 @@ function parseTemplateMeta(templateDir, nicheSlug, relDir) {
     dir: relDir.split(path.sep).join('/'),
     fields,
     snippet: extractSnippet(indexPath),
+    contractVersion: meta.contractVersion === 3 ? 3 : 2,
+    designId: typeof meta.designId === 'string' ? meta.designId : undefined,
+    contentPresetId: typeof meta.contentPresetId === 'string' ? meta.contentPresetId : undefined,
+    themePresetId: typeof meta.themePresetId === 'string' ? meta.themePresetId : undefined,
+    qualityReceipt: typeof finalReceipt.id === 'string'
+      ? finalReceipt.id
+      : typeof meta.qualityReceipt === 'string' ? meta.qualityReceipt : undefined,
   }
+}
+
+function normalizeArtifactTreePath(value) {
+  if (
+    typeof value !== 'string' ||
+    !value ||
+    value.startsWith('/') ||
+    value.includes('\\') ||
+    /[\0-\x1f]/.test(value)
+  ) {
+    return null
+  }
+  const segments = value.split('/')
+  if (segments.some((segment) => !SAFE_ARTIFACT_SEGMENT_RE.test(segment))) return null
+  return segments.join('/')
+}
+
+function listArtifactTreeFiles(templateDir, currentDir = templateDir, prefix = '') {
+  const files = []
+  for (const entry of readdirSync(currentDir).sort()) {
+    const full = path.resolve(currentDir, entry)
+    if (!isPathWithin(templateDir, full)) throw new Error(`artifact path escapes template root: ${entry}`)
+    const stat = lstatSync(full)
+    const relative = prefix ? `${prefix}/${entry}` : entry
+    if (stat.isSymbolicLink()) throw new Error(`artifact is a symbolic link: ${relative}`)
+    if (stat.isDirectory()) {
+      files.push(...listArtifactTreeFiles(templateDir, full, relative))
+    } else if (stat.isFile() && !ARTIFACT_TREE_EXCLUSIONS.has(relative)) {
+      files.push(relative)
+    }
+  }
+  return files.sort()
+}
+
+function validateReceiptEvidence(receipt, meta, errors) {
+  if (!Array.isArray(meta.pages) || meta.pages.length === 0) {
+    errors.push('catalog v3 template has no pages to verify')
+    return
+  }
+  if (!Array.isArray(receipt.pages)) {
+    errors.push('catalog v3 final receipt has no browser evidence')
+    return
+  }
+
+  const expected = new Set()
+  for (const page of meta.pages) {
+    expected.add(`${page}\0desktop`)
+    expected.add(`${page}\0mobile`)
+  }
+  const seen = new Set()
+  for (const evidence of receipt.pages) {
+    if (!evidence || typeof evidence !== 'object') {
+      errors.push('catalog v3 final receipt contains malformed browser evidence')
+      continue
+    }
+    const key = `${evidence.page}\0${evidence.viewport}`
+    if (!expected.has(key)) {
+      errors.push(`catalog v3 final receipt has unexpected browser evidence for ${evidence.page}/${evidence.viewport}`)
+      continue
+    }
+    if (seen.has(key)) {
+      errors.push(`catalog v3 final receipt repeats browser evidence for ${evidence.page}/${evidence.viewport}`)
+      continue
+    }
+    seen.add(key)
+    if (
+      evidence.passed !== true ||
+      !SHA256_RE.test(evidence.screenshotSha256) ||
+      !/^[a-f0-9]{16}$/.test(evidence.perceptualHash) ||
+      !Number.isSafeInteger(evidence.editSlots) || evidence.editSlots < 0 ||
+      !Number.isSafeInteger(evidence.imageSlots) || evidence.imageSlots < 0 ||
+      !Array.isArray(evidence.issues) || evidence.issues.length !== 0
+    ) {
+      errors.push(`catalog v3 final receipt has invalid browser evidence for ${evidence.page}/${evidence.viewport}`)
+    }
+  }
+  for (const key of expected) {
+    if (!seen.has(key)) {
+      const [page, viewport] = key.split('\0')
+      errors.push(`catalog v3 final receipt is missing browser evidence for ${page}/${viewport}`)
+    }
+  }
+}
+
+export function validateV3QualityReceipt(templateDir, meta) {
+  if (meta.contractVersion !== 3) return []
+  const errors = []
+  for (const [label, pattern] of Object.entries(V3_ID_PATTERNS)) {
+    const value = meta[label]
+    if (typeof value !== 'string' || !pattern.test(value)) {
+      errors.push(`catalog v3 ${label} is missing or invalid`)
+    }
+  }
+
+  const treePath = path.join(templateDir, '.dailyclarity', 'artifact-tree.json')
+  const receiptPath = path.join(templateDir, '.dailyclarity', 'final-quality-receipt.json')
+  let tree
+  let receipt
+  try { tree = JSON.parse(readFileSync(treePath, 'utf-8')) } catch { errors.push('catalog v3 artifact tree is missing or malformed') }
+  try { receipt = JSON.parse(readFileSync(receiptPath, 'utf-8')) } catch { errors.push('catalog v3 final quality receipt is missing or malformed') }
+  if (!tree || !receipt) return errors
+
+  if (
+    typeof tree !== 'object' || Array.isArray(tree) || tree.version !== 1 ||
+    !Array.isArray(tree.files) || tree.files.length === 0 || !SHA256_RE.test(tree.treeHash)
+  ) {
+    errors.push('catalog v3 artifact tree shape is invalid')
+    return errors
+  }
+
+  const records = []
+  const recordPaths = new Set()
+  for (const item of tree.files) {
+    const itemPath = normalizeArtifactTreePath(item?.path)
+    if (
+      !item || typeof item !== 'object' || !itemPath || itemPath !== item.path ||
+      !SHA256_RE.test(item.sha256) || !Number.isSafeInteger(item.bytes) || item.bytes < 0 ||
+      ARTIFACT_TREE_EXCLUSIONS.has(itemPath)
+    ) {
+      errors.push('catalog v3 artifact tree contains an invalid file record')
+      continue
+    }
+    if (recordPaths.has(itemPath)) {
+      errors.push(`catalog v3 artifact tree repeats file record ${itemPath}`)
+      continue
+    }
+    recordPaths.add(itemPath)
+    records.push({ path: itemPath, sha256: item.sha256, bytes: item.bytes })
+
+    const filePath = path.resolve(templateDir, ...itemPath.split('/'))
+    let stat
+    try { stat = lstatSync(filePath) } catch { /* reported as missing below */ }
+    if (!isPathWithin(templateDir, filePath) || !stat?.isFile() || stat.isSymbolicLink()) {
+      errors.push(`catalog v3 artifact is missing or invalid ${itemPath}`)
+      continue
+    }
+    const bytes = readFileSync(filePath)
+    const actualHash = createHash('sha256').update(bytes).digest('hex')
+    if (bytes.byteLength !== item.bytes || actualHash !== item.sha256) {
+      errors.push(`catalog v3 artifact digest mismatch for ${itemPath}`)
+    }
+  }
+  records.sort((left, right) => left.path.localeCompare(right.path))
+  const calculatedTreeHash = manifestDigest(records)
+  if (calculatedTreeHash !== tree.treeHash) errors.push('catalog v3 artifact tree hash is invalid')
+
+  try {
+    const actualPaths = listArtifactTreeFiles(templateDir)
+    for (const actualPath of actualPaths) {
+      if (!recordPaths.has(actualPath)) {
+        errors.push(`catalog v3 artifact tree is missing file record ${actualPath}`)
+      }
+    }
+  } catch (error) {
+    errors.push(`catalog v3 artifact inventory is invalid: ${error instanceof Error ? error.message : String(error)}`)
+  }
+
+  if (typeof receipt !== 'object' || Array.isArray(receipt) || receipt.version !== 1) {
+    errors.push('catalog v3 final quality receipt shape is invalid')
+    return errors
+  }
+  if (receipt.id !== meta.qualityReceipt) errors.push('catalog v3 final receipt id does not match manifest metadata')
+  const { id: _receiptId, ...receiptBody } = receipt
+  const calculatedReceiptId = `receipt_${manifestDigest(receiptBody).slice(0, 24)}`
+  if (receipt.id !== calculatedReceiptId) errors.push('catalog v3 final receipt digest is invalid')
+  if (receipt.legacySlug !== meta.legacySlug || receipt.niche !== meta.nicheSlug) {
+    errors.push('catalog v3 final receipt lineage does not match template metadata')
+  }
+  if (
+    !SHA256_RE.test(receipt.sourceHash) ||
+    typeof receipt.ruleVersion !== 'string' || !receipt.ruleVersion.trim() ||
+    typeof receipt.generatedAt !== 'string' || !Number.isFinite(Date.parse(receipt.generatedAt))
+  ) {
+    errors.push('catalog v3 final receipt provenance is invalid')
+  }
+  if (receipt.artifactHash !== tree.treeHash) errors.push('catalog v3 final receipt does not match artifact tree')
+  if (
+    receipt.checks?.static !== 'passed' || receipt.checks?.desktop !== 'passed' ||
+    receipt.checks?.mobile !== 'passed' || receipt.checks?.criticalDefects !== 0 ||
+    receipt.checks?.seriousDefects !== 0
+  ) {
+    errors.push('catalog v3 final receipt does not prove all required quality gates passed')
+  }
+  validateReceiptEvidence(receipt, meta, errors)
+  return errors
+}
+
+function catalogV3Key(niche, legacySlug) {
+  return `${niche}/${legacySlug}`
+}
+
+/**
+ * Reconcile the uploader manifest with the authoritative, post-dedupe v3 map.
+ * The per-template sidecars predate visual clustering, so only this document
+ * contains the canonical design ID selected for visually equivalent aliases.
+ */
+export function reconcileCatalogV3Manifest(manifest, catalog) {
+  const errors = []
+  if (!catalog || typeof catalog !== 'object' || Array.isArray(catalog)) {
+    return { pass: false, errors: ['catalog v3 document is missing or malformed'], manifest: null }
+  }
+  if (
+    catalog.contractVersion !== 3 ||
+    typeof catalog.ruleVersion !== 'string' || !catalog.ruleVersion.trim() ||
+    typeof catalog.generatedAt !== 'string' || !Number.isFinite(Date.parse(catalog.generatedAt)) ||
+    !Number.isSafeInteger(catalog.sourceTemplates) || catalog.sourceTemplates < 1 ||
+    !Number.isSafeInteger(catalog.canonicalDesigns) || catalog.canonicalDesigns < 1 ||
+    !Array.isArray(catalog.templates) ||
+    !catalog.gallery || typeof catalog.gallery !== 'object' || Array.isArray(catalog.gallery)
+  ) {
+    errors.push('catalog v3 document shape is invalid')
+  }
+  if (!Array.isArray(catalog.templates)) {
+    return { pass: false, errors, manifest: null }
+  }
+
+  const localEntries = []
+  const localByKey = new Map()
+  for (const [niche, templates] of Object.entries(manifest || {})) {
+    if (!Array.isArray(templates)) continue
+    for (const template of templates) {
+      if (template?.validation?.contractVersion !== 3) continue
+      const key = catalogV3Key(niche, template.legacySlug)
+      if (
+        typeof template.legacySlug !== 'string' ||
+        !SAFE_ARTIFACT_SEGMENT_RE.test(template.legacySlug) ||
+        localByKey.has(key)
+      ) {
+        errors.push(`local catalog v3 entry is duplicated or malformed: ${key}`)
+        continue
+      }
+      localEntries.push(template)
+      localByKey.set(key, template)
+    }
+  }
+
+  const mappingsByKey = new Map()
+  for (const mapping of catalog.templates) {
+    const validIdentity = Boolean(
+      mapping && typeof mapping === 'object' &&
+      typeof mapping.niche === 'string' && SAFE_ARTIFACT_SEGMENT_RE.test(mapping.niche) &&
+      typeof mapping.legacySlug === 'string' && SAFE_ARTIFACT_SEGMENT_RE.test(mapping.legacySlug) &&
+      typeof mapping.canonicalLegacySlug === 'string' && SAFE_ARTIFACT_SEGMENT_RE.test(mapping.canonicalLegacySlug) &&
+      ['canonical', 'alias'].includes(mapping.disposition),
+    )
+    const validIds = Boolean(
+      validIdentity && Object.entries(V3_ID_PATTERNS).every(([field, pattern]) => (
+        typeof mapping[field] === 'string' && pattern.test(mapping[field])
+      )),
+    )
+    if (!validIdentity || !validIds) {
+      errors.push('catalog v3 document contains a malformed template mapping')
+      continue
+    }
+    const key = catalogV3Key(mapping.niche, mapping.legacySlug)
+    if (mappingsByKey.has(key)) {
+      errors.push(`catalog v3 document repeats template mapping ${key}`)
+      continue
+    }
+    mappingsByKey.set(key, mapping)
+  }
+
+  if (catalog.sourceTemplates !== catalog.templates.length || catalog.sourceTemplates !== localEntries.length) {
+    errors.push(
+      `catalog v3 source count does not match local manifest: ` +
+      `declared=${catalog.sourceTemplates} mappings=${catalog.templates.length} local=${localEntries.length}`,
+    )
+  }
+  for (const [key, template] of localByKey) {
+    const mapping = mappingsByKey.get(key)
+    if (!mapping) {
+      errors.push(`catalog v3 document is missing template mapping ${key}`)
+      continue
+    }
+    for (const field of ['contentPresetId', 'themePresetId', 'qualityReceipt']) {
+      if (mapping[field] !== template[field]) {
+        errors.push(`catalog v3 ${field} does not match verified template ${key}`)
+      }
+    }
+  }
+  for (const key of mappingsByKey.keys()) {
+    if (!localByKey.has(key)) errors.push(`catalog v3 document has unknown template mapping ${key}`)
+  }
+
+  const canonicalByDesign = new Map()
+  for (const [key, mapping] of mappingsByKey) {
+    const canonicalKey = catalogV3Key(mapping.niche, mapping.canonicalLegacySlug)
+    const canonical = mappingsByKey.get(canonicalKey)
+    const localCanonical = localByKey.get(canonicalKey)
+    if (
+      !canonical || canonical.disposition !== 'canonical' ||
+      canonical.legacySlug !== canonical.canonicalLegacySlug ||
+      canonical.designId !== mapping.designId ||
+      !localCanonical || localCanonical.designId !== canonical.designId
+    ) {
+      errors.push(`catalog v3 template mapping has invalid canonical lineage ${key}`)
+      continue
+    }
+    const previousCanonical = canonicalByDesign.get(mapping.designId)
+    if (previousCanonical && previousCanonical !== canonicalKey) {
+      errors.push(`catalog v3 design has multiple canonical templates ${mapping.designId}`)
+    } else {
+      canonicalByDesign.set(mapping.designId, canonicalKey)
+    }
+    if (mapping.disposition === 'canonical' && mapping.legacySlug !== mapping.canonicalLegacySlug) {
+      errors.push(`catalog v3 canonical mapping does not point to itself ${key}`)
+    }
+    if (mapping.disposition === 'alias' && mapping.legacySlug === mapping.canonicalLegacySlug) {
+      errors.push(`catalog v3 alias mapping points to itself ${key}`)
+    }
+  }
+  if (catalog.canonicalDesigns !== canonicalByDesign.size) {
+    errors.push(
+      `catalog v3 canonical design count is invalid: declared=${catalog.canonicalDesigns} actual=${canonicalByDesign.size}`,
+    )
+  }
+
+  const expectedGallery = {}
+  for (const mapping of mappingsByKey.values()) {
+    if (mapping.disposition !== 'canonical') continue
+    expectedGallery[mapping.niche] ??= []
+    expectedGallery[mapping.niche].push(mapping.legacySlug)
+  }
+  for (const values of Object.values(expectedGallery)) values.sort()
+  const galleryNiches = new Set([
+    ...Object.keys(expectedGallery),
+    ...Object.keys(catalog.gallery || {}),
+  ])
+  for (const niche of galleryNiches) {
+    const actual = catalog.gallery?.[niche]
+    const expected = expectedGallery[niche] || []
+    if (
+      !Array.isArray(actual) ||
+      actual.some((slug) => typeof slug !== 'string') ||
+      new Set(actual).size !== actual.length ||
+      JSON.stringify(actual) !== JSON.stringify(expected)
+    ) {
+      errors.push(`catalog v3 gallery does not match canonical mappings for ${niche}`)
+    }
+  }
+
+  if (errors.length > 0) return { pass: false, errors, manifest: null }
+  const reconciled = Object.fromEntries(
+    Object.entries(manifest).map(([niche, templates]) => [
+      niche,
+      templates.map((template) => {
+        if (template.validation?.contractVersion !== 3) return template
+        const mapping = mappingsByKey.get(catalogV3Key(niche, template.legacySlug))
+        return {
+          ...template,
+          designId: mapping.designId,
+          contentPresetId: mapping.contentPresetId,
+          themePresetId: mapping.themePresetId,
+          qualityReceipt: mapping.qualityReceipt,
+          canonicalLegacySlug: mapping.canonicalLegacySlug,
+          disposition: mapping.disposition,
+        }
+      }),
+    ]),
+  )
+  return { pass: true, errors: [], manifest: reconciled }
+}
+
+function applyCatalogV3DocumentFromRoot(root, manifest) {
+  const hasV3Templates = Object.values(manifest).some(
+    (templates) => templates.some((template) => template.validation?.contractVersion === 3),
+  )
+  const catalogPath = path.join(root, '_catalog-v3.json')
+  if (!hasV3Templates && !existsSync(catalogPath)) return manifest
+  if (!existsSync(catalogPath)) {
+    throw new Error('Catalog v3 templates require the authoritative _catalog-v3.json document')
+  }
+
+  let catalog
+  try {
+    catalog = JSON.parse(readFileSync(catalogPath, 'utf-8'))
+  } catch {
+    throw new Error('Authoritative _catalog-v3.json is malformed')
+  }
+  const result = reconcileCatalogV3Manifest(manifest, catalog)
+  if (!result.pass) {
+    throw new Error(`Authoritative _catalog-v3.json failed validation:\n  - ${result.errors.join('\n  - ')}`)
+  }
+  return result.manifest
 }
 
 function listDeployableFiles(templateDir, currentDir = templateDir, prefix = '') {
@@ -622,6 +1042,7 @@ function validateTemplateDirectory(templateDir, nicheSlug, templateKey) {
   for (const page of meta.pages) {
     if (!meta.files.includes(page)) structuralErrors.push(`page is missing from deployable files: ${page}`)
   }
+  structuralErrors.push(...validateV3QualityReceipt(templateDir, meta))
   const initialContract = validateUploadContract(pages, meta.fields)
   // Legacy libraries often have a correct tokenized HTML surface but stale
   // fields.json metadata. Rebuild the manifest fields from the actual tokens;
@@ -722,7 +1143,7 @@ function buildManifest(nicheSlugs) {
         editable: true,
         validation: {
           status: 'passed',
-          contractVersion: 2,
+          contractVersion: template.contractVersion,
           tokens: result.tokens,
         },
       })
@@ -747,15 +1168,26 @@ function formatBytes(bytes) {
 }
 
 function hasValidationStamp(template) {
-  return Boolean(
+  const hasBaseStamp = Boolean(
     template &&
     typeof template === 'object' &&
     template.editable === true &&
     template.validation?.status === 'passed' &&
-    template.validation?.contractVersion === 2 &&
+    SUPPORTED_CATALOG_CONTRACT_VERSIONS.has(template.validation?.contractVersion) &&
     Array.isArray(template.validation?.tokens) &&
     template.validation.tokens.length > 0,
   )
+  if (!hasBaseStamp || template.validation.contractVersion !== 3) return hasBaseStamp
+  const hasCompositionIds = Object.entries(V3_ID_PATTERNS).every(([field, pattern]) => (
+    typeof template[field] === 'string' && pattern.test(template[field])
+  ))
+  const hasCanonicalLineage = Boolean(
+    typeof template.legacySlug === 'string' && SAFE_ARTIFACT_SEGMENT_RE.test(template.legacySlug) &&
+    typeof template.canonicalLegacySlug === 'string' && SAFE_ARTIFACT_SEGMENT_RE.test(template.canonicalLegacySlug) &&
+    ['canonical', 'alias'].includes(template.disposition) &&
+    (template.disposition === 'canonical') === (template.legacySlug === template.canonicalLegacySlug)
+  )
+  return hasCompositionIds && hasCanonicalLineage
 }
 
 export function mergeValidatedManifest(remoteManifest, localManifest, selectors, nicheSlugs) {
@@ -788,6 +1220,29 @@ export function mergeValidatedManifest(remoteManifest, localManifest, selectors,
     })
   }
   return merged
+}
+
+export function uploadMetadataForFile(key, sha256, manifest) {
+  const parts = typeof key === 'string' ? key.split('/') : []
+  if (parts.length < 3 || !SHA256_RE.test(sha256)) {
+    throw new Error(`Cannot derive upload metadata for invalid template key: ${key}`)
+  }
+  const templateDir = `${parts[0]}/${parts[1]}`
+  const template = Array.isArray(manifest?.[parts[0]])
+    ? manifest[parts[0]].find((entry) => entry?.dir === templateDir)
+    : undefined
+  const contractVersion = template?.validation?.contractVersion
+  if (!SUPPORTED_CATALOG_CONTRACT_VERSIONS.has(contractVersion)) {
+    throw new Error(`Cannot derive upload contract version for ${key}`)
+  }
+  return { sha256, contractVersion }
+}
+
+export function hasMatchingUploadMetadata(remote, expected) {
+  return Boolean(
+    remote?.metadata?.sha256 === expected.sha256 &&
+    remote.metadata.contractVersion === expected.contractVersion,
+  )
 }
 
 function validateSelectedTemplates(files) {
@@ -847,7 +1302,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     }
   }
 
-  const { manifest, totalTemplates, rejectedTemplates } = buildManifest(nicheSlugs)
+  let { manifest, totalTemplates, rejectedTemplates } = buildManifest(nicheSlugs)
   console.log(
     `[upload-templates] Found ${nicheSlugs.length} niches, ${totalTemplates} publishable templates, ` +
     `${rejectedTemplates.length} quarantined.`,
@@ -871,6 +1326,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     console.warn(`[upload-templates] Quarantined templates:\n  - ${preview}${suffix}`)
   }
 
+  manifest = applyCatalogV3DocumentFromRoot(PLATFORM_BUILDER_ROOT, manifest)
   const localCatalogIntegrity = assertLaunchCatalogManifest(manifest, 'Local validated catalog')
   console.log(
     `[upload-templates] Launch inventory verified: ${localCatalogIntegrity.totalTemplates} templates ` +
@@ -940,6 +1396,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
       throw new Error('A partial upload requires an existing validated remote manifest; run a full upload first')
     }
     manifestToPublish = mergeValidatedManifest(remoteManifest, manifest, options.only, nicheSlugs)
+    manifestToPublish = applyCatalogV3DocumentFromRoot(PLATFORM_BUILDER_ROOT, manifestToPublish)
   }
   assertLaunchCatalogManifest(manifestToPublish, 'Manifest publish plan')
 
@@ -952,9 +1409,10 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
     try {
       const content = await fsp.readFile(full)
       const sha256 = createHash('sha256').update(content).digest('hex')
+      const metadata = uploadMetadataForFile(key, sha256, manifestToPublish)
       if (!options.force) {
         const meta = await store.getMetadata(key)
-        if (meta?.metadata?.sha256 === sha256 && meta.metadata.contractVersion === 2) {
+        if (hasMatchingUploadMetadata(meta, metadata)) {
           skipped++
           if ((i + 1) % 500 === 0) {
             console.log(`[upload-templates] Progress: ${i + 1} / ${files.length} (uploaded=${uploaded} skipped=${skipped} errors=${errors})`)
@@ -963,7 +1421,7 @@ export async function main(argv = process.argv.slice(2), env = process.env) {
         }
       }
       await store.set(key, content, {
-        metadata: { sha256, contractVersion: 2 },
+        metadata,
       })
       uploaded++
       if ((uploaded + skipped) % 100 === 0 || (i + 1) % 500 === 0) {

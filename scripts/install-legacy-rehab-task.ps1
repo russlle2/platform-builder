@@ -1,0 +1,191 @@
+#requires -Version 5.1
+
+[CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
+param(
+    [string]$TaskName = 'Daily Clarity Legacy Catalogue Rehabilitation',
+
+    [string]$SourceRoot = 'C:\Users\chris\platform-builder\platform-builder',
+
+    [string]$WorkRoot,
+
+    [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$')]
+    [string]$RuleVersion = 'legacy-rehab-1.0.14',
+
+    [ValidateRange(1, 64)]
+    [int]$StaticWorkers = 8,
+
+    [ValidateRange(1, 6)]
+    [int]$ChromiumWorkers = 4,
+
+    [ValidateRange(1, 999)]
+    [int]$RestartCount = 12,
+
+    [ValidateRange(1, 60)]
+    [int]$RestartDelayMinutes = 5,
+
+    [switch]$Install,
+
+    [switch]$Replace
+)
+
+Set-StrictMode -Version Latest
+$ErrorActionPreference = 'Stop'
+
+function Get-TaskArgument {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Value
+    )
+
+    if ($Value.Contains('"')) {
+        throw 'Scheduled-task arguments may not contain a double-quote character.'
+    }
+    if ($Value -match '\s') {
+        return '"' + $Value + '"'
+    }
+    return $Value
+}
+
+function Get-NormalizedTaskPath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Path,
+
+        [switch]$MustExist
+    )
+
+    $expandedPath = [Environment]::ExpandEnvironmentVariables($Path)
+    if ($MustExist) {
+        $fullPath = [IO.Path]::GetFullPath((Resolve-Path -LiteralPath $expandedPath -ErrorAction Stop).Path)
+    }
+    else {
+        $fullPath = [IO.Path]::GetFullPath($expandedPath)
+    }
+
+    $pathRoot = [IO.Path]::GetPathRoot($fullPath)
+    if ($fullPath.Equals($pathRoot, [StringComparison]::OrdinalIgnoreCase)) {
+        return $pathRoot
+    }
+    return $fullPath.TrimEnd('\', '/')
+}
+
+function Test-TaskPathIsWithin {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Parent,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Candidate
+    )
+
+    if ($Candidate.Equals($Parent, [StringComparison]::OrdinalIgnoreCase)) {
+        return $true
+    }
+
+    $parentWithSeparator = $Parent.TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
+    return $Candidate.StartsWith($parentWithSeparator, [StringComparison]::OrdinalIgnoreCase)
+}
+
+$repositoryRoot = Get-NormalizedTaskPath -Path (Split-Path -Parent $PSScriptRoot) -MustExist
+$runnerPath = Get-NormalizedTaskPath -Path (Join-Path $PSScriptRoot 'run-legacy-rehab.ps1') -MustExist
+$resolvedSourceRoot = Get-NormalizedTaskPath -Path $SourceRoot -MustExist
+if (-not (Test-Path -LiteralPath $resolvedSourceRoot -PathType Container)) {
+    throw "Legacy source root is not a directory: $resolvedSourceRoot"
+}
+
+if ([string]::IsNullOrWhiteSpace($WorkRoot)) {
+    $localApplicationData = [Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
+    if ([string]::IsNullOrWhiteSpace($localApplicationData)) {
+        throw 'Windows LocalApplicationData could not be resolved. Pass -WorkRoot explicitly.'
+    }
+    $WorkRoot = Join-Path $localApplicationData 'DailyClarity\template-rehab'
+}
+$resolvedWorkRoot = Get-NormalizedTaskPath -Path $WorkRoot
+if ((Test-TaskPathIsWithin -Parent $resolvedSourceRoot -Candidate $resolvedWorkRoot) -or
+    (Test-TaskPathIsWithin -Parent $resolvedWorkRoot -Candidate $resolvedSourceRoot)) {
+    throw "Refusing overlapping source and work roots. Source=$resolvedSourceRoot Work=$resolvedWorkRoot"
+}
+if ((Test-TaskPathIsWithin -Parent $repositoryRoot -Candidate $resolvedWorkRoot) -or
+    (Test-TaskPathIsWithin -Parent $resolvedWorkRoot -Candidate $repositoryRoot)) {
+    throw "Refusing a work root that overlaps the code repository. Repository=$repositoryRoot Work=$resolvedWorkRoot"
+}
+if ($resolvedWorkRoot.Equals([IO.Path]::GetPathRoot($resolvedWorkRoot), [StringComparison]::OrdinalIgnoreCase)) {
+    throw "Refusing to use a filesystem root as the rehabilitation work root: $resolvedWorkRoot"
+}
+
+$powerShellCommand = Get-Command 'powershell.exe' -ErrorAction SilentlyContinue
+if (-not $powerShellCommand) {
+    $powerShellCommand = Get-Command 'pwsh.exe' -ErrorAction SilentlyContinue
+}
+if (-not $powerShellCommand) {
+    throw 'Neither powershell.exe nor pwsh.exe was found.'
+}
+
+$taskArgumentValues = @(
+    '-NoLogo',
+    '-NoProfile',
+    '-ExecutionPolicy', 'Bypass',
+    '-File', $runnerPath,
+    '-Command', 'run',
+    '-SourceRoot', $resolvedSourceRoot,
+    '-WorkRoot', $resolvedWorkRoot,
+    '-RuleVersion', $RuleVersion,
+    '-StaticWorkers', $StaticWorkers.ToString([Globalization.CultureInfo]::InvariantCulture),
+    '-ChromiumWorkers', $ChromiumWorkers.ToString([Globalization.CultureInfo]::InvariantCulture),
+    # Let Task Scheduler own unattended restart timing. The interactive runner
+    # still retries a full run three times when MaxAttempts is omitted.
+    '-MaxAttempts', '1'
+)
+$taskArguments = ($taskArgumentValues | ForEach-Object { Get-TaskArgument -Value $_ }) -join ' '
+
+$taskIdentity = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
+$taskAction = New-ScheduledTaskAction `
+    -Execute $powerShellCommand.Path `
+    -Argument $taskArguments `
+    -WorkingDirectory $repositoryRoot
+$taskTrigger = New-ScheduledTaskTrigger -AtLogOn -User $taskIdentity
+$taskSettings = New-ScheduledTaskSettingsSet `
+    -StartWhenAvailable `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -WakeToRun `
+    -MultipleInstances IgnoreNew `
+    -ExecutionTimeLimit ([TimeSpan]::Zero) `
+    -RestartCount $RestartCount `
+    -RestartInterval (New-TimeSpan -Minutes $RestartDelayMinutes)
+$taskPrincipal = New-ScheduledTaskPrincipal `
+    -UserId $taskIdentity `
+    -LogonType Interactive `
+    -RunLevel Limited
+$taskDefinition = New-ScheduledTask `
+    -Action $taskAction `
+    -Trigger $taskTrigger `
+    -Settings $taskSettings `
+    -Principal $taskPrincipal `
+    -Description 'Resumes the immutable-source Daily Clarity legacy catalogue compiler. Production publication is not part of this task.'
+
+Write-Host "Task name: $TaskName"
+Write-Host "Executable: $($powerShellCommand.Path)"
+Write-Host "Arguments: $taskArguments"
+Write-Host "Restart policy: $RestartCount retries, $RestartDelayMinutes minute(s) apart"
+Write-Host 'Trigger: current user logon; the runner prevents automatic sleep while active'
+
+if (-not $Install) {
+    Write-Host 'Preview only. No task was registered. Re-run with -Install (and optionally -Confirm:$false) to register it.'
+    return
+}
+
+$existingTask = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
+if ($existingTask -and -not $Replace) {
+    throw "A scheduled task named '$TaskName' already exists. Use -Replace to update it deliberately."
+}
+
+if ($PSCmdlet.ShouldProcess($TaskName, 'Register resumable legacy-rehabilitation scheduled task')) {
+    if ($existingTask) {
+        Register-ScheduledTask -TaskName $TaskName -InputObject $taskDefinition -Force | Out-Null
+    }
+    else {
+        Register-ScheduledTask -TaskName $TaskName -InputObject $taskDefinition | Out-Null
+    }
+    Write-Host "Registered '$TaskName'. It will start at the next logon; start it manually only after the 100-template pilot passes."
+}

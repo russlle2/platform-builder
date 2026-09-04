@@ -9,6 +9,7 @@ import {
   mergeInlineEdit,
   applyInlineEditsToHtml,
   loadInlineEdits,
+  sanitizeStoredInlineEditMap,
   saveInlineEdits,
 } from '@/lib/inline-edits'
 import {
@@ -98,7 +99,7 @@ function getIframeInjectionScript(): string {
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
       // Notify parent of the edit (include the pre-edit text so it can persist)
-      window.parent.postMessage({ type: 'textEdited', id: el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
+      window.parent.postMessage({ type: 'textEdited', nodeId: el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
 
     e.preventDefault();
@@ -129,12 +130,18 @@ function getIframeInjectionScript(): string {
 
   /* ---- Image swap / insert ---- */
   document.addEventListener('click', function(e) {
-    var img = e.target.closest('img');
+    var img = e.target.closest('img,[data-dc-image-id],[data-pb-image-id]');
     if (!img) return;
     e.preventDefault();
     e.stopPropagation();
+    var src = img.currentSrc || img.src || '';
+    if (!src) {
+      var background = window.getComputedStyle(img).backgroundImage || '';
+      var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
+      src = backgroundMatch ? backgroundMatch[1] : '';
+    }
     // Ask parent to open file picker
-    window.parent.postMessage({ type: 'imageSwapRequest', src: img.src, id: img.id || '' }, '*');
+    window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
   });
 
   // Listen for image swap response from parent
@@ -143,6 +150,26 @@ function getIframeInjectionScript(): string {
     if (e.data && e.data.type === 'imageSwapResponse') {
       var newSrc = e.data.imageUrl || e.data.dataUrl;
       if (typeof newSrc !== 'string' || newSrc.length > 2048 || !/^(https?:\\/\\/|data:image\\/|blob:|\\/)/i.test(newSrc)) return;
+      var slotId = e.data.slotId;
+      var slot = null;
+      if (typeof slotId === 'string' && slotId) {
+        var candidates = document.querySelectorAll('[data-dc-image-id],[data-pb-image-id]');
+        for (var s = 0; s < candidates.length; s++) {
+          if (candidates[s].getAttribute('data-dc-image-id') === slotId || candidates[s].getAttribute('data-pb-image-id') === slotId) {
+            slot = candidates[s];
+            break;
+          }
+        }
+      }
+      if (slot) {
+        if (slot.tagName === 'IMG') {
+          slot.removeAttribute('srcset');
+          slot.src = newSrc;
+        } else {
+          slot.style.setProperty('background-image', 'url(' + newSrc + ')', 'important');
+        }
+        return;
+      }
       var imgs = document.querySelectorAll('img');
       for (var i = 0; i < imgs.length; i++) {
         if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
@@ -197,6 +224,8 @@ export default function TemplateCustomizePage({
   const iframeRef = useRef<HTMLIFrameElement>(null!)
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef<string>('')
+  const pendingImageSwapSlotId = useRef<string>('')
+  const pendingImageSwapPage = useRef<string>('index.html')
   // Inline text edits keyed by page filename, persisted so they survive page
   // navigation, variation switches, and carry through to purchase.
   const [inlineEdits, setInlineEdits] = useState<Record<string, InlineTextEdit[]>>({})
@@ -279,7 +308,7 @@ export default function TemplateCustomizePage({
           setCustomTheme(sanitizeCustomTheme(portalData.customTheme))
 
           if (portalData.inlineEdits && typeof portalData.inlineEdits === 'object') {
-            const edits = portalData.inlineEdits as Record<string, InlineTextEdit[]>
+            const edits = sanitizeStoredInlineEditMap(portalData.inlineEdits)
             setInlineEdits(edits)
             inlineEditsRef.current = edits
             saveInlineEdits(edits, activeCustomizationScopeRef.current)
@@ -369,6 +398,8 @@ export default function TemplateCustomizePage({
       if (e.data.type === 'imageSwapRequest') {
         if (isSafePreviewImageUrl(e.data.src)) {
           pendingImageSwapSrc.current = e.data.src
+          pendingImageSwapSlotId.current = typeof e.data.slotId === 'string' ? e.data.slotId : ''
+          pendingImageSwapPage.current = currentPageRef.current
           fileInputRef.current?.click()
         }
       }
@@ -382,7 +413,7 @@ export default function TemplateCustomizePage({
           inlineEditsRef.current[page] || [],
           original,
           updated,
-          e.data.id,
+          e.data.nodeId || e.data.id,
         )
         const next = { ...inlineEditsRef.current, [page]: pageEdits }
         setInlineEdits(next)
@@ -400,8 +431,9 @@ export default function TemplateCustomizePage({
   const handleImageFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const page = currentPageRef.current
+    const page = pendingImageSwapPage.current
     const originalSrc = pendingImageSwapSrc.current
+    const slotId = pendingImageSwapSlotId.current
     const owner = getOrCreateImageOwnerId(portalSlug)
     try {
       const { map, url } = await handlePersistentImageUpload(
@@ -412,13 +444,16 @@ export default function TemplateCustomizePage({
         imageSwapsRef.current,
         portalSlug ? getStoredPortalToken(portalSlug) || undefined : undefined,
         activeCustomizationScopeRef.current,
+        slotId,
       )
       setImageSwaps(map)
       imageSwapsRef.current = map
-      iframeRef.current?.contentWindow?.postMessage(
-        { type: 'imageSwapResponse', imageUrl: url, originalSrc },
-        '*',
-      )
+      if (currentPageRef.current === page) {
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: 'imageSwapResponse', imageUrl: url, originalSrc, slotId },
+          '*',
+        )
+      }
     } catch (err) {
       console.error('Image upload failed:', err)
       alert(err instanceof Error ? err.message : 'Image upload failed')
@@ -472,7 +507,7 @@ export default function TemplateCustomizePage({
         // Re-apply any inline text edits the user made (they aren't part of
         // the server hydration, which only fills {{TOKENS}}).
         html = applyInlineEditsToHtml(html, inlineEditsRef.current[page], page)
-        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page])
+        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page], page)
 
         // Inject interaction scripts before </body>
         html = html.replace('</body>', getIframeInjectionScript() + '</body>')

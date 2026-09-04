@@ -311,6 +311,8 @@ export default function PreviewYourBusinessClient() {
   const iframeRef = useRef<HTMLIFrameElement>(null!)
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef('')
+  const pendingImageSwapSlotId = useRef('')
+  const pendingImageSwapPage = useRef('index.html')
 
   // Inline text edits captured from the preview, persisted so they survive
   // page navigation and carry through to purchase.
@@ -558,7 +560,7 @@ export default function PreviewYourBusinessClient() {
 
         // Re-apply inline text edits captured earlier (not part of hydration)
         html = applyInlineEditsToHtml(html, inlineEditsRef.current[page], page)
-        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page])
+        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page], page)
 
         // Inject editing + nav scripts
         html = html.replace('</body>', getIframeInjectionScript() + '</body>')
@@ -660,6 +662,8 @@ export default function PreviewYourBusinessClient() {
       if (e.data.type === 'imageSwapRequest') {
         if (isSafePreviewImageUrl(e.data.src)) {
           pendingImageSwapSrc.current = e.data.src
+          pendingImageSwapSlotId.current = typeof e.data.slotId === 'string' ? e.data.slotId : ''
+          pendingImageSwapPage.current = currentPageRef.current
           fileInputRef.current?.click()
         }
       }
@@ -670,7 +674,7 @@ export default function PreviewYourBusinessClient() {
           inlineEditsRef.current[page] || [],
           e.data.original,
           e.data.text,
-          e.data.id,
+          e.data.nodeId || e.data.id,
         )
         inlineEditsRef.current = { ...inlineEditsRef.current, [page]: pageEdits }
         saveInlineEdits(inlineEditsRef.current, activeCustomizationScopeRef.current)
@@ -683,8 +687,9 @@ export default function PreviewYourBusinessClient() {
   const handleImageFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const page = currentPageRef.current
+    const page = pendingImageSwapPage.current
     const originalSrc = pendingImageSwapSrc.current
+    const slotId = pendingImageSwapSlotId.current
     const owner = getOrCreateImageOwnerId()
     try {
       const { map, url } = await handlePersistentImageUpload(
@@ -695,12 +700,15 @@ export default function PreviewYourBusinessClient() {
         imageSwapsRef.current,
         undefined,
         activeCustomizationScopeRef.current,
+        slotId,
       )
       imageSwapsRef.current = map
-      iframeRef.current?.contentWindow?.postMessage(
-        { type: 'imageSwapResponse', imageUrl: url, originalSrc },
-        '*',
-      )
+      if (currentPageRef.current === page) {
+        iframeRef.current?.contentWindow?.postMessage(
+          { type: 'imageSwapResponse', imageUrl: url, originalSrc, slotId },
+          '*',
+        )
+      }
     } catch (err) {
       console.error('Image upload failed:', err)
       alert(err instanceof Error ? err.message : 'Image upload failed')
@@ -1897,7 +1905,7 @@ function getIframeInjectionScript(): string {
       el.style.outlineOffset = '';
       el.style.cursor = '';
       el.removeEventListener('blur', onBlur);
-      window.parent.postMessage({ type: 'textEdited', id: el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
+      window.parent.postMessage({ type: 'textEdited', nodeId: el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '', tag: el.tagName, original: originalText, text: el.textContent }, '*');
     }, { once: true });
   }
 
@@ -1945,11 +1953,17 @@ function getIframeInjectionScript(): string {
   }
 
   document.addEventListener('click', function(e) {
-    var img = e.target.closest('img');
+    var img = e.target.closest('img,[data-dc-image-id],[data-pb-image-id]');
     if (!img) return;
     e.preventDefault();
     e.stopPropagation();
-    window.parent.postMessage({ type: 'imageSwapRequest', src: img.src, id: img.id || '' }, '*');
+    var src = img.currentSrc || img.src || '';
+    if (!src) {
+      var background = window.getComputedStyle(img).backgroundImage || '';
+      var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
+      src = backgroundMatch ? backgroundMatch[1] : '';
+    }
+    window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
   });
 
   window.addEventListener('message', function(e) {
@@ -1957,6 +1971,26 @@ function getIframeInjectionScript(): string {
     if (e.data && e.data.type === 'imageSwapResponse') {
       var newSrc = e.data.imageUrl || e.data.dataUrl;
       if (typeof newSrc !== 'string' || newSrc.length > 2048 || !/^(https?:\\/\\/|data:image\\/|blob:|\\/)/i.test(newSrc)) return;
+      var slotId = e.data.slotId;
+      var slot = null;
+      if (typeof slotId === 'string' && slotId) {
+        var candidates = document.querySelectorAll('[data-dc-image-id],[data-pb-image-id]');
+        for (var s = 0; s < candidates.length; s++) {
+          if (candidates[s].getAttribute('data-dc-image-id') === slotId || candidates[s].getAttribute('data-pb-image-id') === slotId) {
+            slot = candidates[s];
+            break;
+          }
+        }
+      }
+      if (slot) {
+        if (slot.tagName === 'IMG') {
+          slot.removeAttribute('srcset');
+          slot.src = newSrc;
+        } else {
+          slot.style.setProperty('background-image', 'url(' + newSrc + ')', 'important');
+        }
+        return;
+      }
       var imgs = document.querySelectorAll('img');
       for (var i = 0; i < imgs.length; i++) {
         if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {

@@ -182,7 +182,7 @@ export function validateTemplateContract(
 
     const visibleMarkup = withoutValidTokens
       .replace(/<!--[\s\S]*?-->/g, ' ')
-      .replace(/<(?:script|style|noscript)\b[\s\S]*?<\/(?:script|style|noscript)>/gi, ' ');
+      .replace(/<(?:script|style|noscript|svg)\b[\s\S]*?<\/(?:script|style|noscript|svg)>/gi, ' ');
     const linkMarkup = html
       .replace(/<!--[\s\S]*?-->/g, ' ')
       .replace(/<(?:script|style|noscript)\b[\s\S]*?<\/(?:script|style|noscript)>/gi, ' ');

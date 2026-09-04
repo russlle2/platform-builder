@@ -21,6 +21,8 @@ export interface TemplateField {
 
 export interface TemplateMeta {
   slug: string
+  /** Original addressable slug; retained even when its design is deduplicated from the gallery. */
+  legacySlug?: string
   name: string
   niche: string
   nicheSlug: string
@@ -51,6 +53,13 @@ export interface TemplateMeta {
     contractVersion: number
     tokens: string[]
   }
+  /** Catalogue v3 separates shared design structure from per-slug copy/theme. */
+  designId?: string
+  contentPresetId?: string
+  themePresetId?: string
+  qualityReceipt?: string
+  canonicalLegacySlug?: string
+  disposition?: 'canonical' | 'alias'
 }
 export interface NicheInfo {
   slug: string
@@ -193,9 +202,25 @@ function loadManifest(): Promise<ManifestShape> {
   return request
 }
 
-async function getCache(): Promise<Map<string, TemplateMeta[]>> {
+interface TemplateCaches {
+  all: Map<string, TemplateMeta[]>
+  gallery: Map<string, TemplateMeta[]>
+}
+
+export function dedupeTemplatesForGallery(templates: readonly TemplateMeta[]): TemplateMeta[] {
+  const seenDesigns = new Set<string>()
+  return templates.filter((template) => {
+    if (template.disposition === 'alias') return false
+    if (!template.designId) return true
+    if (seenDesigns.has(template.designId)) return false
+    seenDesigns.add(template.designId)
+    return true
+  })
+}
+
+async function getCaches(): Promise<TemplateCaches> {
   const manifest = await loadManifest()
-  const out = new Map<string, TemplateMeta[]>()
+  const all = new Map<string, TemplateMeta[]>()
   for (const nicheSlug of Object.keys(NICHE_META)) {
     const templates = manifest[nicheSlug] || []
     const publishable = templates.filter(isPublishableTemplateMeta)
@@ -205,11 +230,11 @@ async function getCache(): Promise<Map<string, TemplateMeta[]>> {
         `unvalidated template(s) in ${nicheSlug}`,
       )
     }
-    out.set(nicheSlug, publishable)
+    all.set(nicheSlug, publishable)
   }
 
   const integrity = inspectLaunchCatalog(
-    [...out.entries()].map(([slug, templates]) => ({
+    [...all.entries()].map(([slug, templates]) => ({
       slug,
       templateCount: templates.length,
     })),
@@ -218,9 +243,17 @@ async function getCache(): Promise<Map<string, TemplateMeta[]>> {
     console.error(
       `[niche-registry] launch catalog integrity failed; disabling the catalog: ${integrity.issues.join('; ')}`,
     )
-    for (const nicheSlug of Object.keys(NICHE_META)) out.set(nicheSlug, [])
+    for (const nicheSlug of Object.keys(NICHE_META)) all.set(nicheSlug, [])
   }
-  return out
+
+  const gallery = new Map<string, TemplateMeta[]>()
+  for (const [nicheSlug, templates] of all) {
+    // v2 entries have no design ID and remain individually visible. v3
+    // aliases retain direct URL resolution in `all`, while only the first
+    // deterministic representative of each design appears in the gallery.
+    gallery.set(nicheSlug, dedupeTemplatesForGallery(templates))
+  }
+  return { all, gallery }
 }
 /**
  * Fail-closed catalog boundary. Only manifests emitted by the audited uploader
@@ -233,10 +266,22 @@ export function isPublishableTemplateMeta(value: unknown): value is TemplateMeta
   if (
     template.editable !== true ||
     validation?.status !== 'passed' ||
-    validation.contractVersion !== 2 ||
+    ![2, 3].includes(validation.contractVersion) ||
     !Array.isArray(validation.tokens) ||
     validation.tokens.length === 0
   ) {
+    return false
+  }
+  if (validation.contractVersion === 3 && (
+    typeof template.designId !== 'string' || !/^design_[A-Za-z0-9_-]+$/.test(template.designId) ||
+    typeof template.contentPresetId !== 'string' || !/^content_[A-Za-z0-9_-]+$/.test(template.contentPresetId) ||
+    typeof template.themePresetId !== 'string' || !/^theme_[A-Za-z0-9_-]+$/.test(template.themePresetId) ||
+    typeof template.qualityReceipt !== 'string' || !/^receipt_[A-Za-z0-9_-]+$/.test(template.qualityReceipt) ||
+    typeof template.legacySlug !== 'string' || !/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/.test(template.legacySlug) ||
+    typeof template.canonicalLegacySlug !== 'string' || !/^[A-Za-z0-9_-][A-Za-z0-9._-]*$/.test(template.canonicalLegacySlug) ||
+    !['canonical', 'alias'].includes(template.disposition || '') ||
+    (template.disposition === 'canonical') !== (template.legacySlug === template.canonicalLegacySlug)
+  )) {
     return false
   }
   if (
@@ -277,7 +322,7 @@ export function isPublishableTemplateMeta(value: unknown): value is TemplateMeta
 
 /** Get all niches with their metadata and counts */
 export async function getNiches(): Promise<NicheInfo[]> {
-  const cache = await getCache()
+  const cache = (await getCaches()).gallery
   return Object.entries(NICHE_META).map(([slug, meta]) => ({
     slug,
     ...meta,
@@ -287,7 +332,7 @@ export async function getNiches(): Promise<NicheInfo[]> {
 
 /** Get all templates for a niche */
 export async function getTemplatesForNiche(nicheSlug: string): Promise<TemplateMeta[]> {
-  const cache = await getCache()
+  const cache = (await getCaches()).gallery
   return cache.get(nicheSlug) || []
 }
 
@@ -305,7 +350,7 @@ export async function getFeaturedTemplatesForNiche(nicheSlug: string): Promise<T
 
 /** Get a single template by niche + slug */
 export async function getTemplate(nicheSlug: string, templateSlug: string): Promise<TemplateMeta | null> {
-  const templates = await getTemplatesForNiche(nicheSlug)
+  const templates = (await getCaches()).all.get(nicheSlug) || []
   return templates.find((t) => t.slug === templateSlug) || null
 }
 

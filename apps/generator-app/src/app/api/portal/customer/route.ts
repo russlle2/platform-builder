@@ -26,6 +26,7 @@ import {
   type PortalSiteRow,
 } from '@/lib/portal-auth'
 import { sanitizeCustomTheme, type CustomTheme } from '@/lib/custom-theme'
+import type { CatalogRevisionPin } from '@/lib/catalog-revision'
 import { getColorScheme, getFontVariation, getStructureVariation } from '@/lib/templates/variations'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -38,6 +39,7 @@ interface SiteData {
   fontVariation?: string
   structureVariation?: string
   customTheme?: CustomTheme | null
+  catalogRevision?: CatalogRevisionPin
   customerValues?: Record<string, string>
   inlineEdits?: Record<string, InlineTextEdit[]>
   imageSwaps?: Record<string, ImageSwap[]>
@@ -113,6 +115,7 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     fontVariation: data.fontVariation,
     structureVariation: data.structureVariation,
     customTheme: data.customTheme,
+    catalogRevision: data.catalogRevision,
     inlineEdits: data.inlineEdits,
     imageSwaps: data.imageSwaps,
     slug,

@@ -9,8 +9,13 @@ import { getTrustedSiteOrigin } from '@/lib/site-origin'
 import { sanitizeImageSwapMap } from '@/lib/image-swaps'
 import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
 import { sanitizeCustomTheme } from '@/lib/custom-theme'
-import { sanitizeCustomerValues, sanitizeInlineEditMap } from '@/lib/site-deploy'
+import {
+  chunkJsonToMetadata,
+  sanitizeCustomerValues,
+  sanitizeInlineEditMap,
+} from '@/lib/site-deploy'
 import { getTemplate } from '@/lib/templates/niche-registry'
+import { snapshotCatalogRevision } from '@/lib/catalog-revision'
 import { createStripeClient } from '@/lib/stripe-client'
 import {
   TEMPLATE_CHECKOUT_TYPE,
@@ -107,6 +112,9 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       )
     }
+    // Never trust a client-provided catalogue identity. Snapshot the audited
+    // v3 design + per-slug presets from the server manifest at purchase time.
+    const catalogRevision = snapshotCatalogRevision(selectedTemplate)
 
     const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
     const cookieImageOwner = verifyUploadSessionValue(
@@ -177,6 +185,7 @@ export async function POST(req: NextRequest) {
       inlineEdits: sanitizeInlineEditMap(inlineEdits),
       imageSwaps: safeImageSwaps,
       imageOwner: imageSession.imageOwner,
+      ...(catalogRevision ? { catalogRevision } : {}),
     }
     const { error: intentError } = await supabase.from('checkout_intents').insert({
       id: checkoutIntentId,
@@ -229,6 +238,7 @@ export async function POST(req: NextRequest) {
       checkoutIntentId,
       planKey: canonicalPlan,
       slug: resolvedSlug,
+      ...(catalogRevision ? chunkJsonToMetadata('catalogRevision', catalogRevision, 2) : {}),
     }
 
     const trialDays = getStripeTrialDays()

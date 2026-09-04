@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   applyInlineTextEdits,
+  applyPageCustomizationsForDeploy,
   buildContactFormScript,
   buildSearchEngineFiles,
   chunkJsonToMetadata,
@@ -16,20 +17,35 @@ describe('site customization safety', () => {
       original: 'Original heading',
       updated: '</h1><script>alert(1)</script>',
     }])).toBe(
-      '<h1 data-pb-edit-id="pb-index-0001">&lt;/h1&gt;&lt;script&gt;alert(1)&lt;/script&gt;</h1>',
+      '<h1 data-dc-edit-id="dc-edit-index-0001">&lt;/h1&gt;&lt;script&gt;alert(1)&lt;/script&gt;</h1>',
     )
   })
 
   it('uses the same page-specific ID contract for targeted deploy edits', () => {
     const html = '<p>&copy; Same</p><p>&copy; Same</p>'
     expect(applyInlineTextEdits(html, [{
-      id: 'pb-about-0002',
+      nodeId: 'dc-edit-about-0002',
       original: '© Same',
       updated: 'Second & safe',
     }], 'about.html')).toBe(
-      '<p data-pb-edit-id="pb-about-0001">&copy; Same</p>' +
-      '<p data-pb-edit-id="pb-about-0002">Second &amp; safe</p>',
+      '<p data-dc-edit-id="dc-edit-about-0001">&copy; Same</p>' +
+      '<p data-dc-edit-id="dc-edit-about-0002">Second &amp; safe</p>',
     )
+  })
+
+  it('fails deployment when stable text or image targets disappear', () => {
+    const html = '<p>Same</p><p>Same</p><img src="/same.jpg"><img src="/same.jpg">'
+    expect(() => applyPageCustomizationsForDeploy(
+      html,
+      [{ nodeId: 'missing-copy', original: 'Same', updated: 'Wrong' }],
+      undefined,
+    )).toThrow('text IDs: missing-copy')
+
+    expect(() => applyPageCustomizationsForDeploy(
+      html,
+      undefined,
+      [{ slotId: 'missing-image', original: '/same.jpg', updated: 'https://cdn.example/new.webp' }],
+    )).toThrow('image IDs: missing-image')
   })
 
   it('normalizes untrusted value and edit maps with strict limits', () => {
@@ -38,13 +54,15 @@ describe('site customization safety', () => {
     expect(sanitizeInlineEditMap({
       'index.html': [
         { id: 'pb-index-0001', original: 'Old', updated: 'New' },
-        { id: 'unsafe-id', original: 'Other', updated: 'Changed' },
+        { nodeId: 'hero-copy', updated: 'New without original' },
+        { id: 'not safe', original: 'Other', updated: 'Changed' },
         { original: '', updated: 'x' },
       ],
       '../admin.html': [{ original: 'a', updated: 'b' }],
     })).toEqual({
       'index.html': [
-        { id: 'pb-index-0001', original: 'Old', updated: 'New' },
+        { nodeId: 'pb-index-0001', original: 'Old', updated: 'New' },
+        { nodeId: 'hero-copy', updated: 'New without original' },
         { original: 'Other', updated: 'Changed' },
       ],
     })

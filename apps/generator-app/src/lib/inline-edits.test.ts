@@ -3,6 +3,7 @@ import {
   INLINE_EDITS_KEY,
   annotateEditableElements,
   applyInlineEditsToHtml,
+  applyInlineEditsToHtmlWithReport,
   buildCustomizationScope,
   loadInlineEdits,
   mergeInlineEdit,
@@ -28,36 +29,50 @@ describe('inline edit targeting', () => {
     const second = annotateEditableElements(html, 'index.html')
 
     expect(first).toBe(second)
-    expect(first).toContain('<h1 data-pb-edit-id="pb-index-0001">One</h1>')
-    expect(first).toContain('<p data-pb-edit-id="pb-index-0002">Two</p>')
+    expect(first).toContain('<h1 data-dc-edit-id="dc-edit-index-0001">One</h1>')
+    expect(first).toContain('<p data-dc-edit-id="dc-edit-index-0002">Two</p>')
     expect(first).toContain('<!-- <p>comment</p> -->')
     expect(first).toContain('<script>"<p>script</p>"</script>')
-    expect(annotateEditableElements(html, 'about.html')).toContain('pb-about-0001')
+    expect(annotateEditableElements(html, 'about.html')).toContain('dc-edit-about-0001')
+  })
+
+  it('preserves v3 IDs and canonicalizes legacy attribute names', () => {
+    const html = '<h1 data-dc-edit-id="hero-title">One</h1><p data-pb-edit-id="pb-index-0002">Two</p>'
+    expect(annotateEditableElements(html)).toBe(
+      '<h1 data-dc-edit-id="hero-title">One</h1>' +
+      '<p data-dc-edit-id="pb-index-0002">Two</p>',
+    )
+    expect(annotateEditableElements(
+      '<h1 data-dc-edit-id="duplicate">One</h1><p data-dc-edit-id="duplicate">Two</p>',
+    )).toBe(
+      '<h1 data-dc-edit-id="duplicate">One</h1>' +
+      '<p data-dc-edit-id="dc-edit-index-0002">Two</p>',
+    )
   })
 
   it('persists edits whose rendered source uses HTML entities and escapes replacements', () => {
     const html = '<p>&copy; Acme &amp; Co.</p>'
     const result = applyInlineEditsToHtml(html, [{
-      id: 'pb-index-0001',
+      nodeId: 'dc-edit-index-0001',
       original: '© Acme & Co.',
       updated: 'A & <B> "quoted"',
     }], 'index.html')
 
     expect(result).toBe(
-      '<p data-pb-edit-id="pb-index-0001">A &amp; &lt;B&gt; &quot;quoted&quot;</p>',
+      '<p data-dc-edit-id="dc-edit-index-0001">A &amp; &lt;B&gt; &quot;quoted&quot;</p>',
     )
   })
 
   it('updates only the selected duplicate while preserving legacy all-match fallback', () => {
     const html = '<p>Same label</p><p>Same label</p>'
     const targeted = applyInlineEditsToHtml(html, [{
-      id: 'pb-index-0002',
+      nodeId: 'dc-edit-index-0002',
       original: 'Same label',
       updated: 'Second only',
     }])
     expect(targeted).toBe(
-      '<p data-pb-edit-id="pb-index-0001">Same label</p>' +
-      '<p data-pb-edit-id="pb-index-0002">Second only</p>',
+      '<p data-dc-edit-id="dc-edit-index-0001">Same label</p>' +
+      '<p data-dc-edit-id="dc-edit-index-0002">Second only</p>',
     )
 
     const legacy = applyInlineEditsToHtml(html, [{
@@ -68,11 +83,26 @@ describe('inline edit targeting', () => {
     expect(legacy).not.toContain('<Both')
   })
 
+  it('reports a stale v3 ID without falling through to duplicate-text replacement', () => {
+    const html = '<p>Same label</p><p>Same label</p>'
+    const result = applyInlineEditsToHtmlWithReport(html, [{
+      nodeId: 'removed-node',
+      original: 'Same label',
+      updated: 'Must not spread',
+    }])
+
+    expect(result.unmatchedNodeIds).toEqual(['removed-node'])
+    expect(result.html).toBe(
+      '<p data-dc-edit-id="dc-edit-index-0001">Same label</p>' +
+      '<p data-dc-edit-id="dc-edit-index-0002">Same label</p>',
+    )
+  })
+
   it('chains later edits by element ID instead of duplicate text', () => {
-    const first = mergeInlineEdit([], 'Same', 'First version', 'pb-index-0002')
-    const second = mergeInlineEdit(first, 'First version', 'Final version', 'pb-index-0002')
+    const first = mergeInlineEdit([], 'Same', 'First version', 'dc-edit-index-0002')
+    const second = mergeInlineEdit(first, 'First version', 'Final version', 'dc-edit-index-0002')
     expect(second).toEqual([{
-      id: 'pb-index-0002',
+      nodeId: 'dc-edit-index-0002',
       original: 'Same',
       updated: 'Final version',
     }])
@@ -82,13 +112,15 @@ describe('inline edit targeting', () => {
     expect(sanitizeStoredInlineEditMap({
       'index.html': [
         { id: 'pb-index-0001', original: 'Old', updated: 'New' },
+        { nodeId: 'hero-copy', updated: 'New without fallback' },
         { id: 'not safe', original: 'Other', updated: 'Changed' },
         { original: '', updated: 'Ignored' },
       ],
       '../escape.html': [{ original: 'x', updated: 'y' }],
     })).toEqual({
       'index.html': [
-        { id: 'pb-index-0001', original: 'Old', updated: 'New' },
+        { nodeId: 'pb-index-0001', original: 'Old', updated: 'New' },
+        { nodeId: 'hero-copy', updated: 'New without fallback' },
         { original: 'Other', updated: 'Changed' },
       ],
     })
@@ -108,7 +140,9 @@ describe('scoped inline edit persistence', () => {
   it('isolates templates and mirrors only the active scope for checkout', () => {
     const firstScope = buildCustomizationScope('wellness_coach', 'serene-path')
     const secondScope = buildCustomizationScope('sound_bath', 'moon-room')
-    const first = { 'index.html': [{ original: 'Old one', updated: 'New one' }] }
+    const first = {
+      'index.html': [{ nodeId: 'dc-edit-index-0001', updated: 'New one' }],
+    }
     const second = { 'about.html': [{ original: 'Old two', updated: 'New two' }] }
 
     expect(loadInlineEdits(firstScope)).toEqual({})

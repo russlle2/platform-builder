@@ -18,6 +18,7 @@ import {
   getCustomerImageRelativePath,
   migrateImagesToSiteSlug,
   normalizeOwnedStoragePath,
+  rewriteImageSwapUrls,
 } from './customer-images'
 
 const DRAFT_OWNER = 'draft-123e4567-e89b-42d3-a456-426614174000'
@@ -123,5 +124,21 @@ describe('migrateImagesToSiteSlug', () => {
       SITE_SLUG,
       [`https://example.com/media/${DRAFT_OWNER}/hero.webp`],
     )).rejects.toThrow('referenced draft image URL is invalid')
+  })
+})
+
+describe('rewriteImageSwapUrls', () => {
+  it('rewrites only the uploaded URL while preserving its stable slot ID', () => {
+    expect(rewriteImageSwapUrls({
+      'index.html': [{
+        slotId: 'dc-image-index-0002',
+        updated: SOURCE_URL,
+      }],
+    }, DRAFT_OWNER, SITE_SLUG)).toEqual({
+      'index.html': [{
+        slotId: 'dc-image-index-0002',
+        updated: SOURCE_URL.replace(`/${DRAFT_OWNER}/`, `/${SITE_SLUG}/`),
+      }],
+    })
   })
 })

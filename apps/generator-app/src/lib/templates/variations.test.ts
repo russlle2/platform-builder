@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  buildVariationCSS,
   resolveQuizColorScheme,
   resolveQuizFontVariation,
   resolveQuizStructureVariation,
@@ -42,5 +43,12 @@ describe('style quiz variation mapping', () => {
     expect(resolveQuizFontVariation('space-grotesk')).toBe('space-grotesk')
     expect(resolveQuizStructureVariation('asymmetric')).toBe('asymmetric')
     expect(resolveQuizColorScheme('unknown')).toBe('original')
+  })
+
+  it('overrides compiler color tokens with the selected customer palette', () => {
+    const compiledCss = ':root{--dc-theme-color_bg:#fff;--dc-theme-color_cta:#f00}body{background:var(--dc-theme-color_bg)}.btn{background:var(--dc-theme-color_cta)}'
+    const css = buildVariationCSS('ocean-breeze', 'original', 'original', compiledCss)
+    expect(css).toContain('--dc-theme-color_bg: #0B1628 !important')
+    expect(css).toContain('--dc-theme-color_cta: #0EA5E9 !important')
   })
 })
