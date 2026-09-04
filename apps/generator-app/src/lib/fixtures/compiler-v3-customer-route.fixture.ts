@@ -36,12 +36,19 @@ export const COMPILER_V3_ROUTE_FIXTURE = {
   files: {
     'index.html': [
       '<!doctype html><html lang="en"><head><meta charset="utf-8">',
-      '<meta name="description" content="Original description" data-dc-edit-id="txt_meta_description" data-dc-edit-attribute="content">',
+      '<meta name="viewport" content="width=device-width,initial-scale=1">',
+      '<title data-dc-edit-id="txt_888888888888888888">Original page title</title>',
+      '<meta name="description" content="Original description" data-dc-edit-id="txt_222222222222222222" data-dc-edit-attribute="content">',
       '<link rel="stylesheet" href="assets/css/styles.css">',
       '<link rel="stylesheet" href="assets/css/secondary.css"></head><body>',
-      '<main><h1 data-dc-edit-id="txt_heading">{{BUSINESS_NAME}}</h1>',
-      '<p data-dc-edit-id="txt_intro">Original introduction</p>',
-      '<img data-dc-image-id="img_hero" data-dc-edit-id="txt_hero_alt" data-dc-edit-attribute="alt" src="assets/img/hero.svg" alt="Original hero description">',
+      '<main><h1 data-dc-edit-id="txt_000000000000000000">{{BUSINESS_NAME}}</h1>',
+      '<p data-dc-edit-id="txt_111111111111111111">Original introduction</p>',
+      '<nav><a href="#contact"><span data-dc-edit-id="txt_444444444444444444">Contact</span></a></nav>',
+      '<img data-dc-image-id="img_hero" data-dc-edit-id="txt_333333333333333333" data-dc-edit-attribute="alt" src="assets/img/hero.svg" alt="Original hero description">',
+      '<form id="contact" action="/" method="post" data-dc-standard-form="safe"><label>',
+      '<span data-dc-edit-id="txt_555555555555555555">Name</span>',
+      '<input name="name" aria-label="Customer name" placeholder="Your name" data-dc-edit-id="txt_666666666666666666" data-dc-edit-attribute="placeholder"></label>',
+      '<button type="submit"><span data-dc-edit-id="txt_777777777777777777">Send</span></button></form>',
       '<a href="mailto:{{EMAIL}}">{{EMAIL}}</a></main></body></html>',
     ].join(''),
     'assets/css/styles.css': [

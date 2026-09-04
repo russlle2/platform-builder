@@ -29,6 +29,7 @@ async function createStaging(overrides?: {
   entries?: unknown[]
   images?: unknown[]
   tokens?: unknown[]
+  pages?: string[]
 }): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), 'dc-rehab-verifier-'))
   temporaryRoots.push(root)
@@ -44,7 +45,7 @@ async function createStaging(overrides?: {
     contractVersion: 3,
     legacySlug: catalogueEntry.legacySlug,
     niche: catalogueEntry.niche,
-    pages: ['index.html'],
+    pages: overrides?.pages ?? ['index.html'],
     designId: catalogueEntry.designId,
     contentPresetId: catalogueEntry.contentPresetId,
     themePresetId: catalogueEntry.themePresetId,
@@ -59,6 +60,10 @@ async function createStaging(overrides?: {
       { nodeId: 'txt_title', page: 'index.html', html: 'Title', text: 'Title' },
       { nodeId: 'txt_option', page: 'index.html', html: 'First', text: 'First' },
       { nodeId: 'txt_caption', page: 'index.html', html: 'Caption', text: 'Caption' },
+      { nodeId: 'txt_111111111111111111', page: 'index.html', html: 'About', text: 'About' },
+      { nodeId: 'txt_222222222222222222', page: 'index.html', html: 'Name', text: 'Name' },
+      { nodeId: 'txt_333333333333333333', page: 'index.html', html: 'Your name', text: 'Your name', attribute: 'placeholder' },
+      { nodeId: 'txt_444444444444444444', page: 'index.html', html: 'Send', text: 'Send' },
     ],
     images: overrides?.images ?? [
       { slotId: 'img_hero', page: 'index.html', kind: 'image', source: '/hero.webp', attribute: 'src' },
@@ -99,6 +104,10 @@ async function createStaging(overrides?: {
     '<h1 data-dc-edit-id="txt_heading">Welcome</h1>',
     '<select><option data-dc-edit-id="txt_option">First</option></select>',
     '<table><caption data-dc-edit-id="txt_caption">Caption</caption></table>',
+    '<nav><a href="about.html"><span data-dc-edit-id="txt_111111111111111111">About</span></a></nav>',
+    '<form action="/" method="post" data-dc-standard-form="safe"><label><span data-dc-edit-id="txt_222222222222222222">Name</span>',
+    '<input name="name" aria-label="Customer name" placeholder="Your name" data-dc-edit-id="txt_333333333333333333" data-dc-edit-attribute="placeholder"></label>',
+    '<button type="submit"><span data-dc-edit-id="txt_444444444444444444">Send</span></button></form>',
     '<picture><source data-dc-image-id="source_responsive" srcset="wide.webp 1x, wide-2x.webp 2x">',
     '<img data-dc-image-id="img_hero" src="/hero.webp" alt=""></picture>',
     '<section class="hero" data-dc-image-id="css_hero">Background</section>',
@@ -129,13 +138,46 @@ describe('verifyRehabCustomizationStaging', () => {
       scannedTemplates: 1,
       pages: 1,
       stylesheets: 1,
-      contentEntries: 5,
+      contentEntries: 9,
       imageSlots: 3,
       themeTokens: 2,
       diagnosticCount: 0,
       diagnosticsTruncated: 0,
     })
     expect(result.diagnostics).toEqual([])
+  })
+
+  it('rejects structural text targets and aria-label-first visible placeholders', async () => {
+    const root = await createStaging({
+      html: [
+        '<html><body><nav data-dc-edit-id="txt_structural"><a href="about.html">About</a></nav>',
+        '<form><label>Name <input name="name" aria-label="Customer name" placeholder="Your name" ',
+        'data-dc-edit-id="txt_placeholder" data-dc-edit-attribute="aria-label"></label></form></body></html>',
+      ].join(''),
+      entries: [
+        { nodeId: 'txt_structural', page: 'index.html', html: '<a href="about.html">About</a>', text: 'About' },
+        { nodeId: 'txt_placeholder', page: 'index.html', html: 'Customer name', text: 'Customer name', attribute: 'aria-label' },
+      ],
+      images: [],
+    })
+    const result = await verifyRehabCustomizationStaging({ root, maxDiagnostics: 100 })
+    const codes = result.diagnostics.map((diagnostic) => diagnostic.code)
+
+    expect(result.pass).toBe(false)
+    expect(codes).toContain('content_target_not_leaf')
+    expect(codes).toContain('visible_placeholder_uneditable')
+  })
+
+  it('executes the sanitized customer preview route instead of accepting stripped targets', async () => {
+    const root = await createStaging({
+      html: '<html><head></head><body><iframe data-dc-edit-id="txt_frame">Frame copy</iframe></body></html>',
+      entries: [{ nodeId: 'txt_frame', page: 'index.html', html: 'Frame copy', text: 'Frame copy' }],
+      images: [],
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+
+    expect(result.pass).toBe(false)
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain('content_customer_path_failed')
   })
 
   it('reports ambiguous IDs and non-HTML image slots', async () => {
@@ -156,6 +198,15 @@ describe('verifyRehabCustomizationStaging', () => {
     expect(codes).toContain('content_target_ambiguous')
     expect(codes).toContain('image_page_not_customer_editable')
     expect(codes).not.toContain('theme_token_not_overridden')
+  })
+
+  it('rejects manifest pages that the customer preview and persistence routes cannot address', async () => {
+    for (const page of ['legacy.htm', '/absolute.html', 'pages//empty.html']) {
+      const root = await createStaging({ pages: [page], entries: [], images: [] })
+      const result = await verifyRehabCustomizationStaging({ root })
+      expect(result.pass).toBe(false)
+      expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain('manifest_pages_invalid')
+    }
   })
 
   it('preserves non-family compiler font tokens while mapping family tokens', async () => {

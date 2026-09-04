@@ -22,6 +22,8 @@ export const EXPECTED_LEGACY_COUNTS: Readonly<Record<ActiveLegacyNiche, number>>
 };
 
 export const EXPECTED_LEGACY_TEMPLATE_TOTAL = 5_486;
+export const EXPECTED_LEGACY_SOURCE_PAGE_TOTAL = 33_962;
+export const EXPECTED_LEGACY_MISSING_INDEX_TOTAL = 1;
 
 const SAFE_SEGMENT_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const SAFE_FILE_SEGMENT_RE = /^[A-Za-z0-9._-]+$/;
@@ -447,6 +449,27 @@ export async function inventoryLegacyCatalog(
     throw reason instanceof Error ? reason : new Error('Legacy catalogue inventory cancelled');
   }
 
+  const pageCount = templates.reduce((sum, template) => sum + template.pages.length, 0);
+  const missingIndexCount = templates.filter((template) => (
+    !template.pages.some((page) => page.name.toLowerCase() === 'index.html')
+  )).length;
+  const fullSnapshotScope = !options.onlyKeys
+    && niches.length === ACTIVE_LEGACY_NICHES.length
+    && ACTIVE_LEGACY_NICHES.every((niche) => niches.includes(niche));
+  if (options.expectedCounts !== false && fullSnapshotScope) {
+    const mismatches = [
+      ...(pageCount === EXPECTED_LEGACY_SOURCE_PAGE_TOTAL
+        ? []
+        : [`source pages: expected ${EXPECTED_LEGACY_SOURCE_PAGE_TOTAL}, found ${pageCount}`]),
+      ...(missingIndexCount === EXPECTED_LEGACY_MISSING_INDEX_TOTAL
+        ? []
+        : [`templates missing index.html: expected ${EXPECTED_LEGACY_MISSING_INDEX_TOTAL}, found ${missingIndexCount}`]),
+    ];
+    if (mismatches.length > 0) {
+      throw new Error(`Legacy catalogue inventory does not match its page-lineage safety contract:\n${mismatches.join('\n')}`);
+    }
+  }
+
   const allRemoteUrls = new Set<string>();
   for (const template of templates) {
     if (options.signal?.aborted) {
@@ -473,7 +496,7 @@ export async function inventoryLegacyCatalog(
     catalogHash,
     templates,
     templateCount: templates.length,
-    pageCount: templates.reduce((sum, template) => sum + template.pages.length, 0),
+    pageCount,
     fileCount: templates.reduce((sum, template) => sum + template.files.length, 0),
     sourceBytes: templates.reduce((sum, template) => sum + template.sourceBytes, 0),
     countsByNiche,

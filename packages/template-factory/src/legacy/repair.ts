@@ -12,16 +12,25 @@ import {
 import {
   CORE_PERSONALIZATION_TOKENS,
   SENSITIVE_FORM_TEXT_RE,
+  UNSAFE_INQUIRY_FORM_TEXT_RE,
   UNSUPPORTED_ABSOLUTE_EFFICACY_RE,
   UNSUPPORTED_CREDENTIAL_CLAIM_RE,
   UNSUPPORTED_CREDENTIAL_PROOF_RE,
-  UNSUPPORTED_OUTCOME_CLAIM_RE,
+  UNSUPPORTED_FABRICATED_METRIC_RE,
   UNSUPPORTED_PERCENT_RESULT_RE,
   UNSUPPORTED_PROOF_ATTRIBUTE_RE,
   UNSUPPORTED_PROOF_TEXT_RE,
+  containsUnsupportedOutcomeClaim,
   extractTemplateTokens,
   isCorePersonalizationToken,
+  isUnsupportedProofHeading,
 } from '../template-contract.js';
+import {
+  containsUnsafeCssReferences,
+  containsUnsafeSrcset,
+  isUnsafeCssUrl,
+  isUnsafeStaticUrl,
+} from './url-safety.js';
 
 type Attr = { name: string; value: string; namespace?: string; prefix?: string };
 export type HtmlNode = {
@@ -77,13 +86,10 @@ const NON_EDITABLE_ELEMENTS = new Set(['script', 'style', 'svg', 'template']);
 const REMOVED_ELEMENTS = new Set(['frame', 'frameset', 'iframe', 'object', 'embed']);
 const URL_ATTRS = new Set(['action', 'formaction', 'href', 'poster', 'src', 'xlink:href']);
 const SENSITIVE_FORM = SENSITIVE_FORM_TEXT_RE;
+const UNSAFE_FORM_MARKER = new RegExp(`${SENSITIVE_FORM_TEXT_RE.source}|${UNSAFE_INQUIRY_FORM_TEXT_RE.source}`, 'i');
 const PROOF_TEXT = UNSUPPORTED_PROOF_TEXT_RE;
 const PROOF_ATTR = UNSUPPORTED_PROOF_ATTRIBUTE_RE;
 const SYNTHETIC_BADGE_SIGNAL = UNSUPPORTED_CREDENTIAL_PROOF_RE;
-const CLAIM_TEXT = new RegExp(
-  `${UNSUPPORTED_OUTCOME_CLAIM_RE.source}|${UNSUPPORTED_ABSOLUTE_EFFICACY_RE.source}|${UNSUPPORTED_CREDENTIAL_CLAIM_RE.source}`,
-  'i',
-);
 const PERCENT_RESULT = UNSUPPORTED_PERCENT_RESULT_RE;
 const PRICE = /(?:[$£€]\s*\d[\d,.]*(?:\s*(?:USD|EUR|GBP))?|\b\d[\d,.]*\s*(?:USD|EUR|GBP)\b)/gi;
 const THEME_COLOR = /#[0-9a-f]{3,8}\b|rgba?\([^)]*\)|hsla?\([^)]*\)/i;
@@ -96,6 +102,27 @@ const REMOTE_URL = /^(?:https?:)?\/\//i;
 const NEUTRAL_BLOCK = '<section class="dc-neutral-guidance" data-dc-safe-replacement="neutral-guidance"><h2>A clear, practical next step</h2><p>Ask about current services, availability, and what to expect before you decide.</p></section>';
 const NEUTRAL_CLAIM = 'Services and experiences vary. Ask the practice what is currently offered and what to expect.';
 const STANDARD_FORM = '<form class="dc-contact-form" name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><p><label>Your name <input name="name" autocomplete="name" required></label></p><p><label>Email <input type="email" name="email" autocomplete="email" required></label></p><p><label>Phone (optional) <input type="tel" name="phone" autocomplete="tel"></label></p><p><label>Message <textarea name="message" rows="5" required></textarea></label></p><button type="submit">Send inquiry</button><p class="dc-form-status" aria-live="polite"></p></form>';
+
+function containsUnsupportedClaim(value: string): boolean {
+  return containsUnsupportedOutcomeClaim(value)
+    || UNSUPPORTED_ABSOLUTE_EFFICACY_RE.test(value)
+    || UNSUPPORTED_CREDENTIAL_CLAIM_RE.test(value);
+}
+
+function neutralizeUnsupportedClaimSentences(value: string): { value: string; count: number } {
+  let count = 0;
+  const repaired = value.replace(
+    /[^.!?\r\n]+(?:[.!?]+["'’”)*\]]*|(?=\r?\n)|$)/gu,
+    (sentence) => {
+      if (!containsUnsupportedClaim(sentence) && !PERCENT_RESULT.test(sentence)) return sentence;
+      count += 1;
+      const leading = sentence.match(/^\s*/u)?.[0] ?? '';
+      const trailing = sentence.match(/\s*$/u)?.[0] ?? '';
+      return `${leading}${NEUTRAL_CLAIM}${trailing}`;
+    },
+  );
+  return { value: repaired, count };
+}
 
 /** Audited, dependency-free behavior shared by every rehabilitated template. */
 export const LEGACY_COMPATIBILITY_SCRIPT = `(() => {
@@ -371,7 +398,17 @@ function hasDirectProofSignal(node: HtmlNode): boolean {
     getAttr(node, 'data-tooltip'),
     getAttr(node, 'data-title'),
   ].filter(Boolean).join(' ');
-  if (PROOF_TEXT.test(accessibleSignal) || PROOF_ATTR.test(accessibleSignal) || SYNTHETIC_BADGE_SIGNAL.test(accessibleSignal)) return true;
+  if (
+    PROOF_TEXT.test(accessibleSignal)
+    || PROOF_ATTR.test(accessibleSignal)
+    || SYNTHETIC_BADGE_SIGNAL.test(accessibleSignal)
+    || UNSUPPORTED_FABRICATED_METRIC_RE.test(accessibleSignal)
+  ) return true;
+
+  if ((node.childNodes ?? []).some((child) => (
+    /^(?:h[1-6]|legend|title)$/.test(child.tagName ?? '')
+    && isUnsupportedProofHeading(textContent(child))
+  ))) return true;
 
   const signalText = (node.childNodes ?? []).map((child) => {
     if (child.nodeName === '#text') return child.value ?? '';
@@ -380,7 +417,10 @@ function hasDirectProofSignal(node: HtmlNode): boolean {
       ? textContent(child)
       : '';
   }).join(' ');
-  return PROOF_TEXT.test(signalText.replace(/\s+/g, ' '));
+  const normalizedSignal = signalText.replace(/\s+/g, ' ');
+  return PROOF_TEXT.test(normalizedSignal)
+    || UNSUPPORTED_FABRICATED_METRIC_RE.test(normalizedSignal)
+    || isUnsupportedProofHeading(normalizedSignal);
 }
 
 function isProofContainer(node: HtmlNode): boolean {
@@ -408,7 +448,12 @@ function isProofContainer(node: HtmlNode): boolean {
           getAttr(child, 'data-tooltip'),
           getAttr(child, 'data-title'),
         ].filter(Boolean).join(' ');
-        if (PROOF_TEXT.test(childSignal) || PROOF_ATTR.test(childSignal) || SYNTHETIC_BADGE_SIGNAL.test(childSignal)) return true;
+        if (
+          PROOF_TEXT.test(childSignal)
+          || PROOF_ATTR.test(childSignal)
+          || SYNTHETIC_BADGE_SIGNAL.test(childSignal)
+          || UNSUPPORTED_FABRICATED_METRIC_RE.test(childSignal)
+        ) return true;
         if (hasExplicitProofDescendant(child)) return true;
       }
       return false;
@@ -558,7 +603,34 @@ function relocateOrphanDecorativeOverlays(document: HtmlNode): number {
 }
 
 function neutralizeSensitiveFormMarker(value: string): string {
-  return value.replace(new RegExp(SENSITIVE_FORM.source, 'gi'), 'contact');
+  return value.replace(new RegExp(UNSAFE_FORM_MARKER.source, 'gi'), 'contact');
+}
+
+function hasStandardInquiryControls(node: HtmlNode): boolean {
+  const controls: HtmlNode[] = [];
+  const collect = (candidate: HtmlNode): void => {
+    if (['input', 'select', 'textarea'].includes(candidate.tagName ?? '')) controls.push(candidate);
+    for (const child of candidate.childNodes ?? []) collect(child);
+  };
+  for (const child of node.childNodes ?? []) collect(child);
+  if (controls.length !== 4) return false;
+
+  const expected = new Map<string, { tag: string; type?: string; required: boolean }>([
+    ['name', { tag: 'input', type: 'text', required: true }],
+    ['email', { tag: 'input', type: 'email', required: true }],
+    ['phone', { tag: 'input', type: 'tel', required: false }],
+    ['message', { tag: 'textarea', required: true }],
+  ]);
+  const seen = new Set<string>();
+  for (const control of controls) {
+    const name = (getAttr(control, 'name') ?? '').trim().toLowerCase();
+    const rule = expected.get(name);
+    if (!rule || seen.has(name) || control.tagName !== rule.tag) return false;
+    if (rule.type && (getAttr(control, 'type') ?? 'text').toLowerCase() !== rule.type) return false;
+    if ((getAttr(control, 'required') !== undefined) !== rule.required) return false;
+    seen.add(name);
+  }
+  return seen.size === expected.size;
 }
 
 function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean; renamedId?: readonly [string, string] } {
@@ -572,7 +644,7 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
   let changedWrapper = false;
   node.attrs = [...(standard.attrs ?? []).map((attr) => ({ ...attr }))];
   for (const [name, value] of preserved) {
-    if (name === 'aria-labelledby' && SENSITIVE_FORM.test(value)) {
+    if (name === 'aria-labelledby' && UNSAFE_FORM_MARKER.test(value)) {
       setAttr(node, 'aria-label', 'Contact form');
       changedWrapper = true;
       continue;
@@ -583,7 +655,7 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
       const merged = new Set(`${safeValue} ${getAttr(node, 'class') ?? ''}`.split(/\s+/).filter(Boolean));
       setAttr(node, 'class', [...merged].join(' '));
     } else {
-      setAttr(node, name, name === 'aria-label' && SENSITIVE_FORM.test(value) ? 'Contact form' : safeValue);
+      setAttr(node, name, name === 'aria-label' && UNSAFE_FORM_MARKER.test(value) ? 'Contact form' : safeValue);
     }
   }
   node.childNodes = standard.childNodes ?? [];
@@ -593,6 +665,51 @@ function replaceSensitiveFormContents(node: HtmlNode): { changedWrapper: boolean
     changedWrapper,
     ...(originalId && repairedId && originalId !== repairedId ? { renamedId: [originalId, repairedId] as const } : {}),
   };
+}
+
+/**
+ * Revalidate the accessible name after a form body has been replaced.
+ *
+ * Legacy forms commonly point `aria-labelledby` at a heading inside the form.
+ * Replacing the body removes that heading, leaving a dangling IDREF. A label
+ * outside the form can also preserve sensitive intake wording even though the
+ * visible controls were standardized. Resolve the final tree rather than
+ * trusting the identifier spelling and fail closed to a neutral name whenever
+ * a reference is missing, ambiguous, or unsafe.
+ */
+function normalizeStandardFormAccessibleNames(document: HtmlNode): number {
+  const nodesById = new Map<string, HtmlNode[]>();
+  walk(document, (node) => {
+    const id = getAttr(node, 'id');
+    if (!id) return;
+    const nodes = nodesById.get(id) ?? [];
+    nodes.push(node);
+    nodesById.set(id, nodes);
+  });
+
+  let count = 0;
+  walk(document, (node) => {
+    if (node.tagName !== 'form' || getAttr(node, 'data-dc-standard-form') !== 'contact') return;
+    const reference = getAttr(node, 'aria-labelledby');
+    if (reference === undefined) return;
+    const ids = reference.split(/\s+/).filter(Boolean);
+    const targets = ids.map((id) => nodesById.get(id) ?? []);
+    const invalidReference = ids.length === 0 || targets.some((matches) => matches.length !== 1);
+    const referencedName = targets
+      .flatMap((matches) => matches)
+      .map((target) => [
+        textContent(target),
+        getAttr(target, 'aria-label') ?? '',
+        getAttr(target, 'title') ?? '',
+      ].join(' '))
+      .join(' ');
+    if (!invalidReference && !UNSAFE_FORM_MARKER.test(referencedName)) return;
+
+    removeAttr(node, 'aria-labelledby');
+    setAttr(node, 'aria-label', 'Contact form');
+    count += 1;
+  });
+  return count;
 }
 
 function normalizeAccessibility(document: HtmlNode): number {
@@ -1253,21 +1370,31 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
     ?? pageNames.find((page) => /index\.html?$/i.test(page))
     ?? '#';
   const sanitizeText = (value: string): string => value
-    .replace(/\bproof\s*(?:(?:&|and)\s*credibility|gallery)\b/gi, 'practice information')
-    .replace(/\bcredibility\s*(?:badges?|bar|gallery)\b/gi, 'practice information')
+    .replace(/\bproof\s*(?:(?:&|and)\s*(?:credibility|notes?|perspective)|gallery)\b/gi, 'practice information')
+    .replace(/\bproof of progress\b/gi, 'practical progress')
+    .replace(/\bsocial[- ]proof\b/gi, 'practice information')
+    .replace(/\bcredibility\s*(?:badges?|bar|gallery|indicators?)\b/gi, 'practice information')
     .replace(/\btestimonials?\b/gi, 'practice information')
     .replace(/\b(?:client|patient) (?:success )?stor(?:y|ies)\b/gi, 'service information')
     .replace(/\b(?:client|patient) reviews?\b/gi, 'service information')
     .replace(/\bsuccess stor(?:y|ies)\b/gi, 'service information')
     .replace(/\bwhat (?:our )?(?:clients?|patients?) (?:say|share)\b/gi, 'what to expect')
+    .replace(/\b(?:direct|rotating) voices?\b/gi, 'practice perspectives')
     .replace(/\bvoices? from (?:the )?(?:cohort|community|clients?)\b/gi, 'practice perspectives')
-    .replace(/\b(?:real )?client note\b/gi, 'service note')
+    .replace(/\b(?:(?:real )?client|anonymized) (?:case )?note\b/gi, 'service note')
+    .replace(/\bcase note\s*\(\s*anonymized\s*\)/gi, 'service information')
+    .replace(/\b(?:selected|short|illustrative) (?:case )?(?:vignettes?|examples?)\s*\(\s*(?:anonymized|de-identified)\s*\)/gi, 'service information')
     .replace(/\bfeatured in\b/gi, 'described in')
     .replace(/\breal results\b/gi, 'practical progress')
     .replace(/\btrusted by\b/gi, 'designed for');
   walk(document, (node) => {
     if (node.nodeName === '#text' && typeof node.value === 'string') {
-      const next = sanitizeText(node.value);
+      const parentTag = node.parentNode?.tagName ?? '';
+      const next = UNSUPPORTED_FABRICATED_METRIC_RE.test(node.value)
+        ? ` ${NEUTRAL_CLAIM} `
+        : /^(?:h[1-6]|legend|title)$/.test(parentTag) && isUnsupportedProofHeading(node.value)
+          ? 'Practice information'
+          : sanitizeText(node.value);
       if (next !== node.value) count += 1;
       node.value = next;
     }
@@ -1284,7 +1411,10 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
         || attr.name === 'alt'
         || (attr.name.startsWith('data-') && attr.name !== 'data-dc-safe-replacement')
       ) {
-        next = PROOF_TEXT.test(next) || CLAIM_TEXT.test(next) || SYNTHETIC_BADGE_SIGNAL.test(next)
+        next = PROOF_TEXT.test(next)
+          || UNSUPPORTED_FABRICATED_METRIC_RE.test(next)
+          || containsUnsupportedClaim(next)
+          || SYNTHETIC_BADGE_SIGNAL.test(next)
           ? 'Practice information'
           : sanitizeText(next);
       }
@@ -1325,9 +1455,10 @@ function sanitizeProofVocabulary(document: HtmlNode, pageNames: readonly string[
 function annotateEditableNodes(
   document: HtmlNode,
   file: string,
-): { editIds: string[]; imageIds: string[] } {
+): { editIds: string[]; imageIds: string[]; wrappedTextNodes: number } {
   const editIds: string[] = [];
   const imageIds: string[] = [];
+  let wrappedTextNodes = 0;
 
   const mark = (node: HtmlNode, kind: 'edit' | 'image'): string => {
     const id = `${kind === 'edit' ? 'txt' : 'img'}_${sha256(`${file}:${structuralPath(node)}:${kind}`).slice(0, 18)}`;
@@ -1335,32 +1466,58 @@ function annotateEditableNodes(
     return id;
   };
 
-  const visit = (node: HtmlNode, editableAncestor: boolean): void => {
+  const visit = (node: HtmlNode, editableAncestor: boolean, hiddenAncestor = false): void => {
     if (!node.tagName) {
-      for (const child of node.childNodes ?? []) visit(child, editableAncestor);
+      for (const child of node.childNodes ?? []) visit(child, editableAncestor, hiddenAncestor);
       return;
     }
-    const hidden = getAttr(node, 'aria-hidden') === 'true' || NON_EDITABLE_ELEMENTS.has(node.tagName);
+    const hidden = hiddenAncestor || getAttr(node, 'aria-hidden') === 'true' || NON_EDITABLE_ELEMENTS.has(node.tagName);
+    const elementChildren = (node.childNodes ?? []).filter((child) => Boolean(child.tagName));
+
+    // An ID-targeted text edit replaces the target's complete inner HTML. A
+    // container-level slot must therefore never own links, controls, icons, or
+    // other element structure. Preserve mixed-content markup by wrapping only
+    // its meaningful direct text nodes, then annotate those leaf wrappers and
+    // the existing descendants independently.
+    if (!hidden && elementChildren.length > 0 && (TEXT_TAGS.has(node.tagName) || FALLBACK_TEXT_TAGS.has(node.tagName))) {
+      for (const child of [...(node.childNodes ?? [])]) {
+        if (child.nodeName !== '#text' || !child.value?.trim()) continue;
+        const fragment = parseFragment('<span data-dc-edit-wrapper="direct-text"></span>') as unknown as HtmlNode;
+        const wrapper = fragment.childNodes?.[0];
+        if (!wrapper) continue;
+        const childIndex = node.childNodes?.indexOf(child) ?? -1;
+        if (childIndex < 0 || !node.childNodes) continue;
+        wrapper.parentNode = node;
+        wrapper.childNodes = [child];
+        child.parentNode = wrapper;
+        node.childNodes.splice(childIndex, 1, wrapper);
+        wrappedTextNodes += 1;
+      }
+    }
+
     const text = textContent(node).replace(/\s+/g, ' ').trim();
     const directText = (node.childNodes ?? []).some((child) => child.nodeName === '#text' && Boolean(child.value?.trim()));
-    const shouldEdit = !hidden && !editableAncestor && Boolean(text) && (
+    const hasElementChildren = (node.childNodes ?? []).some((child) => Boolean(child.tagName));
+    const shouldEdit = !hidden && !editableAncestor && !hasElementChildren && Boolean(text) && (
       TEXT_TAGS.has(node.tagName) || (FALLBACK_TEXT_TAGS.has(node.tagName) && directText)
     );
     // Attribute content is independent from ancestor inner HTML. Keep useful
     // alt/label/title metadata editable even when an enclosing link or figure
     // already owns the visible-text slot.
     const editableAttribute = !shouldEdit
-      ? node.tagName === 'meta' && getAttr(node, 'content')?.trim()
+      ? node.tagName === 'meta'
+          && (getAttr(node, 'name') ?? '').trim().toLowerCase() === 'description'
+          && getAttr(node, 'content')?.trim()
         ? 'content'
         : node.tagName === 'img' && getAttr(node, 'alt')?.trim()
           ? 'alt'
+          : ['input', 'textarea'].includes(node.tagName) && getAttr(node, 'placeholder')?.trim()
+            ? 'placeholder'
           : getAttr(node, 'aria-label')?.trim()
             ? 'aria-label'
             : getAttr(node, 'title')?.trim()
               ? 'title'
-              : ['input', 'textarea'].includes(node.tagName) && getAttr(node, 'placeholder')?.trim()
-                ? 'placeholder'
-                : undefined
+              : undefined
       : undefined;
     if (shouldEdit || editableAttribute) {
       editIds.push(mark(node, 'edit'));
@@ -1372,10 +1529,14 @@ function annotateEditableNodes(
     if (node.tagName === 'img' || node.tagName === 'source' || inlineBackground) {
       imageIds.push(mark(node, 'image'));
     }
-    for (const child of node.childNodes ?? []) visit(child, editableAncestor || shouldEdit);
+    for (const child of node.childNodes ?? []) visit(child, editableAncestor || shouldEdit, hidden);
   };
   visit(document, false);
-  return { editIds: [...new Set(editIds)].sort(), imageIds: [...new Set(imageIds)].sort() };
+  return {
+    editIds: [...new Set(editIds)].sort(),
+    imageIds: [...new Set(imageIds)].sort(),
+    wrappedTextNodes,
+  };
 }
 
 export function detectFoundation(html: string): string | undefined {
@@ -1435,7 +1596,8 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
     if (!root) {
       const sanitized = css
         .replace(/expression\s*\([^)]*\)/gi, 'unset')
-        .replace(/url\(\s*(['"]?)\s*javascript:[^)]*\)/gi, 'none');
+        .replace(/url\(\s*(['"]?)\s*(?:javascript|vbscript|data|blob)\s*:[^)]*\)/gi, 'none')
+        .replace(/@import\s+[^;]*(?:javascript|vbscript|data|blob)\s*:[^;]*;?/gi, '');
       issues.push({ code: 'css-parse-fallback', severity: 'warning', file, message: `PostCSS could not parse the stylesheet; applied the conservative safety fallback: ${error instanceof Error ? error.message : String(error)}`, resolved: true });
       return { css: sanitized, backgrounds, issues, transformations: [{ rule: 'sanitize-malformed-css', file, count: Number(sanitized !== css) }] };
     }
@@ -1444,7 +1606,7 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
   let unsafe = 0;
   let backgroundImageIndex = 0;
   root.walkDecls((declaration) => {
-    if (/expression\s*\(|url\(\s*(['"]?)\s*(?:javascript:|data:text\/html)/i.test(declaration.value)) {
+    if (/expression\s*\(/i.test(declaration.value) || containsUnsafeCssReferences(declaration.value)) {
       declaration.remove();
       unsafe += 1;
       return;
@@ -1469,7 +1631,8 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
     }
   });
   root.walkAtRules('import', (rule) => {
-    if (/javascript:|data:text\/html/i.test(rule.params)) {
+    const reference = rule.params.match(/^(?:url\()?\s*(["']?)(.*?)\1\s*\)?(?:\s+.*)?$/i)?.[2] ?? rule.params;
+    if (isUnsafeCssUrl(reference, true)) {
       rule.remove();
       unsafe += 1;
     }
@@ -1523,9 +1686,9 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   let prices = 0;
   let linkRepairs = 0;
   let inlineStyles = 0;
-  let formIndex = 0;
   let namedFormFields = 0;
   let sanitizedFormWrappers = 0;
+  let detachedExternalFormControls = 0;
   const sensitiveFormIdRenames = new Map<string, string>();
 
   walk(document, (node) => {
@@ -1546,21 +1709,20 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     }
 
     if (node.tagName === 'form') {
-      formIndex += 1;
-      const priorFormKind = getAttr(node, 'data-dc-standard-form');
-      const sensitive = SENSITIVE_FORM.test(nodeMarkup(node));
-      if (sensitive) {
+      const formMarkup = nodeMarkup(node);
+      const needsStandardForm = SENSITIVE_FORM.test(formMarkup)
+        || UNSAFE_INQUIRY_FORM_TEXT_RE.test(formMarkup)
+        || !hasStandardInquiryControls(node);
+      if (needsStandardForm) {
         const replacement = replaceSensitiveFormContents(node);
         if (replacement.changedWrapper) sanitizedFormWrappers += 1;
         if (replacement.renamedId) sensitiveFormIdRenames.set(...replacement.renamedId);
         standardizedForms += 1;
       }
-      if (!getAttr(node, 'name')?.trim()) setAttr(node, 'name', `legacy-form-${sha256(options.file).slice(0, 10)}-${formIndex}`);
-      if (!getAttr(node, 'method')) setAttr(node, 'method', 'post');
-      const contactForm = sensitive
-        || priorFormKind === 'contact'
-        || /(?:^|\s)dc-contact-form(?:\s|$)/.test(getAttr(node, 'class') ?? '');
-      setAttr(node, 'data-dc-standard-form', contactForm ? 'contact' : 'safe');
+      setAttr(node, 'name', 'contact');
+      setAttr(node, 'method', 'post');
+      removeAttr(node, 'action');
+      setAttr(node, 'data-dc-standard-form', 'contact');
       setAttr(node, 'data-netlify', 'true');
 
     }
@@ -1577,10 +1739,9 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
         if (NON_CONTENT_TEXT_ANCESTORS.has(parent.tagName ?? '')) return;
         parent = parent.parentNode;
       }
-      if (CLAIM_TEXT.test(node.value) || PERCENT_RESULT.test(node.value)) {
-        node.value = ` ${NEUTRAL_CLAIM} `;
-        claims += 1;
-      }
+      const claimRepair = neutralizeUnsupportedClaimSentences(node.value);
+      node.value = claimRepair.value;
+      claims += claimRepair.count;
       const replaced = node.value.replace(PRICE, 'Contact for current pricing');
       if (replaced !== node.value) prices += 1;
       node.value = replaced;
@@ -1591,24 +1752,28 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     const nextAttrs: Attr[] = [];
     for (const attr of node.attrs) {
       const name = attr.name.toLowerCase();
+      if (name === 'action' || name === 'formaction') {
+        unsafeAttrs += 1;
+        continue;
+      }
       if (name.startsWith('on') || name === 'srcdoc') {
         unsafeAttrs += 1;
         continue;
       }
-      if (URL_ATTRS.has(name) && /^(?:javascript:|vbscript:|data:text\/html)/i.test(attr.value.trim())) {
+      if (URL_ATTRS.has(name) && isUnsafeStaticUrl(node.tagName ?? '', name, attr.value)) {
         unsafeAttrs += 1;
         continue;
       }
-      if ((name === 'action' || name === 'formaction') && /^(?:https?:|mailto:)/i.test(attr.value.trim()) && !/\{\{/.test(attr.value)) {
+      if (name === 'srcset' && containsUnsafeSrcset(attr.value)) {
         unsafeAttrs += 1;
         continue;
       }
-      if (name === 'style' && /expression\s*\(|url\(\s*(['"]?)\s*(?:javascript:|data:text\/html)/i.test(attr.value)) {
+      if (name === 'style' && (/expression\s*\(/i.test(attr.value) || containsUnsafeCssReferences(attr.value))) {
         unsafeAttrs += 1;
         continue;
       }
       if (['content', 'title', 'aria-label', 'alt', 'placeholder'].includes(name)) {
-        if (CLAIM_TEXT.test(attr.value) || PERCENT_RESULT.test(attr.value)) {
+        if (containsUnsupportedClaim(attr.value) || PERCENT_RESULT.test(attr.value)) {
           attr.value = NEUTRAL_CLAIM;
           claims += 1;
         }
@@ -1688,6 +1853,25 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     });
   }
 
+  // Only controls physically contained by the audited inquiry form survive.
+  // A `form=` association can otherwise bypass descendant-only form checks;
+  // orphan controls can still solicit unsupported data even when inert.
+  walk(document, (node) => {
+    if (!['input', 'select', 'textarea'].includes(node.tagName ?? '')) return;
+    let owner = node.parentNode;
+    while (owner && owner.tagName !== 'form') owner = owner.parentNode;
+    if (owner?.tagName === 'form' && getAttr(owner, 'data-dc-standard-form') === 'contact') {
+      if (getAttr(node, 'form') !== undefined) {
+        removeAttr(node, 'form');
+        detachedExternalFormControls += 1;
+      }
+      return;
+    }
+    const removable = node.parentNode?.tagName === 'label' ? node.parentNode : node;
+    removals.add(removable);
+    detachedExternalFormControls += 1;
+  });
+
   // Re-evaluate proof containers after text/form normalization. Several legacy
   // pages nest proof blocks in malformed markup that parse5 reparents while we
   // walk it; this post-pass makes removal deterministic on the repaired tree.
@@ -1726,6 +1910,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     if (!node.parentNode || removals.has(node.parentNode) || proofReplacements.has(node.parentNode)) continue;
     removeNode(node);
   }
+  sanitizedFormWrappers += normalizeStandardFormAccessibleNames(document);
   // Netlify and ordinary form encoding omit successful controls without a
   // name. Resolve ownership after form replacement/removal so both descendant
   // controls and controls associated through HTML's `form=` attribute receive
@@ -1748,6 +1933,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   if (standardizedForms) transformations.push({ rule: 'standardize-contact-form', file: options.file, count: standardizedForms });
   if (namedFormFields) transformations.push({ rule: 'name-form-controls', file: options.file, count: namedFormFields });
   if (sanitizedFormWrappers) transformations.push({ rule: 'sanitize-sensitive-form-wrapper', file: options.file, count: sanitizedFormWrappers });
+  if (detachedExternalFormControls) transformations.push({ rule: 'remove-nonstandard-form-controls', file: options.file, count: detachedExternalFormControls });
   if (claims) transformations.push({ rule: 'neutralize-outcome-claims', file: options.file, count: claims });
   if (prices) transformations.push({ rule: 'replace-fixed-price', file: options.file, count: prices, detail: 'Contact for current pricing' });
   if (linkRepairs) transformations.push({ rule: 'repair-navigation-targets', file: options.file, count: linkRepairs });
@@ -1757,6 +1943,14 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   appendHtml(body, `<script defer src="${COMPATIBILITY_SCRIPT_PATH}" data-dc-runtime="compatibility-v1"></script>`);
 
   const annotated = annotateEditableNodes(document, options.file);
+  if (annotated.wrappedTextNodes) {
+    transformations.push({
+      rule: 'wrap-direct-editable-text',
+      file: options.file,
+      count: annotated.wrappedTextNodes,
+      detail: 'Wrapped direct text in mixed-content containers so customer edits cannot erase descendant structure.',
+    });
+  }
   const outputHtml = serialize(document as never);
   const fields = canonicalFieldsForTokens(extractTemplateTokens(outputHtml), options.fields);
 

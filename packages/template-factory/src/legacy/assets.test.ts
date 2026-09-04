@@ -4,7 +4,14 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import test from 'node:test';
-import { AssetVendor, assetLicenseManifest, vendorRemoteAssets } from './assets.js';
+import { repairLegacyTemplate } from './compose.js';
+import {
+  AssetVendor,
+  assetLicenseManifest,
+  readAssetLicenseManifest,
+  validateAssetLicenseManifest,
+  vendorRemoteAssets,
+} from './assets.js';
 
 test('asset vendor rejects unapproved and non-HTTPS origins before network access', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-assets-'));
@@ -82,6 +89,38 @@ test('asset vendor refuses a redirect hop that leaves the approved host allowlis
   }
 });
 
+test('asset vendor refuses approved-host redirects that cross a license boundary', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-assets-license-redirect-'));
+  const originalFetch = globalThis.fetch;
+  const requests: string[] = [];
+  globalThis.fetch = (async (input) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    requests.push(url);
+    if (url.startsWith('https://images.unsplash.com/')) {
+      return new Response(null, {
+        status: 302,
+        headers: { location: 'https://fonts.gstatic.com/s/inter/v18/not-an-image.woff2' },
+      });
+    }
+    return new Response(Buffer.from('google-font-bytes'), {
+      status: 200,
+      headers: { 'content-type': 'font/woff2' },
+    });
+  }) as typeof fetch;
+  try {
+    const vendor = new AssetVendor(root);
+    await vendor.initialize();
+    const asset = await vendor.get('https://images.unsplash.com/photo-license-boundary');
+    assert.equal(requests.length, 2);
+    assert.equal(asset.fallback, true);
+    assert.equal(asset.licenseName, 'DailyClarity first-party generated placeholder');
+    assert.match(asset.finalUrl, /^local:\/\/dailyclarity\/generated-asset\//);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('generated fallbacks use truthful first-party provenance and corrupted cache bytes are repaired', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-assets-fallback-'));
   const sourceUrl = 'https://images.unsplash.com/photo-cache-integrity?w=1200';
@@ -127,6 +166,126 @@ test('generated fallbacks use truthful first-party provenance and corrupted cach
     assert.equal(persisted.assets[sourceUrl]?.licenseName, normalized.licenseName);
     assert.equal(persisted.assets[sourceUrl]?.licenseUrl, normalized.licenseUrl);
     assert.equal(persisted.assets[sourceUrl]?.finalUrl, normalized.finalUrl);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('cached bytes cannot inherit forged source, redirect, or license provenance on resume', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-assets-provenance-'));
+  const sourceUrl = 'https://images.unsplash.com/photo-provenance-integrity?w=1200';
+  const originalFetch = globalThis.fetch;
+  let requests = 0;
+  globalThis.fetch = (async () => {
+    requests += 1;
+    return new Response(Buffer.from(`image-bytes-${requests}`), {
+      status: 200,
+      headers: { 'content-type': 'image/jpeg' },
+    });
+  }) as typeof fetch;
+  try {
+    const vendor = new AssetVendor(root);
+    await vendor.initialize();
+    const first = await vendor.get(sourceUrl);
+    assert.equal(first.fallback, false);
+    assert.equal(requests, 1);
+
+    const index = JSON.parse(await readFile(vendor.indexPath, 'utf8')) as {
+      assets: Record<string, Record<string, unknown>>;
+    };
+    index.assets[sourceUrl] = {
+      ...index.assets[sourceUrl],
+      sourceUrl: 'https://fonts.gstatic.com/s/forged/example.woff2',
+      finalUrl: 'https://unapproved.example/tracker.jpg',
+      licenseName: 'Invented permissive license',
+      licenseUrl: 'https://unapproved.example/license',
+    };
+    await writeFile(vendor.indexPath, `${JSON.stringify(index, null, 2)}\n`);
+
+    const resumed = new AssetVendor(root);
+    await resumed.initialize();
+    const repaired = await resumed.get(sourceUrl);
+    assert.equal(requests, 2, 'invalid provenance must force a fresh approved fetch');
+    assert.equal(repaired.sourceUrl, sourceUrl);
+    assert.equal(repaired.finalUrl, sourceUrl);
+    assert.equal(repaired.licenseName, 'Unsplash License');
+    assert.equal(repaired.licenseUrl, 'https://unsplash.com/license');
+
+    const persisted = JSON.parse(await readFile(resumed.indexPath, 'utf8')) as {
+      assets: Record<string, Record<string, unknown>>;
+    };
+    assert.equal(persisted.assets[sourceUrl]?.sourceUrl, sourceUrl);
+    assert.equal(persisted.assets[sourceUrl]?.licenseName, 'Unsplash License');
+
+    const forgedManifestFiles = new Map<string, string | Uint8Array>([
+      [`assets/vendor/${repaired.cacheFilename}`, await readFile(join(resumed.objectRoot, repaired.cacheFilename))],
+      ['.dailyclarity/assets.json', assetLicenseManifest([{
+        ...repaired,
+        finalUrl: 'https://unapproved.example/tracker.jpg',
+        licenseName: 'Invented permissive license',
+      }])],
+    ]);
+    assert.match(validateAssetLicenseManifest(forgedManifestFiles).join('\n'), /manifest is malformed/i);
+  } finally {
+    globalThis.fetch = originalFetch;
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('Google Fonts CSS and its nested font are finally attested after deterministic repair', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-assets-google-fonts-'));
+  const originalFetch = globalThis.fetch;
+  const stylesheetUrl = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap';
+  const fontUrl = 'https://fonts.gstatic.com/s/inter/v18/example.woff2';
+  const fontBytes = Buffer.from('fixture-woff2-bytes');
+  globalThis.fetch = (async (input) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+    if (url === stylesheetUrl.replace(/ /g, '%20')) {
+      return new Response(`@font-face{font-family:'Inter';font-style:normal;font-weight:400;src:url(${fontUrl}) format('woff2')}`, {
+        status: 200,
+        headers: { 'content-type': 'text/css; charset=utf-8' },
+      });
+    }
+    if (url === fontUrl) {
+      return new Response(fontBytes, { status: 200, headers: { 'content-type': 'font/woff2' } });
+    }
+    throw new Error(`Unexpected fixture URL: ${url}`);
+  }) as typeof fetch;
+  try {
+    const vendor = new AssetVendor(root);
+    await vendor.initialize();
+    const first = await vendorRemoteAssets(new Map([[
+      'index.html',
+      `<!doctype html><html lang="en"><head><title>Font fixture</title><link rel="stylesheet" href="${stylesheetUrl}"></head><body><main><h1>{{BUSINESS_NAME}}</h1><p>A practical introduction long enough for safe publication.</p><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`,
+    ]]), vendor);
+    const repaired = repairLegacyTemplate({
+      slug: 'google-font-fixture',
+      niche: 'wellness_coach',
+      files: first.files,
+    });
+    const final = await vendorRemoteAssets(repaired.files, vendor);
+    const manifest = readAssetLicenseManifest(final.files);
+
+    assert.deepEqual(validateAssetLicenseManifest(final.files), []);
+    assert.equal(manifest.length, 2, JSON.stringify(manifest, null, 2));
+    assert.deepEqual(new Set(manifest.map((asset) => asset.sourceUrl)), new Set([stylesheetUrl, fontUrl]));
+    assert.ok(manifest.every((asset) => asset.licenseName === 'Google Fonts / upstream font license'));
+    assert.ok(manifest.every((asset) => !('author' in asset)), 'unknown font authors must not be invented');
+    for (const asset of manifest) {
+      const emitted = final.files.get(`assets/vendor/${asset.cacheFilename}`);
+      assert.ok(emitted !== undefined);
+      const bytes = typeof emitted === 'string' ? Buffer.from(emitted) : Buffer.from(emitted);
+      assert.equal(asset.bytes, bytes.byteLength);
+      assert.equal(asset.sha256, createHash('sha256').update(bytes).digest('hex'));
+      assert.ok(asset.cacheFilename.startsWith(`${asset.sha256}.`));
+    }
+    const stylesheet = manifest.find((asset) => asset.sourceUrl === stylesheetUrl)!;
+    const font = manifest.find((asset) => asset.sourceUrl === fontUrl)!;
+    assert.match(String(final.files.get('index.html')), new RegExp(`assets/vendor/${stylesheet.cacheFilename.replace('.', '\\.')}`));
+    assert.match(String(final.files.get(`assets/vendor/${stylesheet.cacheFilename}`)), new RegExp(font.cacheFilename.replace('.', '\\.')));
+    final.files.set(`assets/vendor/${font.cacheFilename}`, Buffer.from('tampered-font'));
+    assert.match(validateAssetLicenseManifest(final.files).join('\n'), /does not match emitted bytes/);
   } finally {
     globalThis.fetch = originalFetch;
     await rm(root, { recursive: true, force: true });

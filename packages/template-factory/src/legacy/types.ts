@@ -1,10 +1,16 @@
-export const LEGACY_SCHEMA_VERSION = 4;
-export const DEFAULT_LEGACY_RULE_VERSION = 'legacy-rehab-1.0.20';
-export const DEFAULT_AI_DOLLAR_CAP_USD = 25;
-export const DEFAULT_AI_TOKEN_CAP = 1_000_000;
+export const LEGACY_SCHEMA_VERSION = 6;
+export const DEFAULT_LEGACY_RULE_VERSION = 'legacy-rehab-1.0.21';
+export const MAX_AI_DOLLAR_CAP_USD = 25;
+export const MAX_AI_TOKEN_CAP = 1_000_000;
+export const DEFAULT_AI_DOLLAR_CAP_USD = MAX_AI_DOLLAR_CAP_USD;
+export const DEFAULT_AI_TOKEN_CAP = MAX_AI_TOKEN_CAP;
+export const MAX_LEGACY_STATIC_WORKERS = 64;
+export const MAX_LEGACY_CHROMIUM_WORKERS = 6;
 export const LEGACY_CANCEL_EXIT_CODE = 130;
 export const MINIMUM_LEGACY_PILOT_SIZE = 100;
-export const LEGACY_PILOT_GATE_VERSION = 5;
+export const LEGACY_PILOT_GATE_VERSION = 6;
+export const FINAL_QUALITY_RECEIPT_VERSION = 2;
+export const FINAL_RENDER_PROTOCOL = 'customer-preview-v1' as const;
 
 export class LegacyCancellationError extends Error {
   constructor(message = 'Legacy catalogue rehabilitation was cancelled') {
@@ -213,6 +219,8 @@ export interface LegacyRenderRecord {
   status: 'pending' | 'running' | 'passed' | 'failed';
   screenshotHash: string | null;
   perceptualHash: string | null;
+  thumbnailHash: string | null;
+  thumbnailBytes: number | null;
   ssim: number | null;
   consoleErrors: number;
   failedRequests: number;
@@ -267,6 +275,13 @@ export interface ModelUsageInput {
   responseId?: string | null;
   error?: string | null;
 }
+
+export type ModelUsageReconciliation =
+  | { accepted: true }
+  | {
+      accepted: false;
+      reason: 'token_ceiling' | 'cost_ceiling';
+    };
 
 export interface ModelBudgetSnapshot {
   estimatedTokens: number;

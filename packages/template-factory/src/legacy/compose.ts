@@ -38,6 +38,11 @@ import {
   type HtmlNode,
 } from './repair.js';
 import { extractTemplateTokens, validateTemplateContract } from '../template-contract.js';
+import {
+  containsUnsafeCssReferences,
+  containsUnsafeSrcset,
+  isUnsafeStaticUrl,
+} from './url-safety.js';
 
 type Attr = { name: string; value: string };
 
@@ -60,6 +65,7 @@ const BACKGROUND_URL_RE = /url\(\s*(['"]?)(.*?)\1\s*\)/gi;
 const TEXT_FILE_RE = /\.(?:html?|css|js|mjs|cjs|json|txt|md|xml|svg)$/i;
 const REPAIR_STYLESHEET_PATH = 'assets/css/dc-repair.css';
 const REPAIR_IMAGE_PATH = 'assets/img/dc-placeholder.svg';
+const isVendedStylesheet = (path: string): boolean => /^assets\/vendor\/[a-f0-9]{64}\.css$/i.test(path);
 const REPAIR_STYLESHEET = [
   'html,body{max-width:100%;overflow-x:clip}',
   '*,*::before,*::after{box-sizing:border-box}',
@@ -74,6 +80,7 @@ const REPAIR_STYLESHEET = [
   '.dc-contact-form{display:grid;gap:1rem;max-width:42rem;margin-top:2rem}',
   '.dc-contact-form label{display:grid;gap:.35rem}',
   '.dc-contact-form input,.dc-contact-form textarea{width:100%;padding:.75rem;border:1px solid currentColor;border-radius:.4rem;font:inherit}',
+  ':is(p,blockquote,figcaption,dd,td)>a{text-decoration-line:underline;text-underline-offset:.12em}',
   '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}',
   'body :is(nav,header,[class*="nav"],[class*="row"],[class*="flex"]){flex-wrap:wrap!important}',
   'body :is(.grid,[class*="-grid"],[class*="grid-"]){grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))!important}',
@@ -242,6 +249,118 @@ function parseJson(value: string | Uint8Array | undefined): unknown {
   } catch {
     return undefined;
   }
+}
+
+const EXACT_THEME_COLOR_VALUE = /^(?:#[0-9a-f]{3,8}|rgba?\([^)]*\)|hsla?\([^)]*\))$/i;
+
+function isSingleSafeThemeDeclaration(value: string): boolean {
+  if (value.length > 4_096 || /[\0\r\n]|<\/style\b/i.test(value) || containsUnsafeCssReferences(value)) return false;
+  try {
+    const root = postcss.parse(`:root{--dc-theme-check:${value};}`);
+    if (root.nodes.length !== 1 || root.nodes[0]?.type !== 'rule') return false;
+    const declarations = root.nodes[0].nodes ?? [];
+    return declarations.length === 1
+      && declarations[0]?.type === 'decl'
+      && declarations[0].prop === '--dc-theme-check'
+      && !declarations[0].important;
+  } catch {
+    return false;
+  }
+}
+
+function isSingleSafeFontImport(value: string): boolean {
+  if (!value || value.length > 4_096 || /[\0\r\n]|<\/style\b/i.test(value) || containsUnsafeCssReferences(value)) return false;
+  try {
+    const root = postcss.parse(value);
+    const rule = root.nodes[0];
+    if (
+      root.nodes.length !== 1
+      || rule?.type !== 'atrule'
+      || rule.name.toLowerCase() !== 'import'
+      || rule.nodes
+    ) return false;
+    const params = rule.params.trim();
+    const match = params.match(/^url\(\s*(?:"([^"]*)"|'([^']*)'|([^\s"')]+))\s*\)$/i)
+      ?? params.match(/^(?:"([^"]*)"|'([^']*)')$/);
+    const rawUrl = match?.slice(1).find((candidate) => candidate !== undefined);
+    if (!rawUrl || /[\\\u0000-\u0020\u007f]/.test(rawUrl)) return false;
+    const url = new URL(rawUrl);
+    return url.protocol === 'https:'
+      && !url.username
+      && !url.password
+      && !url.port
+      && (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com');
+  } catch {
+    return false;
+  }
+}
+
+function assertSafeThemePresetValues(preset: ThemePreset): void {
+  if (!Array.isArray(preset.tokens) || !Array.isArray(preset.fontImports)) {
+    throw new Error('Theme preset must contain token and font-import arrays');
+  }
+  const ids = new Set<string>();
+  for (const [index, token] of preset.tokens.entries()) {
+    if (
+      !token
+      || typeof token !== 'object'
+      || typeof token.id !== 'string'
+      || !/^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(token.id)
+      || ids.has(token.id)
+      || (token.kind !== 'color' && token.kind !== 'font')
+      || typeof token.value !== 'string'
+      || (token.original !== undefined && (typeof token.original !== 'string' || token.original.length > 4_096))
+      || !isSingleSafeThemeDeclaration(token.value)
+      || (token.kind === 'color' && !EXACT_THEME_COLOR_VALUE.test(token.value.trim()))
+      || (token.kind === 'font' && /(?:url\s*\(|@import\b)/i.test(token.value))
+    ) {
+      throw new Error(`Theme preset contains an unsafe token at index ${index}`);
+    }
+    ids.add(token.id);
+  }
+  for (const [index, fontImport] of preset.fontImports.entries()) {
+    if (typeof fontImport !== 'string' || !isSingleSafeFontImport(fontImport)) {
+      throw new Error(`Theme preset contains an unsafe font import at index ${index}`);
+    }
+  }
+}
+
+function readPreviousThemePreset(
+  value: string | Uint8Array | undefined,
+  legacySlug: string,
+): ThemePreset | undefined {
+  if (value === undefined) return undefined;
+  const parsed = parseJson(value);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`Invalid prior theme preset for ${legacySlug}: expected an object`);
+  }
+  const candidate = parsed as Partial<ThemePreset>;
+  if (
+    typeof candidate.id !== 'string'
+    || typeof candidate.legacySlug !== 'string'
+    || candidate.legacySlug !== legacySlug
+    || typeof candidate.hash !== 'string'
+    || !/^[a-f0-9]{64}$/.test(candidate.hash)
+    || !Array.isArray(candidate.tokens)
+    || !Array.isArray(candidate.fontImports)
+  ) {
+    throw new Error(`Invalid prior theme preset for ${legacySlug}: malformed schema or lineage`);
+  }
+  const preset = candidate as ThemePreset;
+  try {
+    assertSafeThemePresetValues(preset);
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`Invalid prior theme preset for ${legacySlug}: ${detail}`);
+  }
+  if (preset.tokens.some((token) => !/^(?:color|font)_[a-f0-9]{14}$/.test(token.id) || !token.id.startsWith(`${token.kind}_`))) {
+    throw new Error(`Invalid prior theme preset for ${legacySlug}: token identity does not match its kind`);
+  }
+  const expectedHash = sha256(stableStringify({ tokens: preset.tokens, fontImports: preset.fontImports }));
+  if (preset.hash !== expectedHash || preset.id !== `theme_${expectedHash.slice(0, 24)}`) {
+    throw new Error(`Invalid prior theme preset for ${legacySlug}: content hash does not match its payload`);
+  }
+  return preset;
 }
 
 function walk(node: HtmlNode, visitor: (node: HtmlNode) => void): void {
@@ -718,6 +837,7 @@ export function applyThemePreset(
   preset: ThemePreset,
   images: readonly ImageEntry[] = [],
 ): Record<string, string> {
+  assertSafeThemePresetValues(preset);
   const tokens = new Map(preset.tokens.map((token) => [token.id, token]));
   const output: Record<string, string> = {};
   for (const file of Object.keys(designStyles).sort()) {
@@ -774,6 +894,32 @@ function localTarget(owner: string, reference: string): string | undefined {
   return reference.startsWith('/')
     ? posix.normalize(decoded.replace(/^\/+/, ''))
     : posix.normalize(posix.join(posix.dirname(owner), decoded));
+}
+
+function hasUnsafeEmbeddedReference(html: string): boolean {
+  let unsafe = false;
+  const document = parse(html) as unknown as HtmlNode;
+  walk(document, (node) => {
+    if (unsafe || !node.tagName) return;
+    for (const attr of node.attrs ?? []) {
+      const name = attr.name.toLowerCase();
+      if (['src', 'href', 'poster', 'action', 'formaction', 'xlink:href'].includes(name)
+        && isUnsafeStaticUrl(node.tagName, name, attr.value)) {
+        unsafe = true;
+        return;
+      }
+      if (name === 'srcset' && containsUnsafeSrcset(attr.value)) {
+        unsafe = true;
+        return;
+      }
+      if (name === 'style' && containsUnsafeCssReferences(attr.value)) {
+        unsafe = true;
+        return;
+      }
+    }
+    if (node.tagName === 'style' && containsUnsafeCssReferences(textContent(node))) unsafe = true;
+  });
+  return unsafe;
 }
 
 function importedStylesheetReference(params: string): string | undefined {
@@ -1009,6 +1155,15 @@ function repairLocalReferences(
         if (value === undefined) continue;
         const visualReference = (node.tagName === 'img' || node.tagName === 'source' || name === 'poster')
           && (name === 'src' || name === 'poster');
+        if (isUnsafeStaticUrl(node.tagName, name, value)) {
+          if (visualReference) setAttr(node, name, relativeReference(page, REPAIR_IMAGE_PATH));
+          else if (node.tagName === 'link' && rel.includes('stylesheet')) setAttr(node, name, relativeReference(page, REPAIR_STYLESHEET_PATH));
+          else if (node.tagName === 'a' && name === 'href') setAttr(node, name, '#');
+          else removeAttr(node, name);
+          repaired += 1;
+          issues.push({ code: 'unsafe-embedded-reference-repaired', severity: 'warning', file: page, message: `Removed an unsafe embedded ${name} URL.`, resolved: true });
+          continue;
+        }
         if (visualReference && (!value.trim() || value.trim() === '#')) {
           setAttr(node, name, relativeReference(page, REPAIR_IMAGE_PATH));
           repaired += 1;
@@ -1047,6 +1202,13 @@ function repairLocalReferences(
       }
       const srcset = getAttr(node, 'srcset');
       if (srcset) {
+        if (containsUnsafeSrcset(srcset)) {
+          if (node.tagName === 'img' || node.tagName === 'source') setAttr(node, 'srcset', relativeReference(page, REPAIR_IMAGE_PATH));
+          else removeAttr(node, 'srcset');
+          repaired += 1;
+          issues.push({ code: 'unsafe-srcset-repaired', severity: 'warning', file: page, message: 'Replaced an unsafe embedded image candidate set with the local editable placeholder.', resolved: true });
+          return;
+        }
         const candidates = srcset.split(',').map((candidate) => candidate.trim().split(/\s+/, 1)[0]!).filter(Boolean);
         if (candidates.some((candidate) => candidate === '#' || !candidate || (() => {
           const target = localTarget(page, candidate);
@@ -1221,10 +1383,15 @@ function buildReceipt(input: {
   artifactHash: string;
 }): QualityReceipt {
   const pageMap = new Map(Object.entries(input.pages));
-  const contract = validateTemplateContract(pageMap, input.fields);
+  const contract = validateTemplateContract(pageMap, input.fields, {
+    requireStandardInquiryForms: true,
+  });
   const unsafeMarkup = Object.entries(input.pages).flatMap(([page, html]) => {
     const withoutRuntime = html.replace(new RegExp(`<script\\b[^>]*src=["']${COMPATIBILITY_SCRIPT_PATH.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["'][^>]*>\\s*<\\/script>`, 'gi'), '');
-    return /<\/?(?:iframe|frame|frameset|object|embed)\b|<script\b|\son[a-z]+\s*=|(?:href|src|action)\s*=\s*["']\s*(?:javascript:|data:text\/html)/i.test(withoutRuntime) ? [page] : [];
+    return /<\/?(?:iframe|frame|frameset|object|embed)\b|<script\b|\son[a-z]+\s*=/i.test(withoutRuntime)
+      || hasUnsafeEmbeddedReference(withoutRuntime)
+      ? [page]
+      : [];
   });
   const runtimePages = Object.entries(input.pages).filter(([, html]) => {
     const matches = html.match(new RegExp(`<script\\b[^>]*src=["']${COMPATIBILITY_SCRIPT_PATH.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}["']`, 'gi')) ?? [];
@@ -1281,7 +1448,7 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
   for (const [path, value] of input.files) files.set(normalizePath(path), value);
   const rawManifest = input.manifest ?? parseJson(files.get('template.json')) ?? {};
   const rawFields = input.fields ?? parseJson(files.get('fields.json')) ?? {};
-  const previousThemePreset = parseJson(files.get('.dailyclarity/theme-preset.json')) as ThemePreset | undefined;
+  const previousThemePreset = readPreviousThemePreset(files.get('.dailyclarity/theme-preset.json'), input.slug);
   const normalizedFields = normalizeFields(rawFields);
   const issues: RepairIssue[] = [];
   const transformations: Transformation[] = [];
@@ -1324,7 +1491,10 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
   const repairedStyles: Record<string, string> = {};
   const backgroundSelectors: BackgroundSelector[] = [];
   for (const [path, value] of [...files.entries()].sort(([a], [b]) => a.localeCompare(b))) {
-    if (!/\.css$/i.test(path)) continue;
+    // Third-party CSS has already been safety-checked, rewritten offline, and
+    // content-addressed by the vendor. Keep those licensed bytes immutable;
+    // only first-party template styles participate in theme extraction.
+    if (!/\.css$/i.test(path) || isVendedStylesheet(path)) continue;
     const result = repairStylesheet(decode(value), path);
     repairedStyles[path] = result.css;
     backgroundSelectors.push(...result.backgrounds);
@@ -1427,7 +1597,13 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
 
   const emitted = new Map<string, string | Uint8Array>();
   for (const [path, value] of files) {
-    if (/\.html?$/i.test(path) || /\.css$/i.test(path) || /(?:^|\/)template\.json$/i.test(path) || /(?:^|\/)fields\.json$/i.test(path) || /\.m?js$/i.test(path)) continue;
+    if (
+      /\.html?$/i.test(path)
+      || (/\.css$/i.test(path) && !isVendedStylesheet(path))
+      || /(?:^|\/)template\.json$/i.test(path)
+      || /(?:^|\/)fields\.json$/i.test(path)
+      || /\.m?js$/i.test(path)
+    ) continue;
     emitted.set(path, value);
   }
   const composedPages = applyContentPreset(design.pages, contentPreset);

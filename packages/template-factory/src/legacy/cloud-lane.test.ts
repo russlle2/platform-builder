@@ -16,7 +16,11 @@ import {
 } from './cloud-lane.js';
 import { resolveLegacyConfig } from './config.js';
 import { LegacyLedger } from './ledger.js';
-import type { StructuredRepairPatch } from './model.js';
+import {
+  estimateBatchInputReservation,
+  type BatchInputLine,
+  type StructuredRepairPatch,
+} from './model.js';
 
 const ISSUE_A = '0123456789abcdef0123456789abcdef';
 const ISSUE_B = 'fedcba9876543210fedcba9876543210';
@@ -164,6 +168,10 @@ test('preparation clusters one fragment-only request per issue fingerprint and r
     assert.doesNotMatch(String(line.body.input), /<html|<body/i);
     assert.match(JSON.stringify(line.body), /json_schema/);
     assert.equal(line.custom_id, first.state.requests[0]?.customId);
+    const reservation = estimateBatchInputReservation(line as BatchInputLine);
+    assert.equal(first.state.requests[0]?.estimatedInputTokens, reservation.inputTokens);
+    assert.equal(first.state.requests[0]?.estimatedOutputTokens, reservation.outputTokens);
+    assert.equal(first.state.requests[0]?.estimatedCostUsd, reservation.costUsd);
 
     const accountedBefore = ledger.modelBudgetSnapshot().accountedTokens;
     const resumed = await prepareCloudRepairLane({

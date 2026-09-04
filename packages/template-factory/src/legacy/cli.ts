@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-import { randomUUID } from 'node:crypto';
-import { open, readFile, stat, unlink } from 'node:fs/promises';
+import { createHash, randomUUID } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { link, open, readFile, stat, unlink } from 'node:fs/promises';
 import { pathToFileURL } from 'node:url';
 import { join } from 'node:path';
+import { promisify } from 'node:util';
 import {
   assertReadableSource,
   atomicWriteFile,
@@ -16,6 +18,10 @@ import { reapOrphanedStaging } from './staging.js';
 import {
   LEGACY_CANCEL_EXIT_CODE,
   LEGACY_COMMANDS,
+  MAX_AI_DOLLAR_CAP_USD,
+  MAX_AI_TOKEN_CAP,
+  MAX_LEGACY_CHROMIUM_WORKERS,
+  MAX_LEGACY_STATIC_WORKERS,
   MINIMUM_LEGACY_PILOT_SIZE,
   LegacyCancellationError,
   throwIfLegacyCancelled,
@@ -40,14 +46,14 @@ Usage:
 
 Options:
   --source <path>              Immutable legacy catalogue root
-  --work-root <path>           Durable output root (default: %LOCALAPPDATA%\\DailyClarity\\template-rehab)
+  --work-root <path>           Durable output root (default: %USERPROFILE%\\Documents\\DailyClarity\\template-rehab)
   --db <path>                  SQLite ledger path inside work root
   --rule-version <version>     Deterministic repair rule version
   --pilot-size <count>         Stratified pilot size (minimum/default: 100)
-  --static-workers <count>     Static repair workers (default: 8)
-  --chromium-workers <count>   Browser workers (default: 4)
-  --ai-dollar-cap <usd>        Hard model spend cap (default: 25)
-  --ai-token-cap <count>       Hard aggregate model token cap (default: 1000000)
+  --static-workers <count>     Static repair workers (default: 8; maximum: 64)
+  --chromium-workers <count>   Browser workers (default: 4; maximum: 6)
+  --ai-dollar-cap <usd>        Hard model spend cap (default/maximum: 25)
+  --ai-token-cap <count>       Hard aggregate token cap (default/maximum: 1000000)
   --cloud-repair               Explicitly enable the capped OpenAI fragment-repair lane
   --resume                     Resume the newest matching interrupted pilot/full run
   --dry-run                    Required for promote; never mutates publication state
@@ -63,7 +69,23 @@ export interface LegacyCliDependencies {
   signal?: AbortSignal;
   /** Offline tests and controlled callers can inject a client without a credential. */
   cloudRepairClient?: CloudRepairBatchClient;
+  /** Deterministic tests can replace platform process inspection. */
+  processInspector?: LegacyProcessInspector;
 }
+
+export interface LegacyProcessIdentity {
+  executable: string;
+  commandLine: string;
+  startedAtMs: number;
+  /** Identifies the inspection mechanism so formatting changes are fail-safe. */
+  source: string;
+}
+
+export type LegacyProcessInspection =
+  | { state: 'not-running' }
+  | { state: 'running'; identity?: LegacyProcessIdentity };
+
+export type LegacyProcessInspector = (pid: number) => Promise<LegacyProcessInspection>;
 
 function optionValue(argv: string[], index: number, inlineValue: string | undefined, option: string): [string, number] {
   if (inlineValue !== undefined) {
@@ -84,6 +106,18 @@ function positiveInteger(value: string, option: string): number {
 function positiveNumber(value: string, option: string): number {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed <= 0) throw new Error(`${option} must be a positive number`);
+  return parsed;
+}
+
+function positiveIntegerAtMost(value: string, option: string, maximum: number): number {
+  const parsed = positiveInteger(value, option);
+  if (parsed > maximum) throw new Error(`${option} must be at most ${maximum}`);
+  return parsed;
+}
+
+function positiveNumberAtMost(value: string, option: string, maximum: number): number {
+  const parsed = positiveNumber(value, option);
+  if (parsed > maximum) throw new Error(`${option} must be at most ${maximum}`);
   return parsed;
 }
 
@@ -125,10 +159,10 @@ export function parseLegacyArgs(argv: string[]): ParsedLegacyArgs {
       case '--db': flags.databasePath = value; break;
       case '--rule-version': flags.ruleVersion = value; break;
       case '--pilot-size': flags.pilotSize = positiveInteger(value, option); break;
-      case '--static-workers': flags.staticWorkers = positiveInteger(value, option); break;
-      case '--chromium-workers': flags.chromiumWorkers = positiveInteger(value, option); break;
-      case '--ai-dollar-cap': flags.aiDollarCapUsd = positiveNumber(value, option); break;
-      case '--ai-token-cap': flags.aiTokenCap = positiveInteger(value, option); break;
+      case '--static-workers': flags.staticWorkers = positiveIntegerAtMost(value, option, MAX_LEGACY_STATIC_WORKERS); break;
+      case '--chromium-workers': flags.chromiumWorkers = positiveIntegerAtMost(value, option, MAX_LEGACY_CHROMIUM_WORKERS); break;
+      case '--ai-dollar-cap': flags.aiDollarCapUsd = positiveNumberAtMost(value, option, MAX_AI_DOLLAR_CAP_USD); break;
+      case '--ai-token-cap': flags.aiTokenCap = positiveIntegerAtMost(value, option, MAX_AI_TOKEN_CAP); break;
       default: throw new Error(`Unknown option: ${option}`);
     }
   }
@@ -165,22 +199,226 @@ async function processIsAlive(pid: number): Promise<boolean> {
   }
 }
 
-async function acquireCompilerLock(workRoot: string): Promise<() => Promise<void>> {
+const execFileAsync = promisify(execFile);
+const PROCESS_START_TOLERANCE_MS = 5_000;
+
+interface CompilerLockOwner {
+  executable: string;
+  commandHash: string;
+  processStartedAtMs: number;
+  inspectionSource: string;
+}
+
+interface CompilerLockRecord {
+  version?: unknown;
+  pid?: unknown;
+  token?: unknown;
+  startedAt?: unknown;
+  owner?: unknown;
+}
+
+function selfFallbackIdentity(): LegacyProcessIdentity {
+  return {
+    executable: process.execPath,
+    commandLine: process.argv.join(' '),
+    startedAtMs: Date.now() - process.uptime() * 1_000,
+    source: 'self-fallback',
+  };
+}
+
+async function inspectWindowsProcess(pid: number): Promise<LegacyProcessIdentity | null> {
+  const script = [
+    `$p = Get-CimInstance Win32_Process -Filter "ProcessId = ${pid}" -ErrorAction Stop`,
+    'if ($null -eq $p) { exit 3 }',
+    '$startedAtMs = ([DateTimeOffset]$p.CreationDate).ToUniversalTime().ToUnixTimeMilliseconds()',
+    '[pscustomobject]@{ executable = [string]$p.ExecutablePath; commandLine = [string]$p.CommandLine; startedAtMs = $startedAtMs } | ConvertTo-Json -Compress',
+  ].join('; ');
+  const { stdout } = await execFileAsync('powershell.exe', [
+    '-NoLogo',
+    '-NoProfile',
+    '-NonInteractive',
+    '-Command',
+    script,
+  ], { encoding: 'utf8', timeout: 5_000, windowsHide: true, maxBuffer: 64 * 1024 });
+  const parsed = JSON.parse(String(stdout)) as {
+    executable?: unknown;
+    commandLine?: unknown;
+    startedAtMs?: unknown;
+  };
+  if (
+    typeof parsed.executable !== 'string'
+    || !parsed.executable.trim()
+    || typeof parsed.commandLine !== 'string'
+    || !parsed.commandLine.trim()
+    || typeof parsed.startedAtMs !== 'number'
+    || !Number.isFinite(parsed.startedAtMs)
+  ) return null;
+  return {
+    executable: parsed.executable,
+    commandLine: parsed.commandLine,
+    startedAtMs: parsed.startedAtMs,
+    source: 'windows-cim',
+  };
+}
+
+async function inspectPosixProcess(pid: number): Promise<LegacyProcessIdentity | null> {
+  const { stdout } = await execFileAsync('ps', [
+    '-p', String(pid), '-o', 'lstart=', '-o', 'comm=', '-o', 'args=',
+  ], { encoding: 'utf8', timeout: 5_000, windowsHide: true, maxBuffer: 64 * 1024 });
+  const line = String(stdout).split(/\r?\n/u).find((candidate) => candidate.trim())?.trim();
+  if (!line || line.length < 25) return null;
+  const startedAtMs = Date.parse(line.slice(0, 24));
+  const processText = line.slice(24).trim();
+  const executable = processText.split(/\s+/u)[0] ?? '';
+  if (!Number.isFinite(startedAtMs) || !executable || !processText) return null;
+  return { executable, commandLine: processText, startedAtMs, source: 'posix-ps' };
+}
+
+async function inspectProcess(pid: number): Promise<LegacyProcessInspection> {
+  if (!await processIsAlive(pid)) return { state: 'not-running' };
+  try {
+    const identity = process.platform === 'win32'
+      ? await inspectWindowsProcess(pid)
+      : await inspectPosixProcess(pid);
+    if (identity) return { state: 'running', identity };
+  } catch {
+    // A process can exit between kill(0) and inspection. Check once more before
+    // conservatively treating an inaccessible live process as the lock owner.
+  }
+  if (!await processIsAlive(pid)) return { state: 'not-running' };
+  return pid === process.pid
+    ? { state: 'running', identity: selfFallbackIdentity() }
+    : { state: 'running' };
+}
+
+function normalizedExecutable(value: string): string {
+  const normalized = value.trim().replace(/^"|"$/gu, '').replace(/\\/gu, '/');
+  return process.platform === 'win32' ? normalized.toLocaleLowerCase('en-US') : normalized;
+}
+
+function normalizedCommand(value: string): string {
+  const normalized = value.trim().replace(/\s+/gu, ' ').replace(/\\/gu, '/');
+  return process.platform === 'win32' ? normalized.toLocaleLowerCase('en-US') : normalized;
+}
+
+function commandHash(commandLine: string): string {
+  return createHash('sha256').update(normalizedCommand(commandLine)).digest('hex');
+}
+
+function lockOwnerFromIdentity(identity: LegacyProcessIdentity): CompilerLockOwner {
+  return {
+    executable: normalizedExecutable(identity.executable),
+    commandHash: commandHash(identity.commandLine),
+    processStartedAtMs: identity.startedAtMs,
+    inspectionSource: identity.source,
+  };
+}
+
+function parseLockOwner(value: unknown): CompilerLockOwner | null {
+  if (!value || typeof value !== 'object') return null;
+  const candidate = value as Partial<CompilerLockOwner>;
+  if (
+    typeof candidate.executable !== 'string'
+    || !candidate.executable
+    || typeof candidate.commandHash !== 'string'
+    || !/^[a-f\d]{64}$/u.test(candidate.commandHash)
+    || typeof candidate.processStartedAtMs !== 'number'
+    || !Number.isFinite(candidate.processStartedAtMs)
+    || typeof candidate.inspectionSource !== 'string'
+    || !candidate.inspectionSource
+  ) return null;
+  return candidate as CompilerLockOwner;
+}
+
+function compareOwnerIdentity(
+  expected: CompilerLockOwner,
+  observed: LegacyProcessIdentity,
+): 'same' | 'different' | 'uncertain' {
+  const startDelta = Math.abs(expected.processStartedAtMs - observed.startedAtMs);
+  if (startDelta > PROCESS_START_TOLERANCE_MS) return 'different';
+  // Different inspection mechanisms may format executable paths and argv in
+  // incompatible ways. A close start time is not enough to prove ownership,
+  // so retain the lock rather than risk admitting two writers.
+  if (expected.inspectionSource !== observed.source) return 'uncertain';
+  return expected.executable === normalizedExecutable(observed.executable)
+    && expected.commandHash === commandHash(observed.commandLine)
+    ? 'same'
+    : 'different';
+}
+
+function looksLikeLegacyCompiler(identity: LegacyProcessIdentity): boolean {
+  const command = normalizedCommand(identity.commandLine);
+  return /(?:templates:legacy|legacy\/cli(?:\.[cm]?[jt]s)?)(?:\s|$)/u.test(command);
+}
+
+async function lockBelongsToLiveCompiler(
+  record: CompilerLockRecord,
+  inspector: LegacyProcessInspector,
+): Promise<boolean> {
+  if (typeof record.pid !== 'number' || !Number.isSafeInteger(record.pid) || record.pid <= 0) return false;
+  const inspection = await inspector(record.pid);
+  if (inspection.state === 'not-running') return false;
+  // This preserves self-exclusion for embedded/test callers and cannot be a
+  // recycled PID because the current process necessarily owns that PID now.
+  if (record.pid === process.pid) return true;
+  if (!inspection.identity) return true; // Permission/inspection failure: fail safe.
+
+  const expected = parseLockOwner(record.owner);
+  if (expected) return compareOwnerIdentity(expected, inspection.identity) !== 'different';
+
+  // Version-one locks did not record process identity. Recover one only when
+  // inspection positively shows an unrelated process, or a process born well
+  // after the lock (the PID-reuse case). Ambiguous/inaccessible processes were
+  // handled above and remain locked.
+  const lockStartedAtMs = typeof record.startedAt === 'string' ? Date.parse(record.startedAt) : Number.NaN;
+  if (Number.isFinite(lockStartedAtMs) && inspection.identity.startedAtMs > lockStartedAtMs + PROCESS_START_TOLERANCE_MS) {
+    return false;
+  }
+  return looksLikeLegacyCompiler(inspection.identity);
+}
+
+async function atomicallyPublishLock(path: string, body: string, token: string): Promise<void> {
+  const temporaryPath = `${path}.${process.pid}.${token}.tmp`;
+  const handle = await open(temporaryPath, 'wx');
+  let fullyWritten = false;
+  try {
+    await handle.writeFile(body, 'utf8');
+    await handle.sync();
+    fullyWritten = true;
+  } finally {
+    await handle.close();
+    if (!fullyWritten) await unlink(temporaryPath).catch(() => undefined);
+  }
+  try {
+    // Publishing a fully-written same-directory hard link is atomic and never
+    // overwrites a competing writer, unlike rename on POSIX.
+    await link(temporaryPath, path);
+  } finally {
+    await unlink(temporaryPath).catch(() => undefined);
+  }
+}
+
+export async function acquireCompilerLock(
+  workRoot: string,
+  inspector: LegacyProcessInspector = inspectProcess,
+): Promise<() => Promise<void>> {
   const path = join(workRoot, '.compiler.lock');
   const token = randomUUID();
-  const body = `${JSON.stringify({ version: 1, pid: process.pid, token, startedAt: new Date().toISOString() }, null, 2)}\n`;
+  const currentInspection = await inspector(process.pid);
+  const currentIdentity = currentInspection.state === 'running' && currentInspection.identity
+    ? currentInspection.identity
+    : selfFallbackIdentity();
+  const body = `${JSON.stringify({
+    version: 2,
+    pid: process.pid,
+    token,
+    startedAt: new Date().toISOString(),
+    owner: lockOwnerFromIdentity(currentIdentity),
+  }, null, 2)}\n`;
 
-  for (let attempt = 0; attempt < 3; attempt += 1) {
+  for (let attempt = 0; attempt < 8; attempt += 1) {
     try {
-      const handle = await open(path, 'wx');
-      try {
-        await handle.writeFile(body, 'utf8');
-      } catch (error) {
-        await handle.close().catch(() => undefined);
-        await unlink(path).catch(() => undefined);
-        throw error;
-      }
-      await handle.close();
+      await atomicallyPublishLock(path, body, token);
       return async () => {
         try {
           const current = JSON.parse(await readFile(path, 'utf8')) as { token?: unknown };
@@ -191,18 +429,27 @@ async function acquireCompilerLock(workRoot: string): Promise<() => Promise<void
       };
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'EEXIST') throw error;
-      let owner: { pid?: unknown; startedAt?: unknown } = {};
-      try { owner = JSON.parse(await readFile(path, 'utf8')) as typeof owner; } catch { /* stale or partial lock */ }
-      if (typeof owner.pid === 'number' && await processIsAlive(owner.pid)) {
-        throw new Error(`Another legacy compiler is active (pid ${owner.pid}, started ${String(owner.startedAt ?? 'unknown')}). Use status instead of starting a second writer.`);
+      let record: CompilerLockRecord = {};
+      let snapshot: string | null = null;
+      try {
+        snapshot = await readFile(path, 'utf8');
+        record = JSON.parse(snapshot) as CompilerLockRecord;
+      } catch { /* stale or partial lock */ }
+      if (await lockBelongsToLiveCompiler(record, inspector)) {
+        throw new Error(`Another legacy compiler is active (pid ${String(record.pid)}, started ${String(record.startedAt ?? 'unknown')}). Use status instead of starting a second writer.`);
       }
       const lockStat = await stat(path).catch(() => null);
-      if (typeof owner.pid !== 'number' && lockStat && Date.now() - lockStat.mtimeMs < 30_000) {
+      if (typeof record.pid !== 'number' && lockStat && Date.now() - lockStat.mtimeMs < 30_000) {
         // A competing process may have completed the exclusive open but not
         // its tiny JSON write yet. Never delete a fresh, partially-written
         // lock; it becomes reclaimable after the bounded initialization grace.
         throw new Error('Another legacy compiler is initializing its writer lock. Retry status shortly instead of starting a second writer.');
       }
+      // Re-read immediately before removal. This token/content comparison
+      // prevents the ordinary stale-reclaimer race from deleting a lock that
+      // another writer published while inspection was in flight.
+      const latest = await readFile(path, 'utf8').catch(() => null);
+      if (latest === null || latest !== snapshot) continue;
       await unlink(path).catch((unlinkError) => {
         if ((unlinkError as NodeJS.ErrnoException).code !== 'ENOENT') throw unlinkError;
       });
@@ -345,23 +592,32 @@ export async function runLegacyCli(argv: string[], dependencies: LegacyCliDepend
 
     const services = dependencies.services ?? await loadBundledServices();
     if (parsed.command === 'report') {
-      const report = ledger.reportData();
-      const outcome = services.report
-        ? await services.report({ command: 'report', config, flags: parsed.flags, ledger })
-        : undefined;
-      const reportPayload = { generatedAt: new Date().toISOString(), ...report, extension: outcome?.details ?? null };
-      const reportPath = join(config.reportRoot, 'legacy-rehab-report.json');
-      await atomicWriteFile(config, reportPath, `${JSON.stringify(reportPayload, null, 2)}\n`);
-      if (parsed.flags.json) outputJson(io, reportPayload);
-      else {
-        outputHumanStatus(io, report);
-        io.stdout(`Report: ${reportPath}`);
-        if (outcome?.message) io.stdout(outcome.message);
+      const releaseCompilerLock = await acquireCompilerLock(config.workRoot, dependencies.processInspector);
+      try {
+        // A report combines a ledger snapshot with extension-generated
+        // filesystem evidence. Hold the same single-writer lock as repair and
+        // promotion for the entire operation so those sources cannot advance
+        // independently and yield a mixed-state launch audit.
+        const report = ledger.reportData();
+        const outcome = services.report
+          ? await services.report({ command: 'report', config, flags: parsed.flags, ledger })
+          : undefined;
+        const reportPayload = { generatedAt: new Date().toISOString(), ...report, extension: outcome?.details ?? null };
+        const reportPath = join(config.reportRoot, 'legacy-rehab-report.json');
+        await atomicWriteFile(config, reportPath, `${JSON.stringify(reportPayload, null, 2)}\n`);
+        if (parsed.flags.json) outputJson(io, reportPayload);
+        else {
+          outputHumanStatus(io, report);
+          io.stdout(`Report: ${reportPath}`);
+          if (outcome?.message) io.stdout(outcome.message);
+        }
+        return 0;
+      } finally {
+        await releaseCompilerLock();
       }
-      return 0;
     }
 
-    const releaseCompilerLock = await acquireCompilerLock(config.workRoot);
+    const releaseCompilerLock = await acquireCompilerLock(config.workRoot, dependencies.processInspector);
     try {
       // The exclusive writer lock makes every tree in the dedicated transient
       // staging directory orphaned. Reap crash leftovers before any resumed

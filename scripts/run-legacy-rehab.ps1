@@ -7,10 +7,10 @@ param(
 
     [string]$SourceRoot = 'C:\Users\chris\platform-builder\platform-builder',
 
-    [string]$WorkRoot,
+    [string]$WorkRoot = 'C:\Users\chris\Documents\DailyClarity\template-rehab',
 
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$')]
-    [string]$RuleVersion = 'legacy-rehab-1.0.20',
+    [string]$RuleVersion = 'legacy-rehab-1.0.21',
 
     [ValidateRange(100, 10000)]
     [int]$PilotSize = 100,
@@ -46,6 +46,8 @@ param(
 
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
+
+. (Join-Path $PSScriptRoot 'legacy-rehab-path-safety.ps1')
 
 if ($UsePersistedPath -and -not $Preflight) {
     throw '-UsePersistedPath is only valid with -Preflight.'
@@ -224,47 +226,6 @@ function Invoke-LegacyRehabPackageManagerProbe {
     return $browserLines[-1].Trim()
 }
 
-function Get-NormalizedFullPath {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Path,
-
-        [switch]$MustExist
-    )
-
-    $expandedPath = [Environment]::ExpandEnvironmentVariables($Path)
-    if ($MustExist) {
-        $resolvedPath = Resolve-Path -LiteralPath $expandedPath -ErrorAction Stop
-        $fullPath = [IO.Path]::GetFullPath($resolvedPath.Path)
-    }
-    else {
-        $fullPath = [IO.Path]::GetFullPath($expandedPath)
-    }
-
-    $pathRoot = [IO.Path]::GetPathRoot($fullPath)
-    if ($fullPath.Equals($pathRoot, [StringComparison]::OrdinalIgnoreCase)) {
-        return $pathRoot
-    }
-    return $fullPath.TrimEnd('\', '/')
-}
-
-function Test-PathIsWithin {
-    param(
-        [Parameter(Mandatory = $true)]
-        [string]$Parent,
-
-        [Parameter(Mandatory = $true)]
-        [string]$Candidate
-    )
-
-    if ($Candidate.Equals($Parent, [StringComparison]::OrdinalIgnoreCase)) {
-        return $true
-    }
-
-    $parentWithSeparator = $Parent.TrimEnd('\', '/') + [IO.Path]::DirectorySeparatorChar
-    return $Candidate.StartsWith($parentWithSeparator, [StringComparison]::OrdinalIgnoreCase)
-}
-
 function Test-IntentionalCancellationExitCode {
     param(
         [Parameter(Mandatory = $true)]
@@ -331,7 +292,7 @@ function Disable-LegacyRehabSleepPrevention {
     }
 }
 
-$repositoryRoot = Get-NormalizedFullPath -Path (Split-Path -Parent $PSScriptRoot) -MustExist
+$repositoryRoot = Get-LegacyRehabCanonicalProspectivePath -Path (Split-Path -Parent $PSScriptRoot) -MustExist
 $packageJsonPath = Join-Path $repositoryRoot 'package.json'
 if (-not (Test-Path -LiteralPath $packageJsonPath -PathType Leaf)) {
     throw "Repository package.json was not found at $packageJsonPath"
@@ -344,31 +305,16 @@ if ($UsePersistedPath) {
     $env:PATH = Get-PersistedWindowsPath
 }
 
-$resolvedSourceRoot = Get-NormalizedFullPath -Path $SourceRoot -MustExist
+$resolvedSourceRoot = Get-LegacyRehabCanonicalProspectivePath -Path $SourceRoot -MustExist
 if (-not (Test-Path -LiteralPath $resolvedSourceRoot -PathType Container)) {
     throw "Legacy source root is not a directory: $resolvedSourceRoot"
 }
 
-if ([string]::IsNullOrWhiteSpace($WorkRoot)) {
-    $localApplicationData = [Environment]::GetFolderPath([Environment+SpecialFolder]::LocalApplicationData)
-    if ([string]::IsNullOrWhiteSpace($localApplicationData)) {
-        throw 'Windows LocalApplicationData could not be resolved. Pass -WorkRoot explicitly.'
-    }
-    $WorkRoot = Join-Path $localApplicationData 'DailyClarity\template-rehab'
-}
-$resolvedWorkRoot = Get-NormalizedFullPath -Path $WorkRoot
-
-if ((Test-PathIsWithin -Parent $resolvedSourceRoot -Candidate $resolvedWorkRoot) -or
-    (Test-PathIsWithin -Parent $resolvedWorkRoot -Candidate $resolvedSourceRoot)) {
-    throw "Refusing overlapping source and work roots. Source=$resolvedSourceRoot Work=$resolvedWorkRoot"
-}
-if ((Test-PathIsWithin -Parent $repositoryRoot -Candidate $resolvedWorkRoot) -or
-    (Test-PathIsWithin -Parent $resolvedWorkRoot -Candidate $repositoryRoot)) {
-    throw "Refusing a work root that overlaps the code repository. Repository=$repositoryRoot Work=$resolvedWorkRoot"
-}
-if ($resolvedWorkRoot.Equals([IO.Path]::GetPathRoot($resolvedWorkRoot), [StringComparison]::OrdinalIgnoreCase)) {
-    throw "Refusing to use a filesystem root as the rehabilitation work root: $resolvedWorkRoot"
-}
+$resolvedWorkRoot = Get-LegacyRehabCanonicalProspectivePath -Path $WorkRoot
+Assert-LegacyRehabSafeRoots `
+    -SourceRoot $resolvedSourceRoot `
+    -WorkRoot $resolvedWorkRoot `
+    -RepositoryRoot $repositoryRoot
 
 $packageManager = Resolve-LegacyRehabPackageManager `
     -PackageJsonPath $packageJsonPath `
@@ -440,17 +386,17 @@ if ($Command -eq 'run') {
     try {
         $pilotGate = Get-Item -LiteralPath $pilotGatePath -ErrorAction Stop
         $pilotGateHash = (Get-FileHash -LiteralPath $pilotGatePath -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
-        Add-Content -LiteralPath $aggregateLogPath -Value "scheduler-preflight pilotGate=$($pilotGate.FullName) bytes=$($pilotGate.Length) sha256=$pilotGateHash identity=$([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+        Add-Content -LiteralPath $aggregateLogPath -Value "scheduler-preflight rule=$RuleVersion pilotGate=$($pilotGate.FullName) bytes=$($pilotGate.Length) sha256=$pilotGateHash identity=$([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
     }
     catch {
-        Add-Content -LiteralPath $aggregateLogPath -Value "scheduler-preflight pilotGate=$pilotGatePath unreadable=$($_.Exception.Message) identity=$([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
+        Add-Content -LiteralPath $aggregateLogPath -Value "scheduler-preflight rule=$RuleVersion pilotGate=$pilotGatePath unreadable=$($_.Exception.Message) identity=$([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
     }
 }
 
 Enable-LegacyRehabSleepPrevention -TemporaryRoot $resolvedWorkRoot
 try {
     for ($attempt = 1; $attempt -le $effectiveMaxAttempts; $attempt++) {
-        $attemptHeader = "[$([DateTimeOffset]::Now.ToString('o'))] command=$Command attempt=$attempt/$effectiveMaxAttempts source=$resolvedSourceRoot work=$resolvedWorkRoot"
+        $attemptHeader = "[$([DateTimeOffset]::Now.ToString('o'))] command=$Command attempt=$attempt/$effectiveMaxAttempts rule=$RuleVersion source=$resolvedSourceRoot work=$resolvedWorkRoot"
         Add-Content -LiteralPath $aggregateLogPath -Value $attemptHeader
         if (-not $Json) {
             Write-Host $attemptHeader
@@ -474,9 +420,11 @@ try {
             finally {
                 if (Test-Path -LiteralPath $nativeErrorPath -PathType Leaf) {
                     $nativeError = Get-Content -LiteralPath $nativeErrorPath -Raw
-                    if ($finalExitCode -ne 0 -and -not [string]::IsNullOrWhiteSpace($nativeError)) {
+                    if (-not [string]::IsNullOrWhiteSpace($nativeError)) {
                         Add-Content -LiteralPath $aggregateLogPath -Value $nativeError
-                        [Console]::Error.WriteLine($nativeError)
+                        if ($finalExitCode -ne 0) {
+                            [Console]::Error.WriteLine($nativeError)
+                        }
                     }
                     Remove-Item -LiteralPath $nativeErrorPath -Force
                 }

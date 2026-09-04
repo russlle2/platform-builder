@@ -1,6 +1,7 @@
-import { createHash, randomUUID } from 'node:crypto';
-import { copyFile, link, lstat, mkdir, readFile, rename, stat, unlink, writeFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { copyFile, link, lstat, mkdir, readFile, stat, unlink } from 'node:fs/promises';
 import { dirname, extname, join, posix, relative } from 'node:path';
+import { durableAtomicWriteFile } from './config.js';
 
 const MAX_ASSET_BYTES = 25 * 1024 * 1024;
 const FETCH_TIMEOUT_MS = 30_000;
@@ -37,8 +38,26 @@ export interface VendorResult {
   warnings: string[];
 }
 
+export interface AssetLicenseManifestDocument {
+  version: 1;
+  assets: VendedAsset[];
+}
+
 function hash(value: string | Buffer): string {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function bytesOf(value: string | Uint8Array): Buffer {
+  return typeof value === 'string' ? Buffer.from(value, 'utf8') : Buffer.from(value);
+}
+
+function vendorPath(filename: string): string | null {
+  const normalized = filename.replace(/\\/g, '/');
+  return /^assets\/vendor\/[A-Za-z0-9._-]+$/.test(normalized) ? normalized : null;
+}
+
+function assetIdentity(asset: VendedAsset): string {
+  return `${asset.cacheFilename}\0${asset.sourceUrl}\0${asset.finalUrl}`;
 }
 
 function assertApprovedUrl(raw: string): URL {
@@ -63,6 +82,13 @@ function licenseFor(url: URL): Pick<VendedAsset, 'licenseName' | 'licenseUrl'> {
   };
 }
 
+function sharesLicensePolicy(left: URL, right: URL): boolean {
+  const leftLicense = licenseFor(left);
+  const rightLicense = licenseFor(right);
+  return leftLicense.licenseName === rightLicense.licenseName
+    && leftLicense.licenseUrl === rightLicense.licenseUrl;
+}
+
 function truthfulFallbackRecord(record: VendedAsset): VendedAsset {
   if (!record.fallback) return record;
   return {
@@ -71,6 +97,45 @@ function truthfulFallbackRecord(record: VendedAsset): VendedAsset {
     licenseName: GENERATED_ASSET_LICENSE,
     licenseUrl: GENERATED_ASSET_ORIGIN,
   };
+}
+
+function assetProvenanceMatchesPolicy(asset: VendedAsset): boolean {
+  if (asset.fallback) {
+    let source: URL;
+    try {
+      source = new URL(asset.sourceUrl);
+    } catch {
+      return false;
+    }
+    return source.protocol === 'https:'
+      && !source.username
+      && !source.password
+      && asset.finalUrl === `${GENERATED_ASSET_ORIGIN}/${asset.cacheFilename}`
+      && asset.licenseName === GENERATED_ASSET_LICENSE
+      && asset.licenseUrl === GENERATED_ASSET_ORIGIN;
+  }
+
+  try {
+    const source = assertApprovedUrl(asset.sourceUrl);
+    const final = assertApprovedUrl(asset.finalUrl);
+    const expectedLicense = licenseFor(source);
+    return source.toString() === asset.sourceUrl
+      && sharesLicensePolicy(source, final)
+      && asset.licenseName === expectedLicense.licenseName
+      && asset.licenseUrl === expectedLicense.licenseUrl;
+  } catch {
+    return false;
+  }
+}
+
+function indexedAssetForKey(key: string, value: unknown): VendedAsset | null {
+  if (!isVendedAssetShape(value)) return null;
+  const corrected = truthfulFallbackRecord(value);
+  // The URL key is the request identity. A byte-valid object stored under a
+  // different source URL must never be allowed to inherit that source's
+  // license attestation after a damaged or tampered resume.
+  if (corrected.sourceUrl !== key || !assetProvenanceMatchesPolicy(corrected)) return null;
+  return corrected;
 }
 
 async function fetchApprovedAsset(
@@ -120,7 +185,7 @@ async function writeContentAddressedObject(path: string, body: Buffer, digest: s
     if (existing.isSymbolicLink()) await unlink(path);
     else throw new Error(`Asset cache object path is not a regular file: ${path}`);
   }
-  await atomicWrite(path, body);
+  await durableAtomicWriteFile(path, body);
   const written = await readFile(path);
   if (written.byteLength !== body.byteLength || hash(written) !== digest) {
     throw new Error(`Asset cache object digest mismatch after write: ${digest}`);
@@ -157,19 +222,6 @@ function neutralSvg(sourceUrl: string): Buffer {
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Calm abstract wellness background"><defs><linearGradient id="g" x1="0" x2="1" y1="0" y2="1"><stop stop-color="${first}"/><stop offset="1" stop-color="${second}"/></linearGradient></defs><rect width="1600" height="1000" fill="url(#g)"/><circle cx="1250" cy="210" r="330" fill="#fff" opacity=".16"/><circle cx="330" cy="820" r="430" fill="#fff" opacity=".12"/></svg>`,
     'utf8',
   );
-}
-
-async function atomicWrite(path: string, data: string | Buffer): Promise<void> {
-  await mkdir(dirname(path), { recursive: true });
-  const temporary = `${path}.${process.pid}.${randomUUID()}.tmp`;
-  await writeFile(temporary, data, { flag: 'wx' });
-  try {
-    await rename(temporary, path);
-  } catch (error) {
-    await unlink(temporary).catch(() => undefined);
-    const existing = await stat(path).catch(() => null);
-    if (!existing?.isFile()) throw error;
-  }
 }
 
 async function linkOrCopy(source: string, target: string): Promise<void> {
@@ -233,8 +285,12 @@ export class AssetVendor {
         this.#index = parsed;
         let normalized = false;
         for (const [key, value] of Object.entries(this.#index.assets)) {
-          if (!value || typeof value !== 'object' || !value.fallback) continue;
-          const corrected = truthfulFallbackRecord(value);
+          const corrected = indexedAssetForKey(key, value);
+          if (!corrected) {
+            delete this.#index.assets[key];
+            normalized = true;
+            continue;
+          }
           if (
             corrected.finalUrl !== value.finalUrl
             || corrected.licenseName !== value.licenseName
@@ -257,7 +313,7 @@ export class AssetVendor {
         version: 1,
         assets: Object.fromEntries(Object.entries(this.#index.assets).sort(([a], [b]) => a.localeCompare(b))),
       };
-      await atomicWrite(this.indexPath, `${JSON.stringify(ordered, null, 2)}\n`);
+      await durableAtomicWriteFile(this.indexPath, `${JSON.stringify(ordered, null, 2)}\n`);
     });
     this.#saveQueue = save.catch(() => undefined);
     await save;
@@ -265,8 +321,8 @@ export class AssetVendor {
 
   async get(sourceUrl: string): Promise<VendedAsset> {
     const normalized = assertApprovedUrl(sourceUrl).toString();
-    const cached = this.#index.assets[normalized];
-    if (cached && await cachedAssetMatches(this.objectRoot, cached)) return truthfulFallbackRecord(cached);
+    const cached = indexedAssetForKey(normalized, this.#index.assets[normalized]);
+    if (cached && await cachedAssetMatches(this.objectRoot, cached)) return cached;
 
     const inFlight = this.#pending.get(normalized);
     if (inFlight) return inFlight;
@@ -276,9 +332,9 @@ export class AssetVendor {
   }
 
   async fallback(sourceUrl: string, kind: 'image' | 'stylesheet' = 'image'): Promise<VendedAsset> {
-    const cached = this.#index.assets[sourceUrl];
+    const cached = indexedAssetForKey(sourceUrl, this.#index.assets[sourceUrl]);
     if (cached?.fallback && await cachedAssetMatches(this.objectRoot, cached)) {
-      return truthfulFallbackRecord(cached);
+      return cached;
     }
     const body = kind === 'stylesheet'
       ? Buffer.from('/* Unapproved remote stylesheet removed; system fonts are used. */\n', 'utf8')
@@ -323,6 +379,10 @@ export class AssetVendor {
       });
       const { response, finalUrl: approvedFinalUrl } = fetched;
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      if (!sharesLicensePolicy(requested, approvedFinalUrl)) {
+        await response.body?.cancel().catch(() => undefined);
+        throw new Error('Asset redirect crossed a provenance/license policy boundary');
+      }
       finalUrl = approvedFinalUrl.toString();
       contentType = response.headers.get('content-type') ?? 'application/octet-stream';
       const announcedSize = Number(response.headers.get('content-length') ?? '0');
@@ -381,9 +441,211 @@ export class AssetVendor {
     return record;
   }
 
+  /** Return every trustworthy origin record that produced one cache object. */
+  async recordsForCacheFilename(cacheFilename: string): Promise<VendedAsset[]> {
+    if (!/^[a-f0-9]{64}\.[a-z0-9]{1,6}$/.test(cacheFilename)) return [];
+    const records = new Map<string, VendedAsset>();
+    for (const [key, value] of Object.entries(this.#index.assets)) {
+      const normalized = indexedAssetForKey(key, value);
+      if (!normalized || normalized.cacheFilename !== cacheFilename) continue;
+      if (await cachedAssetMatches(this.objectRoot, normalized)) {
+        records.set(assetIdentity(normalized), normalized);
+      }
+    }
+    return [...records.values()].sort((left, right) => assetIdentity(left).localeCompare(assetIdentity(right)));
+  }
+
   async materialize(asset: VendedAsset, target: string): Promise<void> {
     await linkOrCopy(join(this.objectRoot, asset.cacheFilename), target);
   }
+}
+
+function isVendedAssetShape(value: unknown): value is VendedAsset {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.sourceUrl === 'string' && candidate.sourceUrl.length > 0
+    && typeof candidate.finalUrl === 'string' && candidate.finalUrl.length > 0
+    && typeof candidate.sha256 === 'string'
+    && typeof candidate.bytes === 'number'
+    && typeof candidate.contentType === 'string' && candidate.contentType.length > 0
+    && typeof candidate.cacheFilename === 'string'
+    && typeof candidate.retrievedAt === 'string' && candidate.retrievedAt.length > 0
+    && typeof candidate.licenseName === 'string' && candidate.licenseName.length > 0
+    && typeof candidate.licenseUrl === 'string' && candidate.licenseUrl.length > 0
+    && typeof candidate.fallback === 'boolean';
+}
+
+function isVendedAsset(value: unknown): value is VendedAsset {
+  return isVendedAssetShape(value) && assetProvenanceMatchesPolicy(value);
+}
+
+export function readAssetLicenseManifest(
+  files: ReadonlyMap<string, string | Uint8Array>,
+): VendedAsset[] {
+  const raw = files.get('.dailyclarity/assets.json');
+  if (raw === undefined) return [];
+  try {
+    const parsed = JSON.parse(typeof raw === 'string' ? raw : Buffer.from(raw).toString('utf8')) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return [];
+    const document = parsed as Partial<AssetLicenseManifestDocument>;
+    if (document.version !== 1 || !Array.isArray(document.assets) || !document.assets.every(isVendedAsset)) return [];
+    return document.assets;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Reconcile final emitted vendor bytes with their content-addressed names and
+ * provenance. Only text/css may be renamed after a mechanical rewrite;
+ * changed binary bytes are rejected rather than attributed to their source.
+ */
+export function reconcileAssetLicenseManifest(
+  inputFiles: ReadonlyMap<string, string | Uint8Array>,
+  provenance: readonly VendedAsset[],
+): { files: Map<string, string | Uint8Array>; assets: VendedAsset[] } {
+  const files = new Map(inputFiles);
+  const lineage = new Map<string, VendedAsset[]>();
+  for (const asset of provenance) {
+    if (!isVendedAsset(asset)) continue;
+    const path = `assets/vendor/${asset.cacheFilename}`;
+    const records = lineage.get(path) ?? [];
+    if (!records.some((record) => assetIdentity(record) === assetIdentity(asset))) records.push(asset);
+    lineage.set(path, records);
+  }
+
+  const maximumPasses = Math.max(2, [...files.keys()].filter((path) => vendorPath(path)).length * 2 + 2);
+  let stabilized = false;
+  for (let pass = 0; pass < maximumPasses; pass += 1) {
+    const renames = new Map<string, string>();
+    for (const [rawPath, value] of files) {
+      const path = vendorPath(rawPath);
+      if (!path) continue;
+      const digest = hash(bytesOf(value));
+      const extension = extname(path).toLowerCase();
+      if (!/^\.[a-z0-9]{1,6}$/.test(extension)) {
+        throw new Error(`Vended asset has an unsafe extension: ${path}`);
+      }
+      const expected = `${posix.dirname(path)}/${digest}${extension}`;
+      if (expected === path) continue;
+      const records = lineage.get(path) ?? [];
+      if (records.length === 0) throw new Error(`Vended asset has no trustworthy provenance: ${path}`);
+      if (!records.every((record) => record.contentType.toLowerCase().startsWith('text/css')) || extension !== '.css') {
+        throw new Error(`Refusing to re-attest modified binary vendor bytes: ${path}`);
+      }
+      renames.set(path, expected);
+    }
+    if (renames.size === 0) {
+      stabilized = true;
+      break;
+    }
+
+    for (const [from, to] of renames) {
+      const value = files.get(from);
+      if (value === undefined) throw new Error(`Vended asset disappeared during reconciliation: ${from}`);
+      const collision = files.get(to);
+      if (collision !== undefined && !bytesOf(collision).equals(bytesOf(value))) {
+        throw new Error(`Content-addressed vendor asset collision: ${to}`);
+      }
+      files.delete(from);
+      files.set(to, value);
+      const combined = [...(lineage.get(to) ?? []), ...(lineage.get(from) ?? [])];
+      lineage.delete(from);
+      lineage.set(to, [...new Map(combined.map((record) => [assetIdentity(record), record])).values()]);
+    }
+
+    // Repoint every serialized reference, including design/preset sidecars.
+    // Cache basenames are SHA-256 based and therefore unambiguous in the tree.
+    for (const [path, value] of files) {
+      if (typeof value !== 'string') continue;
+      let rewritten = value;
+      for (const [from, to] of renames) {
+        rewritten = rewritten.split(posix.basename(from)).join(posix.basename(to));
+      }
+      if (rewritten !== value) files.set(path, rewritten);
+    }
+  }
+  if (!stabilized) throw new Error('Vended stylesheet references did not stabilize during content-address reconciliation');
+
+  const attested = new Map<string, VendedAsset>();
+  for (const [rawPath, value] of files) {
+    const path = vendorPath(rawPath);
+    if (!path) continue;
+    const records = lineage.get(path) ?? [];
+    if (records.length === 0) throw new Error(`Vended asset has no trustworthy origin/license metadata: ${path}`);
+    const bytes = bytesOf(value);
+    const digest = hash(bytes);
+    const cacheFilename = posix.basename(path);
+    if (!cacheFilename.startsWith(`${digest}.`)) {
+      throw new Error(`Vended asset filename does not attest its final bytes: ${path}`);
+    }
+    for (const record of records) {
+      const updated: VendedAsset = {
+        ...record,
+        sha256: digest,
+        bytes: bytes.byteLength,
+        cacheFilename,
+      };
+      attested.set(assetIdentity(updated), updated);
+    }
+  }
+  const assets = [...attested.values()].sort((left, right) => assetIdentity(left).localeCompare(assetIdentity(right)));
+  files.set('.dailyclarity/assets.json', assetLicenseManifest(assets));
+  return { files, assets };
+}
+
+/** Independently validate the emitted manifest against the final file bytes. */
+export function validateAssetLicenseManifest(
+  files: ReadonlyMap<string, string | Uint8Array>,
+): string[] {
+  const errors: string[] = [];
+  const paths = [...files.keys()].map((path) => vendorPath(path)).filter((path): path is string => Boolean(path)).sort();
+  const raw = files.get('.dailyclarity/assets.json');
+  if (raw === undefined) return paths.length > 0 ? ['assets/vendor files exist without .dailyclarity/assets.json'] : [];
+  const assets = readAssetLicenseManifest(files);
+  if (assets.length === 0) {
+    try {
+      const parsed = JSON.parse(typeof raw === 'string' ? raw : Buffer.from(raw).toString('utf8')) as AssetLicenseManifestDocument;
+      if (parsed.version !== 1 || !Array.isArray(parsed.assets) || parsed.assets.length !== 0) {
+        errors.push('asset license manifest is malformed');
+      }
+    } catch {
+      errors.push('asset license manifest is malformed');
+    }
+  }
+
+  const covered = new Set<string>();
+  const identities = new Set<string>();
+  for (const asset of assets) {
+    const identity = assetIdentity(asset);
+    if (identities.has(identity)) errors.push(`asset manifest repeats provenance for ${asset.cacheFilename}`);
+    identities.add(identity);
+    if (!/^[a-f0-9]{64}\.[a-z0-9]{1,6}$/.test(asset.cacheFilename)) {
+      errors.push(`asset manifest has an unsafe cache filename: ${asset.cacheFilename}`);
+      continue;
+    }
+    if (!/^[a-f0-9]{64}$/.test(asset.sha256) || !asset.cacheFilename.startsWith(`${asset.sha256}.`)) {
+      errors.push(`asset manifest filename/hash mismatch: ${asset.cacheFilename}`);
+    }
+    if (!Number.isSafeInteger(asset.bytes) || asset.bytes < 0) {
+      errors.push(`asset manifest has an invalid byte count: ${asset.cacheFilename}`);
+    }
+    const path = `assets/vendor/${asset.cacheFilename}`;
+    const value = files.get(path);
+    if (value === undefined) {
+      errors.push(`asset manifest references a missing emitted file: ${path}`);
+      continue;
+    }
+    const bytes = bytesOf(value);
+    if (bytes.byteLength !== asset.bytes || hash(bytes) !== asset.sha256) {
+      errors.push(`asset manifest does not match emitted bytes: ${path}`);
+    }
+    covered.add(path);
+  }
+  for (const path of paths) {
+    if (!covered.has(path)) errors.push(`emitted vendor asset lacks origin/license metadata: ${path}`);
+  }
+  return [...new Set(errors)].sort();
 }
 
 export async function vendorRemoteAssets(
@@ -428,13 +690,20 @@ export async function vendorRemoteAssets(
     files.set(filename, rewritten);
   }
 
+  const provenance = new Map<string, VendedAsset>();
   for (const asset of new Set(referenced.values())) {
+    provenance.set(assetIdentity(asset), asset);
     const assetBytes = await readFile(join(vendor.objectRoot, asset.cacheFilename));
     files.set(`assets/vendor/${asset.cacheFilename}`, assetBytes);
     if (asset.contentType.toLowerCase().startsWith('text/css')) {
       const dependencyNames = [...assetBytes.toString('utf8').matchAll(/url\(\s*(['"]?)([a-f0-9]{64}\.[a-z0-9]{1,6})\1\s*\)/gi)]
         .map((match) => match[2]!);
       for (const dependencyName of new Set(dependencyNames)) {
+        const dependencyRecords = await vendor.recordsForCacheFilename(dependencyName);
+        if (dependencyRecords.length === 0) {
+          throw new Error(`Vended stylesheet dependency has no trustworthy provenance: ${dependencyName}`);
+        }
+        for (const dependency of dependencyRecords) provenance.set(assetIdentity(dependency), dependency);
         files.set(
           `assets/vendor/${dependencyName}`,
           await readFile(join(vendor.objectRoot, dependencyName)),
@@ -443,7 +712,21 @@ export async function vendorRemoteAssets(
     }
   }
 
-  return { files, assets: [...new Set(referenced.values())], warnings };
+  // A second vendoring pass runs after deterministic HTML/CSS repair. Recover
+  // the cache-backed provenance for every already-local vendor object so the
+  // final attestation covers transitive font files as well as top-level URLs.
+  for (const filename of files.keys()) {
+    const path = vendorPath(filename);
+    if (!path) continue;
+    const records = await vendor.recordsForCacheFilename(posix.basename(path));
+    if (records.length === 0) {
+      throw new Error(`Emitted vendor asset is not backed by the audited cache: ${path}`);
+    }
+    for (const record of records) provenance.set(assetIdentity(record), record);
+  }
+
+  const reconciled = reconcileAssetLicenseManifest(files, [...provenance.values()]);
+  return { ...reconciled, warnings };
 }
 
 export function assetLicenseManifest(assets: readonly VendedAsset[]): string {

@@ -6,7 +6,6 @@ import { useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
 import {
   type InlineEditMap,
-  VISUAL_EDITABLE_SELECTOR,
   buildCustomizationScope,
   isEditableAttributeForTag,
   isSafeEditableAttribute,
@@ -19,11 +18,12 @@ import {
 import {
   type ImageSwapMap,
   loadImageSwaps,
-  applyImageSwapsToHtml,
   handlePersistentImageUpload,
   getOrCreateImageOwnerId,
+  normalizeCoordinatedImageSlotIds,
 } from '@/lib/image-swaps'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
+import { PageSeoSettingsPanel } from '@/components/PageSeoSettingsPanel'
 import type {
   BusinessInfo,
   StylePreferences,
@@ -44,9 +44,13 @@ import {
   isSafePreviewImageUrl,
   isSafePreviewPage,
   isSafePreviewText,
-  rewriteTemplateAssetReferences,
-  sanitizeTemplatePreviewHtml,
 } from '@/lib/template-preview-security'
+import { composeCustomerPreviewDocument } from '@/lib/customer-preview-document'
+import { getCustomerPreviewEditorScript } from '@/lib/customer-preview-editor-runtime'
+import {
+  buildPageSeoInlineEdit,
+  type PageSeoField,
+} from '@/lib/page-seo-settings'
 
 import { getNicheOptions } from '@/lib/templates/niche-meta'
 import {
@@ -317,7 +321,9 @@ export default function PreviewYourBusinessClient() {
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef('')
   const pendingImageSwapSlotId = useRef('')
+  const pendingImageSwapSlotIds = useRef<string[]>([])
   const pendingImageSwapPage = useRef('index.html')
+  const imageUploadQueueRef = useRef<Promise<void>>(Promise.resolve())
 
   // Inline text edits captured from the preview, persisted so they survive
   // page navigation and carry through to purchase.
@@ -326,6 +332,7 @@ export default function PreviewYourBusinessClient() {
   const activeCustomizationScopeRef = useRef('')
   const currentPageRef = useRef('index.html')
   const previewStylesheetRef = useRef('')
+  const previewRequestIdRef = useRef(0)
   currentPageRef.current = currentPage
 
   /* ---- Color & font customization ---- */
@@ -339,6 +346,7 @@ export default function PreviewYourBusinessClient() {
   const [customThemeActive, setCustomThemeActive] = useState(false)
   const [showColorPanel, setShowColorPanel] = useState(false)
   const [showFontPanel, setShowFontPanel] = useState(false)
+  const [showSeoPanel, setShowSeoPanel] = useState(false)
 
   // ---- Browse templates state ----
   const [browseTemplates, setBrowseTemplates] = useState<ApiTemplate[]>([])
@@ -466,11 +474,13 @@ export default function PreviewYourBusinessClient() {
   /* ================ Load live preview ================ */
   const loadPreview = useCallback(
     async (nicheSlug?: string, templateSlug?: string, page = 'index.html') => {
+      const requestId = ++previewRequestIdRef.current
       const ns = nicheSlug || matchedTemplate?.nicheSlug || businessInfo.niche
       const ts = templateSlug || matchedTemplate?.templateSlug
       if (!ns || !ts) {
         setPreviewError('Choose a template with a valid niche and layout before previewing.')
         setPreviewHtml(null)
+        setPreviewLoading(false)
         return
       }
 
@@ -485,6 +495,8 @@ export default function PreviewYourBusinessClient() {
       }
       setPreviewLoading(true)
       setPreviewError(null)
+      setCurrentPage(page)
+      setPreviewHtml(null)
 
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 20000)
@@ -523,58 +535,24 @@ export default function PreviewYourBusinessClient() {
           )
         }
         const data = await res.json()
+        if (requestId !== previewRequestIdRef.current) return
         previewStylesheetRef.current = typeof data.css === 'string' ? data.css : ''
 
-        let html = sanitizeTemplatePreviewHtml(data.html as string)
         const assetBase = `/api/templates/${ns}/${ts}/assets`
-        html = rewriteTemplateAssetReferences(html, assetBase, page)
-
-        html = html.replace(
-          /<img([^>]*?)src="([^"]+)"([^>]*)>/gi,
-          (_m, before, src, after) => {
-            let imgSrc = src
-            if (src.startsWith('/api/templates')) {
-              imgSrc = `/.netlify/images?url=${encodeURIComponent(src)}&w=1200&q=72`
-            }
-            const lazy = after.includes('loading=') ? after : `${after} loading="lazy" decoding="async"`
-            return `<img${before}src="${imgSrc}"${lazy}>`
-          },
-        )
-
-        if (data.css) {
-          const rewrittenCss = rewriteTemplateAssetReferences(
-            data.css,
-            assetBase,
-            'assets/css/styles.css',
-          )
-          html = html.replace('</head>', `<style>${rewrittenCss}</style></head>`)
-        }
-        if (data.variationCSS) {
-          html = html.replace(
-            '</head>',
-            `<style id="variation-overrides">${data.variationCSS}</style></head>`,
-          )
-        }
-
-        // Inject custom colors/fonts
-        html = html.replace('</head>', `
-          <style>
-            body { margin: 0; }
-            img { cursor: pointer; transition: outline 0.15s; }
-            img:hover { outline: 3px solid #8b5cf6; outline-offset: 2px; border-radius: 2px; }
-          </style>
-        </head>`)
-
-        // Re-apply inline text edits captured earlier (not part of hydration)
-        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page], page)
-        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page], page)
-
-        // Inject editing + nav scripts
-        html = html.replace('</body>', getIframeInjectionScript() + '</body>')
+        const html = composeCustomerPreviewDocument({
+          html: data.html as string,
+          css: typeof data.css === 'string' ? data.css : null,
+          variationCSS: typeof data.variationCSS === 'string' ? data.variationCSS : null,
+          assetBase,
+          page,
+          inlineEdits: inlineEditsRef.current[page],
+          imageSwaps: imageSwapsRef.current[page],
+          trustedEditorScript: getCustomerPreviewEditorScript(page),
+        })
 
         setPreviewHtml(html)
-        setCurrentPage(page)
       } catch (e) {
+        if (requestId !== previewRequestIdRef.current) return
         console.error('Preview error:', e)
         setPreviewHtml(null)
         const aborted = e instanceof DOMException && e.name === 'AbortError'
@@ -587,7 +565,7 @@ export default function PreviewYourBusinessClient() {
         )
       } finally {
         clearTimeout(timeoutId)
-        setPreviewLoading(false)
+        if (requestId === previewRequestIdRef.current) setPreviewLoading(false)
       }
     },
     [
@@ -667,21 +645,25 @@ export default function PreviewYourBusinessClient() {
         }
       }
       if (e.data.type === 'imageSwapRequest') {
-        if (isSafePreviewImageUrl(e.data.src)) {
+        const slotIds = normalizeCoordinatedImageSlotIds(e.data.slotId, e.data.pictureSlotIds)
+        if (isSafePreviewImageUrl(e.data.src) && slotIds) {
           pendingImageSwapSrc.current = e.data.src
-          pendingImageSwapSlotId.current = typeof e.data.slotId === 'string' ? e.data.slotId : ''
+          pendingImageSwapSlotId.current = slotIds[0]
+          pendingImageSwapSlotIds.current = slotIds
           pendingImageSwapPage.current = currentPageRef.current
           fileInputRef.current?.click()
         }
       }
       if (e.data.type === 'textEdited') {
         if (!isSafePreviewText(e.data.original) || !isSafePreviewText(e.data.text)) return
+        const nodeId = e.data.nodeId !== undefined ? e.data.nodeId : e.data.id
+        if (nodeId !== undefined && !isSafeInlineEditId(nodeId)) return
         const page = currentPageRef.current
         const pageEdits = mergeInlineEdit(
           inlineEditsRef.current[page] || [],
           e.data.original,
           e.data.text,
-          e.data.nodeId || e.data.id,
+          nodeId,
         )
         inlineEditsRef.current = { ...inlineEditsRef.current, [page]: pageEdits }
         saveInlineEdits(inlineEditsRef.current, activeCustomizationScopeRef.current)
@@ -719,36 +701,62 @@ export default function PreviewYourBusinessClient() {
     return () => window.removeEventListener('message', handleMessage)
   }, [loadPreview])
 
+  const handlePageSeoChange = useCallback((field: PageSeoField, updated: string): boolean => {
+    const edit = buildPageSeoInlineEdit(previewHtml, field, updated)
+    if (!edit) return false
+
+    const page = currentPage
+    const pageEdits = mergeInlineEdit(
+      inlineEditsRef.current[page] || [],
+      edit.original || '',
+      edit.updated,
+      edit.nodeId,
+    )
+    inlineEditsRef.current = { ...inlineEditsRef.current, [page]: pageEdits }
+    saveInlineEdits(inlineEditsRef.current, activeCustomizationScopeRef.current)
+    setPreviewHtml((current) => (
+      current ? applyInlineEditsToHtml(current, [edit], page) : current
+    ))
+    return true
+  }, [currentPage, previewHtml])
+
   const handleImageFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     const page = pendingImageSwapPage.current
     const originalSrc = pendingImageSwapSrc.current
     const slotId = pendingImageSwapSlotId.current
-    const owner = getOrCreateImageOwnerId()
-    try {
-      const { map, url } = await handlePersistentImageUpload(
-        file,
-        owner,
-        originalSrc,
-        page,
-        imageSwapsRef.current,
-        undefined,
-        activeCustomizationScopeRef.current,
-        slotId,
-      )
-      imageSwapsRef.current = map
-      if (currentPageRef.current === page) {
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: 'imageSwapResponse', imageUrl: url, originalSrc, slotId },
-          '*',
-        )
-      }
-    } catch (err) {
-      console.error('Image upload failed:', err)
-      alert(err instanceof Error ? err.message : 'Image upload failed')
-    }
+    const coordinatedSlotIds = [...pendingImageSwapSlotIds.current]
     e.target.value = ''
+    const upload = async () => {
+      const owner = getOrCreateImageOwnerId()
+      try {
+        const { map, url, slotIds } = await handlePersistentImageUpload(
+          file,
+          owner,
+          originalSrc,
+          page,
+          imageSwapsRef.current,
+          undefined,
+          activeCustomizationScopeRef.current,
+          slotId,
+          coordinatedSlotIds,
+        )
+        imageSwapsRef.current = map
+        if (currentPageRef.current === page) {
+          iframeRef.current?.contentWindow?.postMessage(
+            { type: 'imageSwapResponse', imageUrl: url, originalSrc, slotId, slotIds },
+            '*',
+          )
+        }
+      } catch (err) {
+        console.error('Image upload failed:', err)
+        alert(err instanceof Error ? err.message : 'Image upload failed')
+      }
+    }
+    const queued = imageUploadQueueRef.current.then(upload, upload)
+    imageUploadQueueRef.current = queued
+    await queued
   }, [])
 
   /* ================ Open editor for matched template ================ */
@@ -932,6 +940,9 @@ export default function PreviewYourBusinessClient() {
             setShowColorPanel={setShowColorPanel}
             showFontPanel={showFontPanel}
             setShowFontPanel={setShowFontPanel}
+            showSeoPanel={showSeoPanel}
+            setShowSeoPanel={setShowSeoPanel}
+            onPageSeoChange={handlePageSeoChange}
             customColors={customColors}
             setCustomColors={setCustomColors}
             customFonts={customFonts}
@@ -1449,6 +1460,9 @@ function EditorStep({
   setShowColorPanel,
   showFontPanel,
   setShowFontPanel,
+  showSeoPanel,
+  setShowSeoPanel,
+  onPageSeoChange,
   customColors,
   setCustomColors,
   customFonts,
@@ -1475,6 +1489,9 @@ function EditorStep({
   setShowColorPanel: (v: boolean) => void
   showFontPanel: boolean
   setShowFontPanel: (v: boolean) => void
+  showSeoPanel: boolean
+  setShowSeoPanel: (v: boolean) => void
+  onPageSeoChange: (field: PageSeoField, updated: string) => boolean
   customColors: { primary: string; bg: string; text: string }
   setCustomColors: (v: { primary: string; bg: string; text: string }) => void
   customFonts: { heading: string; body: string; importUrl?: string }
@@ -1596,6 +1613,16 @@ function EditorStep({
           >
             🔤 Fonts
           </button>
+          <button
+            type="button"
+            onClick={() => setShowSeoPanel(!showSeoPanel)}
+            aria-expanded={showSeoPanel}
+            className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-all ${
+              showSeoPanel ? 'bg-cyan-500/20 border-cyan-400 text-cyan-300' : 'border-white/20 text-slate-300 hover:bg-white/10'
+            }`}
+          >
+            ⌕ Page SEO
+          </button>
           <Link
             href={checkoutHref}
             className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
@@ -1682,6 +1709,14 @@ function EditorStep({
             ))}
           </div>
         </div>
+      )}
+
+      {!demoRecord && showSeoPanel && (
+        <PageSeoSettingsPanel
+          html={previewHtml}
+          page={currentPage}
+          onApply={onPageSeoChange}
+        />
       )}
 
       {/* Preview */}
@@ -1920,229 +1955,4 @@ function Field({
       {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
     </div>
   )
-}
-
-/* ================================================================== */
-/* Iframe injection script                                             */
-/* ================================================================== */
-
-function getIframeInjectionScript(): string {
-  const editableSelector = JSON.stringify(VISUAL_EDITABLE_SELECTOR)
-  return `
-<script>
-(function(){
-  var editableSelectors = ${editableSelector};
-  var safeEditableAttributes = { content: true, alt: true, title: true, placeholder: true, 'aria-label': true };
-  var supportsHover = window.matchMedia && window.matchMedia('(hover: hover)').matches;
-  var pendingImageClick = null;
-
-  function editIdFor(el) {
-    return el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '';
-  }
-
-  function requestPromptEdit(el, attribute) {
-    var nodeId = editIdFor(el);
-    if (!nodeId) return false;
-    if (attribute && !safeEditableAttributes[attribute]) return false;
-    if (pendingImageClick) {
-      clearTimeout(pendingImageClick);
-      pendingImageClick = null;
-    }
-    var original = attribute ? (el.getAttribute(attribute) || '') : (el.textContent || '');
-    window.parent.postMessage({
-      type: 'editValueRequest',
-      nodeId: nodeId,
-      attribute: attribute || '',
-      tag: el.tagName,
-      original: original
-    }, '*');
-    return true;
-  }
-
-  function startEditing(el) {
-    if (!el || el.isContentEditable) return;
-    if (el.tagName === 'SELECT') {
-      var selectedOption = el.options && el.options[el.selectedIndex];
-      if (selectedOption) requestPromptEdit(selectedOption, '');
-      return;
-    }
-    var editableAttribute = el.getAttribute('data-dc-edit-attribute') || el.getAttribute('data-pb-edit-attribute') || '';
-    if (editableAttribute) {
-      requestPromptEdit(el, editableAttribute);
-      return;
-    }
-    if (el.tagName === 'OPTION') {
-      requestPromptEdit(el, '');
-      return;
-    }
-    var originalText = el.textContent;
-    el.contentEditable = 'true';
-    el.style.outline = '2px solid #3b82f6';
-    el.style.outlineOffset = '2px';
-    el.style.borderRadius = '2px';
-    el.style.cursor = 'text';
-    el.focus();
-    el.addEventListener('blur', function onBlur() {
-      el.contentEditable = 'false';
-      el.style.outline = '';
-      el.style.outlineOffset = '';
-      el.style.cursor = '';
-      el.removeEventListener('blur', onBlur);
-      window.parent.postMessage({ type: 'textEdited', nodeId: editIdFor(el), tag: el.tagName, original: originalText, text: el.textContent }, '*');
-    }, { once: true });
-  }
-
-  document.addEventListener('dblclick', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (!el) return;
-    startEditing(el);
-    e.preventDefault();
-    e.stopPropagation();
-  });
-
-  var lastTap = 0;
-  document.addEventListener('touchend', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (!el) return;
-    var now = Date.now();
-    if (now - lastTap < 400) {
-      startEditing(el);
-      e.preventDefault();
-    }
-    lastTap = now;
-  });
-
-  var lastHovered = null;
-  if (supportsHover) {
-    document.addEventListener('mouseover', function(e) {
-      var el = e.target.closest(editableSelectors);
-      if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
-        lastHovered.style.outline = '';
-        lastHovered.style.outlineOffset = '';
-      }
-      if (el && !el.isContentEditable) {
-        el.style.outline = '1px dashed rgba(59,130,246,0.4)';
-        el.style.outlineOffset = '1px';
-        lastHovered = el;
-      }
-    });
-    document.addEventListener('mouseout', function(e) {
-      var el = e.target.closest(editableSelectors);
-      if (el && !el.isContentEditable) {
-        el.style.outline = '';
-        el.style.outlineOffset = '';
-      }
-    });
-  }
-
-  document.addEventListener('click', function(e) {
-    var img = e.target.closest('img,[data-dc-image-id],[data-pb-image-id]');
-    if (!img) return;
-    e.preventDefault();
-    e.stopPropagation();
-    var requestImageSwap = function() {
-      pendingImageClick = null;
-      var src = img.currentSrc || img.src || '';
-      if (!src) {
-        var background = window.getComputedStyle(img).backgroundImage || '';
-        var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
-        src = backgroundMatch ? backgroundMatch[1] : '';
-      }
-      window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
-    };
-    if (img.hasAttribute('data-dc-edit-attribute') || img.hasAttribute('data-pb-edit-attribute')) {
-      if (pendingImageClick) clearTimeout(pendingImageClick);
-      pendingImageClick = setTimeout(requestImageSwap, 280);
-    } else {
-      requestImageSwap();
-    }
-  });
-
-  window.addEventListener('message', function(e) {
-    if (e.source !== window.parent || !e.data || typeof e.data !== 'object') return;
-    if (e.data && e.data.type === 'imageSwapResponse') {
-      var newSrc = e.data.imageUrl || e.data.dataUrl;
-      if (typeof newSrc !== 'string' || newSrc.length > 2048 || !/^(https?:\\/\\/|data:image\\/|blob:|\\/)/i.test(newSrc)) return;
-      var slotId = e.data.slotId;
-      var slot = null;
-      if (typeof slotId === 'string' && slotId) {
-        var candidates = document.querySelectorAll('[data-dc-image-id],[data-pb-image-id]');
-        for (var s = 0; s < candidates.length; s++) {
-          if (candidates[s].getAttribute('data-dc-image-id') === slotId || candidates[s].getAttribute('data-pb-image-id') === slotId) {
-            slot = candidates[s];
-            break;
-          }
-        }
-      }
-      if (slot) {
-        if (slot.tagName === 'IMG') {
-          slot.removeAttribute('srcset');
-          slot.src = newSrc;
-        } else if (slot.tagName === 'SOURCE') {
-          if (slot.hasAttribute('srcset')) slot.srcset = newSrc;
-          else slot.src = newSrc;
-        } else {
-          slot.style.setProperty('background-image', 'url(' + newSrc + ')', 'important');
-        }
-        return;
-      }
-      var imgs = document.querySelectorAll('img');
-      for (var i = 0; i < imgs.length; i++) {
-        if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
-          imgs[i].src = newSrc;
-          break;
-        }
-      }
-    }
-    if (e.data.type === 'editValueResponse') {
-      var responseId = e.data.nodeId;
-      var responseAttribute = e.data.attribute;
-      var responseText = e.data.text;
-      if (typeof responseId !== 'string' || typeof responseText !== 'string' || responseText.length > 10000) return;
-      var editCandidates = document.querySelectorAll('[data-dc-edit-id],[data-pb-edit-id]');
-      var editTarget = null;
-      for (var eIndex = 0; eIndex < editCandidates.length; eIndex++) {
-        if (editIdFor(editCandidates[eIndex]) === responseId) {
-          editTarget = editCandidates[eIndex];
-          break;
-        }
-      }
-      if (!editTarget) return;
-      if (responseAttribute) {
-        var declared = editTarget.getAttribute('data-dc-edit-attribute') || editTarget.getAttribute('data-pb-edit-attribute') || '';
-        if (!safeEditableAttributes[responseAttribute] || declared !== responseAttribute) return;
-        editTarget.setAttribute(responseAttribute, responseText);
-      } else {
-        editTarget.textContent = responseText;
-      }
-    }
-    if (e.data.type === 'applyPreviewStyles') {
-      if (typeof e.data.css !== 'string' || !e.data.css || e.data.css.length > 524288) return;
-      var style = document.getElementById('pb-custom-styles');
-      if (!style) {
-        style = document.createElement('style');
-        style.id = 'pb-custom-styles';
-        document.head.appendChild(style);
-      }
-      style.textContent = e.data.css;
-    }
-  });
-
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('a[href]');
-    if (!link) return;
-    var href = link.getAttribute('href');
-    if (!href) return;
-    if (href.endsWith('.html') || href === '/' || href === './') {
-      e.preventDefault();
-      e.stopPropagation();
-      var page = href;
-      if (page === '/' || page === './') page = 'index.html';
-      if (!page.endsWith('.html')) page = page + '.html';
-      page = page.replace(/^\\.?\\//, '');
-      window.parent.postMessage({ type: 'navigatePage', page: page }, '*');
-    }
-  });
-})();
-</script>`
 }

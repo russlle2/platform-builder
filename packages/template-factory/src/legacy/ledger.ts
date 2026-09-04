@@ -20,6 +20,7 @@ import {
   type LegacyTemplateRecord,
   type ModelBudgetSnapshot,
   type ModelUsageInput,
+  type ModelUsageReconciliation,
   type RunState,
   type TemplateStage,
   type TerminalDisposition,
@@ -128,6 +129,8 @@ export interface RenderInput {
   status: 'pending' | 'running' | 'passed' | 'failed';
   screenshotHash?: string | null;
   perceptualHash?: string | null;
+  thumbnailHash?: string | null;
+  thumbnailBytes?: number | null;
   ssim?: number | null;
   consoleErrors?: number;
   failedRequests?: number;
@@ -302,6 +305,8 @@ function parseRender(row: SqlRow): LegacyRenderRecord {
     status: String(row.status) as LegacyRenderRecord['status'],
     screenshotHash: row.screenshot_hash === null ? null : String(row.screenshot_hash),
     perceptualHash: row.perceptual_hash === null ? null : String(row.perceptual_hash),
+    thumbnailHash: row.thumbnail_hash === null ? null : String(row.thumbnail_hash),
+    thumbnailBytes: row.thumbnail_bytes === null ? null : Number(row.thumbnail_bytes),
     ssim: row.ssim === null ? null : Number(row.ssim),
     consoleErrors: Number(row.console_errors),
     failedRequests: Number(row.failed_requests),
@@ -426,7 +431,7 @@ export class LegacyLedger {
       timeout: options.busyTimeoutMs ?? 15_000,
     });
     this.database.exec('PRAGMA journal_mode = WAL');
-    this.database.exec('PRAGMA synchronous = NORMAL');
+    this.database.exec('PRAGMA synchronous = FULL');
     this.database.exec('PRAGMA foreign_keys = ON');
     this.migrate();
   }
@@ -781,8 +786,63 @@ export class LegacyLedger {
       currentVersion = 4;
     }
 
+    if (currentVersion < 5) {
+      // Passing WebP previews were previously referenced by path but were not
+      // cryptographically bound to their render rows. Preserve those rows as
+      // history, but return terminal templates to the resumable browser stage:
+      // no pre-v5 receipt may authorize promotion without fresh thumbnail
+      // digest, byte-size, and decode evidence.
+      this.database.exec(`
+        BEGIN IMMEDIATE;
+        ALTER TABLE renders ADD COLUMN thumbnail_hash TEXT;
+        ALTER TABLE renders ADD COLUMN thumbnail_bytes INTEGER;
+        UPDATE aliases SET
+          status = 'rejected',
+          updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+        WHERE template_id IN (SELECT id FROM templates WHERE stage = 'complete');
+        UPDATE templates SET
+          stage = 'render_pending', terminal_disposition = NULL,
+          quality_receipt = NULL, attempts = 0,
+          lease_owner = NULL, lease_token = NULL, lease_expires_at = NULL,
+          last_error = 'Render evidence schema v5 requires fresh attested thumbnails',
+          updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+        WHERE stage = 'complete';
+        PRAGMA user_version = 5;
+        COMMIT;
+      `);
+      currentVersion = 5;
+    }
+
+    if (currentVersion < 6) {
+      // v5 receipts could have been produced by the legacy raw-hydration QA
+      // server. They do not prove that every page passed through the shared
+      // customer preview composers, so no terminal or post-render checkpoint
+      // may survive this evidence-protocol upgrade. Preserve candidate bytes
+      // and render history, but require a fresh browser matrix and v2 receipt.
+      this.database.exec(`
+        BEGIN IMMEDIATE;
+        UPDATE aliases SET
+          status = 'rejected',
+          updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+        WHERE template_id IN (
+          SELECT id FROM templates
+          WHERE stage IN ('verified', 'clustered', 'composed', 'promotable', 'complete')
+        );
+        UPDATE templates SET
+          stage = 'render_pending', terminal_disposition = NULL,
+          quality_receipt = NULL, attempts = 0,
+          lease_owner = NULL, lease_token = NULL, lease_expires_at = NULL,
+          last_error = 'Final evidence protocol v2 requires fresh shared customer-preview browser QA',
+          updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now')
+        WHERE stage IN ('verified', 'clustered', 'composed', 'promotable', 'complete');
+        PRAGMA user_version = 6;
+        COMMIT;
+      `);
+      currentVersion = 6;
+    }
+
     // The recipe cache is an additive cloud-lane extension. Keeping it behind
-    // CREATE IF NOT EXISTS preserves schema-v4 compatibility while allowing an
+    // CREATE IF NOT EXISTS preserves ledger compatibility while allowing an
     // existing offline ledger to gain cross-run recipe reuse without a rule or
     // emitted-artifact version change.
     this.database.exec(`
@@ -826,6 +886,10 @@ export class LegacyLedger {
 
   journalMode(): string {
     return String((this.database.prepare('PRAGMA journal_mode').get() as SqlRow).journal_mode);
+  }
+
+  synchronousMode(): number {
+    return Number((this.database.prepare('PRAGMA synchronous').get() as SqlRow).synchronous);
   }
 
   createRun(input: CreateRunInput): LegacyRunRecord {
@@ -1518,6 +1582,61 @@ export class LegacyLedger {
     });
   }
 
+  /**
+   * Fail one active render preparation lease back to deterministic repair.
+   * This deliberately clears every artifact-derived authorization surface in
+   * the same transaction that releases the lease and records the current
+   * issue, so a malformed prerequisite cannot poison its healthy siblings or
+   * be mistaken for a browser failure eligible for neutral fallback.
+   */
+  requeueLeasedTemplateForRepair(input: {
+    templateId: number;
+    leaseToken: string;
+    reason: string;
+    runId?: string | null;
+    details?: unknown;
+  }): boolean {
+    return this.transaction(() => {
+      const timestamp = nowIso();
+      const result = this.database.prepare(`
+        UPDATE templates SET
+          stage = 'repair_pending', terminal_disposition = NULL,
+          result_hash = NULL, quality_receipt = NULL, attempts = 0,
+          lease_owner = NULL, lease_token = NULL, lease_expires_at = NULL,
+          last_run_id = COALESCE(?, last_run_id), last_error = ?, updated_at = ?
+        WHERE id = ? AND stage = 'rendering' AND lease_token = ?
+      `).run(
+        input.runId ?? null,
+        input.reason,
+        timestamp,
+        input.templateId,
+        input.leaseToken,
+      );
+      if (Number(result.changes) !== 1) return false;
+      this.database.prepare(`
+        UPDATE aliases SET status = 'rejected', updated_at = ? WHERE template_id = ?
+      `).run(timestamp, input.templateId);
+      // Retire the entire derived page set. repairOne reactivates exactly the
+      // HTML files it emits; any stale or invented ledger-only page therefore
+      // stays superseded instead of poisoning every resumed render attempt.
+      this.database.prepare(`
+        UPDATE pages SET stage = 'superseded', result_hash = NULL,
+          visible_text_length = NULL, updated_at = ?
+        WHERE template_id = ? AND stage <> 'superseded'
+      `).run(timestamp, input.templateId);
+      this.addIssue({
+        templateId: input.templateId,
+        runId: input.runId,
+        code: 'render_preparation_failed',
+        severity: 'error',
+        message: input.reason,
+        artifactHash: null,
+        details: input.details,
+      });
+      return true;
+    });
+  }
+
   addTransformation(input: TransformationInput): number {
     const detailsJson = json(input.details);
     const fingerprint = input.fingerprint ?? auditFingerprint('transformation', [
@@ -1571,14 +1690,17 @@ export class LegacyLedger {
       INSERT INTO renders (
         template_id, page_id, run_id, artifact_hash, rule_version,
         viewport, width, height, status,
-        screenshot_hash, perceptual_hash, ssim, console_errors, failed_requests,
+        screenshot_hash, perceptual_hash, thumbnail_hash, thumbnail_bytes,
+        ssim, console_errors, failed_requests,
         axe_critical, axe_serious, horizontal_overflow_px, artifact_path, error,
         attempts, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
       ON CONFLICT(template_id, page_id, viewport, artifact_hash, rule_version) DO UPDATE SET
         run_id = excluded.run_id, width = excluded.width, height = excluded.height,
         status = excluded.status, screenshot_hash = excluded.screenshot_hash,
-        perceptual_hash = excluded.perceptual_hash, ssim = excluded.ssim,
+        perceptual_hash = excluded.perceptual_hash,
+        thumbnail_hash = excluded.thumbnail_hash, thumbnail_bytes = excluded.thumbnail_bytes,
+        ssim = excluded.ssim,
         console_errors = excluded.console_errors, failed_requests = excluded.failed_requests,
         axe_critical = excluded.axe_critical, axe_serious = excluded.axe_serious,
         horizontal_overflow_px = excluded.horizontal_overflow_px,
@@ -1596,6 +1718,8 @@ export class LegacyLedger {
       input.status,
       input.screenshotHash ?? null,
       input.perceptualHash ?? null,
+      input.thumbnailHash ?? null,
+      input.thumbnailBytes ?? null,
       input.ssim ?? null,
       input.consoleErrors ?? 0,
       input.failedRequests ?? 0,
@@ -1904,26 +2028,82 @@ export class LegacyLedger {
     });
   }
 
-  reconcileModelUsage(input: ModelUsageInput): void {
-    const timestamp = nowIso();
-    const result = this.database.prepare(`
-      UPDATE model_usage SET
-        status = ?, actual_input_tokens = ?, actual_output_tokens = ?,
-        actual_cost_usd = ?, batch_id = COALESCE(?, batch_id),
-        response_id = COALESCE(?, response_id), error = ?, updated_at = ?
-      WHERE request_key = ?
-    `).run(
-      input.status,
-      input.actualInputTokens ?? 0,
-      input.actualOutputTokens ?? 0,
-      input.actualCostUsd ?? 0,
-      input.batchId ?? null,
-      input.responseId ?? null,
-      input.error ?? null,
-      timestamp,
-      input.requestKey,
-    );
-    if (Number(result.changes) !== 1) throw new Error(`No model usage reservation for ${input.requestKey}`);
+  reconcileModelUsage(input: ModelUsageInput): ModelUsageReconciliation {
+    return this.transaction(() => {
+      const existing = this.database.prepare(`
+        SELECT model, status, estimated_input_tokens, estimated_output_tokens,
+               actual_input_tokens, actual_output_tokens,
+               estimated_cost_usd, actual_cost_usd
+        FROM model_usage
+        WHERE request_key = ?
+      `).get(input.requestKey) as SqlRow | undefined;
+      if (!existing) throw new Error(`No model usage reservation for ${input.requestKey}`);
+      if (String(existing.model) !== input.model) throw new Error(`Model usage reservation changed model for ${input.requestKey}`);
+
+      const actualInputTokens = input.actualInputTokens ?? Number(existing.actual_input_tokens);
+      const actualOutputTokens = input.actualOutputTokens ?? Number(existing.actual_output_tokens);
+      const actualCostUsd = input.actualCostUsd ?? Number(existing.actual_cost_usd);
+      if (
+        !Number.isSafeInteger(actualInputTokens) || actualInputTokens < 0
+        || !Number.isSafeInteger(actualOutputTokens) || actualOutputTokens < 0
+        || !Number.isFinite(actualCostUsd) || actualCostUsd < 0
+      ) {
+        throw new Error(`Invalid actual model usage for ${input.requestKey}`);
+      }
+
+      const estimatedTokens = Number(existing.estimated_input_tokens) + Number(existing.estimated_output_tokens);
+      const actualTokens = actualInputTokens + actualOutputTokens;
+      const estimatedCostUsd = Number(existing.estimated_cost_usd);
+      const proposedTokens = input.status === 'failed' || input.status === 'cancelled'
+        ? actualTokens
+        : actualTokens > 0 ? actualTokens : estimatedTokens;
+      const proposedCostUsd = input.status === 'failed' || input.status === 'cancelled'
+        ? actualCostUsd
+        : actualCostUsd > 0 ? actualCostUsd : estimatedCostUsd;
+      const other = this.database.prepare(`
+        SELECT
+          COALESCE(SUM(CASE
+            WHEN status IN ('failed', 'cancelled') THEN actual_input_tokens + actual_output_tokens
+            WHEN actual_input_tokens + actual_output_tokens > 0 THEN actual_input_tokens + actual_output_tokens
+            ELSE estimated_input_tokens + estimated_output_tokens END), 0) AS accounted_tokens,
+          COALESCE(SUM(CASE
+            WHEN status IN ('failed', 'cancelled') THEN actual_cost_usd
+            WHEN actual_cost_usd > 0 THEN actual_cost_usd
+            ELSE estimated_cost_usd END), 0) AS accounted_cost_usd
+        FROM model_usage
+        WHERE request_key <> ?
+      `).get(input.requestKey) as SqlRow;
+      const tokenCeilingExceeded = Number(other.accounted_tokens) + proposedTokens > this.aiTokenCap;
+      const costCeilingExceeded = Number(other.accounted_cost_usd) + proposedCostUsd > this.aiDollarCapUsd;
+      const accepted = !tokenCeilingExceeded && !costCeilingExceeded;
+      const reason = tokenCeilingExceeded ? 'token_ceiling' as const : 'cost_ceiling' as const;
+      const budgetError = accepted
+        ? input.error ?? null
+        : [
+            input.error,
+            `Model budget ${reason}: actual usage was recorded, cloud output was rejected, and further spend is disabled.`,
+          ].filter(Boolean).join(' ').slice(0, 2_000);
+      const timestamp = nowIso();
+      const result = this.database.prepare(`
+        UPDATE model_usage SET
+          status = ?, actual_input_tokens = ?, actual_output_tokens = ?,
+          actual_cost_usd = ?, batch_id = COALESCE(?, batch_id),
+          response_id = COALESCE(?, response_id), error = ?, updated_at = ?
+        WHERE request_key = ?
+      `).run(
+        accepted ? input.status : 'failed',
+        actualInputTokens,
+        actualOutputTokens,
+        actualCostUsd,
+        input.batchId ?? null,
+        input.responseId ?? null,
+        budgetError,
+        timestamp,
+        input.requestKey,
+      );
+      if (Number(result.changes) !== 1) throw new Error(`No model usage reservation for ${input.requestKey}`);
+      return accepted ? { accepted: true } : { accepted: false, reason };
+    });
   }
 
   modelBudgetSnapshot(): ModelBudgetSnapshot {
@@ -1943,8 +2123,13 @@ export class LegacyLedger {
           ELSE estimated_cost_usd END), 0) AS accounted_cost_usd
       FROM model_usage
     `).get() as SqlRow;
-    const accountedTokens = Number(row.accounted_tokens);
-    const accountedCostUsd = Number(row.accounted_cost_usd);
+    const rawAccountedTokens = Number(row.accounted_tokens);
+    const rawAccountedCostUsd = Number(row.accounted_cost_usd);
+    // Actual provider usage remains visible above, but spend authorization is
+    // a bounded quantity. Clamping prevents a defensive overage reconciliation
+    // from reopening headroom or reporting that the configured cap moved.
+    const accountedTokens = Math.min(this.aiTokenCap, rawAccountedTokens);
+    const accountedCostUsd = Math.min(this.aiDollarCapUsd, rawAccountedCostUsd);
     return {
       estimatedTokens: Number(row.estimated_tokens),
       actualTokens: Number(row.actual_tokens),
@@ -1956,7 +2141,7 @@ export class LegacyLedger {
       dollarCapUsd: this.aiDollarCapUsd,
       tokensRemaining: Math.max(0, this.aiTokenCap - accountedTokens),
       dollarsRemaining: Math.max(0, this.aiDollarCapUsd - accountedCostUsd),
-      exhausted: accountedTokens >= this.aiTokenCap || accountedCostUsd >= this.aiDollarCapUsd,
+      exhausted: rawAccountedTokens >= this.aiTokenCap || rawAccountedCostUsd >= this.aiDollarCapUsd,
     };
   }
 

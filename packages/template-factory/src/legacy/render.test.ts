@@ -1,20 +1,44 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import test from 'node:test';
+import { chromium } from '@playwright/test';
 import sharp from 'sharp';
 import { repairLegacyTemplate } from './compose.js';
+import { satisfiesVisualAliasThresholds } from './dedupe.js';
 import { addAccessibilityOverrides, addContrastOverrides, verifyStaticArtifact } from './pipeline.js';
+import { LEGACY_COMPATIBILITY_SCRIPT } from './repair.js';
 import {
+  compareViewportScreenshotPixels,
   hammingDistance,
   hydrateSentinelHtml,
+  isAllowedTemplateRenderRequest,
+  losslessScreenshotSsim,
   recommendedRenderWorkers,
+  removeTemporaryComparisonScreenshots,
   renderTemplateTasks,
   safeForegroundForBackground,
   startTemplateServer,
+  temporaryComparisonScreenshotPath,
+  thumbnailSsim,
+  verifyRetainedThumbnailEvidence,
   writeEvidenceThumbnail,
 } from './render.js';
+
+test('browser request policy allows only same-origin resources and raster image data', () => {
+  const origin = 'http://127.0.0.1:4173';
+  const raster = 'data:image/png;base64,AAAA';
+  assert.equal(isAllowedTemplateRenderRequest(origin, `${origin}/template/index.html`, 'document'), true);
+  assert.equal(isAllowedTemplateRenderRequest(origin, 'about:blank', 'document'), true);
+  assert.equal(isAllowedTemplateRenderRequest(origin, raster, 'image'), true);
+  assert.equal(isAllowedTemplateRenderRequest(origin, raster, 'stylesheet'), false);
+  assert.equal(isAllowedTemplateRenderRequest(origin, 'data:image/svg+xml,<svg/>', 'image'), false);
+  assert.equal(isAllowedTemplateRenderRequest(origin, 'data:text/html,<script>alert(1)</script>', 'document'), false);
+  assert.equal(isAllowedTemplateRenderRequest(origin, `blob:${origin}/transient`, 'image'), false);
+  assert.equal(isAllowedTemplateRenderRequest(origin, 'https://example.test/remote.png', 'image'), false);
+});
 
 test('sentinel hydration resolves every simple runtime field deterministically', () => {
   const hydrated = hydrateSentinelHtml('<h1>{{ BUSINESS_NAME }}</h1><a href="mailto:{{EMAIL}}">{{UNKNOWN_FIELD}}</a>');
@@ -43,6 +67,256 @@ test('local QA server hydrates HTML and serves assets without external publicati
   }
 });
 
+test('every topology page uses the shared customer route while nested assets and compatibility behavior remain functional', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-customer-route-'));
+  const templateDir = join(root, 'artifacts', 'niche', 'topology-fixture', 'hash');
+  const evidenceRoot = join(root, 'evidence');
+  const pages = ['index.html', 'pages/services.html', 'pages/contact/form.html'];
+  const pageMarkup = (page: string, prefix: string, heading: string, link: string) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${heading}</title>
+    <link rel="stylesheet" href="${prefix}assets/css/styles.css"><link rel="stylesheet" href="${prefix}assets/css/secondary.css"></head><body>
+    <header><nav aria-label="Primary"><button type="button" aria-controls="site-menu" aria-expanded="false">Menu</button><div id="site-menu"><a href="${link}">Another page</a></div></nav></header>
+    <main><h1 data-dc-edit-id="txt_000000000000000001">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="txt_000000000000000002">${heading} gives visitors clear, practical information about the service, what to expect, and how to make a confident next-step decision.</p>
+    <p data-dc-edit-id="txt_000000000000000003" data-dc-edit-attribute="title" title="Helpful context">Hover for more context about this page.</p>
+    <img data-dc-image-id="img_000000000000000001" src="${prefix}assets/img/hero.png" alt="Calm geometric landscape">
+    <picture><source data-dc-image-id="img_000000000000000002" media="(min-width: 700px)" srcset="${prefix}assets/img/hero.png 1x"><img data-dc-image-id="img_000000000000000003" src="${prefix}assets/img/hero.png" alt="Responsive calm geometric landscape"></picture>
+    <form name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><label>Name <input name="name" autocomplete="name" required></label><label>Email <input type="email" name="email" autocomplete="email" required></label><label>Phone <input type="tel" name="phone" autocomplete="tel"></label><label>Message <textarea name="message" required></textarea></label><button type="submit">Send inquiry</button></form>
+    <a href="mailto:{{EMAIL}}">Email the studio</a></main><script defer src="assets/js/dc-compat.js" data-dc-runtime="compatibility-v1"></script></body></html>`;
+  const tasks = pages.map((page) => ({
+    key: 'customer-route-topology',
+    niche: 'wellness_coach',
+    slug: 'customer-route-topology',
+    page,
+    templateDir,
+  }));
+  try {
+    const files = new Map<string, string | Uint8Array>([
+      ['template.json', `${JSON.stringify({
+        contractVersion: 3,
+        legacySlug: 'customer-route-topology',
+        slug: 'customer-route-topology',
+        niche: 'wellness_coach',
+        pages,
+        pageRoles: { 'index.html': 'home', 'pages/services.html': 'services', 'pages/contact/form.html': 'contact' },
+      })}\n`],
+      ['fields.json', `${JSON.stringify({
+        contractVersion: 3,
+        fields: [
+          { name: 'BUSINESS_NAME', label: 'Business name', type: 'text' },
+          { name: 'EMAIL', label: 'Email', type: 'email' },
+        ],
+      })}\n`],
+      ['index.html', pageMarkup('index.html', '', 'Home overview', 'pages/services.html')],
+      ['pages/services.html', pageMarkup('pages/services.html', '../', 'Services overview', '../index.html')],
+      ['pages/contact/form.html', pageMarkup('pages/contact/form.html', '../../', 'Contact and booking', '../../index.html')],
+      ['assets/css/styles.css', ':root{--dc-theme-color_bg:#fff;--dc-theme-color_text:#111;--dc-theme-font_body:Arial,sans-serif}*{box-sizing:border-box}body{background:var(--dc-theme-color_bg);color:var(--dc-theme-color_text);font-family:var(--dc-theme-font_body)}main{max-width:60rem;margin:auto;padding:2rem}.hero{background-image:url("../img/pattern.png")}'],
+      ['assets/css/secondary.css', ':root{--dc-theme-color_secondary:#24513f}.secondary{color:var(--dc-theme-color_secondary)}'],
+      ['assets/js/dc-compat.js', LEGACY_COMPATIBILITY_SCRIPT],
+      ['assets/img/hero.png', await sharp({ create: { width: 32, height: 20, channels: 3, background: '#8aa899' } }).png().toBuffer()],
+      ['assets/img/pattern.png', await sharp({ create: { width: 8, height: 8, channels: 3, background: '#dce8e1' } }).png().toBuffer()],
+      ['harness.html', '<!doctype html><html><head><meta charset="utf-8"><title>Iframe harness</title></head><body></body></html>'],
+    ]);
+    for (const [relativePath, contents] of files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+
+    const server = await startTemplateServer(root, { renderTasks: tasks });
+    try {
+      const nestedUrl = `${server.origin}/artifacts/niche/topology-fixture/hash/pages/contact/form.html`;
+      const response = await fetch(nestedUrl);
+      const previewDocument = await response.text();
+      assert.equal(response.status, 200, previewDocument);
+      assert.equal(response.headers.get('x-dc-preview-composition'), 'shared-customer-route');
+      assert.equal(response.headers.get('x-dc-manifest-fields'), '2');
+      assert.equal(response.headers.get('x-dc-theme-stylesheets'), '2');
+      assert.match(previewDocument, /Sentinel Clarity Studio/);
+      assert.doesNotMatch(previewDocument, /\{\{/);
+      assert.equal((previewDocument.match(/data-dc-runtime="customer-preview-editor-v1"/g) ?? []).length, 1);
+      assert.match(previewDocument, /var currentPage = "pages\/contact\/form\.html";/);
+      assert.match(previewDocument, /src="\/api\/templates\/__dc_compiler__\/[0-9a-f]{32}\/assets\/assets\/img\/hero\.png"/);
+      const compatibilitySource = previewDocument.match(/src="(\/api\/templates\/__dc_compiler__\/[0-9a-f]{32}\/assets\/assets\/js\/dc-compat\.js)" data-dc-runtime="compatibility-v1"/)?.[1];
+      assert.ok(compatibilitySource, previewDocument);
+      assert.equal((await fetch(`${server.origin}${compatibilitySource}`)).status, 200);
+
+      // Prove the same document works across the real opaque-origin iframe
+      // boundary used by both customer editors, including parent validation,
+      // prompt response, coordinated picture response, navigation, and form
+      // compatibility semantics.
+      const browser = await chromium.launch({ headless: true });
+      try {
+        const context = await browser.newContext({ serviceWorkers: 'block' });
+        const parent = await context.newPage();
+        await parent.goto(`${server.origin}/artifacts/niche/topology-fixture/hash/harness.html`);
+        await parent.evaluate(({ srcdoc, sentinelImage }) => {
+          const iframe = document.createElement('iframe');
+          iframe.id = 'customer-preview';
+          iframe.setAttribute('sandbox', 'allow-scripts allow-forms');
+          document.body.appendChild(iframe);
+          const state = {
+            messages: [] as Array<Record<string, unknown>>,
+            promptCalls: 0,
+          };
+          (window as typeof window & { __dcIframeHarness?: typeof state }).__dcIframeHarness = state;
+          window.prompt = () => {
+            state.promptCalls += 1;
+            return 'SENTINEL ATTRIBUTE EDIT';
+          };
+          window.addEventListener('message', (event) => {
+            if (event.source !== iframe.contentWindow || !event.data || typeof event.data !== 'object') return;
+            const message = event.data as Record<string, unknown>;
+            state.messages.push(message);
+            if (message.type === 'editValueRequest') {
+              const text = window.prompt('Edit text', String(message.original ?? ''));
+              iframe.contentWindow?.postMessage({
+                type: 'editValueResponse',
+                nodeId: message.nodeId,
+                attribute: message.attribute,
+                text,
+              }, '*');
+            }
+            if (message.type === 'imageSwapRequest' && typeof message.slotId === 'string' && Array.isArray(message.pictureSlotIds)) {
+              const slotIds = [message.slotId, ...message.pictureSlotIds.filter((slotId) => slotId !== message.slotId)];
+              iframe.contentWindow?.postMessage({
+                type: 'imageSwapResponse',
+                imageUrl: sentinelImage,
+                slotId: message.slotId,
+                slotIds,
+              }, '*');
+            }
+          });
+          iframe.srcdoc = srcdoc;
+        }, {
+          srcdoc: previewDocument,
+          sentinelImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=',
+        });
+        const frame = parent.frames().find((candidate) => candidate !== parent.mainFrame());
+        assert.ok(frame);
+        await frame.waitForFunction(() => (
+          (window as typeof window & {
+            __dailyClarityCustomerPreviewEditorRuntime?: string;
+            __dailyClarityCompatibilityInstalled?: boolean;
+          }).__dailyClarityCustomerPreviewEditorRuntime === 'customer-preview-editor-v1'
+          && (window as typeof window & { __dailyClarityCompatibilityInstalled?: boolean })
+            .__dailyClarityCompatibilityInstalled === true
+        ));
+        const frameState = await frame.evaluate(async () => {
+          const leaf = document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000002"]')!;
+          leaf.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
+          leaf.textContent = 'SENTINEL LEAF EDIT';
+          leaf.dispatchEvent(new FocusEvent('blur'));
+
+          document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000003"]')!
+            .dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
+          document.querySelector<HTMLElement>('[data-dc-image-id="img_000000000000000001"]')!
+            .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+          document.querySelector<HTMLElement>('[data-dc-image-id="img_000000000000000003"]')!
+            .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+          document.querySelector<HTMLAnchorElement>('a[href="../../index.html"]')!
+            .dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+
+          const form = document.querySelector<HTMLFormElement>('form[data-dc-standard-form]')!;
+          (form.elements.namedItem('name') as HTMLInputElement).value = 'Sentinel Visitor';
+          (form.elements.namedItem('email') as HTMLInputElement).value = 'sentinel@example.test';
+          (form.elements.namedItem('message') as HTMLTextAreaElement).value = 'A safe general inquiry.';
+          let compatibilityEvent = false;
+          form.addEventListener('dc:form-submit', () => { compatibilityEvent = true; }, { once: true });
+          form.addEventListener('submit', (event) => event.preventDefault(), { once: true, capture: true });
+          form.requestSubmit();
+          await new Promise((resolvePromise) => setTimeout(resolvePromise, 100));
+          return {
+            leaf: leaf.textContent,
+            title: document.querySelector<HTMLElement>('[data-dc-edit-id="txt_000000000000000003"]')!.title,
+            standalone: document.querySelector<HTMLImageElement>('[data-dc-image-id="img_000000000000000001"]')!.getAttribute('src'),
+            pictureSource: document.querySelector<HTMLSourceElement>('[data-dc-image-id="img_000000000000000002"]')!.getAttribute('srcset'),
+            pictureImage: document.querySelector<HTMLImageElement>('[data-dc-image-id="img_000000000000000003"]')!.getAttribute('src'),
+            compatibilityEvent,
+          };
+        });
+        const parentState = await parent.evaluate(() => (
+          (window as typeof window & {
+            __dcIframeHarness: { messages: Array<Record<string, unknown>>; promptCalls: number };
+          }).__dcIframeHarness
+        ));
+        assert.equal(frameState.leaf, 'SENTINEL LEAF EDIT');
+        assert.equal(frameState.title, 'SENTINEL ATTRIBUTE EDIT');
+        assert.equal(frameState.compatibilityEvent, true);
+        assert.match(frameState.standalone ?? '', /^data:image\/png;base64,/);
+        assert.match(frameState.pictureSource ?? '', /^data:image\/png;base64,/);
+        assert.match(frameState.pictureImage ?? '', /^data:image\/png;base64,/);
+        assert.equal(parentState.promptCalls, 1);
+        assert.ok(parentState.messages.some((message) => message.type === 'textEdited' && message.nodeId === 'txt_000000000000000002'));
+        assert.ok(parentState.messages.some((message) => message.type === 'editValueRequest' && message.attribute === 'title'));
+        assert.ok(parentState.messages.some((message) => message.type === 'imageSwapRequest'
+          && message.slotId === 'img_000000000000000001'
+          && Array.isArray(message.pictureSlotIds)
+          && message.pictureSlotIds.length === 1));
+        assert.ok(parentState.messages.some((message) => message.type === 'imageSwapRequest'
+          && message.slotId === 'img_000000000000000003'
+          && Array.isArray(message.pictureSlotIds)
+          && message.pictureSlotIds.length === 2));
+        assert.ok(parentState.messages.some((message) => message.type === 'navigatePage' && message.page === 'index.html'));
+        await context.close();
+      } finally {
+        await browser.close();
+      }
+    } finally {
+      await server.close();
+    }
+
+    const evidence = await renderTemplateTasks(root, tasks, {
+      evidenceRoot,
+      workers: 2,
+      retries: 0,
+    });
+    assert.equal(evidence.length, pages.length * 2);
+    assert.ok(evidence.every((item) => item.passed), JSON.stringify(evidence, null, 2));
+    assert.deepEqual([...new Set(evidence.map((item) => item.page))].sort(), [...pages].sort());
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('browser QA records same-origin HTTP error responses as failed requests', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-http-status-'));
+  const templateDir = join(root, 'niche', 'slug');
+  const evidenceRoot = join(root, 'evidence');
+  try {
+    const repaired = repairLegacyTemplate({
+      slug: 'same-origin-http-error',
+      niche: 'wellness_coach',
+      files: new Map([['index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>HTTP evidence</title></head><body><main>
+        <h1>Same-origin response evidence</h1><p>This deliberately complete paragraph keeps the page readable while a missing local stylesheet returns an HTTP error.</p>
+        <a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
+    });
+    for (const [relativePath, contents] of repaired.files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      const value = relativePath === 'index.html'
+        ? String(contents).replace('</head>', '<link rel="stylesheet" href="missing-local-stylesheet.css"></head>')
+        : contents;
+      await writeFile(target, value);
+    }
+
+    const evidence = await renderTemplateTasks(root, [{
+      key: 'same-origin-http-error',
+      niche: 'wellness_coach',
+      slug: 'same-origin-http-error',
+      page: 'index.html',
+      templateDir,
+    }], { evidenceRoot, workers: 1, retries: 0 });
+
+    assert.equal(evidence.length, 2);
+    for (const viewport of evidence) {
+      const failures = viewport.issues.filter((issue) => issue.code === 'failed_request');
+      assert.equal(failures.length, 1, JSON.stringify(viewport.issues, null, 2));
+      assert.match(failures[0]!.detail, /missing-local-stylesheet\.css \(HTTP 404\)/);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('perceptual hash distance and worker limits are bounded', () => {
   assert.equal(hammingDistance('0000000000000000', '000000000000000f'), 4);
   const pressureAwareWorkers = recommendedRenderWorkers(99);
@@ -62,12 +336,156 @@ test('evidence thumbnails bound extremely tall pages to WebP-safe dimensions', a
         background: '#ffffff',
       },
     }).png().toBuffer();
-    const target = join(root, 'thumbnail.webp');
-    await writeEvidenceThumbnail(source, target);
-    const metadata = await sharp(await readFile(target)).metadata();
+    const target = join(root, 'thumbnails', 'thumbnail.webp');
+    await mkdir(dirname(target), { recursive: true });
+    const attestation = await writeEvidenceThumbnail(source, target);
+    const encoded = await readFile(target);
+    const metadata = await sharp(encoded).metadata();
     assert.ok((metadata.width ?? 0) <= 320);
     assert.ok((metadata.height ?? 0) <= 4096);
     assert.equal(metadata.format, 'webp');
+    assert.equal(attestation.bytes, encoded.byteLength);
+    assert.equal(attestation.sha256, createHash('sha256').update(encoded).digest('hex'));
+    await assert.doesNotReject(verifyRetainedThumbnailEvidence({
+      renderRoot: root,
+      thumbnailPath: target,
+      expectedSha256: attestation.sha256,
+      expectedBytes: attestation.bytes,
+    }));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('promotion-grade thumbnail evidence rejects deletion, corruption, and file swapping', async () => {
+  const renderRoot = await mkdtemp(join(tmpdir(), 'dc-render-thumbnail-integrity-'));
+  const firstPath = join(renderRoot, 'thumbnails', 'first.webp');
+  const secondPath = join(renderRoot, 'thumbnails', 'second.webp');
+  try {
+    await mkdir(dirname(firstPath), { recursive: true });
+    const [firstPng, secondPng] = await Promise.all([
+      sharp({ create: { width: 40, height: 30, channels: 3, background: '#ffffff' } }).png().toBuffer(),
+      sharp({ create: { width: 40, height: 30, channels: 3, background: '#000000' } }).png().toBuffer(),
+    ]);
+    const first = await writeEvidenceThumbnail(firstPng, firstPath);
+    const second = await writeEvidenceThumbnail(secondPng, secondPath);
+    const verifyFirst = () => verifyRetainedThumbnailEvidence({
+      renderRoot,
+      thumbnailPath: firstPath,
+      expectedSha256: first.sha256,
+      expectedBytes: first.bytes,
+    });
+    await assert.doesNotReject(verifyFirst());
+
+    await rm(firstPath);
+    await assert.rejects(verifyFirst(), /missing or unsafe/i);
+
+    const corrupt = Buffer.from('not an image but internally hash-consistent');
+    await writeFile(firstPath, corrupt);
+    await assert.rejects(verifyRetainedThumbnailEvidence({
+      renderRoot,
+      thumbnailPath: firstPath,
+      expectedSha256: createHash('sha256').update(corrupt).digest('hex'),
+      expectedBytes: corrupt.byteLength,
+    }), /not a decodable image/i);
+
+    await writeFile(firstPath, await readFile(secondPath));
+    await assert.rejects(verifyFirst(), /(?:byte-size|SHA-256) mismatch/i);
+    assert.notEqual(first.sha256, second.sha256);
+  } finally {
+    await rm(renderRoot, { recursive: true, force: true });
+  }
+});
+
+test('lossy square thumbnails cannot certify differently sized native screenshots as aliases', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-native-ssim-'));
+  try {
+    const makePng = (height: number) => sharp({
+      create: {
+        width: 1440,
+        height,
+        channels: 3,
+        background: '#718096',
+      },
+    }).png().toBuffer();
+    const [first, second] = await Promise.all([makePng(900), makePng(1_200)]);
+    const firstPath = join(root, 'first.png');
+    const secondPath = join(root, 'second.png');
+    const firstThumbnail = join(root, 'first.webp');
+    const secondThumbnail = join(root, 'second.webp');
+    await Promise.all([
+      writeFile(firstPath, first),
+      writeFile(secondPath, second),
+      writeEvidenceThumbnail(first, firstThumbnail),
+      writeEvidenceThumbnail(second, secondThumbnail),
+    ]);
+    const hash = (value: Buffer): string => createHash('sha256').update(value).digest('hex');
+    const compressedThumbnailScore = await thumbnailSsim(firstThumbnail, secondThumbnail);
+    const nativeScore = await losslessScreenshotSsim(
+      { path: firstPath, sha256: hash(first) },
+      { path: secondPath, sha256: hash(second) },
+    );
+
+    assert.ok(compressedThumbnailScore >= 0.995, `fixture must expose the old false-positive path: ${compressedThumbnailScore}`);
+    assert.equal(nativeScore, 0, 'native evidence must fail closed instead of stretching page heights');
+    assert.equal(satisfiesVisualAliasThresholds({
+      domSimilarity: 1,
+      desktopSsim: nativeScore,
+      mobileSsim: 1,
+      desktopPerceptualHashDistance: 0,
+      mobilePerceptualHashDistance: 0,
+      pages: [{
+        page: 'index.html',
+        desktopSsim: nativeScore,
+        mobileSsim: 1,
+        desktopPerceptualHashDistance: 0,
+        mobilePerceptualHashDistance: 0,
+      }],
+    }, ['index.html']), false);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('native visual comparison independently consumes desktop and mobile screenshots', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-two-viewports-'));
+  try {
+    const makePng = (background: string) => sharp({
+      create: { width: 64, height: 48, channels: 3, background },
+    }).png().toBuffer();
+    const [same, different] = await Promise.all([makePng('#ffffff'), makePng('#000000')]);
+    const samePath = join(root, 'same.png');
+    const differentPath = join(root, 'different.png');
+    await Promise.all([writeFile(samePath, same), writeFile(differentPath, different)]);
+    const hash = (value: Buffer): string => createHash('sha256').update(value).digest('hex');
+    const sameSource = { path: samePath, sha256: hash(same) };
+    const comparison = await compareViewportScreenshotPixels({
+      desktop: { first: sameSource, second: sameSource },
+      mobile: {
+        first: sameSource,
+        second: { path: differentPath, sha256: hash(different) },
+      },
+    });
+
+    assert.equal(comparison.desktopSsim, 1);
+    assert.ok(comparison.mobileSsim < 0.995, `mobile evidence was not independently compared: ${comparison.mobileSsim}`);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('temporary native comparison evidence is content-addressed and cleanly reaped', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-comparison-cleanup-'));
+  try {
+    const bytes = Buffer.from('lossless screenshot fixture');
+    const hash = createHash('sha256').update(bytes).digest('hex');
+    const target = temporaryComparisonScreenshotPath(root, hash);
+    await mkdir(dirname(target), { recursive: true });
+    await writeFile(target, bytes);
+    assert.equal((await readFile(target)).toString(), bytes.toString());
+
+    await removeTemporaryComparisonScreenshots(root);
+    await assert.rejects(readFile(target), /ENOENT/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -128,7 +546,7 @@ test('browser contrast evidence covers every node, nested selectors, and ancesto
     for (const viewport of evidence) {
       assert.deepEqual([...new Set(viewport.issues.map((issue) => issue.code))], ['axe_color-contrast']);
       assert.equal(viewport.contrastRepairs?.length, 12);
-      assert.ok(viewport.contrastRepairs?.every((repair) => repair.selector.includes('>a:nth-of-type(1)')));
+      assert.ok(viewport.contrastRepairs?.every((repair) => /^\[data-dc-edit-id="[A-Za-z0-9._:-]+"\]$/.test(repair.selector)));
       assert.ok(viewport.contrastRepairs?.every((repair) => repair.foreground === '#000000'));
       assert.ok(viewport.contrastRepairs?.every((repair) => repair.opacitySelectors?.includes('#faded')));
     }
@@ -158,7 +576,7 @@ test('browser contrast evidence covers every node, nested selectors, and ancesto
   }
 });
 
-test('browser link-in-text-block evidence is repaired by exact viewport-scoped selectors', async () => {
+test('direct-text edit wrappers retain deterministic inline-link distinction', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-render-link-distinction-'));
   const templateDir = join(root, 'niche', 'slug', 'initial');
   const remediatedDir = join(root, 'niche', 'slug', 'remediated');
@@ -198,19 +616,17 @@ test('browser link-in-text-block evidence is repaired by exact viewport-scoped s
 
     assert.equal(evidence.length, 2);
     for (const viewport of evidence) {
-      assert.deepEqual([...new Set(viewport.issues.map((issue) => issue.code))], ['axe_link-in-text-block']);
-      assert.equal(viewport.linkInTextBlockRepairs?.length, 1);
-      assert.match(viewport.linkInTextBlockRepairs![0]!.selector, /^\[data-dc-edit-id="[A-Za-z0-9._:-]+"\]>a:nth-of-type\(1\)$/);
+      assert.equal(viewport.passed, true, JSON.stringify(viewport.issues, null, 2));
+      assert.deepEqual(viewport.linkInTextBlockRepairs, []);
     }
 
     const initialHtml = String(initial.files.get('index.html'));
+    assert.match(initialHtml, /data-dc-edit-wrapper="direct-text"/);
+    assert.match(String(initial.files.get('assets/css/dc-repair.css')), /:is\(p,blockquote,figcaption,dd,td\)>a\{text-decoration-line:underline/);
     const remediatedHtml = addAccessibilityOverrides(initialHtml, evidence);
-    assert.notEqual(remediatedHtml, initialHtml, 'the deterministic remediation must change the page artifact');
-    assert.match(remediatedHtml, /@media\(min-width:601px\)/);
-    assert.match(remediatedHtml, /@media\(max-width:600px\)/);
-    assert.match(remediatedHtml, /text-decoration-line:underline!important/);
+    assert.equal(remediatedHtml, initialHtml, 'the audited base stylesheet should make a viewport repair unnecessary');
     const twiceRemediatedHtml = addAccessibilityOverrides(remediatedHtml, evidence);
-    assert.equal((twiceRemediatedHtml.match(/id="dc-a11y-contrast-overrides"/g) ?? []).length, 1);
+    assert.equal(twiceRemediatedHtml, initialHtml);
 
     const remediatedInput = new Map(initial.files);
     remediatedInput.set('index.html', remediatedHtml);
@@ -272,7 +688,15 @@ test('browser QA exercises constrained forms, static ARIA repairs, and every sup
     assert.match(repairedHtml, /data-dc-repaired-semantics="tab"/);
     assert.match(repairedHtml, /data-dc-repaired-semantics="aria-list"/);
     assert.match(repairedHtml, /data-dc-repaired-semantics="list"/);
-    assert.match(repairedHtml, /form="inquiry" id="postal-code" pattern="\[0-9\]\{5\}" maxlength="5" required="" name="postal-code"/);
+    assert.doesNotMatch(repairedHtml, /postal-code|type="date"|<select\b|type="checkbox"|form="inquiry"/i);
+    assert.match(
+      repairedHtml,
+      /<form\b(?=[^>]*\bname="contact")(?=[^>]*\bmethod="post")(?=[^>]*\bdata-netlify="true")(?=[^>]*\bdata-dc-standard-form="contact")[^>]*>/i,
+    );
+    assert.match(repairedHtml, /<input\b(?=[^>]*\bname="name")(?=[^>]*\bautocomplete="name")(?=[^>]*\brequired(?:="")?)[^>]*>/i);
+    assert.match(repairedHtml, /<input\b(?=[^>]*\btype="email")(?=[^>]*\bname="email")(?=[^>]*\brequired(?:="")?)[^>]*>/i);
+    assert.match(repairedHtml, /<input\b(?=[^>]*\btype="tel")(?=[^>]*\bname="phone")[^>]*>/i);
+    assert.match(repairedHtml, /<textarea\b(?=[^>]*\bname="message")(?=[^>]*\brequired(?:="")?)[^>]*>/i);
     assert.ok([...repaired.files.values()].some((contents) =>
       typeof contents === 'string' && /font-weight:\s*var\(--dc-theme-font_/.test(contents),
     ));
@@ -322,10 +746,32 @@ test('theme smoke probes later selector matches when the first match is cascade-
       slug: 'theme-cascade-fixture',
       page: 'index.html',
       templateDir,
+      retainComparisonScreenshot: true,
     }], { evidenceRoot, workers: 1, retries: 0 });
 
     assert.equal(evidence.length, 2);
     assert.ok(evidence.every((viewport) => viewport.passed), JSON.stringify(evidence, null, 2));
+    for (const viewport of evidence) {
+      assert.ok(viewport.screenshotSha256);
+      assert.match(viewport.thumbnailSha256 ?? '', /^[0-9a-f]{64}$/);
+      assert.ok((viewport.thumbnailBytes ?? 0) > 0);
+      await assert.doesNotReject(verifyRetainedThumbnailEvidence({
+        renderRoot: evidenceRoot,
+        thumbnailPath: viewport.thumbnailPath!,
+        expectedSha256: viewport.thumbnailSha256!,
+        expectedBytes: viewport.thumbnailBytes!,
+      }));
+      assert.equal(
+        viewport.comparisonScreenshotPath,
+        temporaryComparisonScreenshotPath(evidenceRoot, viewport.screenshotSha256),
+      );
+      const metadata = await sharp(await readFile(viewport.comparisonScreenshotPath!)).metadata();
+      assert.equal(metadata.format, 'png');
+      assert.equal(metadata.width, viewport.viewport === 'desktop' ? 1440 : 390);
+    }
+    const retainedPaths = evidence.map((viewport) => viewport.comparisonScreenshotPath!);
+    await removeTemporaryComparisonScreenshots(evidenceRoot);
+    for (const path of retainedPaths) await assert.rejects(readFile(path), /ENOENT/);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

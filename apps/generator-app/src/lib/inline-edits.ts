@@ -8,6 +8,8 @@
  * original-text path remains as a compatibility fallback for existing drafts.
  */
 
+import { isSafePreviewPage } from './template-preview-security'
+
 export interface InlineTextEdit {
   /** Stable v3 ID stored in `data-dc-edit-id`. */
   nodeId?: string
@@ -55,20 +57,10 @@ const EDITABLE_TAGS = [
   'div', 'section', 'article',
 ] as const
 
-/** Selector shared by both visual editors. Attribute slots are explicitly
- * included because several compiler slots live on otherwise non-text nodes
- * such as images and form controls. */
-export const VISUAL_EDITABLE_SELECTOR = [
-  'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'span', 'li', 'td', 'th', 'a',
-  'blockquote', 'caption', 'figcaption', 'label', 'button', 'dt', 'dd', 'small',
-  'summary', 'strong', 'em', 'b', 'i', 'cite', 'legend', 'address', 'time',
-  'code', 'pre', 'caption', 'option', 'title', 'select',
-  'div:not(:has(h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,caption,figcaption,label,button,dt,dd,small,summary,strong,em,b,i,cite,legend,address,time,code,pre,option,div,section,article))',
-  'section:not(:has(*))',
-  'article:not(:has(*))',
-  '[data-dc-edit-id][data-dc-edit-attribute]',
-  '[data-pb-edit-id][data-pb-edit-attribute]',
-].join(',')
+/** Selector shared by both visual editors. Only explicitly annotated targets
+ * are interactive. Legacy pages receive deterministic IDs before entering the
+ * iframe; compiler-v3 pages retain their audited, leaf-granular IDs. */
+export const VISUAL_EDITABLE_SELECTOR = '[data-dc-edit-id],[data-pb-edit-id]'
 
 const EDITABLE_OPEN_TAG_RE = new RegExp(
   `<(${EDITABLE_TAGS.join('|')})\\b([^>]*)>`,
@@ -81,6 +73,7 @@ const READ_DC_EDIT_ID_RE = /\bdata-dc-edit-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s
 const READ_PB_EDIT_ID_RE = /\bdata-pb-edit-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
 const READ_EDIT_ATTRIBUTE_RE = /\bdata-(?:dc|pb)-edit-attribute\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
 const SAFE_EDIT_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/
+const COMPILER_V3_EDIT_ID_RE = /\bdata-dc-edit-id\s*=\s*(?:"txt_[a-f0-9]{18}"|'txt_[a-f0-9]{18}'|txt_[a-f0-9]{18}(?=\s|>))/i
 const EDITABLE_ATTRIBUTE_SET = new Set<string>(EDITABLE_ATTRIBUTE_NAMES)
 
 function escapeHtmlText(value: string): string {
@@ -94,6 +87,61 @@ function escapeHtmlText(value: string): string {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function replaceLegacyVisibleText(html: string, original: string, updated: string): string {
+  const replaceText = (value: string) => value.split(original).join(updated)
+  let result = ''
+  let cursor = 0
+
+  while (cursor < html.length) {
+    const tagStart = html.indexOf('<', cursor)
+    if (tagStart < 0) {
+      result += replaceText(html.slice(cursor))
+      break
+    }
+    result += replaceText(html.slice(cursor, tagStart))
+
+    if (html.startsWith('<!--', tagStart)) {
+      const commentEnd = html.indexOf('-->', tagStart + 4)
+      if (commentEnd < 0) return result + html.slice(tagStart)
+      result += html.slice(tagStart, commentEnd + 3)
+      cursor = commentEnd + 3
+      continue
+    }
+
+    let quote = ''
+    let tagEnd = tagStart + 1
+    for (; tagEnd < html.length; tagEnd += 1) {
+      const character = html[tagEnd]
+      if (quote) {
+        if (character === quote) quote = ''
+      } else if (character === '"' || character === "'") {
+        quote = character
+      } else if (character === '>') {
+        tagEnd += 1
+        break
+      }
+    }
+    if (tagEnd > html.length || html[tagEnd - 1] !== '>') return result + html.slice(tagStart)
+
+    const openingTag = html.slice(tagStart, tagEnd)
+    const protectedName = /^<\s*(script|style|noscript|template)\b/i.exec(openingTag)?.[1]
+    if (protectedName && !/^<\s*\//.test(openingTag)) {
+      const closing = new RegExp(`<\\/${protectedName}\\s*>`, 'ig')
+      closing.lastIndex = tagEnd
+      const match = closing.exec(html)
+      if (!match) return result + html.slice(tagStart)
+      result += html.slice(tagStart, match.index + match[0].length)
+      cursor = match.index + match[0].length
+      continue
+    }
+
+    result += openingTag
+    cursor = tagEnd
+  }
+
+  return result
 }
 
 function safeScopePart(value: string): string {
@@ -137,7 +185,12 @@ function readEditId(rawAttrs: string): string | undefined {
 }
 
 function editNodeId(edit: Pick<InlineTextEdit, 'nodeId' | 'id'>): string | undefined {
-  if (isSafeInlineEditId(edit.nodeId)) return edit.nodeId
+  // The newest identity field is authoritative whenever it is present. A
+  // malformed nodeId must not fall through to an older ID (or later to broad
+  // original-text replacement).
+  if (edit.nodeId !== undefined) {
+    return isSafeInlineEditId(edit.nodeId) ? edit.nodeId : undefined
+  }
   return isSafeInlineEditId(edit.id) ? edit.id : undefined
 }
 
@@ -146,7 +199,7 @@ export function sanitizeStoredInlineEditMap(value: unknown): InlineEditMap {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
   const result: InlineEditMap = {}
   for (const [page, rawEdits] of Object.entries(value)) {
-    if (!/^[A-Za-z0-9_-]+\.html$/.test(page) || !Array.isArray(rawEdits)) continue
+    if (!isSafePreviewPage(page) || !Array.isArray(rawEdits)) continue
     const edits: InlineTextEdit[] = []
     for (const raw of rawEdits.slice(0, MAX_EDITS_PER_PAGE)) {
       if (!raw || typeof raw !== 'object') continue
@@ -160,6 +213,11 @@ export function sanitizeStoredInlineEditMap(value: unknown): InlineEditMap {
       // text-only edit. Invalid IDs are discarded instead of being allowed to
       // replace every matching string in the page.
       if (candidate.nodeId !== undefined && !isSafeInlineEditId(candidate.nodeId)) continue
+      if (
+        candidate.nodeId === undefined &&
+        candidate.id !== undefined &&
+        !isSafeInlineEditId(candidate.id)
+      ) continue
       const nodeId = editNodeId(candidate)
       if ((!nodeId && !original) || original === updated) continue
       edits.push({ ...(nodeId ? { nodeId } : {}), ...(original ? { original } : {}), updated })
@@ -195,6 +253,11 @@ function annotateSegment(
  * independently built preview and deploy documents receive the same targets.
  */
 export function annotateEditableElements(html: string, page = 'index.html'): string {
+  // Compiler-v3 output is exhaustively annotated by the rehabilitation
+  // compiler. Synthesizing broad legacy IDs on top of it would reintroduce
+  // unsafe parent slots that can own links or form controls.
+  if (COMPILER_V3_EDIT_ID_RE.test(html)) return html
+
   const prefix = pageIdPrefix(page)
   let ordinal = 0
   const usedIds = new Set<string>()
@@ -260,10 +323,13 @@ function replaceElementValueById(
   const escapedId = escapeRegExp(id)
   const openingTag = new RegExp(
     `<([A-Za-z][A-Za-z0-9:-]*)\\b[^>]*\\bdata-(?:dc|pb)-edit-id\\s*=\\s*(["'])${escapedId}\\2[^>]*>`,
-    'i',
+    'gi',
   )
-  const opening = openingTag.exec(html)
-  if (!opening) return { html, replaced: false }
+  const openings = [...html.matchAll(openingTag)]
+  // Stable IDs are a uniqueness contract. Refuse an ambiguous document
+  // instead of silently editing the first duplicate.
+  if (openings.length !== 1) return { html, replaced: false }
+  const opening = openings[0]
 
   const tagName = opening[1]
   const declaredAttribute = declaredEditableAttribute(opening[0])
@@ -300,6 +366,11 @@ function replaceElementValueById(
     if (isClosing) depth -= 1
     else if (!isSelfClosing) depth += 1
     if (depth === 0) {
+      const innerHtml = html.slice(contentStart, match.index)
+      // Text edits are intentionally leaf-only. Refuse stale or legacy IDs
+      // that would replace descendant markup such as links, images, or form
+      // controls with escaped plain text.
+      if (/<[A-Za-z][^>]*>/.test(innerHtml)) return { html, replaced: false }
       return {
         html: html.slice(0, contentStart) + escapeHtmlText(updated) + html.slice(match.index),
         replaced: true,
@@ -318,6 +389,7 @@ export function mergeInlineEdit(
   nodeId?: string,
 ): InlineTextEdit[] {
   const trimmed = (original || '').trim()
+  if (nodeId !== undefined && nodeId !== '' && !isSafeInlineEditId(nodeId)) return edits
   const safeNodeId = isSafeInlineEditId(nodeId) ? nodeId : undefined
   if ((!trimmed && !safeNodeId) || trimmed === updated) return edits
   const next = edits.map((edit) => ({ ...edit }))
@@ -380,16 +452,16 @@ export function applyInlineEditsToHtmlWithReport(
       // design revision, which is worse than leaving a stale edit unapplied.
       continue
     }
-    if (edit.nodeId !== undefined) {
+    if (edit.nodeId !== undefined || edit.id !== undefined) {
       // Direct callers may not have passed through the storage sanitizer.
-      // Preserve fail-closed semantics for malformed v3 records as well.
-      unmatchedNodeIds.add(String(edit.nodeId).slice(0, 128))
+      // Preserve fail-closed semantics for malformed identity records as well.
+      unmatchedNodeIds.add(String(edit.nodeId ?? edit.id).slice(0, 128))
       continue
     }
 
     const original = typeof edit.original === 'string' ? edit.original.trim() : ''
     if (!original || original === edit.updated) continue
-    result = result.split(original).join(escapeHtmlText(edit.updated))
+    result = replaceLegacyVisibleText(result, original, escapeHtmlText(edit.updated))
   }
   return { html: result, unmatchedNodeIds: [...unmatchedNodeIds] }
 }

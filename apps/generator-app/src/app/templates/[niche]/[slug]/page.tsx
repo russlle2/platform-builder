@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
   type InlineTextEdit,
-  VISUAL_EDITABLE_SELECTOR,
   buildCustomizationScope,
   isEditableAttributeForTag,
   isSafeEditableAttribute,
@@ -19,26 +18,31 @@ import {
 import {
   type ImageSwapMap,
   loadImageSwaps,
-  applyImageSwapsToHtml,
   handlePersistentImageUpload,
   getOrCreateImageOwnerId,
+  normalizeCoordinatedImageSlotIds,
   sanitizeImageSwapMap,
   saveImageSwaps,
 } from '@/lib/image-swaps'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
+import { PageSeoSettingsPanel } from '@/components/PageSeoSettingsPanel'
 import { getStoredPortalToken } from '@/lib/portal-token-client'
 import {
   isSafePreviewImageUrl,
   isSafePreviewPage,
   isSafePreviewText,
-  rewriteTemplateAssetReferences,
-  sanitizeTemplatePreviewHtml,
 } from '@/lib/template-preview-security'
+import { composeCustomerPreviewDocument } from '@/lib/customer-preview-document'
+import { getCustomerPreviewEditorScript } from '@/lib/customer-preview-editor-runtime'
 import {
   CUSTOM_THEME_STORAGE_KEY,
   sanitizeCustomTheme,
   type CustomTheme,
 } from '@/lib/custom-theme'
+import {
+  buildPageSeoInlineEdit,
+  type PageSeoField,
+} from '@/lib/page-seo-settings'
 
 interface TemplateField {
   name: string
@@ -77,215 +81,6 @@ const nicheLabels: Record<string, string> = {
   wellness_coach: 'Wellness Coach',
 }
 
-/* ---------- Script injected into preview iframe for editing + nav ---------- */
-function getIframeInjectionScript(): string {
-  const editableSelector = JSON.stringify(VISUAL_EDITABLE_SELECTOR)
-  return `
-<script>
-(function(){
-  /* ---- Inline text editing ---- */
-  var editableSelectors = ${editableSelector};
-  var safeEditableAttributes = { content: true, alt: true, title: true, placeholder: true, 'aria-label': true };
-  var pendingImageClick = null;
-
-  function editIdFor(el) {
-    return el.getAttribute('data-dc-edit-id') || el.getAttribute('data-pb-edit-id') || '';
-  }
-
-  function requestPromptEdit(el, attribute) {
-    var nodeId = editIdFor(el);
-    if (!nodeId) return false;
-    if (attribute && !safeEditableAttributes[attribute]) return false;
-    if (pendingImageClick) {
-      clearTimeout(pendingImageClick);
-      pendingImageClick = null;
-    }
-    window.parent.postMessage({
-      type: 'editValueRequest',
-      nodeId: nodeId,
-      attribute: attribute || '',
-      tag: el.tagName,
-      original: attribute ? (el.getAttribute(attribute) || '') : (el.textContent || '')
-    }, '*');
-    return true;
-  }
-
-  document.addEventListener('dblclick', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (!el || el.isContentEditable) return;
-    if (el.tagName === 'SELECT') {
-      var selectedOption = el.options && el.options[el.selectedIndex];
-      if (selectedOption) requestPromptEdit(selectedOption, '');
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    var editableAttribute = el.getAttribute('data-dc-edit-attribute') || el.getAttribute('data-pb-edit-attribute') || '';
-    if (editableAttribute) {
-      requestPromptEdit(el, editableAttribute);
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    if (el.tagName === 'OPTION') {
-      requestPromptEdit(el, '');
-      e.preventDefault();
-      e.stopPropagation();
-      return;
-    }
-    var originalText = el.textContent;
-    el.contentEditable = 'true';
-    el.style.outline = '2px solid #3b82f6';
-    el.style.outlineOffset = '2px';
-    el.style.borderRadius = '2px';
-    el.style.cursor = 'text';
-    el.focus();
-
-    el.addEventListener('blur', function onBlur() {
-      el.contentEditable = 'false';
-      el.style.outline = '';
-      el.style.outlineOffset = '';
-      el.style.cursor = '';
-      el.removeEventListener('blur', onBlur);
-      // Notify parent of the edit (include the pre-edit text so it can persist)
-      window.parent.postMessage({ type: 'textEdited', nodeId: editIdFor(el), tag: el.tagName, original: originalText, text: el.textContent }, '*');
-    }, { once: true });
-
-    e.preventDefault();
-    e.stopPropagation();
-  });
-
-  /* ---- Hover outlines for editable text ---- */
-  var lastHovered = null;
-  document.addEventListener('mouseover', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
-      lastHovered.style.outline = '';
-      lastHovered.style.outlineOffset = '';
-    }
-    if (el && !el.isContentEditable) {
-      el.style.outline = '1px dashed rgba(59,130,246,0.4)';
-      el.style.outlineOffset = '1px';
-      lastHovered = el;
-    }
-  });
-  document.addEventListener('mouseout', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (el && !el.isContentEditable) {
-      el.style.outline = '';
-      el.style.outlineOffset = '';
-    }
-  });
-
-  /* ---- Image swap / insert ---- */
-  document.addEventListener('click', function(e) {
-    var img = e.target.closest('img,[data-dc-image-id],[data-pb-image-id]');
-    if (!img) return;
-    e.preventDefault();
-    e.stopPropagation();
-    var requestImageSwap = function() {
-      pendingImageClick = null;
-      var src = img.currentSrc || img.src || '';
-      if (!src) {
-        var background = window.getComputedStyle(img).backgroundImage || '';
-        var backgroundMatch = background.match(/^url\\(["']?(.*?)["']?\\)$/i);
-        src = backgroundMatch ? backgroundMatch[1] : '';
-      }
-      // Ask parent to open file picker
-      window.parent.postMessage({ type: 'imageSwapRequest', src: src, slotId: img.getAttribute('data-dc-image-id') || img.getAttribute('data-pb-image-id') || '' }, '*');
-    };
-    if (img.hasAttribute('data-dc-edit-attribute') || img.hasAttribute('data-pb-edit-attribute')) {
-      if (pendingImageClick) clearTimeout(pendingImageClick);
-      pendingImageClick = setTimeout(requestImageSwap, 280);
-    } else {
-      requestImageSwap();
-    }
-  });
-
-  // Listen for image swap response from parent
-  window.addEventListener('message', function(e) {
-    if (e.source !== window.parent || !e.data || typeof e.data !== 'object') return;
-    if (e.data && e.data.type === 'imageSwapResponse') {
-      var newSrc = e.data.imageUrl || e.data.dataUrl;
-      if (typeof newSrc !== 'string' || newSrc.length > 2048 || !/^(https?:\\/\\/|data:image\\/|blob:|\\/)/i.test(newSrc)) return;
-      var slotId = e.data.slotId;
-      var slot = null;
-      if (typeof slotId === 'string' && slotId) {
-        var candidates = document.querySelectorAll('[data-dc-image-id],[data-pb-image-id]');
-        for (var s = 0; s < candidates.length; s++) {
-          if (candidates[s].getAttribute('data-dc-image-id') === slotId || candidates[s].getAttribute('data-pb-image-id') === slotId) {
-            slot = candidates[s];
-            break;
-          }
-        }
-      }
-      if (slot) {
-        if (slot.tagName === 'IMG') {
-          slot.removeAttribute('srcset');
-          slot.src = newSrc;
-        } else if (slot.tagName === 'SOURCE') {
-          if (slot.hasAttribute('srcset')) slot.srcset = newSrc;
-          else slot.src = newSrc;
-        } else {
-          slot.style.setProperty('background-image', 'url(' + newSrc + ')', 'important');
-        }
-        return;
-      }
-      var imgs = document.querySelectorAll('img');
-      for (var i = 0; i < imgs.length; i++) {
-        if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
-          imgs[i].src = newSrc;
-          break;
-        }
-      }
-    }
-    if (e.data.type === 'editValueResponse') {
-      var responseId = e.data.nodeId;
-      var responseAttribute = e.data.attribute;
-      var responseText = e.data.text;
-      if (typeof responseId !== 'string' || typeof responseText !== 'string' || responseText.length > 10000) return;
-      var editCandidates = document.querySelectorAll('[data-dc-edit-id],[data-pb-edit-id]');
-      var editTarget = null;
-      for (var eIndex = 0; eIndex < editCandidates.length; eIndex++) {
-        if (editIdFor(editCandidates[eIndex]) === responseId) {
-          editTarget = editCandidates[eIndex];
-          break;
-        }
-      }
-      if (!editTarget) return;
-      if (responseAttribute) {
-        var declared = editTarget.getAttribute('data-dc-edit-attribute') || editTarget.getAttribute('data-pb-edit-attribute') || '';
-        if (!safeEditableAttributes[responseAttribute] || declared !== responseAttribute) return;
-        editTarget.setAttribute(responseAttribute, responseText);
-      } else {
-        editTarget.textContent = responseText;
-      }
-    }
-  });
-
-  /* ---- Live page navigation ---- */
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('a[href]');
-    if (!link) return;
-    var href = link.getAttribute('href');
-    if (!href) return;
-    // Only intercept internal .html links
-    if (href.endsWith('.html') || href === '/' || href === './') {
-      e.preventDefault();
-      e.stopPropagation();
-      var page = href;
-      if (page === '/' || page === './') page = 'index.html';
-      if (!page.endsWith('.html')) page = page + '.html';
-      // Strip leading ./ or /
-      page = page.replace(/^\\.?\\//, '');
-      window.parent.postMessage({ type: 'navigatePage', page: page }, '*');
-    }
-  });
-})();
-</script>
-`
-}
-
 export default function TemplateCustomizePage({
   params: paramsPromise,
 }: {
@@ -301,6 +96,7 @@ export default function TemplateCustomizePage({
   const [values, setValues] = useState<Record<string, string>>({})
   const [previewHtml, setPreviewHtml] = useState<string | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState('index.html')
   const [step, setStep] = useState<'form' | 'preview'>('form')
   const [editMode, setEditMode] = useState(false)
@@ -308,7 +104,9 @@ export default function TemplateCustomizePage({
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef<string>('')
   const pendingImageSwapSlotId = useRef<string>('')
+  const pendingImageSwapSlotIds = useRef<string[]>([])
   const pendingImageSwapPage = useRef<string>('index.html')
+  const imageUploadQueueRef = useRef<Promise<void>>(Promise.resolve())
   // Inline text edits keyed by page filename, persisted so they survive page
   // navigation, variation switches, and carry through to purchase.
   const [inlineEdits, setInlineEdits] = useState<Record<string, InlineTextEdit[]>>({})
@@ -319,6 +117,8 @@ export default function TemplateCustomizePage({
   imageSwapsRef.current = imageSwaps
   const activeCustomizationScopeRef = useRef('')
   const currentPageRef = useRef('index.html')
+  const previewRequestIdRef = useRef(0)
+  const loadPreviewRef = useRef<(page?: string) => void>(() => {})
   currentPageRef.current = currentPage
 
   // Variation state
@@ -474,14 +274,16 @@ export default function TemplateCustomizePage({
       if (e.data.type === 'navigatePage') {
         const page = e.data.page
         if (isSafePreviewPage(page) && template?.pages.includes(page)) {
-          loadPreview(page)
+          loadPreviewRef.current(page)
         }
       }
 
       if (e.data.type === 'imageSwapRequest') {
-        if (isSafePreviewImageUrl(e.data.src)) {
+        const slotIds = normalizeCoordinatedImageSlotIds(e.data.slotId, e.data.pictureSlotIds)
+        if (isSafePreviewImageUrl(e.data.src) && slotIds) {
           pendingImageSwapSrc.current = e.data.src
-          pendingImageSwapSlotId.current = typeof e.data.slotId === 'string' ? e.data.slotId : ''
+          pendingImageSwapSlotId.current = slotIds[0]
+          pendingImageSwapSlotIds.current = slotIds
           pendingImageSwapPage.current = currentPageRef.current
           fileInputRef.current?.click()
         }
@@ -489,6 +291,8 @@ export default function TemplateCustomizePage({
 
       if (e.data.type === 'textEdited') {
         if (!isSafePreviewText(e.data.original) || !isSafePreviewText(e.data.text)) return
+        const nodeId = e.data.nodeId !== undefined ? e.data.nodeId : e.data.id
+        if (nodeId !== undefined && !isSafeInlineEditId(nodeId)) return
         const page = currentPageRef.current
         const original = e.data.original
         const updated = e.data.text
@@ -496,7 +300,7 @@ export default function TemplateCustomizePage({
           inlineEditsRef.current[page] || [],
           original,
           updated,
-          e.data.nodeId || e.data.id,
+          nodeId,
         )
         const next = { ...inlineEditsRef.current, [page]: pageEdits }
         setInlineEdits(next)
@@ -548,38 +352,49 @@ export default function TemplateCustomizePage({
     const page = pendingImageSwapPage.current
     const originalSrc = pendingImageSwapSrc.current
     const slotId = pendingImageSwapSlotId.current
-    const owner = getOrCreateImageOwnerId(portalSlug)
-    try {
-      const { map, url } = await handlePersistentImageUpload(
-        file,
-        owner,
-        originalSrc,
-        page,
-        imageSwapsRef.current,
-        portalSlug ? getStoredPortalToken(portalSlug) || undefined : undefined,
-        activeCustomizationScopeRef.current,
-        slotId,
-      )
-      setImageSwaps(map)
-      imageSwapsRef.current = map
-      if (currentPageRef.current === page) {
-        iframeRef.current?.contentWindow?.postMessage(
-          { type: 'imageSwapResponse', imageUrl: url, originalSrc, slotId },
-          '*',
-        )
-      }
-    } catch (err) {
-      console.error('Image upload failed:', err)
-      alert(err instanceof Error ? err.message : 'Image upload failed')
-    }
+    const coordinatedSlotIds = [...pendingImageSwapSlotIds.current]
     e.target.value = ''
+    const upload = async () => {
+      const owner = getOrCreateImageOwnerId(portalSlug)
+      try {
+        const { map, url, slotIds } = await handlePersistentImageUpload(
+          file,
+          owner,
+          originalSrc,
+          page,
+          imageSwapsRef.current,
+          portalSlug ? getStoredPortalToken(portalSlug) || undefined : undefined,
+          activeCustomizationScopeRef.current,
+          slotId,
+          coordinatedSlotIds,
+        )
+        setImageSwaps(map)
+        imageSwapsRef.current = map
+        if (currentPageRef.current === page) {
+          iframeRef.current?.contentWindow?.postMessage(
+            { type: 'imageSwapResponse', imageUrl: url, originalSrc, slotId, slotIds },
+            '*',
+          )
+        }
+      } catch (err) {
+        console.error('Image upload failed:', err)
+        alert(err instanceof Error ? err.message : 'Image upload failed')
+      }
+    }
+    const queued = imageUploadQueueRef.current.then(upload, upload)
+    imageUploadQueueRef.current = queued
+    await queued
   }, [portalSlug])
 
   // Load preview
   const loadPreview = useCallback(
     async (page: string = 'index.html') => {
       if (!params || !template) return
+      const requestId = ++previewRequestIdRef.current
+      setCurrentPage(page)
       setPreviewLoading(true)
+      setPreviewError(null)
+      setPreviewHtml(null)
       try {
         const res = await fetch(`/api/templates/${params.niche}/${params.slug}/preview`, {
           method: 'POST',
@@ -588,54 +403,54 @@ export default function TemplateCustomizePage({
         })
         if (!res.ok) throw new Error('Failed to load preview')
         const data = await res.json()
+        if (requestId !== previewRequestIdRef.current) return
 
-        let html = sanitizeTemplatePreviewHtml(data.html as string)
         const assetBase = `/api/templates/${params.niche}/${params.slug}/assets`
-
-        html = rewriteTemplateAssetReferences(html, assetBase, page)
-
-        // Inject CSS if available
-        if (data.css) {
-          const rewrittenCss = rewriteTemplateAssetReferences(
-            data.css,
-            assetBase,
-            'assets/css/styles.css',
-          )
-          html = html.replace('</head>', `<style>${rewrittenCss}</style></head>`)
-        }
-
-        // Inject variation CSS overrides (must come after base CSS)
-        if (data.variationCSS) {
-          html = html.replace('</head>', `<style id="variation-overrides">${data.variationCSS}</style></head>`)
-        }
-
-        // Inject base styles + editing/navigation scripts
-        html = html.replace('</head>', `
-          <style>
-            body { margin: 0; }
-            img { cursor: pointer; transition: outline 0.15s; }
-            img:hover { outline: 3px solid #8b5cf6; outline-offset: 2px; border-radius: 2px; }
-          </style>
-        </head>`)
-
-        // Re-apply any inline text edits the user made (they aren't part of
-        // the server hydration, which only fills {{TOKENS}}).
-        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page], page)
-        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page], page)
-
-        // Inject interaction scripts before </body>
-        html = html.replace('</body>', getIframeInjectionScript() + '</body>')
+        const html = composeCustomerPreviewDocument({
+          html: data.html as string,
+          css: typeof data.css === 'string' ? data.css : null,
+          variationCSS: typeof data.variationCSS === 'string' ? data.variationCSS : null,
+          assetBase,
+          page,
+          inlineEdits: inlineEditsRef.current[page],
+          imageSwaps: imageSwapsRef.current[page],
+          trustedEditorScript: getCustomerPreviewEditorScript(page),
+        })
 
         setPreviewHtml(html)
-        setCurrentPage(page)
       } catch (e) {
+        if (requestId !== previewRequestIdRef.current) return
         console.error('Preview error:', e)
+        setPreviewHtml(null)
+        setPreviewError(e instanceof Error ? e.message : 'Unable to load this preview page.')
       } finally {
-        setPreviewLoading(false)
+        if (requestId === previewRequestIdRef.current) setPreviewLoading(false)
       }
     },
     [params, template, values, colorScheme, fontVariation, structureVariation, customTheme]
   )
+  loadPreviewRef.current = loadPreview
+
+  const handlePageSeoChange = useCallback((field: PageSeoField, updated: string): boolean => {
+    const edit = buildPageSeoInlineEdit(previewHtml, field, updated)
+    if (!edit) return false
+
+    const page = currentPage
+    const pageEdits = mergeInlineEdit(
+      inlineEditsRef.current[page] || [],
+      edit.original || '',
+      edit.updated,
+      edit.nodeId,
+    )
+    const next = { ...inlineEditsRef.current, [page]: pageEdits }
+    setInlineEdits(next)
+    inlineEditsRef.current = next
+    saveInlineEdits(next, activeCustomizationScopeRef.current)
+    setPreviewHtml((current) => (
+      current ? applyInlineEditsToHtml(current, [edit], page) : current
+    ))
+    return true
+  }, [currentPage, previewHtml])
 
   const handleGeneratePreview = () => {
     // Persist customer values so they survive navigation to pricing page
@@ -752,6 +567,7 @@ export default function TemplateCustomizePage({
             template={template}
             previewHtml={previewHtml}
             previewLoading={previewLoading}
+            previewError={previewError}
             currentPage={currentPage}
             onPageChange={(page) => loadPreview(page)}
             onBack={() => setStep('form')}
@@ -778,6 +594,7 @@ export default function TemplateCustomizePage({
             }}
             variationOptions={variationOptions}
             onReloadPreview={() => loadPreview(currentPage)}
+            onPageSeoChange={handlePageSeoChange}
             portalSlug={portalSlug}
             publishStatus={publishStatus}
             onPublishLive={publishToLiveSite}
@@ -1116,6 +933,7 @@ function PreviewStep({
   template,
   previewHtml,
   previewLoading,
+  previewError,
   currentPage,
   onPageChange,
   onBack,
@@ -1133,6 +951,7 @@ function PreviewStep({
   setStructureVariation,
   variationOptions,
   onReloadPreview,
+  onPageSeoChange,
   portalSlug,
   publishStatus,
   onPublishLive,
@@ -1140,6 +959,7 @@ function PreviewStep({
   template: TemplateData
   previewHtml: string | null
   previewLoading: boolean
+  previewError: string | null
   currentPage: string
   onPageChange: (page: string) => void
   onBack: () => void
@@ -1161,10 +981,12 @@ function PreviewStep({
     structureVariations: { id: string; name: string }[]
   } | null
   onReloadPreview: () => void
+  onPageSeoChange: (field: PageSeoField, updated: string) => boolean
   portalSlug: string | null
   publishStatus: 'idle' | 'saving' | 'done' | 'error'
   onPublishLive: () => void
 }) {
+  const [showSeoPanel, setShowSeoPanel] = useState(false)
   // Generic cycler helper
   const cycle = (
     list: { id: string; name: string }[] | undefined,
@@ -1250,16 +1072,16 @@ function PreviewStep({
       />
 
       {/* ═══════ Variation Switcher Bar ═══════ */}
-      {variationOptions && (
+      {previewHtml && (
         <div className="glass-panel rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
-            <span className="text-sm font-semibold text-white">Style Variations</span>
-            <span className="text-xs text-slate-500 ml-2">Use arrows to cycle through 10 options for each</span>
+            <span className="text-sm font-semibold text-white">Customize this page</span>
+            <span className="text-xs text-slate-500 ml-2">Style and search settings update the live preview</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
             {/* Color Scheme */}
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+            {variationOptions && <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
               <button
                 onClick={() => cycle(variationOptions.colorSchemes, colorScheme, -1, setColorScheme)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
@@ -1278,10 +1100,10 @@ function PreviewStep({
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
-            </div>
+            </div>}
 
             {/* Font */}
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+            {variationOptions && <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
               <button
                 onClick={() => cycle(variationOptions.fontVariations, fontVariation, -1, setFontVariation)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
@@ -1300,10 +1122,10 @@ function PreviewStep({
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
-            </div>
+            </div>}
 
             {/* Structure */}
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+            {variationOptions && <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
               <button
                 onClick={() => cycle(variationOptions.structureVariations, structureVariation, -1, setStructureVariation)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
@@ -1322,8 +1144,34 @@ function PreviewStep({
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
-            </div>
+            </div>}
+
+            <button
+              type="button"
+              onClick={() => setShowSeoPanel((current) => !current)}
+              aria-expanded={showSeoPanel}
+              className={`flex items-center justify-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all ${
+                showSeoPanel
+                  ? 'border-cyan-400 bg-cyan-500/15 text-cyan-100'
+                  : 'border-white/10 bg-white/5 text-white hover:bg-white/10'
+              }`}
+            >
+              <span aria-hidden="true" className="text-base">⌕</span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-semibold uppercase tracking-widest text-slate-500">Page</span>
+                <span className="block truncate text-sm font-bold">SEO settings</span>
+              </span>
+            </button>
           </div>
+          {showSeoPanel && (
+            <div className="mt-4">
+              <PageSeoSettingsPanel
+                html={previewHtml}
+                page={currentPage}
+                onApply={onPageSeoChange}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -1404,6 +1252,17 @@ function PreviewStep({
             referrerPolicy="no-referrer"
             title="Template preview"
           />
+        ) : previewError ? (
+          <div className="flex h-[700px] flex-col items-center justify-center gap-4 bg-slate-900 px-6 text-center">
+            <p className="max-w-md text-sm text-red-200">{previewError}</p>
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage)}
+              className="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+            >
+              Retry preview
+            </button>
+          </div>
         ) : (
           <div className="flex items-center justify-center h-[700px] bg-slate-900">
             <p className="text-slate-400">Preview will appear here</p>

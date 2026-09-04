@@ -16,14 +16,16 @@ The only in-scope source directories are the five active niches below. Inventory
 
 The 46 dental, HVAC, and injury-law experiments are out of scope and are never selected by inventory. The 60 already-curated templates remain the live baseline until a separately reviewed publication workflow replaces the manifest.
 
-The legacy source root is read-only by contract. The compiler refuses overlapping source and work roots, hashes every source file, rechecks a template's tree hash after repair, re-inventories the complete catalogue before declaring a run successful, and writes all state beneath the work root. Do not point `-WorkRoot` at the catalogue, repository, a parent of either, or a cloud-synced source copy.
+The legacy source root is read-only by contract. The compiler refuses overlapping source and work roots, hashes every source file, rechecks a template's tree hash after repair, re-inventories the complete catalogue before declaring a run successful, and writes all state beneath the work root. Both Windows wrappers resolve the nearest existing ancestor through junctions/reparse points before creating even the work root or runner log, and pass those canonical roots onward to the compiler. Do not point `-WorkRoot` at the catalogue, repository, a parent of either, or a cloud-synced source copy.
 
 Recommended Windows paths:
 
 ```text
 source: C:\Users\chris\platform-builder\platform-builder
-work:   %LOCALAPPDATA%\DailyClarity\template-rehab
+work:   C:\Users\chris\Documents\DailyClarity\template-rehab
 ```
+
+The older `%LOCALAPPDATA%\DailyClarity\template-rehab` ledger is preserved audit history and is not an input to this rule version. The CLI, runner, installer, commands below, and scheduled task all default to the fresh Documents root so an omitted argument cannot silently resume that superseded state.
 
 ## Architecture
 
@@ -40,26 +42,29 @@ template-rehab/
 ├── blobs/sha256/                 de-duplicated emitted file content
 ├── renders/
 │   ├── thumbnails/               compact passing evidence
+│   ├── comparison-screenshots/   transient lossless visual-dedupe evidence
 │   └── failures/                 full screenshots retained for failures
 ├── reports/                      inventory, pilot gate, catalogue v3, audit, contact sheet
 ├── logs/                         structured compiler events
 └── runner-logs/                  PowerShell runner output
 ```
 
-The ledger tracks runs, templates, pages, issues, transformations, renders, dedupe clusters, aliases, artifacts, reusable cloud recipes, and model usage. Jobs carry a source hash, rule version, attempts, stage, lease owner/expiry, and terminal disposition. Writes are atomic; leases make an interrupted `run --resume` safe to continue. A work-root lock also enforces one compiler writer at a time, detects a live owner by PID, safely clears stale locks, and reaps only the dedicated transient `.staging` directory after an interrupted process. Content-addressed candidates and promotion caches are never reaped.
+The ledger tracks runs, templates, pages, issues, transformations, renders, dedupe clusters, aliases, artifacts, reusable cloud recipes, and model usage. Jobs carry a source hash, rule version, attempts, stage, lease owner/expiry, and terminal disposition. SQLite runs in WAL mode with `synchronous=FULL`; multi-row state changes use immediate transactions. Durable file writes use a same-directory temporary file, file sync, atomic replacement, and a containing-directory sync where the host supports it. Leases make an interrupted `run --resume` safe to continue. A work-root lock also enforces one compiler writer at a time. Its current format binds the PID to process start time, executable, and command identity, is published without exposing a partially written lock, refuses an unverifiable live owner, and can distinguish a stale lock from a recycled PID. Recovery reaps only the dedicated transient `.staging` directory; content-addressed candidates and promotion caches are never reaped.
 
 The pipeline proceeds in this order:
 
 1. Inventory and hash the immutable source.
-2. Repair deterministically with `parse5`, PostCSS, the known foundations, page-role adapters, claim/form/script safety rules, canonical manifests, and local asset vendoring. When legacy generation duplicated one inner page across several filenames, each copy is rebuilt through its own semantic role adapter rather than preserving mislabeled content.
+2. Repair deterministically with `parse5`, PostCSS, the known foundations, page-role adapters, claim/form/script safety rules, canonical manifests, and local asset vendoring. Every surviving form is reduced to the one standard inquiry schema, all template-authored active code is removed, and exactly one audited compatibility runtime is installed on each page. When legacy generation duplicated one inner page across several filenames, each copy is rebuilt through its own semantic role adapter rather than preserving mislabeled content.
 3. If a candidate still cannot pass static safety, substitute a vetted niche-specific neutral template with the same page set. The original source and the reason remain in the audit lineage.
-4. Render every emitted page at 1440×900 and 390×844 in isolated Chromium contexts. External requests are blocked. The gate checks page and console errors, requests, links/assets, visible structure, overflow, forms, accessibility, sentinel hydration, ID-targeted editing, and computed theme changes.
-5. Separate canonical design, content preset, and theme preset. A foundation marker identifies one of 60 trusted lineage families, but it is not by itself proof of design equivalence. Foundation variants alias only when their post-repair design/composition hash and editable slot contracts match exactly. Incompatible variants remain distinct designs. Irregular variants alias only when page roles and niche match and every corresponding page passes DOM similarity plus desktop and mobile SSIM/perceptual-hash thresholds. A homepage-only resemblance can never alias a multi-page site.
-6. Emit one quality receipt and one catalogue mapping for every source slug.
+4. Render every emitted page at 1440×900 and 390×844 in isolated Chromium contexts through the application-owned preview composition functions. External requests are blocked. The gate checks page and console errors, failed requests and same-origin HTTP responses of 400 or above, links/assets, visible structure, overflow, forms, accessibility, sentinel hydration, ID-targeted editing, and computed theme changes.
+5. Separate canonical design, content preset, and theme preset. A foundation marker identifies one of 60 trusted lineage families, but it is not by itself proof of design equivalence. Foundation variants alias only when their post-repair design/composition hash and editable slot contracts match exactly. Incompatible variants remain distinct designs. Irregular variants alias only when page roles and niche match and every corresponding page passes DOM similarity plus desktop and mobile SSIM/perceptual-hash thresholds. SSIM is calculated over the native, losslessly decoded pixels of each full-page PNG at both viewports; dimensions must match, and lossy thumbnails are never similarity evidence. A homepage-only resemblance can never alias a multi-page site.
+6. Emit one cryptographically scoped quality receipt and one catalogue mapping for every source slug.
 
 Passing aliases do not erase content. Each legacy slug retains its own content/theme preset and lineage while the public gallery displays one representative for each canonical `designId`. This fail-closed policy can legitimately produce more than 60 public designs from the 60 foundation families; preserving every editable text and image slot takes precedence over an artificially small gallery count.
 
 The rule-version 1.0.4+ foundation census repaired all 4,937 foundation-marked sources and formed 1,202 safe canonical clusters plus 3,735 compatible aliases. All 4,937 passed self/canonical composition checks. It rebuilt 13,159 role-adapted pages and reduced the 8,224 raw byte-redundant inner pages to zero duplicate-role outputs. These counts are verification evidence for this source snapshot, not hard-coded targets for a future changed catalogue.
+
+The safeguards described below are implemented for rule version **`legacy-rehab-1.0.21`**. Earlier pilot receipts and census results remain useful audit history, but they do not authorize a run under this version. A new inventory and stratified pilot must establish fresh evidence before full processing begins; this document does not claim that the 1.0.21 full catalogue run has passed until those fresh artifacts exist.
 
 ## Commands
 
@@ -67,7 +72,7 @@ Run commands from the repository root. Always pass an explicit source and work r
 
 ```powershell
 $source = 'C:\Users\chris\platform-builder\platform-builder'
-$work = Join-Path $env:LOCALAPPDATA 'DailyClarity\template-rehab'
+$work = 'C:\Users\chris\Documents\DailyClarity\template-rehab'
 
 pnpm templates:legacy inventory --source $source --work-root $work
 pnpm templates:legacy pilot --resume --source $source --work-root $work --pilot-size 100
@@ -138,11 +143,19 @@ type CatalogTemplate = {
 }
 ```
 
-Every editable text node has a deterministic `data-dc-edit-id`; every image and meaningful CSS background has a deterministic `data-dc-image-id`. Preview, checkout, portal persistence, deployment generation, and later editing target those IDs first. Existing catalogue-v2 drafts remain compatible through original-string/source fallback fields.
+Every editable text node has a deterministic `data-dc-edit-id`; every image and meaningful CSS background has a deterministic `data-dc-image-id`. Visible-text IDs are leaf-only: an edit target cannot own child links, controls, icons, or other element structure. If a mixed-content element contains meaningful direct text, the compiler wraps just that text in a `<span data-dc-edit-wrapper="direct-text">` leaf and annotates the wrapper and existing descendants independently. Attribute slots such as image alt text remain separate. This prevents a customer text replacement from erasing adjacent structure.
 
-The complete-source census binds 713 stylesheet-background controls and all 55 inline-style backgrounds to one real page element apiece. Another 159 stylesheet backgrounds remain intentionally fixed because their selectors are pseudo/dynamic, multi-target, conflicting, or stale; all 159 are ornamental pattern layers (`pattern.svg` or its local placeholder), and none is photo, editorial, hero, or Unsplash content. Responsive `<img>` and `<source>` elements use one slot per actual element, preserve their original `src`/`srcset` composition, and switch safely to a customer-selected source. The largest emitted page uses 131 of the 250 persisted text-edit slots and 7 of the 50 image slots.
+The editor's **Page & SEO** controls expose exactly the page's single leaf `<title>` slot and single `<meta name="description" content="…">` slot when they carry valid compiler IDs. Other head metadata, including viewport configuration, is never offered as editable copy. Title and description changes use the same ID-first inline-edit record as body copy and therefore follow preview, checkout revision pinning, portal persistence, deployment generation, and subsequent editing. Existing catalogue-v2 drafts remain compatible through original-string/source fallback fields.
 
-“Complete” therefore means more than rendering: each slug must resolve to a passing canonical design or passing alias, and its IDs must survive composition and persistence. Browser QA performs ID-targeted text and theme mutation checks and requires image slots to remain unique, local, and renderable. The promotion gate then batches a sentinel edit into every advertised text/image slot of every staged page and proves the same payload through the application sanitizer, preview helper, checkout revision pin, portal persistence, deployment generator, and theme mapper. A neutral fallback is also fully ID-editable; it exists to preserve coverage without publishing unsafe or broken legacy content.
+Customer preview has one shared composition route and one shared editor runtime. The template gallery/editor and **Preview Your Business** both call the app's pure `composeCustomerPreviewDocument` helper and install the script returned by `getCustomerPreviewEditorScript`. Compiler browser QA imports those same app modules directly and fails closed if either implementation cannot be loaded. The ordered route sanitizes template HTML, rewrites manifest-backed asset URLs, sanitizes and layers CSS, applies persisted text/image edits, and only then appends the app-owned editor code exactly once. Chromium then drives that exact runtime through text, attribute, standalone-image, responsive-picture, and navigation message round trips; source-code similarity or a compiler-owned imitation is not accepted as browser evidence. The whole-catalogue promotion verifier separately exercises every advertised slot through the persistence and deployment contracts; that evidence complements rather than substitutes for browser QA of the exact customer route.
+
+The complete-source census binds 713 stylesheet-background controls and all 55 inline-style backgrounds to one real page element apiece. Another 159 stylesheet backgrounds remain intentionally fixed because their selectors are pseudo/dynamic, multi-target, conflicting, or stale; all 159 are ornamental pattern layers (`pattern.svg` or its local placeholder), and none is photo, editorial, hero, or Unsplash content. Responsive `<img>` and `<source>` elements use one slot per actual element and preserve their original `src`/`srcset` composition until a customer replaces the picture. One replacement is then recorded atomically as independent stable-ID swaps for every direct `<source>`/`<img>` sibling in that `<picture>`; preview and deployment both apply the complete group, while a missing, duplicate, or structurally ambiguous group fails closed. The largest emitted page uses 131 of the 250 persisted text-edit slots and 7 of the 50 image slots.
+
+“Complete” therefore means more than rendering: each slug must resolve to a passing canonical design or passing alias, and its IDs must survive composition and persistence. Browser QA performs ID-targeted text and theme mutation checks through the shared preview composer and requires image slots to remain unique, local, and renderable. The promotion gate then batches a sentinel edit into every advertised text/image slot of every staged page and proves the same payload through checkout revision pinning, portal persistence, deployment generation, and theme mapping. A neutral fallback is also fully ID-editable; it exists to preserve coverage without publishing unsafe or broken legacy content.
+
+Forms and active behavior are deliberately narrow. A page may contain only the standard `contact` POST form with audited Netlify submission, no custom action, and exactly one required name input, one required email input, one optional telephone input, and one required message textarea. Selects, extra or sensitive fields, `form=` associations, and orphan controls fail the independent contract and static gates. Form accessible names are resolved against the final DOM: dangling or ambiguous `aria-labelledby` references and labels that preserve removed sensitive/proof language are rejected, while repair installs a neutral `Contact form` label when an unsafe reference is removed. All source scripts, event handlers, frames, objects, embeds, and meta refreshes are removed. The sole template runtime is the fixed local `assets/js/dc-compat.js` `compatibility-v1` script, exactly once per page; browser QA exercises both its navigation behavior and standardized form event.
+
+Embedded URLs are contextual rather than globally trusted. Candidate HTML rejects JavaScript, VBScript, and every blob URL. A non-empty, valid base64 raster data URL is allowed only as an image `src` or video `poster`; candidate `srcset` remains local-only. CSS may use the same raster payload in `url()`, but never in `@import`; active schemes and blob URLs are rejected after control-character and CSS-escape normalization. Customer preview applies the same template boundary, while a transient blob image is accepted only through the trusted post-sanitization customer image-swap path. Remote approved assets are downloaded and rewritten to local references before a candidate can pass.
 
 ## Model and token policy
 
@@ -157,23 +170,27 @@ The isolated cloud-repair module is reserved for unresolved DOM fragments only. 
 - no more than 1,000,000 total tokens and no more than $25 accounted spend;
 - deterministic neutral fallback when either ceiling would be crossed.
 
-Usage reservations and actual usage are reconciled in the ledger. Do not add an API key to the scheduled-task command or logs. Cloud escalation must remain an explicit operator decision; a deterministic run needs none.
+Usage reservations and actual provider usage are reconciled idempotently in the ledger. Missing provider telemetry keeps the conservative reservation accounted. If reconciled actual usage crosses either hard ceiling, the telemetry is still recorded truthfully, the cloud output and reusable recipe are rejected, the authorization counter saturates with zero remaining headroom, further reservations are refused, and that fragment takes the deterministic neutral fallback. An underestimated response can therefore never reopen budget or become publishable. Do not add an API key to the scheduled-task command or logs. Cloud escalation must remain an explicit operator decision; a deterministic run needs none.
 
 ## Gates and evidence
 
 The 100-template stratified pilot covers foundations, topologies, issue families, and generation cohorts. Full processing is blocked unless the current rule version has a passing pilot with no critical defects, less than 2% deterministic failure, and every selected template passing the stricter current gate.
 
-For each page and viewport, the final gate requires no unresolved tokens, sample contacts, unsupported claims/proof, unsafe form fields, missing local assets, broken internal links, exceptions, failed requests, blank content, overflow above one pixel, duplicate edit IDs, or critical/serious Axe findings. Navigation, standardized forms, sentinel profile hydration, ID-targeted editing, and theme-variable mutation are tested through the same local serving path used for customer preview composition.
+For each page and viewport, the final gate requires no unresolved tokens, sample contacts, unsupported claims/proof, nonstandard form controls, unsafe embedded URLs, missing local assets, broken internal links, exceptions, failed requests, same-origin HTTP status of 400 or above, blank content, overflow above one pixel, duplicate edit IDs, or critical/serious Axe findings. Navigation, standardized forms, sentinel profile hydration, ID-targeted editing, and theme-variable mutation are tested through the exact shared customer-preview composition path.
 
 Inventory findings describe the immutable source and remain available in transformation history. They are marked resolved only after the repaired candidate earns a complete browser-backed receipt, so the final report distinguishes repaired legacy defects from unresolved output defects.
 
-Passing renders retain hashes and small thumbnails. Full-size screenshots are kept only for failures. `report` writes a JSON/Markdown audit plus an HTML contact sheet of up to 300 passing home-page thumbnails for human review.
+Candidate assets, presets, and render evidence are cryptographically attested, not trusted by path alone. Every vended asset has a SHA-256 content-addressed filename plus final byte count, content type, origin, and license metadata; cache reuse requires the index key to equal the requested source URL, an approved final URL, and the exact license policy for that provider. Redirects cannot cross provider/license boundaries. Rewritten stylesheet bytes are re-addressed, while modified binary bytes are rejected. A resumed theme preset must match its slug, identity, schema, and content hash; each token is parsed as one safe CSS declaration with bounded color/font syntax, and font imports are restricted to the exact approved Google Fonts hosts before interpolation. Each candidate also carries a sorted artifact-tree manifest that binds every relative path to its SHA-256 and byte count, and the materialized tree is re-read before reuse or promotion.
+
+Passing renders retain screenshot/perceptual hashes and compact WebP thumbnails. Each retained thumbnail is bound to its render row and final receipt by SHA-256 and byte count, must resolve beneath the real render root without a symbolic-link escape, and must decode to non-empty pixels when the pilot, final audit, or contact sheet consumes it. Ledger schema v6 preserves older render rows as history but rejects their aliases, clears their terminal receipt/disposition, and returns formerly complete templates to `render_pending`. A current final receipt is version 2 and declares the `customer-preview-v1` render protocol, so evidence captured before the application-owned preview composition route cannot authorize promotion. Temporary lossless comparison PNGs exist only for visual dedupe and are removed afterward; full screenshots otherwise remain only for failures. `report` holds the compiler writer lock while it combines ledger and filesystem evidence, then writes a JSON/Markdown audit plus an HTML contact sheet of up to 300 passing home-page thumbnails for human review.
+
+The final page-matrix audit also proves exact source lineage. For each template, emitted HTML, the emitted manifest, static-passed ledger rows, two-viewport render rows, and the signed receipt must cover exactly the source inventory's HTML paths, with one generated `index.html` added only for the single source template that lacks it. For the current immutable source snapshot that is 33,962 source pages and exactly 33,963 emitted pages. Missing or extra pages force deterministic repair instead of permitting a self-consistent but incomplete candidate. A missing/corrupt candidate, manifest, or ledger page discovered before rendering is isolated to that template, recorded as a current issue, and atomically returned to `repair_pending`; healthy siblings continue, and corruption alone can never manufacture a neutral-fallback receipt.
 
 Use these while an unattended run is active:
 
 ```powershell
 .\scripts\run-legacy-rehab.ps1 -Command status -Json
-$latestCompilerLog = Get-ChildItem "$env:LOCALAPPDATA\DailyClarity\template-rehab\logs\*.ndjson" |
+$latestCompilerLog = Get-ChildItem 'C:\Users\chris\Documents\DailyClarity\template-rehab\logs\*.ndjson' |
   Sort-Object LastWriteTimeUtc |
   Select-Object -Last 1
 Get-Content -LiteralPath $latestCompilerLog.FullName -Wait

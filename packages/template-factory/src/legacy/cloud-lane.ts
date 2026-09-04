@@ -3,12 +3,14 @@ import { readFile } from 'node:fs/promises';
 import { basename, join, relative, resolve } from 'node:path';
 import {
   LEGACY_MODEL_POLICY,
+  LEGACY_MODEL_MAX_USD_PER_MILLION_TOKENS,
   buildBatchInput,
-  estimateTokens,
+  estimateBatchInputReservation,
   parseBatchOutput,
   promptFingerprint,
   validateFragment,
   validateStructuredPatch,
+  type BatchInputLine,
   type OpenAIBatchRecord,
   type StructuredRepairPatch,
   type UnresolvedFragment,
@@ -24,6 +26,7 @@ import type {
   LegacyCompilerConfig,
   ModelBudgetSnapshot,
   ModelUsageInput,
+  ModelUsageReconciliation,
 } from './types.js';
 
 /**
@@ -36,7 +39,7 @@ import type {
 
 export const CLOUD_LANE_STATE_VERSION = 1 as const;
 export const CLOUD_LANE_DIRECTORY = 'cloud-lane';
-export const CONSERVATIVE_USD_PER_MILLION_TOKENS = 25;
+export const CONSERVATIVE_USD_PER_MILLION_TOKENS = LEGACY_MODEL_MAX_USD_PER_MILLION_TOKENS;
 
 const MAX_BATCH_REQUESTS = 50_000;
 const MAX_BATCH_BYTES = 200 * 1024 * 1024;
@@ -96,7 +99,7 @@ export interface CloudRepairBatchClient {
 /** The existing LegacyLedger satisfies this interface without an adapter. */
 export interface CloudLaneLedger {
   reserveModelUsage(input: Omit<ModelUsageInput, 'status'>): boolean;
-  reconcileModelUsage(input: ModelUsageInput): void;
+  reconcileModelUsage(input: ModelUsageInput): ModelUsageReconciliation;
   modelBudgetSnapshot(): ModelBudgetSnapshot;
   getCloudRepairRecipe?(key: CloudRepairRecipeKey): CloudRepairRecipeRecord | null;
   claimCloudRepairRecipe?(input: ClaimCloudRepairRecipeInput): ClaimCloudRepairRecipeResult;
@@ -497,18 +500,48 @@ function extractAllowedNodeIds(fragment: string): string[] {
   return [...ids].sort();
 }
 
-function reservationEstimate(fragment: CloudRepairFragment): {
+function reservationEstimate(batchLine: BatchInputLine): {
   inputTokens: number;
   outputTokens: number;
   costUsd: number;
 } {
-  const inputTokens = estimateTokens(fragment.fragment) + 500;
-  const outputTokens = LEGACY_MODEL_POLICY.maxOutputTokensPerFragment;
+  const estimate = estimateBatchInputReservation(batchLine);
   return {
-    inputTokens,
-    outputTokens,
-    costUsd: ((inputTokens + outputTokens) / 1_000_000) * CONSERVATIVE_USD_PER_MILLION_TOKENS,
+    inputTokens: estimate.inputTokens,
+    outputTokens: estimate.outputTokens,
+    costUsd: estimate.costUsd,
   };
+}
+
+function assertRequestArtifactReservationCoverage(state: CloudLaneState, jsonl: string): void {
+  const byCustomId = new Map(state.requests.map((request) => [request.customId, request]));
+  const seen = new Set<string>();
+  const lines = jsonl.split(/\r?\n/).filter((line) => line.trim());
+  if (lines.length !== state.requests.length) {
+    throw new Error('Cloud request artifact does not match its conservatively reserved request count');
+  }
+  for (const raw of lines) {
+    let line: BatchInputLine;
+    try {
+      line = JSON.parse(raw) as BatchInputLine;
+    } catch {
+      throw new Error('Cloud request artifact contains invalid JSONL');
+    }
+    const request = typeof line.custom_id === 'string' ? byCustomId.get(line.custom_id) : undefined;
+    if (!request || seen.has(line.custom_id)) {
+      throw new Error('Cloud request artifact contains an unknown or duplicate request');
+    }
+    seen.add(line.custom_id);
+    const required = estimateBatchInputReservation(line);
+    const costTolerance = Number.EPSILON * Math.max(1, required.costUsd);
+    if (
+      request.estimatedInputTokens < required.inputTokens
+      || request.estimatedOutputTokens < required.outputTokens
+      || request.estimatedCostUsd + costTolerance < required.costUsd
+    ) {
+      throw new Error(`Cloud request ${line.custom_id} is not fully covered by its conservative reservation`);
+    }
+  }
 }
 
 function classifyBudgetRefusal(
@@ -568,8 +601,11 @@ function validateRecipePatchForMembers(
   return patch;
 }
 
-function cachedRecipeFailureReason(value: string | null): Exclude<CloudFailureReason, 'token_ceiling' | 'cost_ceiling' | 'attempt_ceiling'> {
-  const allowed = new Set<Exclude<CloudFailureReason, 'token_ceiling' | 'cost_ceiling' | 'attempt_ceiling'>>([
+function cachedRecipeFailureReason(value: string | null): CloudFailureReason {
+  const allowed = new Set<CloudFailureReason>([
+    'token_ceiling',
+    'cost_ceiling',
+    'attempt_ceiling',
     'batch_failed',
     'batch_expired',
     'batch_cancelled',
@@ -578,7 +614,18 @@ function cachedRecipeFailureReason(value: string | null): Exclude<CloudFailureRe
     'invalid_patch',
     'output_integrity',
   ]);
-  return allowed.has(value as never) ? value as Exclude<CloudFailureReason, 'token_ceiling' | 'cost_ceiling' | 'attempt_ceiling'> : 'request_failed';
+  return allowed.has(value as CloudFailureReason) ? value as CloudFailureReason : 'request_failed';
+}
+
+function outcomeForFailureReason(
+  request: Pick<CloudLaneRequestState, 'issueFingerprint' | 'fragmentIds' | 'attempt' | 'requestKey'>,
+  reason: CloudFailureReason,
+  detail?: string,
+): CloudLaneOutcome {
+  if (reason === 'token_ceiling' || reason === 'cost_ceiling' || reason === 'attempt_ceiling') {
+    return { kind: 'neutral_fallback', ...request, reason, ...(detail ? { detail } : {}) };
+  }
+  return failedOutcome(request, reason, detail);
 }
 
 function outcomeFromCachedRecipe(
@@ -603,7 +650,7 @@ function outcomeFromCachedRecipe(
     }
   }
   if (record.status === 'failed') {
-    return failedOutcome(request, cachedRecipeFailureReason(record.failureReason), record.detail ?? undefined);
+    return outcomeForFailureReason(request, cachedRecipeFailureReason(record.failureReason), record.detail ?? undefined);
   }
   return { kind: 'pending', ...request };
 }
@@ -676,9 +723,9 @@ export async function prepareCloudRepairLane(
       attempt: cluster.attempt,
     }))}`;
     const customId = `dc-${cluster.attempt}-${sha256(requestKey).slice(0, 48)}`;
-    const estimate = reservationEstimate(cluster.representative);
     const batchLine = buildBatchInput(cluster.representative);
     batchLine.custom_id = customId;
+    const estimate = reservationEstimate(batchLine);
     candidates.push({
       ...cluster,
       promptHash,
@@ -878,6 +925,10 @@ export async function submitCloudRepairLane(
   try {
     const requestPath = resolveLaneArtifact(config, laneId, state.requestArtifact.relativePath);
     const jsonl = await verifyArtifact(requestPath, state.requestArtifact.sha256, state.requestArtifact.byteSize);
+    // Recompute from the immutable JSONL immediately before the first remote
+    // operation. This fails closed for stale, migrated, or tampered lane state
+    // whose reservation did not cover the complete serialized request.
+    assertRequestArtifactReservationCoverage(state, jsonl);
 
     if (!state.remote.inputFileId) {
       state.phase = 'uploading';
@@ -914,13 +965,16 @@ export async function submitCloudRepairLane(
 
     for (const request of state.requests) {
       if (request.ledgerStatus !== 'reserved') continue;
-      ledger.reconcileModelUsage({
+      const reconciliation = ledger.reconcileModelUsage({
         runId: state.runId,
         requestKey: request.requestKey,
         model: state.model,
         status: 'submitted',
         batchId: state.remote.batchId,
       });
+      if (!reconciliation.accepted) {
+        throw new Error(`Reserved cloud request exceeded the ${reconciliation.reason.replace('_', ' ')}`);
+      }
       request.ledgerStatus = 'submitted';
     }
     state.phase = 'submitted';
@@ -1207,7 +1261,7 @@ function refreshRecipeWaiters(ledger: CloudLaneLedger, state: CloudLaneState): b
       continue;
     }
     if (record.status === 'failed') {
-      waiter.outcome = failedOutcome(
+      waiter.outcome = outcomeForFailureReason(
         request,
         cachedRecipeFailureReason(record.failureReason),
         record.detail ?? undefined,
@@ -1296,7 +1350,7 @@ export async function reconcileCloudRepairLane(
       costUsd: number;
       outcome: CloudLaneOutcome;
       error?: string;
-      failureReason?: Exclude<CloudFailureReason, 'token_ceiling' | 'cost_ceiling' | 'attempt_ceiling'>;
+      failureReason?: CloudFailureReason;
     }> = [];
 
     for (const request of state.requests) {
@@ -1356,7 +1410,7 @@ export async function reconcileCloudRepairLane(
     }
 
     for (const item of reconciliations) {
-      ledger.reconcileModelUsage({
+      const reconciliation = ledger.reconcileModelUsage({
         runId: state.runId,
         requestKey: item.request.requestKey,
         model: state.model,
@@ -1368,6 +1422,21 @@ export async function reconcileCloudRepairLane(
         responseId: item.responseId,
         error: item.error,
       });
+      if (!reconciliation.accepted) {
+        const detail = `Actual model usage exceeded the reserved ${reconciliation.reason.replace('_', ' ')}; deterministic neutral fallback required.`;
+        item.status = 'failed';
+        item.error = detail;
+        item.failureReason = reconciliation.reason;
+        item.outcome = {
+          kind: 'neutral_fallback',
+          issueFingerprint: item.request.issueFingerprint,
+          fragmentIds: item.request.fragmentIds,
+          attempt: item.request.attempt,
+          requestKey: item.request.requestKey,
+          reason: reconciliation.reason,
+          detail,
+        };
+      }
       item.request.ledgerStatus = item.status;
       item.request.responseId = item.responseId;
       item.request.actualInputTokens = item.usage.inputTokens;

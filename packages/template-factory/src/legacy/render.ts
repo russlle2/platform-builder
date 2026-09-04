@@ -2,10 +2,17 @@ import { createHash } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
 import { cpus, freemem, totalmem } from 'node:os';
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import axe from 'axe-core';
 import { chromium, type Browser, type BrowserContext, type Page } from '@playwright/test';
 import sharp from 'sharp';
+import {
+  composeCustomerPreviewWithApp,
+  loadCustomerPreviewComposers,
+  type CustomerPreviewField,
+  type CustomerPreviewStylesheet,
+} from './customer-preview-adapter.js';
+import { isEmbeddedUrl, isSafeEmbeddedRasterDataUrl } from './url-safety.js';
 
 export const LEGACY_VIEWPORTS = {
   desktop: { width: 1440, height: 900 },
@@ -20,6 +27,8 @@ export interface RenderTask {
   slug: string;
   page: string;
   templateDir: string;
+  /** Retain the lossless full-page PNG until catalogue-wide visual dedupe finishes. */
+  retainComparisonScreenshot?: boolean;
 }
 
 export interface RenderIssue {
@@ -49,6 +58,9 @@ export interface RenderEvidence {
   screenshotSha256?: string;
   perceptualHash?: string;
   thumbnailPath?: string;
+  thumbnailSha256?: string;
+  thumbnailBytes?: number;
+  comparisonScreenshotPath?: string;
   failureScreenshotPath?: string;
   visibleTextLength: number;
   editSlotCount: number;
@@ -72,6 +84,11 @@ export interface RenderRunOptions {
 export interface StaticServerHandle {
   origin: string;
   close: () => Promise<void>;
+}
+
+export interface StaticServerOptions {
+  /** When present, these exact page paths are composed through the app route. */
+  renderTasks?: readonly RenderTask[];
 }
 
 const MIME_TYPES: Record<string, string> = {
@@ -138,8 +155,7 @@ function isContained(root: string, target: string): boolean {
   return rel === '' || (rel !== '..' && !rel.startsWith(`..${sep}`) && !rel.includes(`:${sep}`));
 }
 
-export function hydrateSentinelHtml(html: string): string {
-  const sentinels: Record<string, string> = {
+const SENTINEL_TEMPLATE_VALUES: Readonly<Record<string, string>> = {
     BUSINESS_NAME: 'Sentinel Clarity Studio',
     PRACTICE_NAME: 'Sentinel Clarity Practice',
     BRAND_NAME: 'Sentinel Clarity Brand',
@@ -162,41 +178,222 @@ export function hydrateSentinelHtml(html: string): string {
     SERVICES: 'Personalized services',
     CTA_LABEL: 'Request a consultation',
     PRIMARY_CTA_LABEL: 'Request a consultation',
-    PRIMARY_CTA_URL: 'contact.html',
-    BOOKING_URL: 'contact.html',
-    WEBSITE: 'index.html',
-  };
+    PRIMARY_CTA_URL: './contact.html',
+    BOOKING_URL: './contact.html',
+    WEBSITE: './index.html',
+};
+
+export function sentinelTemplateValues(fields: readonly CustomerPreviewField[] = []): Record<string, string> {
+  const values: Record<string, string> = { ...SENTINEL_TEMPLATE_VALUES };
+  for (const field of fields) {
+    const name = field.name.trim().toUpperCase();
+    if (!name || values[name]) continue;
+    const type = field.type?.trim().toLowerCase();
+    values[name] = type === 'email' ? 'sentinel@example.test'
+      : type === 'tel' ? '(212) 555-0199'
+        : type === 'url' ? 'https://example.test/'
+          : type === 'textarea' ? 'Sentinel profile hydration is active.'
+            : `Sentinel ${name.toLowerCase().replace(/_/g, ' ')}`;
+  }
+  return values;
+}
+
+export function hydrateSentinelHtml(html: string): string {
+  const sentinels = sentinelTemplateValues();
   return html.replace(/\{\{\s*([A-Za-z0-9_]+)\s*\}\}/g, (_, raw: string) => {
     const token = raw.toUpperCase();
     return sentinels[token] ?? `Sentinel ${token.toLowerCase().replace(/_/g, ' ')}`;
   });
 }
 
-export async function startTemplateServer(rootInput: string): Promise<StaticServerHandle> {
+interface TemplatePreviewSource {
+  fields: CustomerPreviewField[];
+  pages: Set<string>;
+  stylesheets: CustomerPreviewStylesheet[];
+}
+
+async function loadTemplatePreviewSource(templateDir: string): Promise<TemplatePreviewSource> {
+  const [manifestValue, fieldsValue] = await Promise.all([
+    readFile(resolve(templateDir, 'template.json'), 'utf8'),
+    readFile(resolve(templateDir, 'fields.json'), 'utf8'),
+  ]);
+  const manifest = JSON.parse(manifestValue) as unknown;
+  const fieldsDocument = JSON.parse(fieldsValue) as unknown;
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    throw new Error('template.json is not an object');
+  }
+  if (!fieldsDocument || typeof fieldsDocument !== 'object' || Array.isArray(fieldsDocument)) {
+    throw new Error('fields.json is not an object');
+  }
+  const pagesValue = (manifest as Record<string, unknown>).pages;
+  const fieldsValueArray = (fieldsDocument as Record<string, unknown>).fields;
+  if (!Array.isArray(pagesValue) || pagesValue.some((page) => typeof page !== 'string')) {
+    throw new Error('template.json has no valid page manifest');
+  }
+  if (!Array.isArray(fieldsValueArray)) throw new Error('fields.json has no fields array');
+  const fields = fieldsValueArray.map((value, index): CustomerPreviewField => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      throw new Error(`fields.json field ${index} is not an object`);
+    }
+    const field = value as Record<string, unknown>;
+    if (typeof field.name !== 'string' || !field.name.trim()) {
+      throw new Error(`fields.json field ${index} has no name`);
+    }
+    if (field.type !== undefined && typeof field.type !== 'string') {
+      throw new Error(`fields.json field ${index} has an invalid type`);
+    }
+    if (field.default !== undefined && typeof field.default !== 'string') {
+      throw new Error(`fields.json field ${index} has an invalid default`);
+    }
+    return {
+      name: field.name,
+      ...(typeof field.type === 'string' ? { type: field.type } : {}),
+      ...(typeof field.default === 'string' ? { default: field.default } : {}),
+    };
+  });
+
+  const stylesheets: CustomerPreviewStylesheet[] = [];
+  const pending = [''];
+  while (pending.length > 0) {
+    const directory = pending.pop()!;
+    const absoluteDirectory = resolve(templateDir, ...directory.split('/').filter(Boolean));
+    if (!isContained(templateDir, absoluteDirectory)) throw new Error('stylesheet discovery escaped the template root');
+    for (const entry of await readdir(absoluteDirectory, { withFileTypes: true })) {
+      const path = [directory, entry.name].filter(Boolean).join('/');
+      if (entry.isSymbolicLink()) throw new Error(`template contains a symbolic link: ${path}`);
+      if (entry.isDirectory()) {
+        pending.push(path);
+      } else if (entry.isFile() && /\.css$/i.test(entry.name)) {
+        const absolutePath = resolve(templateDir, ...path.split('/'));
+        if (!isContained(templateDir, absolutePath)) throw new Error(`stylesheet escaped the template root: ${path}`);
+        stylesheets.push({ path, css: await readFile(absolutePath, 'utf8') });
+      }
+    }
+  }
+  stylesheets.sort((left, right) => left.path.localeCompare(right.path, 'en'));
+  return { fields, pages: new Set(pagesValue as string[]), stylesheets };
+}
+
+const CUSTOMER_ASSET_ROUTE_PREFIX = '/api/templates/__dc_compiler__/';
+
+function customerAssetRoute(root: string, templateDir: string): { base: string; token: string } {
+  const path = relative(root, templateDir).replace(/\\/g, '/');
+  if (!path || path.startsWith('../') || path === '..') throw new Error(`Template path escaped the server root: ${templateDir}`);
+  const token = sha256(path).slice(0, 32);
+  return { base: `${CUSTOMER_ASSET_ROUTE_PREFIX}${token}/assets`, token };
+}
+
+export async function startTemplateServer(
+  rootInput: string,
+  options: StaticServerOptions = {},
+): Promise<StaticServerHandle> {
   const root = resolve(rootInput);
+  const previewTasks = new Map<string, RenderTask>();
+  const assetRoots = new Map<string, string>();
+  for (const task of options.renderTasks ?? []) {
+    const templateDir = resolve(task.templateDir);
+    const pageTarget = resolve(templateDir, ...task.page.replace(/\\/g, '/').split('/'));
+    if (
+      templateDir === root
+      || !isContained(root, templateDir)
+      || pageTarget === templateDir
+      || !isContained(templateDir, pageTarget)
+      || !/\.html?$/i.test(task.page)
+    ) {
+      throw new Error(`Render task has an unsafe customer preview path: ${task.key}/${task.page}`);
+    }
+    previewTasks.set(pageTarget, task);
+    const route = customerAssetRoute(root, templateDir);
+    const existingRoot = assetRoots.get(route.token);
+    if (existingRoot && existingRoot !== templateDir) {
+      throw new Error(`Customer asset-route collision between ${existingRoot} and ${templateDir}`);
+    }
+    assetRoots.set(route.token, templateDir);
+  }
+  if (options.renderTasks) await loadCustomerPreviewComposers();
+
+  const sourceCache = new Map<string, Promise<TemplatePreviewSource>>();
+  const documentCache = new Map<string, Promise<{
+    bytes: Buffer;
+    manifestFields: number;
+    themeStylesheets: number;
+  }>>();
+  const composeTask = (task: RenderTask): Promise<{
+    bytes: Buffer;
+    manifestFields: number;
+    themeStylesheets: number;
+  }> => {
+    const templateDir = resolve(task.templateDir);
+    const target = resolve(templateDir, ...task.page.replace(/\\/g, '/').split('/'));
+    const cached = documentCache.get(target);
+    if (cached) return cached;
+    const composed = (async () => {
+      let source = sourceCache.get(templateDir);
+      if (!source) {
+        source = loadTemplatePreviewSource(templateDir);
+        sourceCache.set(templateDir, source);
+      }
+      const metadata = await source;
+      if (!metadata.pages.has(task.page)) throw new Error(`page is absent from template.json: ${task.page}`);
+      const html = await readFile(target, 'utf8');
+      const assetBase = customerAssetRoute(root, templateDir).base;
+      const document = await composeCustomerPreviewWithApp({
+        html,
+        page: task.page,
+        fields: metadata.fields,
+        values: sentinelTemplateValues(metadata.fields),
+        stylesheets: metadata.stylesheets,
+        assetBase,
+      });
+      return {
+        bytes: Buffer.from(document, 'utf8'),
+        manifestFields: metadata.fields.length,
+        themeStylesheets: metadata.stylesheets.length,
+      };
+    })();
+    documentCache.set(target, composed);
+    return composed;
+  };
   const server: Server = createServer(async (request, response) => {
+    let isPreviewRequest = false;
     try {
       const requestUrl = new URL(request.url ?? '/', 'http://127.0.0.1');
-      const decoded = decodeURIComponent(requestUrl.pathname).replace(/^\/+/, '');
-      const target = resolve(root, ...decoded.split('/'));
-      if (!decoded || !isContained(root, target)) {
+      const assetMatch = requestUrl.pathname.match(/^\/api\/templates\/__dc_compiler__\/([0-9a-f]{32})\/assets\/(.+)$/);
+      const assetRoot = assetMatch ? assetRoots.get(assetMatch[1]!) : undefined;
+      const decoded = decodeURIComponent(assetMatch ? assetMatch[2]! : requestUrl.pathname).replace(/^\/+/, '');
+      const targetRoot = assetRoot ?? root;
+      const target = resolve(targetRoot, ...decoded.split('/'));
+      if ((assetMatch && !assetRoot) || !decoded || !isContained(targetRoot, target)) {
         response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
         response.end('Not found');
         return;
       }
-      let bytes = await readFile(target);
+      const renderTask = previewTasks.get(target);
+      isPreviewRequest = Boolean(renderTask);
+      const preview = renderTask ? await composeTask(renderTask) : null;
+      let bytes = preview?.bytes ?? await readFile(target);
       const extension = extname(target).toLowerCase();
-      if (extension === '.html') bytes = Buffer.from(hydrateSentinelHtml(bytes.toString('utf8')), 'utf8');
+      if (extension === '.html' && !renderTask) bytes = Buffer.from(hydrateSentinelHtml(bytes.toString('utf8')), 'utf8');
       response.writeHead(200, {
         'content-type': MIME_TYPES[extension] ?? 'application/octet-stream',
         'cache-control': 'no-store',
+        ...(renderTask ? { 'x-dc-preview-composition': 'shared-customer-route' } : {}),
+        ...(preview ? {
+          'x-dc-manifest-fields': String(preview.manifestFields),
+          'x-dc-theme-stylesheets': String(preview.themeStylesheets),
+        } : {}),
         'content-security-policy': "default-src 'self'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'none'; frame-src 'none'; object-src 'none'; base-uri 'none'",
         'x-content-type-options': 'nosniff',
       });
       response.end(bytes);
-    } catch {
-      response.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
-      response.end('Not found');
+    } catch (error) {
+      response.writeHead(isPreviewRequest ? 500 : 404, {
+        'content-type': 'text/plain; charset=utf-8',
+        'cache-control': 'no-store',
+      });
+      response.end(isPreviewRequest
+        ? `Customer preview composition failed: ${error instanceof Error ? error.message : String(error)}`
+        : 'Not found');
     }
   });
 
@@ -234,7 +431,9 @@ async function screenshotEvidence(
   task: RenderTask,
   viewport: LegacyViewportName,
   passed: boolean,
-): Promise<Pick<RenderEvidence, 'screenshotSha256' | 'perceptualHash' | 'thumbnailPath' | 'failureScreenshotPath'>> {
+): Promise<Pick<RenderEvidence,
+  'screenshotSha256' | 'perceptualHash' | 'thumbnailPath' | 'thumbnailSha256' | 'thumbnailBytes'
+  | 'comparisonScreenshotPath' | 'failureScreenshotPath'>> {
   const png = await page.screenshot({ fullPage: true, type: 'png' });
   const digest = sha256(png);
   const raw = await sharp(png)
@@ -253,7 +452,16 @@ async function screenshotEvidence(
   const base = `${safeEvidenceName(task.niche)}__${safeEvidenceName(task.slug)}__${safeEvidenceName(task.page)}__${viewport}`;
   const thumbnailPath = join(evidenceRoot, 'thumbnails', `${base}.webp`);
   await mkdir(dirname(thumbnailPath), { recursive: true });
-  await writeEvidenceThumbnail(png, thumbnailPath);
+  const thumbnail = await writeEvidenceThumbnail(png, thumbnailPath);
+
+  let comparisonScreenshotPath: string | undefined;
+  if (passed && task.retainComparisonScreenshot) {
+    comparisonScreenshotPath = temporaryComparisonScreenshotPath(evidenceRoot, digest);
+    await mkdir(dirname(comparisonScreenshotPath), { recursive: true });
+    // The filename is the hash of these exact PNG bytes. Rewriting an existing
+    // path is safe (and repairs a partial file left by an interrupted process).
+    await writeFile(comparisonScreenshotPath, png);
+  }
 
   let failureScreenshotPath: string | undefined;
   if (!passed) {
@@ -265,6 +473,9 @@ async function screenshotEvidence(
     screenshotSha256: digest,
     perceptualHash,
     thumbnailPath,
+    thumbnailSha256: thumbnail.sha256,
+    thumbnailBytes: thumbnail.bytes,
+    ...(comparisonScreenshotPath ? { comparisonScreenshotPath } : {}),
     ...(failureScreenshotPath ? { failureScreenshotPath } : {}),
   };
 }
@@ -274,11 +485,116 @@ async function screenshotEvidence(
  * legacy pages are extraordinarily tall; constraining only width could leave
  * the proportional height too large for libvips to encode.
  */
-export async function writeEvidenceThumbnail(png: Buffer, thumbnailPath: string): Promise<void> {
-  await sharp(png)
+export async function writeEvidenceThumbnail(
+  png: Buffer,
+  thumbnailPath: string,
+): Promise<{ sha256: string; bytes: number }> {
+  const encoded = await sharp(png)
     .resize({ width: 320, height: 4096, fit: 'inside', withoutEnlargement: true })
     .webp({ quality: 70 })
-    .toFile(thumbnailPath);
+    .toBuffer();
+  await writeFile(thumbnailPath, encoded);
+  return { sha256: sha256(encoded), bytes: encoded.byteLength };
+}
+
+/**
+ * Revalidate the long-lived thumbnail independently of its SQLite row and
+ * signed receipt. The real-path check prevents a junction/symlinked ancestor
+ * from turning a lexically contained artifact path into an external file.
+ */
+export async function verifyRetainedThumbnailEvidence(input: {
+  renderRoot: string;
+  thumbnailPath: string;
+  expectedSha256: string;
+  expectedBytes: number;
+}): Promise<void> {
+  const renderRoot = resolve(input.renderRoot);
+  const thumbnailRoot = resolve(renderRoot, 'thumbnails');
+  const thumbnailPath = resolve(input.thumbnailPath);
+  if (
+    thumbnailPath === thumbnailRoot
+    || !isContained(renderRoot, thumbnailPath)
+    || !isContained(thumbnailRoot, thumbnailPath)
+  ) {
+    throw new Error(`Retained thumbnail escaped the render thumbnail root: ${input.thumbnailPath}`);
+  }
+  if (!/^[0-9a-f]{64}$/.test(input.expectedSha256)) {
+    throw new Error('Retained thumbnail is missing a lowercase SHA-256 digest');
+  }
+  if (!Number.isSafeInteger(input.expectedBytes) || input.expectedBytes <= 0) {
+    throw new Error('Retained thumbnail is missing a positive byte-size attestation');
+  }
+
+  const [renderRootDetails, thumbnailDetails] = await Promise.all([
+    lstat(renderRoot).catch(() => null),
+    lstat(thumbnailPath).catch(() => null),
+  ]);
+  if (!renderRootDetails?.isDirectory() || renderRootDetails.isSymbolicLink()) {
+    throw new Error(`Render evidence root is missing or unsafe: ${renderRoot}`);
+  }
+  if (!thumbnailDetails?.isFile() || thumbnailDetails.isSymbolicLink()) {
+    throw new Error(`Retained thumbnail is missing or unsafe: ${thumbnailPath}`);
+  }
+  const [realRenderRoot, realThumbnailPath] = await Promise.all([
+    realpath(renderRoot),
+    realpath(thumbnailPath),
+  ]);
+  if (!isContained(realRenderRoot, realThumbnailPath) || realThumbnailPath === realRenderRoot) {
+    throw new Error(`Retained thumbnail resolves outside the render root: ${thumbnailPath}`);
+  }
+
+  const encoded = await readFile(thumbnailPath);
+  if (encoded.byteLength !== input.expectedBytes || thumbnailDetails.size !== input.expectedBytes) {
+    throw new Error(
+      `Retained thumbnail byte-size mismatch: expected ${input.expectedBytes}, found ${encoded.byteLength}`,
+    );
+  }
+  const actualSha256 = sha256(encoded);
+  if (actualSha256 !== input.expectedSha256) {
+    throw new Error(`Retained thumbnail SHA-256 mismatch: expected ${input.expectedSha256}, found ${actualSha256}`);
+  }
+  try {
+    const decoded = await sharp(encoded).rotate().raw().toBuffer({ resolveWithObject: true });
+    if (!decoded.info.width || !decoded.info.height || decoded.data.byteLength === 0) {
+      throw new Error('decoded image contains no pixels');
+    }
+  } catch (error) {
+    throw new Error(
+      `Retained thumbnail is not a decodable image: ${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+}
+
+const COMPARISON_SCREENSHOT_DIRECTORY = 'comparison-screenshots';
+
+/**
+ * Resolve the short-lived, lossless screenshot backing a visual-alias score.
+ * Content addressing lets an interrupted run resume without adding a SQLite
+ * column or confusing these files with the long-lived gallery thumbnails.
+ */
+export function temporaryComparisonScreenshotPath(evidenceRoot: string, screenshotSha256: string): string {
+  if (!/^[0-9a-f]{64}$/i.test(screenshotSha256)) {
+    throw new Error('Comparison screenshot hashes must be 64 hexadecimal characters');
+  }
+  return join(resolve(evidenceRoot), COMPARISON_SCREENSHOT_DIRECTORY, `${screenshotSha256.toLowerCase()}.png`);
+}
+
+/** Remove only the dedicated transient full-screenshot directory. */
+export async function removeTemporaryComparisonScreenshots(evidenceRoot: string): Promise<void> {
+  const root = resolve(evidenceRoot);
+  const target = resolve(root, COMPARISON_SCREENSHOT_DIRECTORY);
+  if (target === root || !isContained(root, target)) {
+    throw new Error(`Refusing to remove an unsafe comparison screenshot path: ${target}`);
+  }
+  const details = await lstat(target).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === 'ENOENT') return null;
+    throw error;
+  });
+  if (!details) return;
+  if (!details.isDirectory() || details.isSymbolicLink()) {
+    throw new Error(`Refusing to remove a non-directory comparison screenshot path: ${target}`);
+  }
+  await rm(target, { recursive: true, force: true });
 }
 
 async function configureContext(browser: Browser, viewport: LegacyViewportName): Promise<BrowserContext> {
@@ -295,7 +611,270 @@ async function configureContext(browser: Browser, viewport: LegacyViewportName):
   });
 }
 
-async function inspectPage(page: Page, origin: string, url: string, timeoutMs: number): Promise<{
+interface CustomerEditorRuntimeCheck {
+  installed: boolean;
+  leafText: 'passed' | 'missing' | 'failed';
+  editableAttribute: 'passed' | 'missing' | 'failed';
+  standaloneImage: 'passed' | 'missing' | 'failed';
+  responsivePicture: 'passed' | 'missing' | 'failed';
+  navigation: 'passed' | 'missing' | 'failed';
+  details: string[];
+}
+
+/** Exercise the exact app-owned iframe runtime through its public events. */
+async function exerciseCustomerEditorRuntime(page: Page, currentPage: string): Promise<CustomerEditorRuntimeCheck> {
+  return page.evaluate(async ({ manifestPage, expectedRuntime }) => {
+    type PreviewMessage = Record<string, unknown> & { type?: string };
+    type CheckStatus = 'passed' | 'missing' | 'failed';
+    const details: string[] = [];
+    const sentinelText = 'SENTINEL EDIT PERSISTED';
+    const sentinelImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
+    const nativeSetTimeout = window.setTimeout.bind(window);
+
+    const nextMessage = (
+      type: string,
+      trigger: () => void,
+      timeoutMs = 750,
+    ): Promise<PreviewMessage | null> => new Promise((resolvePromise) => {
+      let settled = false;
+      const finish = (value: PreviewMessage | null) => {
+        if (settled) return;
+        settled = true;
+        window.removeEventListener('message', onMessage);
+        resolvePromise(value);
+      };
+      const onMessage = (event: MessageEvent) => {
+        if (event.source !== window || !event.data || typeof event.data !== 'object') return;
+        const message = event.data as PreviewMessage;
+        if (message.type === type) finish(message);
+      };
+      window.addEventListener('message', onMessage);
+      nativeSetTimeout(() => finish(null), timeoutMs);
+      trigger();
+    });
+
+    const restoreAttribute = (element: Element, attribute: string, value: string | null) => {
+      if (value === null) element.removeAttribute(attribute);
+      else element.setAttribute(attribute, value);
+    };
+
+    let leafText: CheckStatus = 'missing';
+    const leaf = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-id],[data-pb-edit-id]')]
+      .find((element) => document.body.contains(element)
+        && !element.hasAttribute('data-dc-edit-attribute')
+        && !element.hasAttribute('data-pb-edit-attribute')
+        && element.children.length === 0);
+    if (leaf) {
+      const originalHtml = leaf.innerHTML;
+      const originalStyle = leaf.getAttribute('style');
+      const originalEditable = leaf.getAttribute('contenteditable');
+      const nodeId = leaf.getAttribute('data-dc-edit-id') || leaf.getAttribute('data-pb-edit-id') || '';
+      const originalText = leaf.textContent || '';
+      const message = await nextMessage('textEdited', () => {
+        leaf.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
+        if (leaf.isContentEditable) {
+          leaf.textContent = sentinelText;
+          leaf.dispatchEvent(new FocusEvent('blur'));
+        }
+      });
+      leafText = leaf.textContent === sentinelText
+        && message?.nodeId === nodeId
+        && message.original === originalText
+        && message.text === sentinelText
+        ? 'passed'
+        : 'failed';
+      if (leafText === 'failed') details.push('leaf text did not complete the dblclick/contenteditable/textEdited round trip');
+      leaf.innerHTML = originalHtml;
+      restoreAttribute(leaf, 'style', originalStyle);
+      restoreAttribute(leaf, 'contenteditable', originalEditable);
+    }
+
+    let editableAttribute: CheckStatus = 'missing';
+    const attributeTarget = [...document.querySelectorAll<HTMLElement>('[data-dc-edit-attribute],[data-pb-edit-attribute]')]
+      .find((element) => document.body.contains(element));
+    if (attributeTarget) {
+      const attribute = attributeTarget.getAttribute('data-dc-edit-attribute')
+        || attributeTarget.getAttribute('data-pb-edit-attribute')
+        || '';
+      const nodeId = attributeTarget.getAttribute('data-dc-edit-id')
+        || attributeTarget.getAttribute('data-pb-edit-id')
+        || '';
+      const original = attributeTarget.getAttribute(attribute);
+      let promptCalls = 0;
+      const nativePrompt = window.prompt;
+      window.prompt = () => {
+        promptCalls += 1;
+        return sentinelText;
+      };
+      const request = await nextMessage('editValueRequest', () => {
+        attributeTarget.dispatchEvent(new MouseEvent('dblclick', { bubbles: true, cancelable: true }));
+      });
+      if (request) {
+        const prompted = window.prompt('Edit value', String(request.original ?? ''));
+        if (prompted !== null) {
+          window.postMessage({
+            type: 'editValueResponse',
+            nodeId: request.nodeId,
+            attribute: request.attribute,
+            text: prompted,
+          }, '*');
+          await new Promise<void>((resolvePromise) => nativeSetTimeout(resolvePromise, 0));
+        }
+      }
+      window.prompt = nativePrompt;
+      editableAttribute = request?.nodeId === nodeId
+        && request.attribute === attribute
+        && request.original === (original || '')
+        && promptCalls === 1
+        && attributeTarget.getAttribute(attribute) === sentinelText
+        ? 'passed'
+        : 'failed';
+      if (editableAttribute === 'failed') details.push('editable attribute did not complete the request/prompt/response round trip');
+      restoreAttribute(attributeTarget, attribute, original);
+    }
+
+    const dispatchImageClick = async (target: HTMLElement): Promise<PreviewMessage | null> => {
+      const nativeWindowSetTimeout = window.setTimeout;
+      // Preserve the real callback path without adding 280 ms to every one of
+      // tens of thousands of catalogue page/viewport checks.
+      window.setTimeout = ((handler: TimerHandler) => {
+        if (typeof handler === 'function') handler();
+        return 0;
+      }) as typeof window.setTimeout;
+      try {
+        return await nextMessage('imageSwapRequest', () => {
+          target.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        });
+      } finally {
+        window.setTimeout = nativeWindowSetTimeout;
+      }
+    };
+
+    const snapshotImageAttributes = (elements: readonly HTMLElement[]) => elements.map((element) => ({
+      element,
+      src: element.getAttribute('src'),
+      srcset: element.getAttribute('srcset'),
+      style: element.getAttribute('style'),
+    }));
+    const restoreImages = (snapshots: ReturnType<typeof snapshotImageAttributes>) => {
+      for (const snapshot of snapshots) {
+        restoreAttribute(snapshot.element, 'src', snapshot.src);
+        restoreAttribute(snapshot.element, 'srcset', snapshot.srcset);
+        restoreAttribute(snapshot.element, 'style', snapshot.style);
+      }
+    };
+    const imageChanged = (target: HTMLElement) => target instanceof HTMLImageElement
+      ? target.getAttribute('src') === sentinelImage && !target.hasAttribute('srcset')
+      : target instanceof HTMLSourceElement
+        ? (target.getAttribute('srcset') ?? target.getAttribute('src')) === sentinelImage
+        : target.style.backgroundImage.includes('data:image/png;base64');
+    const replyToImageRequest = async (request: PreviewMessage, slotIds: string[]) => {
+      window.postMessage({
+        type: 'imageSwapResponse',
+        imageUrl: sentinelImage,
+        slotId: request.slotId,
+        slotIds,
+      }, '*');
+      await new Promise<void>((resolvePromise) => nativeSetTimeout(resolvePromise, 0));
+    };
+
+    let standaloneImage: CheckStatus = 'missing';
+    const standalone = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
+      .find((element) => element.tagName !== 'SOURCE' && !element.closest('picture'));
+    if (standalone) {
+      const snapshots = snapshotImageAttributes([standalone]);
+      const slotId = standalone.getAttribute('data-dc-image-id') || standalone.getAttribute('data-pb-image-id') || '';
+      const request = await dispatchImageClick(standalone);
+      if (request) await replyToImageRequest(request, [slotId]);
+      standaloneImage = request?.slotId === slotId
+        && Array.isArray(request.pictureSlotIds)
+        && request.pictureSlotIds.length === 1
+        && request.pictureSlotIds[0] === slotId
+        && imageChanged(standalone)
+        ? 'passed'
+        : 'failed';
+      if (standaloneImage === 'failed') details.push('standalone image did not complete the click/request/response round trip');
+      restoreImages(snapshots);
+    }
+
+    let responsivePicture: CheckStatus = 'missing';
+    const picture = [...document.querySelectorAll<HTMLPictureElement>('picture')].find((candidate) => {
+      const responsive = [...candidate.children].filter((child) => child.tagName === 'SOURCE' || child.tagName === 'IMG');
+      const ids = responsive.map((child) => child.getAttribute('data-dc-image-id') || child.getAttribute('data-pb-image-id') || '');
+      return responsive.some((child) => child.tagName === 'IMG') && responsive.length > 1
+        && ids.every(Boolean) && new Set(ids).size === ids.length;
+    });
+    if (picture) {
+      const responsive = [...picture.children]
+        .filter((child): child is HTMLElement => child instanceof HTMLElement && (child.tagName === 'SOURCE' || child.tagName === 'IMG'));
+      const image = responsive.find((child): child is HTMLImageElement => child instanceof HTMLImageElement)!;
+      const domSlotIds = responsive.map((child) => child.getAttribute('data-dc-image-id') || child.getAttribute('data-pb-image-id') || '');
+      const primarySlotId = image.getAttribute('data-dc-image-id') || image.getAttribute('data-pb-image-id') || '';
+      const responseSlotIds = [primarySlotId, ...domSlotIds.filter((slotId) => slotId !== primarySlotId)];
+      const snapshots = snapshotImageAttributes(responsive);
+      const request = await dispatchImageClick(image);
+      if (request) await replyToImageRequest(request, responseSlotIds);
+      const requestedPictureSlotIds = Array.isArray(request?.pictureSlotIds)
+        ? request.pictureSlotIds as unknown[]
+        : [];
+      responsivePicture = request?.slotId === primarySlotId
+        && requestedPictureSlotIds.length === domSlotIds.length
+        && domSlotIds.every((slotId) => requestedPictureSlotIds.includes(slotId))
+        && responsive.every(imageChanged)
+        ? 'passed'
+        : 'failed';
+      if (responsivePicture === 'failed') details.push('responsive picture did not require and update its complete stable-ID group');
+      restoreImages(snapshots);
+    }
+
+    let navigation: CheckStatus = 'missing';
+    const navigationLink = [...document.querySelectorAll<HTMLAnchorElement>('a[href]')].find((link) => {
+      const href = link.getAttribute('href') || '';
+      return href === '/' || href === './' || (!/^(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/|#)/.test(href) && /\.html(?:[?#].*)?$/i.test(href));
+    });
+    if (navigationLink) {
+      const href = navigationLink.getAttribute('href') || '';
+      const expectedPage = href === '/' || href === './'
+        ? 'index.html'
+        : new URL(href, `https://preview.invalid/${manifestPage}`).pathname.replace(/^\/+/, '');
+      const request = await nextMessage('navigatePage', () => {
+        navigationLink.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      });
+      navigation = typeof request?.page === 'string'
+        && /^[A-Za-z0-9_-]+(?:\/[A-Za-z0-9_-]+)*\.html$/.test(request.page)
+        && request.page.length <= 160
+        && request.page === expectedPage
+        ? 'passed'
+        : 'failed';
+      if (navigation === 'failed') details.push(`nested navigation did not emit a safe page from ${manifestPage}`);
+    }
+
+    return {
+      installed: (window as typeof window & { __dailyClarityCustomerPreviewEditorRuntime?: string })
+        .__dailyClarityCustomerPreviewEditorRuntime === expectedRuntime
+        && document.querySelectorAll(`script[data-dc-runtime="${expectedRuntime}"]`).length === 1,
+      leafText,
+      editableAttribute,
+      standaloneImage,
+      responsivePicture,
+      navigation,
+      details,
+    };
+  }, { manifestPage: currentPage, expectedRuntime: 'customer-preview-editor-v1' });
+}
+
+export function isAllowedTemplateRenderRequest(origin: string, url: string, resourceType: string): boolean {
+  if (url.startsWith('about:')) return true;
+  if (isEmbeddedUrl(url)) return resourceType === 'image' && isSafeEmbeddedRasterDataUrl(url);
+  try {
+    if (new URL(url).origin === new URL(origin).origin) return true;
+  } catch {
+    return false;
+  }
+  return false;
+}
+
+async function inspectPage(page: Page, origin: string, url: string, currentPage: string, timeoutMs: number): Promise<{
   issues: RenderIssue[];
   visibleTextLength: number;
   editSlotCount: number;
@@ -314,9 +893,21 @@ async function inspectPage(page: Page, origin: string, url: string, timeoutMs: n
     if (message.type() === 'error') consoleErrors.push(message.text());
   });
   page.on('requestfailed', (request) => failedRequests.push(`${request.url()} (${request.failure()?.errorText ?? 'failed'})`));
+  const templateOrigin = new URL(origin).origin;
+  page.on('response', (response) => {
+    const status = response.status();
+    if (status < 400) return;
+    try {
+      if (new URL(response.url()).origin === templateOrigin) {
+        failedRequests.push(`${response.url()} (HTTP ${status})`);
+      }
+    } catch {
+      // A malformed response URL cannot be same-origin and is ignored here.
+    }
+  });
   await page.route('**/*', async (route) => {
-    const url = route.request().url();
-    if (url.startsWith(origin) || /^(?:data|blob|about):/.test(url)) await route.continue();
+    const request = route.request();
+    if (isAllowedTemplateRenderRequest(origin, request.url(), request.resourceType())) await route.continue();
     else await route.abort('blockedbyclient');
   });
 
@@ -522,7 +1113,7 @@ async function inspectPage(page: Page, origin: string, url: string, timeoutMs: n
   if (state.imageSlotCount > 0) {
     const images = await page.evaluate(() => {
       const targets = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id]')];
-      const sentinel = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%221%22 height=%221%22/%3E';
+      const sentinel = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=';
       let passed = 0;
       for (const target of targets) {
         const originals = new Map<string, string | null>();
@@ -534,7 +1125,7 @@ async function inspectPage(page: Page, origin: string, url: string, timeoutMs: n
           ? target.getAttribute('src') === sentinel
           : target instanceof HTMLSourceElement
             ? target.getAttribute('srcset') === `${sentinel} 1x`
-            : target.style.backgroundImage.includes('data:image/svg+xml');
+            : target.style.backgroundImage.includes('data:image/png;base64');
         if (changed && Boolean(target.dataset.dcImageId)) passed += 1;
         for (const [attribute, value] of originals) {
           if (value === null) target.removeAttribute(attribute);
@@ -546,6 +1137,49 @@ async function inspectPage(page: Page, origin: string, url: string, timeoutMs: n
     if (images.checked !== state.imageSlotCount || images.passed !== images.checked) {
       issues.push({ code: 'image_edit_smoke_failed', severity: 'critical', detail: `${images.passed}/${state.imageSlotCount} ID-targeted image edits applied and restored` });
     }
+  }
+
+  const editorRuntime = await exerciseCustomerEditorRuntime(page, currentPage);
+  if (!editorRuntime.installed) {
+    issues.push({
+      code: 'customer_editor_runtime_missing',
+      severity: 'critical',
+      detail: 'The exact app-owned customer-preview editor runtime was not installed exactly once',
+    });
+  }
+  if (editorRuntime.leafText !== 'passed') {
+    issues.push({
+      code: 'customer_editor_text_failed',
+      severity: 'critical',
+      detail: editorRuntime.leafText === 'missing'
+        ? 'No leaf text slot was available for the customer editor round trip'
+        : editorRuntime.details.find((detail) => detail.startsWith('leaf text')) ?? 'Leaf text editor round trip failed',
+    });
+  }
+  for (const [path, status] of [
+    ['attribute', editorRuntime.editableAttribute],
+    ['standalone_image', editorRuntime.standaloneImage],
+    ['responsive_picture', editorRuntime.responsivePicture],
+    ['navigation', editorRuntime.navigation],
+  ] as const) {
+    if (status !== 'failed') continue;
+    issues.push({
+      code: `customer_editor_${path}_failed`,
+      severity: 'critical',
+      detail: editorRuntime.details.find((detail) => detail.includes(path.replace('_', ' ')))
+        ?? `Customer editor ${path.replace('_', ' ')} round trip failed`,
+    });
+  }
+  if (
+    state.imageSlotCount > 0
+    && editorRuntime.standaloneImage === 'missing'
+    && editorRuntime.responsivePicture === 'missing'
+  ) {
+    issues.push({
+      code: 'customer_editor_image_path_missing',
+      severity: 'critical',
+      detail: 'Image slots exist but none could be exercised through the customer editor runtime',
+    });
   }
 
   // Locate a real declaration backed by a compiled theme variable, mutate
@@ -881,7 +1515,7 @@ async function renderOnce(
     const relativeDir = relative(serverRoot, task.templateDir).replace(/\\/g, '/');
     if (relativeDir.startsWith('../') || relativeDir === '..') throw new Error('Render task escapes server root');
     const url = `${serverOrigin}/${relativeDir.split('/').map(encodeURIComponent).join('/')}/${task.page.split('/').map(encodeURIComponent).join('/')}`;
-    const inspection = await inspectPage(page, serverOrigin, url, options.timeoutMs);
+    const inspection = await inspectPage(page, serverOrigin, url, task.page, options.timeoutMs);
     const passed = inspection.issues.length === 0;
     const screenshot = await screenshotEvidence(page, options.evidenceRoot, task, viewport, passed);
     return {
@@ -939,7 +1573,10 @@ export async function renderTemplateTasks(
   options: RenderRunOptions,
 ): Promise<RenderEvidence[]> {
   const serverRoot = resolve(serverRootInput);
-  const server = await startTemplateServer(serverRoot);
+  // Register every page up front so its artifact URL is served through the
+  // same two app-owned composition functions as a customer preview. All other
+  // files at those artifact URLs remain byte-for-byte static subresources.
+  const server = await startTemplateServer(serverRoot, { renderTasks: tasks });
   const workers = recommendedRenderWorkers(options.workers);
   const settings = {
     evidenceRoot: resolve(options.evidenceRoot),
@@ -1020,13 +1657,18 @@ export function hammingDistance(first: string, second: string): number {
   return distance;
 }
 
-export async function thumbnailSsim(firstPath: string, secondPath: string): Promise<number> {
-  const width = 128;
-  const height = 128;
-  const [first, second] = await Promise.all([
-    sharp(firstPath).resize(width, height, { fit: 'fill' }).greyscale().raw().toBuffer(),
-    sharp(secondPath).resize(width, height, { fit: 'fill' }).greyscale().raw().toBuffer(),
-  ]);
+export interface LosslessScreenshotSource {
+  path: string;
+  sha256: string;
+}
+
+export interface ViewportScreenshotSources {
+  desktop: { first: LosslessScreenshotSource; second: LosslessScreenshotSource };
+  mobile: { first: LosslessScreenshotSource; second: LosslessScreenshotSource };
+}
+
+function pixelSsim(first: Buffer, second: Buffer): number {
+  if (first.length !== second.length || first.length === 0) return 0;
   const length = first.length;
   let meanA = 0;
   let meanB = 0;
@@ -1054,4 +1696,67 @@ export async function thumbnailSsim(firstPath: string, secondPath: string): Prom
   const c2 = (0.03 * 255) ** 2;
   return ((2 * meanA * meanB + c1) * (2 * covariance + c2)) /
     ((meanA ** 2 + meanB ** 2 + c1) * (varianceA + varianceB + c2));
+}
+
+async function verifiedScreenshot(source: LosslessScreenshotSource): Promise<{
+  encoded: Buffer;
+  width: number;
+  height: number;
+}> {
+  if (!/^[0-9a-f]{64}$/i.test(source.sha256)) {
+    throw new Error('Lossless screenshot evidence requires a SHA-256 digest');
+  }
+  const encoded = await readFile(source.path);
+  if (sha256(encoded) !== source.sha256.toLowerCase()) {
+    throw new Error(`Lossless screenshot evidence failed its content hash: ${source.path}`);
+  }
+  const metadata = await sharp(encoded).metadata();
+  if (metadata.format !== 'png' || !metadata.width || !metadata.height) {
+    throw new Error(`Lossless screenshot evidence is not a readable PNG: ${source.path}`);
+  }
+  return { encoded, width: metadata.width, height: metadata.height };
+}
+
+/**
+ * SSIM over the browser screenshot's native, losslessly decoded RGB pixels.
+ * A dimension mismatch fails closed instead of stretching unrelated layouts
+ * into the same 128x128 square, and no lossy thumbnail is consulted.
+ */
+export async function losslessScreenshotSsim(
+  firstSource: LosslessScreenshotSource,
+  secondSource: LosslessScreenshotSource,
+): Promise<number> {
+  const [first, second] = await Promise.all([
+    verifiedScreenshot(firstSource),
+    verifiedScreenshot(secondSource),
+  ]);
+  if (first.width !== second.width || first.height !== second.height) return 0;
+  const [firstPixels, secondPixels] = await Promise.all([
+    sharp(first.encoded).flatten({ background: '#ffffff' }).toColourspace('srgb').raw().toBuffer(),
+    sharp(second.encoded).flatten({ background: '#ffffff' }).toColourspace('srgb').raw().toBuffer(),
+  ]);
+  return pixelSsim(firstPixels, secondPixels);
+}
+
+/** Compare both required browser viewports independently. */
+export async function compareViewportScreenshotPixels(
+  sources: ViewportScreenshotSources,
+): Promise<{ desktopSsim: number; mobileSsim: number }> {
+  const [desktopSsim, mobileSsim] = await Promise.all([
+    losslessScreenshotSsim(sources.desktop.first, sources.desktop.second),
+    losslessScreenshotSsim(sources.mobile.first, sources.mobile.second),
+  ]);
+  return { desktopSsim, mobileSsim };
+}
+
+/** Preview/contact-sheet helper only. Never use lossy thumbnails as dedupe evidence. */
+export async function thumbnailSsim(firstPath: string, secondPath: string): Promise<number> {
+  const width = 128;
+  const height = 128;
+  const [firstEncoded, secondEncoded] = await Promise.all([readFile(firstPath), readFile(secondPath)]);
+  const [first, second] = await Promise.all([
+    sharp(firstEncoded).resize(width, height, { fit: 'fill' }).greyscale().raw().toBuffer(),
+    sharp(secondEncoded).resize(width, height, { fit: 'fill' }).greyscale().raw().toBuffer(),
+  ]);
+  return pixelSsim(first, second);
 }

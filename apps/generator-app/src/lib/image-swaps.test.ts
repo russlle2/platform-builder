@@ -4,9 +4,12 @@ import {
   annotateImageSlots,
   applyImageSwapsToHtml,
   applyImageSwapsToHtmlWithReport,
+  extractRelativeAssetPath,
   getOrCreateImageOwnerId,
   loadImageSwaps,
+  mergeCoordinatedImageSwaps,
   mergeImageSwap,
+  normalizeCoordinatedImageSlotIds,
   sanitizeImageSwapMap,
   saveImageSwaps,
 } from './image-swaps'
@@ -92,6 +95,13 @@ describe('image swap safety', () => {
       [{ original: '/assets/same.jpg', updated: 'https://cdn.example/both.webp' }],
     )
     expect(legacy.match(/https:\/\/cdn\.example\/both\.webp/g)).toHaveLength(2)
+    expect(applyImageSwapsToHtml(
+      '<img src="/assets/same.jpg"><img src="same.jpg">',
+      [{ original: '/assets/same.jpg', updated: 'https://cdn.example/only-exact.webp' }],
+    )).toBe(
+      '<img src="https://cdn.example/only-exact.webp" data-dc-image-id="dc-image-index-0001">' +
+      '<img src="same.jpg" data-dc-image-id="dc-image-index-0002">',
+    )
 
     expect(mergeImageSwap(
       [{ original: '/assets/same.jpg', updated: 'https://cdn.example/first.webp' }],
@@ -104,6 +114,62 @@ describe('image swap safety', () => {
       original: '/assets/same.jpg',
       updated: 'https://cdn.example/final.webp',
     }])
+  })
+
+  it('limits v2 fallback swaps to image sources and inline backgrounds', () => {
+    const original = '/assets/same.jpg'
+    const updated = 'https://cdn.example/new.webp'
+    const html = [
+      `<a href="${original}">${original}</a>`,
+      `<script>var markup = '<img src="${original}">'</script>`,
+      `<!-- <img src="${original}"> -->`,
+      `<img src="${original}" alt="">`,
+      `<section style="background-image:url(&quot;${original}&quot;)"></section>`,
+    ].join('')
+    const edited = applyImageSwapsToHtml(html, [{ original, updated }])
+
+    expect(edited).toContain(`<a href="${original}">${original}</a>`)
+    expect(edited).toContain(`<script>var markup = '<img src="${original}">'</script>`)
+    expect(edited).toContain(`<!-- <img src="${original}"> -->`)
+    expect(edited).toContain(`src="${updated}"`)
+    expect(edited).toContain(`background-image:url(&quot;${updated}&quot;)`)
+  })
+
+  it('recovers v2 image sources from the Netlify preview proxy without trusting unsafe paths', () => {
+    const templateSource = '/api/templates/wellness_coach/legacy-route/assets/assets/img/hero%20portrait.webp'
+    const previewProxy = `/.netlify/images?url=${encodeURIComponent(templateSource)}&w=1200&q=72`
+    const browserCurrentSrc = `https://dailyclarity.org${previewProxy}`
+    const updated = 'https://cdn.example/customer/hero.webp'
+
+    expect(extractRelativeAssetPath(previewProxy)).toBe('assets/img/hero portrait.webp')
+    expect(extractRelativeAssetPath(browserCurrentSrc)).toBe('assets/img/hero portrait.webp')
+    expect(extractRelativeAssetPath(previewProxy.replace(/&/g, '&amp;')))
+      .toBe('assets/img/hero portrait.webp')
+    expect(extractRelativeAssetPath(
+      `/.netlify/images?url=${encodeURIComponent('/api/templates/niche/slug/assets/%252e%252e%252fsecret.jpg')}`,
+    )).toBeUndefined()
+    expect(extractRelativeAssetPath('/.netlify/images?w=1200&q=72')).toBeUndefined()
+    expect(extractRelativeAssetPath('/.netlify/images?url=javascript%3Aalert%281%29'))
+      .toBeUndefined()
+
+    // Old affected drafts have only the absolute currentSrc. The helper now
+    // derives their missing relative source and restores both preview + deploy.
+    const legacySwap = [{ original: browserCurrentSrc, updated }]
+    expect(applyImageSwapsToHtml(`<img src="${previewProxy}">`, legacySwap)).toBe(
+      `<img src="${updated}" data-dc-image-id="dc-image-index-0001">`,
+    )
+    expect(applyImageSwapsToHtml(
+      '<img src="assets/img/hero portrait.webp">',
+      legacySwap,
+    )).toBe(`<img src="${updated}" data-dc-image-id="dc-image-index-0001">`)
+
+    const staleTarget = applyImageSwapsToHtmlWithReport(
+      `<img src="${previewProxy}">`,
+      [{ slotId: 'removed-slot', original: browserCurrentSrc, updated }],
+    )
+    expect(staleTarget.unmatchedSlotIds).toEqual(['removed-slot'])
+    expect(staleTarget.html).toContain('/.netlify/images?')
+    expect(staleTarget.html).not.toContain(updated)
   })
 
   it('reports a stale v3 slot without falling through to duplicate-URL replacement', () => {
@@ -119,6 +185,33 @@ describe('image swap safety', () => {
       '<img src="/assets/same.jpg" data-dc-image-id="dc-image-index-0001">' +
       '<img src="/assets/same.jpg" data-dc-image-id="dc-image-index-0002">',
     )
+  })
+
+  it('fails closed for malformed or ambiguous stable slot IDs', () => {
+    const malformedMap = sanitizeImageSwapMap({
+      'index.html': [{
+        id: 'not safe',
+        original: '/assets/same.jpg',
+        updated: 'https://cdn.example/must-not-spread.webp',
+      }],
+    })
+    expect(malformedMap).toEqual({})
+    expect(mergeImageSwap(
+      [],
+      '/assets/same.jpg',
+      'https://cdn.example/new.webp',
+      undefined,
+      'not safe',
+    )).toEqual([])
+
+    const compilerId = 'img_0123456789abcdefab'
+    const duplicateHtml = `<img data-dc-image-id="${compilerId}" src="one.jpg">` +
+      `<img data-dc-image-id="${compilerId}" src="two.jpg">`
+    const ambiguous = applyImageSwapsToHtmlWithReport(duplicateHtml, [{
+      slotId: compilerId,
+      updated: 'https://cdn.example/neither.webp',
+    }])
+    expect(ambiguous).toEqual({ html: duplicateHtml, unmatchedSlotIds: [compilerId] })
   })
 
   it('canonicalizes legacy slot attributes and supports background-image slots', () => {
@@ -158,6 +251,44 @@ describe('image swap safety', () => {
     expect(source.unmatchedSlotIds).toEqual([])
     expect(source.html).toBe('<source media="(min-width: 50rem)" srcset="https://cdn.example/new-wide.webp" data-dc-image-id="source_responsive">')
   })
+
+  it('persists one picture replacement as an atomic set of independent stable slots', () => {
+    const primary = 'img_111111111111111111'
+    const source = 'img_222222222222222222'
+    const updated = 'https://cdn.example/customer-picture.webp'
+    expect(normalizeCoordinatedImageSlotIds(primary, [source, primary])).toEqual([primary, source])
+    expect(normalizeCoordinatedImageSlotIds(primary, [primary, source, source])).toBeNull()
+    expect(normalizeCoordinatedImageSlotIds(primary, [primary, 'not safe'])).toBeNull()
+
+    const swaps = mergeCoordinatedImageSwaps(
+      [],
+      '/assets/fallback.webp',
+      updated,
+      'fallback.webp',
+      primary,
+      [source, primary],
+    )
+    expect(swaps).toEqual([
+      { slotId: primary, original: '/assets/fallback.webp', updated, originalRelative: 'fallback.webp' },
+      { slotId: source, updated },
+    ])
+    expect(sanitizeImageSwapMap({ 'pages/gallery/detail.html': swaps })).toEqual({
+      'pages/gallery/detail.html': swaps,
+    })
+
+    const full = Array.from({ length: 50 }, (_, index) => ({
+      slotId: `existing-${index}`,
+      updated: `https://cdn.example/${index}.webp`,
+    }))
+    expect(mergeCoordinatedImageSwaps(
+      full,
+      '/assets/fallback.webp',
+      updated,
+      undefined,
+      primary,
+      [primary, source],
+    )).toBe(full)
+  })
 })
 
 describe('scoped image swap persistence', () => {
@@ -189,6 +320,27 @@ describe('scoped image swap persistence', () => {
     expect(JSON.parse(sessionStorage.getItem(IMAGE_SWAPS_KEY) || '{}')).toEqual(first)
     expect(loadImageSwaps(secondScope)).toEqual(second)
     expect(JSON.parse(sessionStorage.getItem(IMAGE_SWAPS_KEY) || '{}')).toEqual(second)
+  })
+
+  it('round-trips safe nested page swaps while rejecting non-canonical paths', () => {
+    const scope = 'template:wellness_coach:serene-path'
+    const nested = {
+      'pages/services/detail.html': [{
+        slotId: 'service-hero',
+        updated: 'https://cdn.example/service.webp',
+      }],
+      '/absolute.html': [{ original: '/old.jpg', updated: 'https://cdn.example/unsafe.webp' }],
+      'pages//empty.html': [{ original: '/old.jpg', updated: 'https://cdn.example/unsafe.webp' }],
+      '../escape.html': [{ original: '/old.jpg', updated: 'https://cdn.example/unsafe.webp' }],
+    }
+
+    saveImageSwaps(nested, scope)
+    expect(loadImageSwaps(scope)).toEqual({
+      'pages/services/detail.html': [{
+        slotId: 'service-hero',
+        updated: 'https://cdn.example/service.webp',
+      }],
+    })
   })
 
   it('does not reuse a portal slug as an unauthenticated draft upload owner', () => {

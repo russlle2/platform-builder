@@ -1,6 +1,7 @@
 /** Client-safe helpers for persistent, independently targeted image slots. */
 
 import { isDraftImageOwner } from './image-owner'
+import { isSafePreviewPage } from './template-preview-security'
 
 export interface ImageSwap {
   /** Stable v3 ID stored in `data-dc-image-id`. */
@@ -22,7 +23,11 @@ export const IMAGE_OWNER_KEY = 'pb_image_owner'
 const SCOPED_IMAGE_SWAPS_KEY = 'pb_image_swaps_by_scope_v1'
 const LEGACY_IMAGE_MIGRATION_KEY = 'pb_image_swaps_legacy_migrated_v1'
 const MAX_IMAGE_SWAPS_PER_PAGE = 50
+const MAX_COORDINATED_IMAGE_SLOTS = 32
 const MAX_SCOPES = 50
+const MAX_IMAGE_SOURCE_LENGTH = 4_096
+const MAX_NETLIFY_PROXY_UNWRAPS = 2
+const NETLIFY_IMAGE_PROXY_PATH = '/.netlify/images'
 const SAFE_IMAGE_SLOT_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/
 const PROTECTED_BLOCK_RE = /<!--[\s\S]*?-->|<(script|style|noscript|template)\b[^>]*>[\s\S]*?<\/\1\s*>/gi
 const OPEN_TAG_RE = /<([A-Za-z][A-Za-z0-9:-]*)\b([^>]*)>/gi
@@ -30,6 +35,7 @@ const READ_DC_IMAGE_ID_RE = /\bdata-dc-image-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^
 const READ_PB_IMAGE_ID_RE = /\bdata-pb-image-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
 const EXISTING_DC_IMAGE_ID_RE = /\sdata-dc-image-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
 const EXISTING_PB_IMAGE_ID_RE = /\sdata-pb-image-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
+const COMPILER_V3_IMAGE_ID_RE = /\bdata-dc-image-id\s*=\s*(?:"(?:img|css)_[a-f0-9]{18}"|'(?:img|css)_[a-f0-9]{18}'|(?:img|css)_[a-f0-9]{18}(?=\s|>))/i
 
 function safeImageUrl(value: unknown): value is string {
   // Persisted swaps are eventually interpolated into both quoted HTML
@@ -74,8 +80,30 @@ export function isSafeImageSlotId(value: unknown): value is string {
   return typeof value === 'string' && SAFE_IMAGE_SLOT_ID_RE.test(value)
 }
 
+/** Validate the exact set of stable slots belonging to one customer-selected picture. */
+export function normalizeCoordinatedImageSlotIds(
+  primarySlotId: unknown,
+  value: unknown,
+): string[] | null {
+  if (!isSafeImageSlotId(primarySlotId) || !Array.isArray(value)) return null
+  if (value.length === 0 || value.length > MAX_COORDINATED_IMAGE_SLOTS) return null
+  const ids: string[] = []
+  const seen = new Set<string>()
+  for (const candidate of value) {
+    if (!isSafeImageSlotId(candidate) || seen.has(candidate)) return null
+    seen.add(candidate)
+    ids.push(candidate)
+  }
+  if (!seen.has(primarySlotId)) return null
+  return [primarySlotId, ...ids.filter((id) => id !== primarySlotId)]
+}
+
 function imageSlotId(swap: Pick<ImageSwap, 'slotId' | 'id'>): string | undefined {
-  if (isSafeImageSlotId(swap.slotId)) return swap.slotId
+  // v3 identity is authoritative whenever present. Never allow a malformed
+  // slotId to fall through to a transitional ID or broad URL replacement.
+  if (swap.slotId !== undefined) {
+    return isSafeImageSlotId(swap.slotId) ? swap.slotId : undefined
+  }
   return isSafeImageSlotId(swap.id) ? swap.id : undefined
 }
 
@@ -124,6 +152,10 @@ function annotateImageSegment(
  * preserved and legacy `data-pb-image-id` attributes are canonicalized.
  */
 export function annotateImageSlots(html: string, page = 'index.html'): string {
+  // Compiler-v3 owns its complete, audited image-slot manifest. Do not mint
+  // client-only slots or silently repair duplicate compiler identities.
+  if (COMPILER_V3_IMAGE_ID_RE.test(html)) return html
+
   const prefix = `dc-image-${safePagePart(page)}`
   let ordinal = 0
   const usedIds = new Set<string>()
@@ -160,7 +192,7 @@ export function sanitizeImageSwapMap(value: unknown): ImageSwapMap {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
   const result: ImageSwapMap = {}
   for (const [page, rawSwaps] of Object.entries(value)) {
-    if (!/^[A-Za-z0-9_-]+\.html$/.test(page) || !Array.isArray(rawSwaps)) continue
+    if (!isSafePreviewPage(page) || !Array.isArray(rawSwaps)) continue
     const swaps: ImageSwap[] = []
     for (const raw of rawSwaps.slice(0, MAX_IMAGE_SWAPS_PER_PAGE)) {
       if (!raw || typeof raw !== 'object') continue
@@ -174,6 +206,11 @@ export function sanitizeImageSwapMap(value: unknown): ImageSwapMap {
         : undefined
       // A malformed v3 slot must not degrade into broad v2 URL replacement.
       if (candidate.slotId !== undefined && !isSafeImageSlotId(candidate.slotId)) continue
+      if (
+        candidate.slotId === undefined &&
+        candidate.id !== undefined &&
+        !isSafeImageSlotId(candidate.id)
+      ) continue
       const slotId = imageSlotId(candidate)
       if (!slotId && !original && !originalRelative) continue
       swaps.push({
@@ -210,18 +247,141 @@ export function getOrCreateImageOwnerId(siteSlug?: string | null): string {
   }
 }
 
+function decodedAssetPath(pathname: string): string | undefined {
+  const idx = pathname.toLowerCase().indexOf('/assets/')
+  if (idx < 0) return undefined
+
+  const encoded = pathname.slice(idx + '/assets/'.length)
+  let decoded = encoded
+  try {
+    // URL.pathname retains percent escapes. Decode the source path so it still
+    // matches the original template attribute during deployment.
+    decoded = decodeURIComponent(encoded)
+
+    // Validate a few additional decoding layers without returning them. This
+    // rejects encoded traversal/backslash tricks while preserving ordinary
+    // percent characters in a real filename after the first URL decode.
+    let safetyValue = decoded
+    for (let pass = 0; pass < 2; pass += 1) {
+      let next: string
+      try {
+        next = decodeURIComponent(safetyValue)
+      } catch {
+        break
+      }
+      if (next === safetyValue) break
+      safetyValue = next
+    }
+    if (!safeRelativeAsset(safetyValue)) return undefined
+  } catch {
+    return undefined
+  }
+  return safeRelativeAsset(decoded) ? decoded : undefined
+}
+
+function isNetlifyImageProxySource(value: string): boolean {
+  if (!value || value.length > MAX_IMAGE_SOURCE_LENGTH) return false
+  try {
+    const url = new URL(value.replace(/&amp;/gi, '&'), 'http://local')
+    return url.pathname.replace(/\/+$/, '').toLowerCase() === NETLIFY_IMAGE_PROXY_PATH
+  } catch {
+    return false
+  }
+}
+
 /** Extract template-relative asset path from a preview iframe img src. */
 export function extractRelativeAssetPath(iframeSrc: string): string | undefined {
-  if (!iframeSrc) return undefined
-  const match = iframeSrc.match(/\/api\/templates\/[^/]+\/[^/]+\/assets\/(.+)$/i)
-  if (match) return match[1]
-  try {
-    const u = new URL(iframeSrc, 'http://local')
-    const p = u.pathname
-    const idx = p.indexOf('/assets/')
-    if (idx >= 0) return p.slice(idx + '/assets/'.length)
-  } catch { /* ignore */ }
+  if (typeof iframeSrc !== 'string') return undefined
+  let candidate = iframeSrc.trim()
+  if (!candidate || candidate.length > MAX_IMAGE_SOURCE_LENGTH) return undefined
+
+  for (let unwraps = 0; unwraps <= MAX_NETLIFY_PROXY_UNWRAPS; unwraps += 1) {
+    try {
+      const url = new URL(candidate.replace(/&amp;/gi, '&'), 'http://local')
+      const normalizedPath = url.pathname.replace(/\/+$/, '').toLowerCase()
+      if (normalizedPath === NETLIFY_IMAGE_PROXY_PATH) {
+        if (unwraps === MAX_NETLIFY_PROXY_UNWRAPS) return undefined
+        const proxiedSource = url.searchParams.get('url')?.trim()
+        if (
+          !proxiedSource ||
+          proxiedSource === candidate ||
+          proxiedSource.length > MAX_IMAGE_SOURCE_LENGTH
+        ) return undefined
+        candidate = proxiedSource
+        continue
+      }
+      return decodedAssetPath(url.pathname)
+    } catch {
+      return undefined
+    }
+  }
   return undefined
+}
+
+function replaceLegacyProxiedImageSources(
+  html: string,
+  originalRelative: string,
+  safeUpdated: string,
+): string {
+  return html.replace(/<(?:img|source)\b[^>]*>/gi, (tag) => tag.replace(
+    /(\ssrc\s*=\s*)(["'])([^"']*)\2/gi,
+    (attribute, prefix: string, quote: string, source: string) => (
+      isNetlifyImageProxySource(source) && extractRelativeAssetPath(source) === originalRelative
+        ? `${prefix}${quote}${safeUpdated}${quote}`
+        : attribute
+    ),
+  ))
+}
+
+function replaceLegacyImageReferences(
+  html: string,
+  original: string,
+  safeUpdated: string,
+): string {
+  const transformSegment = (segment: string) => {
+    OPEN_TAG_RE.lastIndex = 0
+    return segment.replace(OPEN_TAG_RE, (tag, rawName: string) => {
+      const name = rawName.toLowerCase()
+      let replacement = tag
+      if (name === 'img' || name === 'source') {
+        replacement = replacement.replace(
+          /(\s)src\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/gi,
+          (attribute, leading: string, doubleQuoted: string, singleQuoted: string, bare: string) => {
+            const value = doubleQuoted ?? singleQuoted ?? bare ?? ''
+            if (value.replace(/&amp;/gi, '&') !== original.replace(/&amp;/gi, '&')) return attribute
+            const quote = doubleQuoted !== undefined ? '"' : singleQuoted !== undefined ? "'" : '"'
+            return `${leading}src=${quote}${safeUpdated}${quote}`
+          },
+        )
+      }
+      return replacement.replace(
+        /(\sstyle\s*=\s*)(["'])([\s\S]*?)\2/i,
+        (attribute, prefix: string, quote: string, style: string) => {
+          const nextStyle = style.replace(
+            /url\(\s*(?:(["']|&quot;|&#(?:39|x27);)(.*?)\1|([^)'"\s][^)]*?))\s*\)/gi,
+            (url, urlQuote: string | undefined, quoted: string | undefined, bare: string | undefined) => {
+              const value = (quoted ?? bare ?? '').trim().replace(/&amp;/gi, '&')
+              if (value !== original.replace(/&amp;/gi, '&')) return url
+              const outputQuote = urlQuote || ''
+              return `url(${outputQuote}${safeUpdated}${outputQuote})`
+            },
+          )
+          return nextStyle === style ? attribute : `${prefix}${quote}${nextStyle}${quote}`
+        },
+      )
+    })
+  }
+
+  let cursor = 0
+  let result = ''
+  PROTECTED_BLOCK_RE.lastIndex = 0
+  let protectedMatch: RegExpExecArray | null
+  while ((protectedMatch = PROTECTED_BLOCK_RE.exec(html)) !== null) {
+    result += transformSegment(html.slice(cursor, protectedMatch.index))
+    result += protectedMatch[0]
+    cursor = protectedMatch.index + protectedMatch[0].length
+  }
+  return result + transformSegment(html.slice(cursor))
 }
 
 export function mergeImageSwap(
@@ -232,6 +392,7 @@ export function mergeImageSwap(
   slotId?: string,
 ): ImageSwap[] {
   const orig = (original || '').trim()
+  if (slotId !== undefined && slotId !== '' && !isSafeImageSlotId(slotId)) return swaps
   const safeSlotId = isSafeImageSlotId(slotId) ? slotId : undefined
   if ((!orig && !safeSlotId) || orig === updated) return swaps
   const next = swaps.map((s) => ({ ...s }))
@@ -263,6 +424,35 @@ export function mergeImageSwap(
   return next
 }
 
+/**
+ * Persist one responsive picture action as independent stable-ID swaps.
+ * Validation is all-or-nothing so a malformed group cannot degrade to a
+ * partial fallback image update.
+ */
+export function mergeCoordinatedImageSwaps(
+  swaps: ImageSwap[],
+  original: string,
+  updated: string,
+  originalRelative: string | undefined,
+  primarySlotId: unknown,
+  slotIds: unknown,
+): ImageSwap[] {
+  const coordinated = normalizeCoordinatedImageSlotIds(primarySlotId, slotIds)
+  if (!coordinated) return swaps
+  let next = swaps
+  for (const slotId of coordinated) {
+    const primary = slotId === primarySlotId
+    next = mergeImageSwap(
+      next,
+      primary ? original : '',
+      updated,
+      primary ? originalRelative : undefined,
+      slotId,
+    )
+  }
+  return next.length <= MAX_IMAGE_SWAPS_PER_PAGE ? next : swaps
+}
+
 function replaceImageSlot(
   html: string,
   slotId: string,
@@ -272,10 +462,13 @@ function replaceImageSlot(
   const escapedId = slotId.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const openingTag = new RegExp(
     `<([A-Za-z][A-Za-z0-9:-]*)\\b[^>]*\\bdata-(?:dc|pb)-image-id\\s*=\\s*(["'])${escapedId}\\2[^>]*>`,
-    'i',
+    'gi',
   )
-  const match = openingTag.exec(html)
-  if (!match) return { html, replaced: false }
+  const matches = [...html.matchAll(openingTag)]
+  // Stable slot IDs must identify exactly one element. Duplicate identities
+  // are ambiguous and therefore fail closed.
+  if (matches.length !== 1) return { html, replaced: false }
+  const match = matches[0]
 
   let replacement = match[0]
   const safeUpdated = escapeHtmlAttribute(updated)
@@ -345,13 +538,21 @@ export function applyImageSwapsToHtmlWithReport(
       continue
     }
     if (original && original !== updated) {
-      result = result.split(original).join(escapeHtmlAttribute(updated))
+      result = replaceLegacyImageReferences(result, original, escapeHtmlAttribute(updated))
     }
-    if (originalRelative && originalRelative !== updated) {
+    // Old v2 drafts created after preview image proxying was introduced may
+    // have stored only the absolute `currentSrc` proxy URL. Recover its source
+    // path at application time so those drafts work in both preview (proxied)
+    // and deployment (original template-relative) HTML.
+    const fallbackRelative = originalRelative || (
+      original && isNetlifyImageProxySource(original)
+        ? extractRelativeAssetPath(original)
+        : undefined
+    )
+    if (fallbackRelative && fallbackRelative !== updated) {
       const safeUpdated = escapeHtmlAttribute(updated)
-      result = result.split(`src="${originalRelative}"`).join(`src="${safeUpdated}"`)
-      result = result.split(`src='${originalRelative}'`).join(`src='${safeUpdated}'`)
-      result = result.split(`url(${originalRelative})`).join(`url(${safeUpdated})`)
+      result = replaceLegacyProxiedImageSources(result, fallbackRelative, safeUpdated)
+      result = replaceLegacyImageReferences(result, fallbackRelative, safeUpdated)
     }
   }
   return { html: result, unmatchedSlotIds: [...unmatchedSlotIds] }
@@ -502,11 +703,42 @@ export async function handlePersistentImageUpload(
   portalToken?: string,
   scope?: string,
   slotId?: string,
-): Promise<{ map: ImageSwapMap; url: string }> {
+  coordinatedSlotIds?: readonly string[],
+): Promise<{ map: ImageSwapMap; url: string; slotIds: string[] }> {
+  const coordinated = coordinatedSlotIds === undefined
+    ? undefined
+    : normalizeCoordinatedImageSlotIds(slotId, coordinatedSlotIds)
+  if (coordinatedSlotIds !== undefined && !coordinated) {
+    throw new Error('The selected responsive image group is invalid or ambiguous.')
+  }
+  const currentPageSwaps = currentMap[page] || []
+  if (coordinated) {
+    const reservationUrl = 'https://images.invalid/dc-responsive-reservation.webp'
+    const prospective = mergeCoordinatedImageSwaps(
+      currentPageSwaps,
+      originalSrc,
+      reservationUrl,
+      extractRelativeAssetPath(originalSrc),
+      slotId,
+      coordinated,
+    )
+    const complete = coordinated.every((id) => (
+      prospective.filter((swap) => imageSlotId(swap) === id).length === 1
+    ))
+    if (!complete || prospective.length > MAX_IMAGE_SWAPS_PER_PAGE) {
+      throw new Error('The selected responsive image group cannot be saved atomically.')
+    }
+  }
   const { url } = await uploadCustomerImageFile(file, owner, portalToken)
   const rel = extractRelativeAssetPath(originalSrc)
-  const pageSwaps = mergeImageSwap(currentMap[page] || [], originalSrc, url, rel, slotId)
+  const pageSwaps = coordinated
+    ? mergeCoordinatedImageSwaps(currentPageSwaps, originalSrc, url, rel, slotId, coordinated)
+    : mergeImageSwap(currentPageSwaps, originalSrc, url, rel, slotId)
   const map = { ...currentMap, [page]: pageSwaps }
   saveImageSwaps(map, scope)
-  return { map, url }
+  return {
+    map,
+    url,
+    slotIds: coordinated || (isSafeImageSlotId(slotId) ? [slotId] : []),
+  }
 }

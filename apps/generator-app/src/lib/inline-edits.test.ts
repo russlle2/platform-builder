@@ -68,10 +68,55 @@ describe('inline edit targeting', () => {
     expect(edited).toContain('<title data-dc-edit-id="page-title">New page title</title>')
     expect(edited).toContain('<caption data-dc-edit-id="table-caption">New summary</caption>')
     expect(edited).toContain('<option data-dc-edit-id="first-option">New choice</option>')
-    expect(VISUAL_EDITABLE_SELECTOR).toContain('caption')
-    expect(VISUAL_EDITABLE_SELECTOR).toContain('option')
-    expect(VISUAL_EDITABLE_SELECTOR).toContain('select')
-    expect(VISUAL_EDITABLE_SELECTOR).toContain('[data-dc-edit-id][data-dc-edit-attribute]')
+    expect(VISUAL_EDITABLE_SELECTOR).toBe('[data-dc-edit-id],[data-pb-edit-id]')
+  })
+
+  it('does not synthesize structural parent IDs on compiler-v3 pages', () => {
+    const html = [
+      '<nav><ul><li><a href="about.html">',
+      '<span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_111111111111111111">About</span>',
+      '</a></li></ul></nav>',
+      '<form><label><span data-dc-edit-id="txt_222222222222222222">Name</span>',
+      '<input name="name" placeholder="Your name" data-dc-edit-id="txt_333333333333333333" data-dc-edit-attribute="placeholder"></label></form>',
+    ].join('')
+
+    expect(annotateEditableElements(html, 'index.html')).toBe(html)
+    expect(annotateEditableElements(html)).not.toMatch(/<(?:nav|ul|li|a|form|label)\b[^>]*data-dc-edit-id=/)
+  })
+
+  it('fails closed for an ID text edit whose target owns descendant markup', () => {
+    const html = '<li data-dc-edit-id="legacy-parent"><a href="about.html">About</a></li>'
+    const result = applyInlineEditsToHtmlWithReport(html, [{
+      nodeId: 'legacy-parent',
+      original: 'About',
+      updated: 'Changed',
+    }])
+
+    expect(result.unmatchedNodeIds).toEqual(['legacy-parent'])
+    expect(result.html).not.toContain('Changed')
+    expect(result.html).toMatch(/<li data-dc-edit-id="legacy-parent"><a href="about\.html"[^>]*>About<\/a><\/li>/)
+  })
+
+  it('edits leaf navigation and form slots without changing their structure', () => {
+    const html = [
+      '<nav><a href="about.html"><span data-dc-edit-id="txt_111111111111111111">About</span></a></nav>',
+      '<form action="/" method="post"><label><span data-dc-edit-id="txt_222222222222222222">Name</span>',
+      '<input name="name" aria-label="Customer name" placeholder="Your name" data-dc-edit-id="txt_333333333333333333" data-dc-edit-attribute="placeholder"></label>',
+      '<button type="submit"><span data-dc-edit-id="txt_444444444444444444">Send</span></button></form>',
+    ].join('')
+    const result = applyInlineEditsToHtmlWithReport(html, [
+      { nodeId: 'txt_111111111111111111', updated: 'Our approach' },
+      { nodeId: 'txt_222222222222222222', updated: 'Preferred name' },
+      { nodeId: 'txt_333333333333333333', updated: 'Enter your name' },
+      { nodeId: 'txt_444444444444444444', updated: 'Send inquiry' },
+    ])
+
+    expect(result.unmatchedNodeIds).toEqual([])
+    expect(result.html).toContain('<a href="about.html"><span data-dc-edit-id="txt_111111111111111111">Our approach</span></a>')
+    expect(result.html).toContain('aria-label="Customer name" placeholder="Enter your name"')
+    expect(result.html).toContain('<form action="/" method="post">')
+    expect(result.html).toContain('<input name="name"')
+    expect(result.html).toContain('<button type="submit"><span data-dc-edit-id="txt_444444444444444444">Send inquiry</span></button>')
   })
 
   it.each([
@@ -162,6 +207,27 @@ describe('inline edit targeting', () => {
     expect(legacy).not.toContain('<Both')
   })
 
+  it('limits v2 fallback edits to visible text without altering markup or protected blocks', () => {
+    const html = [
+      '<a href="Same label">Same label</a>',
+      '<p title="Same label">Same label</p>',
+      '<script>window.label = "Same label"</script>',
+      '<style>.Same label { color: red }</style>',
+      '<!-- Same label -->',
+    ].join('')
+    const edited = applyInlineEditsToHtml(html, [{
+      original: 'Same label',
+      updated: 'Visible only',
+    }])
+
+    expect(edited).toContain('href="Same label"')
+    expect(edited).toContain('title="Same label"')
+    expect(edited.match(/>Visible only</g)).toHaveLength(2)
+    expect(edited).toContain('<script>window.label = "Same label"</script>')
+    expect(edited).toContain('<style>.Same label { color: red }</style>')
+    expect(edited).toContain('<!-- Same label -->')
+  })
+
   it('reports a stale v3 ID without falling through to duplicate-text replacement', () => {
     const html = '<p>Same label</p><p>Same label</p>'
     const result = applyInlineEditsToHtmlWithReport(html, [{
@@ -175,6 +241,27 @@ describe('inline edit targeting', () => {
       '<p data-dc-edit-id="dc-edit-index-0001">Same label</p>' +
       '<p data-dc-edit-id="dc-edit-index-0002">Same label</p>',
     )
+  })
+
+  it('fails closed for malformed or ambiguous stable IDs', () => {
+    const malformed = applyInlineEditsToHtmlWithReport('<p>Same label</p>', [{
+      id: 'not safe',
+      original: 'Same label',
+      updated: 'Must not spread',
+    }])
+    expect(malformed.unmatchedNodeIds).toEqual(['not safe'])
+    expect(malformed.html).toContain('>Same label</p>')
+    expect(malformed.html).not.toContain('Must not spread')
+
+    const compilerId = 'txt_0123456789abcdefab'
+    const duplicateHtml = `<p data-dc-edit-id="${compilerId}">One</p>` +
+      `<p data-dc-edit-id="${compilerId}">Two</p>`
+    const ambiguous = applyInlineEditsToHtmlWithReport(duplicateHtml, [{
+      nodeId: compilerId,
+      updated: 'Neither',
+    }])
+    expect(ambiguous).toEqual({ html: duplicateHtml, unmatchedNodeIds: [compilerId] })
+    expect(mergeInlineEdit([], 'Same label', 'Changed', 'not safe')).toEqual([])
   })
 
   it('chains later edits by element ID instead of duplicate text', () => {
@@ -207,7 +294,6 @@ describe('inline edit targeting', () => {
       'index.html': [
         { nodeId: 'pb-index-0001', original: 'Old', updated: 'New' },
         { nodeId: 'hero-copy', updated: 'New without fallback' },
-        { original: 'Other', updated: 'Changed' },
       ],
     })
   })
@@ -240,6 +326,21 @@ describe('scoped inline edit persistence', () => {
     expect(JSON.parse(sessionStorage.getItem(INLINE_EDITS_KEY) || '{}')).toEqual(first)
     expect(loadInlineEdits(secondScope)).toEqual(second)
     expect(JSON.parse(sessionStorage.getItem(INLINE_EDITS_KEY) || '{}')).toEqual(second)
+  })
+
+  it('round-trips safe nested page edits while rejecting non-canonical paths', () => {
+    const scope = buildCustomizationScope('wellness_coach', 'serene-path')
+    const nested = {
+      'pages/services/detail.html': [{ nodeId: 'service-detail', updated: 'Custom detail' }],
+      '/absolute.html': [{ original: 'Old', updated: 'Unsafe' }],
+      'pages//empty.html': [{ original: 'Old', updated: 'Unsafe' }],
+      '../escape.html': [{ original: 'Old', updated: 'Unsafe' }],
+    }
+
+    saveInlineEdits(nested, scope)
+    expect(loadInlineEdits(scope)).toEqual({
+      'pages/services/detail.html': [{ nodeId: 'service-detail', updated: 'Custom detail' }],
+    })
   })
 
   it('keeps portal drafts separate from their pre-purchase template', () => {

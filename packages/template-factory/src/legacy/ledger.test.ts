@@ -9,6 +9,7 @@ import { LegacyLedger } from './ledger.js';
 import {
   DEFAULT_LEGACY_RULE_VERSION,
   LEGACY_CANCEL_EXIT_CODE,
+  LEGACY_SCHEMA_VERSION,
   LegacyCancellationError,
 } from './types.js';
 
@@ -22,6 +23,7 @@ test('WAL ledger leases work idempotently and produces aggregate status', async 
 
   try {
     assert.equal(ledger.journalMode().toLowerCase(), 'wal');
+    assert.equal(ledger.synchronousMode(), 2, 'SQLite FULL synchronous mode is required for power-loss durability');
     const run = ledger.createRun({
       command: 'run',
       ruleVersion: 'test-v1',
@@ -145,6 +147,9 @@ test('WAL ledger leases work idempotently and produces aggregate status', async 
       width: 1440,
       height: 900,
       status: 'passed',
+      thumbnailHash: 'a'.repeat(64),
+      thumbnailBytes: 321,
+      artifactPath: 'renders/thumbnails/example.webp',
     });
     ledger.upsertAlias({
       legacySlug: inserted.legacySlug,
@@ -176,6 +181,8 @@ test('WAL ledger leases work idempotently and produces aggregate status', async 
     assert.equal(ledger.getPage(pageId)?.role, 'home');
     assert.equal(ledger.listPages(inserted.id).length, 1);
     assert.equal(ledger.listRenders(inserted.id)[0]?.viewport, 'desktop');
+    assert.equal(ledger.listRenders(inserted.id)[0]?.thumbnailHash, 'a'.repeat(64));
+    assert.equal(ledger.listRenders(inserted.id)[0]?.thumbnailBytes, 321);
     assert.equal(ledger.listRenderHistory(inserted.id)[0]?.artifactHash, 'result-a');
     assert.equal(ledger.listAliases('passing')[0]?.designId, 'design-a');
     assert.equal(ledger.listIssues({ templateId: inserted.id, unresolved: true })[0]?.code, 'example_warning');
@@ -357,6 +364,101 @@ test('current issue queries follow source, rule, and artifact while evidence rec
     assert.equal(repairPending.resultHash, null);
     assert.equal(ledger.getPage(pageId)?.stage, 'inventoried');
     assert.equal(ledger.getPage(pageId)?.resultHash, null);
+  } finally {
+    ledger.close();
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('a poisoned render-preparation lease atomically returns only that template to repair', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'legacy-render-preparation-requeue-'));
+  const ledger = new LegacyLedger({ databasePath: join(scratch, 'ledger.sqlite') });
+  try {
+    const run = ledger.createRun({
+      command: 'run', ruleVersion: 'rule-v1', sourceRoot: join(scratch, 'source'), workRoot: join(scratch, 'work'),
+    });
+    const poisoned = ledger.upsertTemplate(run.id, {
+      legacySlug: 'poisoned-render-input',
+      niche: 'aromatherapy',
+      sourcePath: join(scratch, 'source', 'poisoned-render-input'),
+      sourceHash: 'source-v1',
+      pageCount: 1,
+      stage: 'render_pending',
+    }, 'rule-v1');
+    const healthy = ledger.upsertTemplate(run.id, {
+      legacySlug: 'healthy-render-input',
+      niche: 'aromatherapy',
+      sourcePath: join(scratch, 'source', 'healthy-render-input'),
+      sourceHash: 'source-v1',
+      pageCount: 1,
+      stage: 'render_pending',
+    }, 'rule-v1');
+    const pageId = ledger.upsertPage({
+      templateId: poisoned.id,
+      relativePath: 'index.html',
+      sourceHash: 'page-v1',
+      resultHash: 'page-result-v1',
+      stage: 'static-passed',
+      visibleTextLength: 100,
+    });
+    ledger.upsertAlias({
+      legacySlug: poisoned.legacySlug,
+      templateId: poisoned.id,
+      designId: 'design-v1',
+      contentPresetId: 'content-v1',
+      themePresetId: 'theme-v1',
+      qualityReceipt: 'receipt-v1',
+      status: 'passing',
+    });
+    const leases = ledger.leaseTemplates({
+      stages: ['render_pending'], claimedStage: 'rendering', owner: 'renderer', limit: 2, runId: run.id,
+    });
+    const poisonedLease = leases.find((template) => template.id === poisoned.id)!;
+    const healthyLease = leases.find((template) => template.id === healthy.id)!;
+    assert.ok(poisonedLease);
+    assert.ok(healthyLease);
+
+    assert.equal(ledger.requeueLeasedTemplateForRepair({
+      templateId: poisoned.id,
+      leaseToken: poisonedLease.leaseToken,
+      reason: 'Render preparation failed: candidate digest mismatch',
+      runId: run.id,
+      details: { priorArtifactHash: 'artifact-v1' },
+    }), true);
+    assert.equal(ledger.requeueLeasedTemplateForRepair({
+      templateId: poisoned.id,
+      leaseToken: poisonedLease.leaseToken,
+      reason: 'stale duplicate',
+      runId: run.id,
+    }), false);
+
+    const reset = ledger.getTemplate(poisoned.id)!;
+    assert.equal(reset.stage, 'repair_pending');
+    assert.equal(reset.resultHash, null);
+    assert.equal(reset.qualityReceipt, null);
+    assert.equal(reset.terminalDisposition, null);
+    assert.equal(reset.leaseOwner, null);
+    assert.equal(reset.attempts, 0);
+    assert.equal(ledger.getPage(pageId)?.stage, 'superseded');
+    assert.equal(ledger.getPage(pageId)?.resultHash, null);
+    assert.equal(ledger.listAliases()[0]?.status, 'rejected');
+    const currentIssues = ledger.listIssues({ unresolved: true, current: true });
+    assert.equal(currentIssues.length, 1);
+    assert.equal(currentIssues[0]?.code, 'render_preparation_failed');
+    assert.match(currentIssues[0]?.message ?? '', /candidate digest mismatch/);
+
+    const stillRendering = ledger.getTemplate(healthy.id)!;
+    assert.equal(stillRendering.stage, 'rendering');
+    assert.equal(stillRendering.leaseOwner, 'renderer');
+    assert.equal(stillRendering.leaseExpiresAt !== null, true);
+    assert.equal(ledger.completeTemplateLease({
+      templateId: healthy.id,
+      leaseToken: healthyLease.leaseToken,
+      stage: 'verified',
+    }), true);
+    assert.ok(ledger.leaseTemplates({
+      stages: ['repair_pending'], claimedStage: 'repairing', owner: 'repairer', limit: 1, runId: run.id,
+    }).some((template) => template.id === poisoned.id));
   } finally {
     ledger.close();
     await rm(scratch, { recursive: true, force: true });
@@ -865,7 +967,7 @@ test('issue and transformation fingerprints make interrupted attempt replay idem
   }
 });
 
-test('schema migrations retain v1 renders as history and deduplicate v2 audit replays', async () => {
+test('schema migrations retain v1 renders, deduplicate audit replays, and requeue unattested terminals', async () => {
   const scratch = await mkdtemp(join(tmpdir(), 'legacy-render-migration-'));
   const databasePath = join(scratch, 'ledger.sqlite');
   const raw = new DatabaseSync(databasePath);
@@ -917,6 +1019,18 @@ test('schema migrations retain v1 renders as history and deduplicate v2 audit re
         rule_code TEXT NOT NULL, rule_version TEXT NOT NULL, before_hash TEXT, after_hash TEXT,
         details_json TEXT NOT NULL DEFAULT 'null', created_at TEXT NOT NULL
       );
+      CREATE TABLE aliases (
+        legacy_slug TEXT PRIMARY KEY,
+        template_id INTEGER NOT NULL REFERENCES templates(id) ON DELETE CASCADE,
+        cluster_id INTEGER,
+        design_id TEXT NOT NULL,
+        content_preset_id TEXT NOT NULL,
+        theme_preset_id TEXT NOT NULL,
+        quality_receipt TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'candidate',
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      );
       CREATE INDEX renders_status_idx ON renders(status, viewport);
       PRAGMA user_version = 1;
     `);
@@ -926,9 +1040,9 @@ test('schema migrations retain v1 renders as history and deduplicate v2 audit re
       .run('run-v1', join(scratch, 'source'), join(scratch, 'work'), timestamp, timestamp);
     raw.prepare(`INSERT INTO templates
       (id, legacy_slug, niche, source_path, source_hash, page_count, rule_version, stage,
-       result_hash, attempts, last_run_id, created_at, updated_at)
+       terminal_disposition, result_hash, quality_receipt, attempts, last_run_id, created_at, updated_at)
       VALUES (1, 'legacy-template', 'aromatherapy', ?, 'source', 1, 'rule-v1',
-       'verified', 'artifact-current', 0, 'run-v1', ?, ?)`)
+       'complete', 'passing_design', 'artifact-current', 'receipt-old', 0, 'run-v1', ?, ?)`)
       .run(join(scratch, 'source', 'legacy-template'), timestamp, timestamp);
     raw.prepare(`INSERT INTO pages
       (id, template_id, relative_path, role, source_hash, result_hash, stage, created_at, updated_at)
@@ -937,6 +1051,12 @@ test('schema migrations retain v1 renders as history and deduplicate v2 audit re
     raw.prepare(`INSERT INTO renders
       (id, template_id, page_id, run_id, viewport, width, height, status, attempts, created_at, updated_at)
       VALUES (7, 1, 1, 'run-v1', 'desktop', 1440, 900, 'passed', 2, ?, ?)`)
+      .run(timestamp, timestamp);
+    raw.prepare(`INSERT INTO aliases
+      (legacy_slug, template_id, design_id, content_preset_id, theme_preset_id,
+       quality_receipt, status, created_at, updated_at)
+      VALUES ('legacy-template', 1, 'design-old', 'content-old', 'theme-old',
+       'receipt-old', 'passing', ?, ?)`)
       .run(timestamp, timestamp);
     for (const id of [1, 2]) {
       raw.prepare(`INSERT INTO issues
@@ -965,22 +1085,90 @@ test('schema migrations retain v1 renders as history and deduplicate v2 audit re
     assert.equal(history[0]?.artifactHash, 'legacy-unscoped:7');
     assert.equal(history[0]?.ruleVersion, 'rule-v1');
     assert.equal(history[0]?.attempts, 2);
+    assert.equal(history[0]?.thumbnailHash, null);
+    assert.equal(history[0]?.thumbnailBytes, null);
     assert.equal(migrated.listIssues().length, 1);
+    assert.equal(migrated.getTemplate(1)?.stage, 'render_pending');
+    assert.equal(migrated.getTemplate(1)?.qualityReceipt, null);
+    assert.equal(migrated.listAliases('rejected')[0]?.legacySlug, 'legacy-template');
   } finally {
     migrated.close();
   }
   const versionCheck = new DatabaseSync(databasePath, { readOnly: true });
   try {
-    assert.equal(Number((versionCheck.prepare('PRAGMA user_version').get() as { user_version: number }).user_version), 4);
+    assert.equal(Number((versionCheck.prepare('PRAGMA user_version').get() as { user_version: number }).user_version), LEGACY_SCHEMA_VERSION);
     const columns = versionCheck.prepare('PRAGMA table_info(transformations)').all() as Array<{ name: string }>;
     assert.ok(columns.some((column) => column.name === 'fingerprint'));
     const issueColumns = versionCheck.prepare('PRAGMA table_info(issues)').all() as Array<{ name: string }>;
     assert.ok(issueColumns.some((column) => column.name === 'source_hash'));
     assert.ok(issueColumns.some((column) => column.name === 'rule_version'));
     assert.ok(issueColumns.some((column) => column.name === 'artifact_hash'));
+    const renderColumns = versionCheck.prepare('PRAGMA table_info(renders)').all() as Array<{ name: string }>;
+    assert.ok(renderColumns.some((column) => column.name === 'thumbnail_hash'));
+    assert.ok(renderColumns.some((column) => column.name === 'thumbnail_bytes'));
     assert.equal(Number((versionCheck.prepare('SELECT COUNT(*) AS count FROM transformations').get() as { count: number }).count), 1);
   } finally {
     versionCheck.close();
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('schema v6 invalidates terminal pre-customer-preview receipts and aliases', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'legacy-render-protocol-migration-'));
+  const databasePath = join(scratch, 'ledger.sqlite');
+  let ledger: LegacyLedger | undefined;
+  try {
+    ledger = new LegacyLedger({ databasePath });
+    const template = ledger.upsertTemplate(null, {
+      legacySlug: 'stale-preview-receipt',
+      niche: 'aromatherapy',
+      sourcePath: join(scratch, 'source', 'stale-preview-receipt'),
+      sourceHash: 'source-hash',
+      stage: 'complete',
+      terminalDisposition: 'passing_design',
+    }, DEFAULT_LEGACY_RULE_VERSION);
+    const lease = ledger.leaseTemplates({
+      stages: ['complete'],
+      claimedStage: 'clustered',
+      owner: 'protocol-migration-fixture',
+      limit: 1,
+    })[0];
+    assert.ok(lease);
+    assert.equal(ledger.completeTemplateLease({
+      templateId: template.id,
+      leaseToken: lease.leaseToken,
+      stage: 'complete',
+      terminalDisposition: 'passing_design',
+      resultHash: 'artifact-stale-v1',
+      qualityReceipt: 'receipt-stale-v1',
+    }), true);
+    ledger.upsertAlias({
+      legacySlug: template.legacySlug,
+      templateId: template.id,
+      designId: 'design-stale',
+      contentPresetId: 'content-stale',
+      themePresetId: 'theme-stale',
+      qualityReceipt: 'receipt-stale-v1',
+      status: 'passing',
+    });
+    ledger.close();
+    ledger = undefined;
+
+    const downgrade = new DatabaseSync(databasePath);
+    downgrade.exec('PRAGMA user_version = 5');
+    downgrade.close();
+
+    ledger = new LegacyLedger({ databasePath });
+    const migrated = ledger.getTemplate(template.id);
+    assert.equal(migrated?.stage, 'render_pending');
+    assert.equal(migrated?.terminalDisposition, null);
+    assert.equal(migrated?.qualityReceipt, null);
+    assert.equal(migrated?.attempts, 0);
+    assert.match(migrated?.lastError ?? '', /evidence protocol v2.*customer-preview/i);
+    assert.equal(ledger.listAliases('passing').length, 0);
+    assert.equal(ledger.listAliases('rejected')[0]?.legacySlug, template.legacySlug);
+  } finally {
+    ledger?.close();
     await rm(scratch, { recursive: true, force: true });
   }
 });
@@ -1030,6 +1218,45 @@ test('model reservations enforce both caps and reconcile actual usage', async ()
     assert.equal(budget.accountedTokens, 80);
     assert.equal(budget.accountedCostUsd, 0.75);
     assert.equal(budget.tokensRemaining, 20);
+  } finally {
+    ledger.close();
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('actual usage above a reservation saturates the hard cap idempotently', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'legacy-budget-overage-'));
+  const ledger = new LegacyLedger({ databasePath: join(scratch, 'ledger.sqlite'), aiDollarCapUsd: 1, aiTokenCap: 100 });
+  try {
+    assert.equal(ledger.reserveModelUsage({
+      requestKey: 'fragment-overage',
+      model: 'gpt-5.6-terra',
+      estimatedInputTokens: 40,
+      estimatedOutputTokens: 20,
+      estimatedCostUsd: 0.6,
+    }), true);
+    const reconcile = () => ledger.reconcileModelUsage({
+      requestKey: 'fragment-overage',
+      model: 'gpt-5.6-terra',
+      status: 'completed',
+      actualInputTokens: 90,
+      actualOutputTokens: 20,
+      actualCostUsd: 0.7,
+    });
+    assert.deepEqual(reconcile(), { accepted: false, reason: 'token_ceiling' });
+    assert.deepEqual(reconcile(), { accepted: false, reason: 'token_ceiling' });
+    const budget = ledger.modelBudgetSnapshot();
+    assert.equal(budget.actualTokens, 110, 'actual provider telemetry remains truthful');
+    assert.equal(budget.accountedTokens, 100, 'authorization accounting never exceeds its cap');
+    assert.equal(budget.tokensRemaining, 0);
+    assert.equal(budget.exhausted, true);
+    assert.equal(ledger.reserveModelUsage({
+      requestKey: 'fragment-after-overage',
+      model: 'gpt-5.6-terra',
+      estimatedInputTokens: 1,
+      estimatedOutputTokens: 0,
+      estimatedCostUsd: 0,
+    }), false, 'an overage cannot reopen apparent budget headroom');
   } finally {
     ledger.close();
     await rm(scratch, { recursive: true, force: true });

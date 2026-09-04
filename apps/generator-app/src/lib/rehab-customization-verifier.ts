@@ -27,11 +27,15 @@ import {
 } from './inline-edits'
 import { applyPageCustomizationsForDeploy } from './site-deploy'
 import { combineTemplateThemeStylesheets } from './template-preview-composition'
+import { isSafePreviewPage } from './template-preview-security'
+import { composeCustomerPreviewDocument } from './customer-preview-document'
 
 const SAFE_SEGMENT = /^(?!\.{1,2}$)[A-Za-z0-9._-]+$/
 const SAFE_RELATIVE_FILE = /^(?!\/)(?!.*\\)(?!.*(?:^|\/)\.{1,2}(?:\/|$))[A-Za-z0-9._/-]+$/
 const THEME_TOKEN = /--dc-theme-(?:color|font)_[A-Za-z0-9_-]+/g
 const PROTECTED_HTML = /<!--[\s\S]*?-->|<(script|style|noscript|template)\b[^>]*>[\s\S]*?<\/\1\s*>/gi
+const VOID_HTML_ELEMENTS = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'])
+const INTERACTION_ELEMENTS = new Set(['a', 'button', 'form', 'input', 'label', 'nav', 'option', 'select', 'textarea'])
 const DEFAULT_MAX_DIAGNOSTICS = 100
 const DEFAULT_WORKERS = 8
 
@@ -212,6 +216,50 @@ function openingTagName(tag: string): string | undefined {
   return /^<([A-Za-z][A-Za-z0-9:-]*)\b/.exec(tag)?.[1]
 }
 
+function targetInnerHtml(html: string, attribute: string, value: string): string | undefined {
+  const searchable = html.replace(PROTECTED_HTML, (protectedBlock) => ' '.repeat(protectedBlock.length))
+  const openings = [...searchable.matchAll(/<[A-Za-z][^>]*>/g)]
+    .filter((match) => attributeValues(match[0], attribute).includes(value))
+  if (openings.length !== 1) return undefined
+  const opening = openings[0]!
+  const tagName = openingTagName(opening[0])?.toLowerCase()
+  if (!tagName) return undefined
+  if (VOID_HTML_ELEMENTS.has(tagName) || /\/\s*>$/.test(opening[0])) return ''
+
+  const contentStart = opening.index! + opening[0].length
+  const matchingTag = new RegExp(`<\\/?${tagName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b[^>]*>`, 'gi')
+  matchingTag.lastIndex = contentStart
+  let depth = 1
+  let match: RegExpExecArray | null
+  while ((match = matchingTag.exec(searchable)) !== null) {
+    if (/^<\//.test(match[0])) depth -= 1
+    else if (!/\/\s*>$/.test(match[0])) depth += 1
+    if (depth === 0) return html.slice(contentStart, match.index)
+  }
+  return undefined
+}
+
+function hasElementDescendant(innerHtml: string): boolean {
+  return /<[A-Za-z][^>]*>/.test(innerHtml.replace(/<!--[\s\S]*?-->/g, ''))
+}
+
+function normalizeInteractionTag(tag: string): string {
+  if (/^<\//.test(tag)) return tag.toLowerCase().replace(/\s+/g, '')
+  return tag
+    .replace(/\s(?:data-(?:dc|pb)-(?:edit-id|edit-attribute|image-id)|content|alt|title|placeholder|aria-label|src|srcset|style)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+    .replace(/\s+/g, ' ')
+    .replace(/^<([A-Za-z][A-Za-z0-9:-]*)/, (_match, name: string) => `<${name.toLowerCase()}`)
+    .trim()
+}
+
+function interactionStructure(html: string): string {
+  const searchable = html.replace(PROTECTED_HTML, (protectedBlock) => ' '.repeat(protectedBlock.length))
+  return [...searchable.matchAll(/<\/?([A-Za-z][A-Za-z0-9:-]*)\b[^>]*>/g)]
+    .filter((match) => INTERACTION_ELEMENTS.has(match[1]!.toLowerCase()))
+    .map((match) => normalizeInteractionTag(match[0]))
+    .join('|')
+}
+
 function compilerThemeTokens(css: string): string[] {
   const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '')
   return [...new Set(withoutComments.match(THEME_TOKEN) ?? [])].sort()
@@ -318,7 +366,11 @@ async function verifyTemplate(
     if (themePreset.id !== catalogEntry.themePresetId || themePreset.legacySlug !== catalogEntry.legacySlug) {
       add('theme_preset_lineage_mismatch', 'Theme preset identity does not match the catalogue entry')
     }
-    if (!Array.isArray(manifest.pages) || manifest.pages.length === 0 || manifest.pages.some((page) => !safeRelativeFile(page) || !/\.html?$/i.test(page))) {
+    if (
+      !Array.isArray(manifest.pages) ||
+      manifest.pages.length === 0 ||
+      manifest.pages.some((page) => !isSafePreviewPage(page))
+    ) {
       add('manifest_pages_invalid', 'Manifest pages must be safe HTML paths')
       return {
         key,
@@ -397,11 +449,42 @@ async function verifyTemplate(
       } else if (declaredAttributes.length > 0) {
         add('content_attribute_marker_unmanifested', 'Target declares attribute editing but the content preset describes a text slot', entry.page, entry.nodeId)
         continue
+      } else {
+        const innerHtml = targetInnerHtml(html, 'data-dc-edit-id', entry.nodeId)
+          ?? targetInnerHtml(html, 'data-pb-edit-id', entry.nodeId)
+        if (innerHtml === undefined || hasElementDescendant(innerHtml)) {
+          add('content_target_not_leaf', 'A text edit target owns descendant markup and could erase navigation, form controls, or other structure', entry.page, entry.nodeId)
+          continue
+        }
       }
       const sentinel = `dc-edit-check-${sha256(targetKey).slice(0, 16)}`
       const pageEdits = inlineEdits[entry.page] ?? []
       pageEdits.push({ nodeId: entry.nodeId, updated: sentinel })
       inlineEdits[entry.page] = pageEdits
+    }
+
+    // Visible placeholder copy is part of the customer-facing content surface.
+    // When an input also has an aria-label, the placeholder is the single
+    // editable attribute and the accessibility label remains intact.
+    for (const [page, html] of pages) {
+      const searchable = html.replace(PROTECTED_HTML, (protectedBlock) => ' '.repeat(protectedBlock.length))
+      for (const match of searchable.matchAll(/<(?:input|textarea)\b[^>]*>/gi)) {
+        const tag = match[0]
+        const placeholder = attributeValues(tag, 'placeholder')[0]?.trim()
+        if (!placeholder) continue
+        const ids = [
+          ...attributeValues(tag, 'data-dc-edit-id'),
+          ...attributeValues(tag, 'data-pb-edit-id'),
+        ]
+        const declared = [
+          ...attributeValues(tag, 'data-dc-edit-attribute'),
+          ...attributeValues(tag, 'data-pb-edit-attribute'),
+        ]
+        const nodeId = ids.length === 1 ? ids[0] : undefined
+        if (!nodeId || declared.length !== 1 || declared[0] !== 'placeholder' || !seenContentTargets.has(`${page}\0${nodeId}`)) {
+          add('visible_placeholder_uneditable', 'A visible input or textarea placeholder is not represented by one placeholder-priority content slot', page, nodeId)
+        }
+      }
     }
 
     const seenImageTargets = new Set<string>()
@@ -465,18 +548,42 @@ async function verifyTemplate(
       if (edits.length === 0 && swaps.length === 0) continue
 
       const edited = applyInlineEditsToHtmlWithReport(html, edits, page)
+      const customerPreview = composeCustomerPreviewDocument({
+        html,
+        assetBase: `/api/templates/${catalogEntry.niche}/${catalogEntry.legacySlug}/assets`,
+        page,
+        inlineEdits: edits,
+        imageSwaps: swaps,
+      })
       const unmatchedEdits = new Set(edited.unmatchedNodeIds)
       for (const edit of edits) {
-        if (!edit.nodeId || unmatchedEdits.has(edit.nodeId) || !edited.html.includes(edit.updated)) {
+        if (
+          !edit.nodeId ||
+          unmatchedEdits.has(edit.nodeId) ||
+          !edited.html.includes(edit.updated) ||
+          !customerPreview.includes(edit.updated)
+        ) {
           add('content_customer_path_failed', 'Preview inline-edit helper could not update this exact target', page, edit.nodeId)
         }
       }
       const imaged = applyImageSwapsToHtmlWithReport(edited.html, swaps, page)
       const unmatchedImages = new Set(imaged.unmatchedSlotIds)
       for (const swap of swaps) {
-        if (!swap.slotId || unmatchedImages.has(swap.slotId) || !imaged.html.includes(swap.updated)) {
+        if (
+          !swap.slotId ||
+          unmatchedImages.has(swap.slotId) ||
+          !imaged.html.includes(swap.updated) ||
+          !customerPreview.includes(swap.updated)
+        ) {
           add('image_customer_path_failed', 'Preview image helper could not update this exact target', page, swap.slotId)
         }
+      }
+      const sourceInteractionStructure = interactionStructure(html)
+      if (
+        interactionStructure(imaged.html) !== sourceInteractionStructure ||
+        interactionStructure(customerPreview) !== sourceInteractionStructure
+      ) {
+        add('preview_interaction_structure_changed', 'Preview customization changed navigation or form structure', page)
       }
 
       try {
@@ -490,6 +597,9 @@ async function verifyTemplate(
           if (!deployed.includes(swap.updated)) {
             add('image_deploy_path_failed', 'Deploy helper did not preserve the targeted swap', page, swap.slotId)
           }
+        }
+        if (interactionStructure(deployed) !== sourceInteractionStructure) {
+          add('deploy_interaction_structure_changed', 'Deployment customization changed navigation or form structure', page)
         }
       } catch (error) {
         const detail = error instanceof Error ? error.message : error

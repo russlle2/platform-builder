@@ -139,7 +139,10 @@ test('restores locality and practitioner identity without personalizing visitor 
     files: new Map([['index.html', `<!doctype html><html><head>
       <meta name="description" content="Visit the practice in Anytown, CA."><title>Practice</title>
       </head><body><main><h1>{{BUSINESS_NAME}}</h1><p>Care from John Doe.</p>
-      <form><label>Your name<input name="name" placeholder="Jane Doe"></label></form>
+      <form><label>Your name<input name="name" placeholder="Jane Doe" required></label>
+        <label>Email<input type="email" name="email" required></label>
+        <label>Phone<input type="tel" name="phone"></label>
+        <label>Message<textarea name="message" required></textarea></label></form>
       <a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
   });
   const html = String(result.files.get('index.html'));
@@ -233,6 +236,55 @@ test('neutralizes proof vocabulary inside ordinary FAQ copy without replacing th
   assert.equal(result.qualityReceipt.status, 'passed');
 });
 
+test('neutralizes only unsafe outcome sentences and whole descriptive attributes', () => {
+  const result = repairLegacyTemplate({
+    slug: 'sentence-scoped-health-claims',
+    niche: 'aromatherapy',
+    files: new Map([['index.html', `<!doctype html><html><head><title>Services</title>
+      <meta name="description" content="Enhance your immune resilience and mental sharpness."></head><body><main>
+      <h1>{{BUSINESS_NAME}}</h1><p>Sessions are quiet and appointment-based. The experience can significantly improve sleep quality. Ask what to expect before booking.</p>
+      <p>This service does not treat anxiety, depression, pain, or sleep disorders.</p>
+      <p>Supports a quiet pre-sleep routine focused on slowing down and breath awareness.</p>
+      <a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+
+  assert.match(html, /Sessions are quiet and appointment-based\./);
+  assert.match(html, /Ask what to expect before booking\./);
+  assert.match(html, /This service does not treat anxiety, depression, pain, or sleep disorders\./);
+  assert.match(html, /Supports a quiet pre-sleep routine focused on slowing down and breath awareness\./);
+  assert.doesNotMatch(html, /significantly improve sleep quality|immune resilience|mental sharpness/i);
+  assert.match(html, /content="Services and experiences vary\. Ask the practice what is currently offered and what to expect\."/);
+  assert.ok(result.transformations.some((item) => item.rule === 'neutralize-outcome-claims'));
+  assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
+});
+
+test('replaces complete proof and metric regions while preserving safe siblings', () => {
+  const result = repairLegacyTemplate({
+    slug: 'legacy-proof-metric-clusters',
+    niche: 'wellness_coach',
+    files: new Map([['index.html', `<!doctype html><html><head><title>Proof — {{BUSINESS_NAME}}</title></head><body><main>
+      <h1>About {{BUSINESS_NAME}}</h1><p>Safe introduction remains.</p>
+      <section class="intro"><h2>What people notice first</h2><p>Clients report changes in clarity, small daily wins, and routines that stick.</p></section>
+      <aside><h3>Credibility</h3><div data-tip="350+ coaching hours logged">Hours</div><div><h3>Quick stats</h3>
+        <p>Average habit retention: 78% after 6 weeks.</p><p>Client NPS: 4.7 out of 5.</p><p>Repeat clients: 42% return within 6 months.</p></div></aside>
+      <section><h2>Social proof</h2><p>“I left more rested than I have in months.” — M.</p></section>
+      <section><h2>Case note (anonymized)</h2><p>A client used practical exercises over 8 sessions to regain sleep consistency.</p></section>
+      <section><h2>Proof of insurance requirements</h2><p>Clients report scheduling problems through the contact form.</p></section>
+      <p>Safe closing remains.</p><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+
+  assert.match(html, /Safe introduction remains\./);
+  assert.match(html, /Safe closing remains\./);
+  assert.match(html, /Proof of insurance requirements/);
+  assert.match(html, /Clients report scheduling problems through the contact form\./);
+  assert.doesNotMatch(html, /Clients report changes|Credibility|Quick stats|habit retention|Client NPS|Repeat clients|coaching hours|Social proof|left more rested|Case note|regain sleep consistency/i);
+  assert.equal((html.match(/data-dc-safe-replacement="neutral-guidance"/g) ?? []).length, 4);
+  assert.match(html, /<title[^>]*>Practice information<\/title>/);
+  assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
+});
+
 test('preserves a page wrapper while replacing nested proof and normalizing escaped tokens', () => {
   const result = repairLegacyTemplate({
     slug: 'irregular-proof-wrapper',
@@ -291,7 +343,7 @@ test('sanitizes only the smallest proof card and preserves its siblings', () => 
   assert.equal(result.qualityReceipt.status, 'passed');
 });
 
-test('preserves benign form intent and wrapper while replacing only sensitive form contents', () => {
+test('standardizes every legacy form and removes externally associated controls', () => {
   const result = repairLegacyTemplate({
     slug: 'form-intent-preservation',
     niche: 'wellness_coach',
@@ -304,20 +356,48 @@ test('preserves benign form intent and wrapper while replacing only sensitive fo
     ]),
   });
   const html = String(result.files.get('index.html'));
-  assert.match(html, /id="newsletter" class="newsletter compact"/);
-  assert.match(html, /name="subscriber_email"/);
-  assert.match(html, /id="subscriber_email" required="" name="subscriber_email-2"/);
-  assert.match(html, /<textarea name="textarea-3"><\/textarea>/);
-  assert.match(html, /form="newsletter" id="postal-code" pattern="\[0-9\]\{5\}" maxlength="5" required="" name="postal-code"/);
-  assert.match(html, />Join updates</);
+  assert.match(html, /class="newsletter compact dc-contact-form"[^>]*id="newsletter"/);
   assert.match(html, /id="intake"/);
   assert.match(html, /class="booking-grid custom-shell dc-contact-form"/);
   assert.match(html, /style="display:grid"/);
-  assert.doesNotMatch(html, /medical_history|List medications/i);
-  assert.match(html, /data-dc-standard-form="safe"/);
-  assert.match(html, /data-dc-standard-form="contact"/);
-  assert.ok(result.transformations.some((item) => item.rule === 'name-form-controls'));
+  assert.equal((html.match(/data-dc-standard-form="contact"/g) ?? []).length, 2);
+  assert.equal((html.match(/name="name"/g) ?? []).length, 2);
+  assert.equal((html.match(/name="email"/g) ?? []).length, 2);
+  assert.equal((html.match(/name="phone"/g) ?? []).length, 2);
+  assert.equal((html.match(/name="message"/g) ?? []).length, 2);
+  assert.doesNotMatch(html, /medical_history|List medications|subscriber_email|postal-code|Join updates|\bform="newsletter"|\baction=/i);
+  assert.ok(result.transformations.some((item) => item.rule === 'standardize-contact-form'));
+  assert.ok(result.transformations.some((item) => item.rule === 'remove-nonstandard-form-controls'));
   assert.equal(result.qualityReceipt.status, 'passed');
+});
+
+test('replaces password, birth-date, insurance, upload, and orphan intake controls with the exact inquiry schema', () => {
+  const result = repairLegacyTemplate({
+    slug: 'unsupported-intake-controls',
+    niche: 'holistic_medicine',
+    files: new Map([['index.html', `<!doctype html><html><head><title>{{BUSINESS_NAME}}</title></head><body><main><h1>{{BUSINESS_NAME}}</h1>
+      <form id="member-intake" class="insurance-intake"><label>Portal password<input type="password" name="portal_password"></label>
+        <label>Date of birth<input type="date" name="dob"></label><label>Insurance member ID<input name="member_id"></label>
+        <label>Upload medical records<input type="file" name="records"></label></form>
+      <label>Emergency contact<input form="member-intake" name="emergency_contact"></label>
+      <a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+  const form = html.match(/<form\b[\s\S]*?<\/form>/i)?.[0] ?? '';
+
+  assert.match(form, /name="contact"/);
+  assert.match(form, /method="post"/);
+  assert.match(form, /data-netlify="true"/);
+  assert.match(form, /data-dc-standard-form="contact"/);
+  assert.equal((form.match(/<(?:input|textarea)\b/g) ?? []).length, 4);
+  assert.match(form, /<input name="name"[^>]*required/);
+  assert.match(form, /<input type="email" name="email"[^>]*required/);
+  assert.match(form, /<input type="tel" name="phone"/);
+  assert.match(form, /<textarea name="message"[^>]*required/);
+  assert.doesNotMatch(html, /password|date of birth|\bdob\b|insurance|member[_ -]?id|type="file"|medical records|emergency contact|(?:^|\s)form=/i);
+  assert.ok(result.transformations.some((item) => item.rule === 'standardize-contact-form'));
+  assert.ok(result.transformations.some((item) => item.rule === 'remove-nonstandard-form-controls'));
+  assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
 });
 
 test('neutralizes sensitive form wrapper vocabulary and repairs references without discarding shell styling', () => {
@@ -340,7 +420,33 @@ test('neutralizes sensitive form wrapper vocabulary and repairs references witho
   assert.equal(result.qualityReceipt.status, 'passed');
 });
 
-test('keeps a benign form when a sibling link mentions stories and uses a proof-neutral generated name', () => {
+test('revalidates standardized form accessible names against the final ID reference graph', () => {
+  const result = repairLegacyTemplate({
+    slug: 'form-accessible-name-references',
+    niche: 'holistic_medicine',
+    files: new Map([['index.html', `<!doctype html><html><head><title>{{BUSINESS_NAME}}</title></head><body><main><h1>{{BUSINESS_NAME}}</h1>
+      <h2 id="outside-sensitive-title">Medical history intake</h2>
+      <form id="external-sensitive" aria-labelledby="outside-sensitive-title"><label>Date of birth<input name="dob" type="date"></label></form>
+      <form id="removed-title" aria-labelledby="inside-title"><h2 id="inside-title">Send a note</h2><input name="topic"></form>
+      <h2 id="safe-contact-title">Contact our team</h2>
+      <form id="external-safe" aria-labelledby="safe-contact-title"><input name="topic"></form>
+      <a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+  const externalSensitive = html.match(/<form\b(?=[^>]*id="external-sensitive")[\s\S]*?<\/form>/i)?.[0] ?? '';
+  const removedTitle = html.match(/<form\b(?=[^>]*id="removed-title")[\s\S]*?<\/form>/i)?.[0] ?? '';
+  const externalSafe = html.match(/<form\b(?=[^>]*id="external-safe")[\s\S]*?<\/form>/i)?.[0] ?? '';
+
+  assert.match(externalSensitive, /aria-label="Contact form"/);
+  assert.doesNotMatch(externalSensitive, /aria-labelledby/);
+  assert.match(removedTitle, /aria-label="Contact form"/);
+  assert.doesNotMatch(removedTitle, /aria-labelledby/);
+  assert.match(externalSafe, /aria-labelledby="safe-contact-title"/);
+  assert.doesNotMatch(externalSafe, /aria-label="Contact form"/);
+  assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
+});
+
+test('standardizes a newsletter form when a sibling link mentions stories', () => {
   const result = repairLegacyTemplate({
     slug: 'testimonial-page-benign-form',
     niche: 'wellness_coach',
@@ -350,14 +456,17 @@ test('keeps a benign form when a sibling link mentions stories and uses a proof-
     ]),
   });
   const html = String(result.files.get('testimonials.html'));
-  assert.match(html, /name="legacy-form-[a-f0-9]{10}-1"/);
+  assert.match(html, /name="contact"[^>]*data-dc-standard-form="contact"/);
+  assert.match(html, /name="name"/);
   assert.match(html, /name="email"/);
-  assert.match(html, />Join updates</);
+  assert.match(html, /name="phone"/);
+  assert.match(html, /name="message"/);
+  assert.doesNotMatch(html, />Join updates</);
   assert.doesNotMatch(html, /legacy-testimonials/i);
   assert.equal(result.qualityReceipt.status, 'passed');
 });
 
-test('removes missing form endpoints while retaining existing local actions', () => {
+test('removes every legacy form endpoint and uses only the audited submission contract', () => {
   const result = repairLegacyTemplate({
     slug: 'legacy-form-actions',
     niche: 'wellness_coach',
@@ -367,8 +476,59 @@ test('removes missing form endpoints while retaining existing local actions', ()
     ]),
   });
   const html = String(result.files.get('index.html'));
-  assert.doesNotMatch(html, /action="(?:\/submit|\/alternate)"|formaction=/);
-  assert.match(html, /action="contact\.html"/);
+  assert.doesNotMatch(html, /\baction=|\bformaction=/);
+  assert.equal((html.match(/data-dc-standard-form="contact"/g) ?? []).length, 2);
+  assert.equal((html.match(/data-netlify="true"/g) ?? []).length, 2);
+  assert.equal(result.qualityReceipt.status, 'passed');
+});
+
+test('repairs contextual data and blob URLs while retaining an allowed inline raster image', () => {
+  const raster = 'data:image/png;base64,AAAA';
+  const result = repairLegacyTemplate({
+    slug: 'embedded-url-policy',
+    niche: 'aromatherapy',
+    files: new Map<string, string | Uint8Array>([
+      ['index.html', `<!doctype html><html><head><title>{{BUSINESS_NAME}}</title>
+        <link rel="stylesheet" href="data:text/css,body%7Bdisplay:none%7D">
+        <style>.safe{background:url("${raster}")}.unsafe{background:url("d\\61 ta:text/html,blocked")}</style>
+        </head><body><main><h1>{{BUSINESS_NAME}}</h1><img class="safe" src="${raster}" alt="Abstract texture">
+        <img src="data:image/svg+xml,%3Csvg%20onload%3Dalert(1)%3E" alt="Unsafe vector">
+        <a href="blob:https://example.test/transient">Unsafe download</a><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`],
+      ['assets/css/unsafe.css', `@import url("${raster}");.card{background:url("blob:https://example.test/id")}`],
+    ]),
+  });
+  const html = String(result.files.get('index.html'));
+  const css = [...result.files.entries()]
+    .filter(([path]) => /\.css$/i.test(path))
+    .map(([, value]) => String(value))
+    .join('\n');
+
+  assert.match(html, new RegExp(raster.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.doesNotMatch(html, /data:text\/css|data:image\/svg|blob:https|d\\61\s*ta:/i);
+  assert.doesNotMatch(css, /@import\s+url\("data:|blob:https|d\\61\s*ta:/i);
+  assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
+});
+
+test('makes only title and meta description editable among head metadata', () => {
+  const result = repairLegacyTemplate({
+    slug: 'editable-seo-metadata',
+    niche: 'wellness_coach',
+    files: new Map([['index.html', `<!doctype html><html><head>
+      <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta name="description" content="A practical introduction to current services."><title>Current services</title>
+      </head><body><main><h1>{{BUSINESS_NAME}}</h1><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>`]]),
+  });
+  const html = String(result.files.get('index.html'));
+  const viewport = html.match(/<meta name="viewport"[^>]*>/i)?.[0] ?? '';
+  const description = html.match(/<meta name="description"[^>]*>/i)?.[0] ?? '';
+  const title = html.match(/<title[^>]*>/i)?.[0] ?? '';
+
+  assert.doesNotMatch(viewport, /data-dc-edit-id|data-dc-edit-attribute/);
+  assert.match(description, /data-dc-edit-id="txt_[a-f0-9]{18}"/);
+  assert.match(description, /data-dc-edit-attribute="content"/);
+  assert.match(title, /data-dc-edit-id="txt_[a-f0-9]{18}"/);
+  assert.ok(result.contentPreset.entries.some((entry) => entry.attribute === 'content' && entry.text === 'A practical introduction to current services.'));
+  assert.ok(!result.contentPreset.entries.some((entry) => entry.text === 'width=device-width,initial-scale=1'));
   assert.equal(result.qualityReceipt.status, 'passed');
 });
 
@@ -421,7 +581,7 @@ test('normalizes legacy accessibility semantics and root-relative CSS assets', (
   });
   const html = String(result.files.get('index.html'));
   assert.match(html, /<div class="facts" data-dc-repaired-semantics="definition-list">/);
-  assert.match(html, /<select id="strength" aria-label="Strength"/);
+  assert.doesNotMatch(html, /<select\b|id="strength"/);
   assert.match(html, /role="dialog" aria-label="Information"/);
   assert.match(html, /<button data-dc-repaired-semantics="tab"/);
   assert.doesNotMatch(html, /role="tab"|aria-selected=/);
@@ -655,6 +815,53 @@ test('applies only stylesheet-local theme variables to avoid quadratic artifact 
   assert.doesNotMatch(output['two.css']!, /--dc-theme-one/);
 });
 
+test('rejects corrupt resumed theme presets before CSS interpolation', () => {
+  const first = fixture('theme-resume-integrity');
+  const files = new Map(first.files);
+  const preset = JSON.parse(String(files.get('.dailyclarity/theme-preset.json'))) as {
+    tokens: Array<{ kind: string; value: string }>;
+  };
+  const color = preset.tokens.find((token) => token.kind === 'color');
+  assert.ok(color);
+  color.value = '#fff;}body{display:none';
+  files.set('.dailyclarity/theme-preset.json', JSON.stringify(preset));
+
+  assert.throws(
+    () => repairLegacyTemplate({
+      slug: 'theme-resume-integrity',
+      niche: 'wellness_coach',
+      files,
+    }),
+    /prior theme preset.*unsafe token/i,
+  );
+  assert.throws(
+    () => applyThemePreset(
+      { 'styles.css': '.card{color:var(--dc-theme-corrupt)}' },
+      {
+        id: 'theme-corrupt',
+        legacySlug: 'theme-corrupt',
+        tokens: [{ id: 'corrupt', kind: 'color', value: '#fff;}body{display:none' }],
+        fontImports: [],
+        hash: 'corrupt',
+      },
+    ),
+    /unsafe token/i,
+  );
+  assert.throws(
+    () => applyThemePreset(
+      { 'styles.css': '.card{font-family:var(--dc-theme-font)}' },
+      {
+        id: 'theme-corrupt-import',
+        legacySlug: 'theme-corrupt-import',
+        tokens: [{ id: 'font', kind: 'font', value: 'Inter, sans-serif' }],
+        fontImports: ['@import "https://fonts.googleapis.com.attacker.invalid/tracker.css";'],
+        hash: 'corrupt',
+      },
+    ),
+    /unsafe font import/i,
+  );
+});
+
 test('keeps nested image and alt slots independently editable and exactly recomposable', () => {
   const result = repairLegacyTemplate({
     slug: 'nested-editable-image',
@@ -685,6 +892,63 @@ test('keeps nested image and alt slots independently editable and exactly recomp
   assert.equal(buildDedupeClusters([candidate]).length, 1);
 });
 
+test('emits only leaf text slots while preserving navigation and form descendants', () => {
+  const source = () => repairLegacyTemplate({
+    slug: 'leaf-edit-contract',
+    niche: 'wellness_coach',
+    files: new Map<string, string | Uint8Array>([
+      ['index.html', `<!doctype html><html lang="en"><head><title>Legacy</title></head><body>
+        <header><nav>Explore <a href="about.html"><strong>About us</strong></a></nav></header>
+        <main><h1>{{BUSINESS_NAME}}</h1><p>Tell us about your current priorities.</p>
+        <button type="button"><svg aria-hidden="true" viewBox="0 0 1 1"><path d="M0 0h1v1z"></path></svg> Open menu</button>
+        <a href="mailto:{{EMAIL}}">Contact</a></main>
+        <form id="contact" name="contact" method="post" data-netlify="true" data-dc-standard-form="contact">
+          <label>Name <input name="name" required aria-label="Full name" placeholder="Enter your name"></label>
+          <label>Email <input type="email" name="email" required></label>
+          <label>Phone <input type="tel" name="phone"></label>
+          <label>Message <textarea name="message" required aria-label="Inquiry message" placeholder="How can we help?"></textarea></label>
+          <button type="submit">Send</button></form>
+      </body></html>`],
+      ['about.html', '<!doctype html><html lang="en"><head><title>About</title></head><body><main><h1>About {{BUSINESS_NAME}}</h1><a href="index.html">Home</a><a href="mailto:{{EMAIL}}">Contact</a></main></body></html>'],
+      ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+    ]),
+  });
+  const first = source();
+  const second = source();
+  const html = String(first.files.get('index.html'));
+  const document = parse(html) as unknown as HtmlNode;
+  const targets: HtmlNode[] = [];
+  const collect = (node: HtmlNode): void => {
+    if (node.attrs?.some((attr) => attr.name === 'data-dc-edit-id')) targets.push(node);
+    for (const child of node.childNodes ?? []) collect(child);
+  };
+  collect(document);
+
+  assert.ok(targets.length > 0);
+  for (const target of targets) {
+    const attributeSlot = target.attrs?.some((attr) => attr.name === 'data-dc-edit-attribute');
+    if (!attributeSlot) {
+      assert.equal(
+        (target.childNodes ?? []).some((child) => Boolean(child.tagName)),
+        false,
+        `text slot on <${target.tagName}> owns element descendants`,
+      );
+    }
+  }
+  assert.match(html, /<nav><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Explore <\/span><a href="about\.html"><strong data-dc-edit-id="txt_[a-f0-9]{18}">About us<\/strong><\/a><\/nav>/);
+  assert.match(html, /<label><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Name <\/span><input[^>]*aria-label="Full name"[^>]*placeholder="Enter your name"[^>]*data-dc-edit-id="txt_[a-f0-9]{18}"[^>]*data-dc-edit-attribute="placeholder"/);
+  assert.match(html, /<textarea[^>]*aria-label="Inquiry message"[^>]*placeholder="How can we help\?"[^>]*data-dc-edit-id="txt_[a-f0-9]{18}"[^>]*data-dc-edit-attribute="placeholder"/);
+  assert.ok(first.contentPreset.entries.some((entry) => entry.attribute === 'placeholder' && entry.text === 'Enter your name'));
+  assert.ok(first.contentPreset.entries.some((entry) => entry.attribute === 'placeholder' && entry.text === 'How can we help?'));
+  assert.equal(applyContentPreset(first.design.pages, first.contentPreset)['index.html'], html);
+  assert.equal(String(second.files.get('index.html')), html, 'leaf wrappers and IDs must be deterministic');
+  assert.ok(first.transformations.some((item) => item.rule === 'wrap-direct-editable-text'));
+  assert.match(html, /href="about\.html"/);
+  assert.match(html, /<form id="contact"/);
+  assert.match(html, /<input\b[^>]*name="name"/);
+  assert.match(html, /<textarea\b[^>]*name="message"/);
+});
+
 test('uses one real element slot for responsive img and source candidates', () => {
   const result = repairLegacyTemplate({
     slug: 'responsive-image-slots',
@@ -712,7 +976,7 @@ test('uses one real element slot for responsive img and source candidates', () =
   assert.equal(result.qualityReceipt.checks.find((check) => check.code === 'stable-image-ids')?.pass, true);
 });
 
-test('composition compatibility follows editable attributes nested inside a parent content slot', () => {
+test('composition compatibility follows the visible leaf slot when an aria label shares its element', () => {
   const result = repairLegacyTemplate({
     slug: 'nested-editable-label',
     niche: 'aromatherapy',
@@ -722,10 +986,10 @@ test('composition compatibility follows editable attributes nested inside a pare
     ]),
   });
   const repaired = String(result.files.get('index.html'));
-  const nestedId = repaired.match(/<button[^>]*data-dc-edit-id="([^"]+)"[^>]*data-dc-edit-attribute="aria-label"/)?.[1];
+  const nestedId = repaired.match(/<button[^>]*data-dc-edit-id="([^"]+)"/)?.[1];
   assert.ok(nestedId);
-  assert.ok(result.contentPreset.entries.some((entry) => entry.nodeId === nestedId && entry.attribute === 'aria-label'));
-  assert.ok(result.contentPreset.entries.some((entry) => !entry.attribute && entry.html.includes(`data-dc-edit-id="${nestedId}"`)));
+  assert.match(repaired, /<button[^>]*aria-label="Book a session"[^>]*data-dc-edit-id="[^"]+"[^>]*>\{\{PRIMARY_CTA_LABEL\}\}<\/button>/);
+  assert.ok(result.contentPreset.entries.some((entry) => entry.nodeId === nestedId && !entry.attribute && entry.text === '{{PRIMARY_CTA_LABEL}}'));
   assert.equal(applyContentPreset(result.design.pages, result.contentPreset)['index.html'], repaired);
 
   const candidate = {
@@ -970,10 +1234,7 @@ test('mid-tone text colors receive an auditable accessible default', () => {
 test('irregular near matches stay distinct without strict structural or render evidence', () => {
   const left = fixture('irregular-a');
   const changedCss = SOURCE_CSS.replace('display: grid', 'display: flex');
-  const rightInput = fixture('discarded');
-  const files = new Map(rightInput.files);
-  files.set('assets/css/styles.css', changedCss);
-  const right = repairLegacyTemplate({ slug: 'irregular-b', niche: 'wellness_coach', files });
+  const right = fixture('irregular-b', SOURCE_HTML, '', changedCss);
   assert.equal(canAliasDesigns(left.fingerprint, right.fingerprint).alias, false);
   const pageEvidence = [{ page: 'index.html', desktopSsim: 0.995, mobileSsim: 0.995, desktopPerceptualHashDistance: 4, mobilePerceptualHashDistance: 4 }];
   assert.equal(satisfiesVisualAliasThresholds({ domSimilarity: 0.98, desktopSsim: 0.995, mobileSsim: 0.995, desktopPerceptualHashDistance: 4, mobilePerceptualHashDistance: 4, pages: pageEvidence }), true);

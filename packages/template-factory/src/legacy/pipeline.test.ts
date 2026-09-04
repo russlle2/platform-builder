@@ -17,6 +17,7 @@ import {
   rehabCustomizationVerifierArgs,
   rehabStagingUploaderArgs,
   repairOne,
+  renderPendingBatch,
   validateFinalPageEvidenceMatrix,
   validatePromotionSourceState,
   validatePilotGateAuthorization,
@@ -25,7 +26,12 @@ import {
 } from './pipeline.js';
 import type { LegacyTemplateInventory } from './inventory.js';
 import type { LegacyCommandContext } from './types.js';
-import { LEGACY_PILOT_GATE_VERSION, LegacyCancellationError } from './types.js';
+import {
+  FINAL_QUALITY_RECEIPT_VERSION,
+  FINAL_RENDER_PROTOCOL,
+  LEGACY_PILOT_GATE_VERSION,
+  LegacyCancellationError,
+} from './types.js';
 
 function artifactContext(
   config: ReturnType<typeof resolveLegacyConfig>,
@@ -92,7 +98,7 @@ test('render completion requires one passing result per page and viewport', () =
   ], ['index.html', 'about.html']), false);
 });
 
-test('final evidence requires exact manifest, ledger, render, and receipt page matrices', () => {
+test('promotion-grade final evidence requires the current protocol and exact page matrices', () => {
   const ledgerPages = [
     { id: 11, relativePath: 'index.html', stage: 'static-passed' },
     { id: 12, relativePath: 'about.html', stage: 'static-passed' },
@@ -106,6 +112,9 @@ test('final evidence requires exact manifest, ledger, render, and receipt page m
     status: 'passed' as const,
     screenshotHash: `${pageId}-${viewport}-screenshot`,
     perceptualHash: `${pageId}-${viewport}-phash`,
+    thumbnailHash: sha256(`${pageId}-${viewport}-thumbnail`),
+    thumbnailBytes: 123,
+    artifactPath: `renders/thumbnails/${pageId}-${viewport}.webp`,
     consoleErrors: 0,
     failedRequests: 0,
     axeCritical: 0,
@@ -125,19 +134,45 @@ test('final evidence requires exact manifest, ledger, render, and receipt page m
     passed: true,
     screenshotSha256: render.screenshotHash,
     perceptualHash: render.perceptualHash,
+    thumbnailSha256: render.thumbnailHash,
+    thumbnailBytes: render.thumbnailBytes,
     issues: [],
   }));
   const valid = {
+    sourcePages: ['index.html', 'about.html'],
+    artifactPages: ['index.html', 'about.html'],
     manifestPages: ['index.html', 'about.html'],
     ledgerPages,
     renders,
+    receiptVersion: FINAL_QUALITY_RECEIPT_VERSION,
+    receiptRenderProtocol: FINAL_RENDER_PROTOCOL,
     receiptPages,
   };
 
   assert.deepEqual(validateFinalPageEvidenceMatrix(valid), []);
   assert.ok(validateFinalPageEvidenceMatrix({
     ...valid,
+    sourcePages: ['index.html', 'about.html', 'services.html'],
+  }).some((issue) => issue.code === 'source_page_lineage' && issue.recoveryStage === 'repair_pending'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    artifactPages: ['index.html'],
+  }).some((issue) => issue.code === 'source_page_lineage' && issue.recoveryStage === 'repair_pending'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    artifactPages: ['index.html', 'about.html', 'invented.html'],
+  }).some((issue) => issue.code === 'source_page_lineage' && issue.recoveryStage === 'repair_pending'));
+  assert.deepEqual(validateFinalPageEvidenceMatrix({
+    ...valid,
+    sourcePages: ['about.html'],
+  }), []);
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
     manifestPages: ['index.html', 'about.html', 'missing.html'],
+  }).some((issue) => issue.code === 'source_page_lineage' && issue.recoveryStage === 'repair_pending'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    ledgerPages: ledgerPages.filter((page) => page.relativePath !== 'about.html'),
   }).some((issue) => issue.code === 'ledger_page_matrix' && issue.recoveryStage === 'repair_pending'));
   assert.ok(validateFinalPageEvidenceMatrix({
     ...valid,
@@ -149,6 +184,10 @@ test('final evidence requires exact manifest, ledger, render, and receipt page m
   }).some((issue) => issue.code === 'render_page_matrix'));
   assert.ok(validateFinalPageEvidenceMatrix({
     ...valid,
+    renders: renders.map((render, index) => index === 0 ? { ...render, thumbnailHash: null } : render),
+  }).some((issue) => issue.code === 'render_page_matrix'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
     receiptPages: receiptPages.slice(0, 3),
   }).some((issue) => issue.code === 'receipt_page_matrix'));
   assert.ok(validateFinalPageEvidenceMatrix({
@@ -157,6 +196,20 @@ test('final evidence requires exact manifest, ledger, render, and receipt page m
       ? { ...receipt, screenshotSha256: 'stale-screenshot' }
       : receipt),
   }).some((issue) => issue.code === 'receipt_page_matrix'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    receiptPages: receiptPages.map((receipt, index) => index === 0
+      ? { ...receipt, thumbnailSha256: sha256('swapped-thumbnail') }
+      : receipt),
+  }).some((issue) => issue.code === 'receipt_page_matrix'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    receiptVersion: FINAL_QUALITY_RECEIPT_VERSION - 1,
+  }).some((issue) => issue.code === 'receipt_protocol' && issue.recoveryStage === 'render_pending'));
+  assert.ok(validateFinalPageEvidenceMatrix({
+    ...valid,
+    receiptRenderProtocol: undefined,
+  }).some((issue) => issue.code === 'receipt_protocol' && issue.recoveryStage === 'render_pending'));
 });
 
 test('static final-output gate independently rejects unsafe semantic copy', () => {
@@ -366,13 +419,77 @@ test('static gate resolves entity-quoted inline CSS URLs without hiding remote i
   assert.ok(unsafe.errors.some((error) => error.code === 'remote_dependency'));
 });
 
-test('static gate ignores inert CSS comments and nested data-SVG paint URLs', () => {
-  const html = '<!doctype html><html><head><style>/* data URL (also intended as assets/img/not-a-reference.svg) */ .hero{background:url("data:image/svg+xml,%3Csvg%3E%3Cpath fill=%27url(%23paint)%27/%3E%3C/svg%3E")}</style></head><body><main><h1 data-dc-edit-id="heading">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="copy">Editable copy.</p></main><script src="assets/js/dc-compat.js"></script><a href="mailto:{{EMAIL}}">Email</a></body></html>';
+test('static gate ignores inert CSS comments and permits only base64 raster CSS data URLs', () => {
+  const html = '<!doctype html><html><head><style>/* data URL (also intended as assets/img/not-a-reference.svg) */ .hero{background:url("data:image/png;base64,AAAA")}</style></head><body><main><h1 data-dc-edit-id="heading">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="copy">Editable copy.</p></main><script src="assets/js/dc-compat.js"></script><a href="mailto:{{EMAIL}}">Email</a></body></html>';
   const result = verifyStaticArtifact(
     new Map<string, string | Uint8Array>([['index.html', html], ['assets/js/dc-compat.js', '']]),
     [{ name: 'BUSINESS_NAME' }, { name: 'EMAIL' }],
   );
   assert.equal(result.passed, true, result.errors.map((error) => `${error.code}: ${error.detail}`).join('\n'));
+
+  const svg = verifyStaticArtifact(
+    new Map<string, string | Uint8Array>([
+      ['index.html', html.replace('data:image/png;base64,AAAA', 'data:image/svg+xml,%3Csvg%20onload%3Dalert(1)%3E')],
+      ['assets/js/dc-compat.js', ''],
+    ]),
+    [{ name: 'BUSINESS_NAME' }, { name: 'EMAIL' }],
+  );
+  assert.equal(svg.passed, false);
+  assert.ok(svg.errors.some((error) => error.code === 'unsafe_embedded_url'));
+});
+
+test('static and publication gates reject data/blob URLs in unaudited contexts', () => {
+  const html = `<!doctype html><html><head>
+    <link rel="stylesheet" href="${'\t'.repeat(300)}d${'\t'.repeat(300)}a${'\t'.repeat(300)}t${'\t'.repeat(300)}a:text/css,body%7Bdisplay:none%7D">
+    <style>.unsafe{background:url("d\\61 ta:text/html,blocked")}</style></head><body><main>
+    <h1 data-dc-edit-id="heading">{{BUSINESS_NAME}}</h1><p data-dc-edit-id="copy">Editable copy.</p>
+    <a href="blob:https://example.test/transient">Download</a><a href="mailto:{{EMAIL}}">Email</a></main>
+    <script src="assets/js/dc-compat.js"></script></body></html>`;
+  const result = verifyStaticArtifact(
+    new Map<string, string | Uint8Array>([
+      ['index.html', html],
+      ['assets/css/unsafe.css', '@import url("data:image/png;base64,AAAA");'],
+      ['assets/js/dc-compat.js', ''],
+    ]),
+    [{ name: 'BUSINESS_NAME' }, { name: 'EMAIL' }],
+  );
+
+  assert.equal(result.passed, false);
+  assert.ok(result.errors.some((error) => error.code === 'unsafe_embedded_url' && error.page === 'index.html'));
+  assert.ok(result.errors.some((error) => error.code === 'unsafe_embedded_url' && error.page === 'assets/css/unsafe.css'));
+  assert.ok(result.errors.some((error) => error.code === 'publication_contract' && /unsafe embedded URL/i.test(error.detail)));
+});
+
+test('repair plus static verification replaces the exact unsupported intake-control cohort', () => {
+  const repaired = repairLegacyTemplate({
+    slug: 'strict-form-e2e',
+    niche: 'holistic_medicine',
+    files: new Map([['index.html', `<!doctype html><html><head><title>{{BUSINESS_NAME}}</title></head><body><main>
+      <h1>{{BUSINESS_NAME}}</h1><form id="portal"><input type="password" name="password">
+      <input type="date" name="dob"><input name="insurance_member_id"><input type="file" name="medical_records"></form>
+      <label>Emergency contact<input form="portal" name="emergency_contact"></label>
+      <a href="mailto:{{EMAIL}}">Email</a></main></body></html>`]]),
+  });
+  const verified = verifyStaticArtifact(repaired.files, repaired.fields);
+  const html = String(repaired.files.get('index.html'));
+
+  assert.equal(verified.passed, true, verified.errors.map((error) => `${error.code}: ${error.detail}`).join('\n'));
+  assert.equal((html.match(/<(?:input|textarea)\b/g) ?? []).length, 4);
+  assert.doesNotMatch(html, /password|\bdob\b|insurance|type="file"|medical records|emergency contact|(?:^|\s)form=/i);
+});
+
+test('static form gate rejects unsupported and orphan controls without trusting repair markers', () => {
+  const html = '<!doctype html><html><body><main><h1 data-dc-edit-id="heading">{{BUSINESS_NAME}}</h1><form name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><input name="name" required><input type="email" name="email" required><input type="tel" name="phone"><textarea name="message" required></textarea><input type="password" name="portal_password"><input type="date" name="dob"><input type="file" name="records"><input name="insurance_member_id"></form><label>Emergency contact<input name="emergency_contact"></label><a href="mailto:{{EMAIL}}">Email</a></main><script src="assets/js/dc-compat.js"></script></body></html>';
+  const result = verifyStaticArtifact(
+    new Map<string, string | Uint8Array>([['index.html', html], ['assets/js/dc-compat.js', '']]),
+    [{ name: 'BUSINESS_NAME' }, { name: 'EMAIL' }],
+  );
+
+  assert.equal(result.passed, false);
+  assert.ok(result.errors.some((error) => error.code === 'invalid_standard_inquiry_form'));
+  assert.ok(result.errors.some((error) => error.code === 'nonstandard_form_controls'));
+  assert.ok(result.errors.some((error) => error.code === 'publication_contract' && /unsupported sensitive information/i.test(error.detail)));
+  assert.ok(result.errors.some((error) => error.code === 'publication_contract' && /outside the standard inquiry form/i.test(error.detail)));
 });
 
 test('repair preserves valid fragments, neutralizes missing fragments, and the static gate verifies both pages', () => {
@@ -456,6 +573,169 @@ test('artifact reuse validates content and repairs ledger registration after a c
   } finally {
     firstLedger?.close();
     secondLedger?.close();
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
+test('render preparation requeues corrupt templates independently and renders healthy siblings without fallback', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'legacy-render-preparation-isolation-'));
+  const sourceRoot = join(scratch, 'source');
+  const workRoot = join(scratch, 'work');
+  await mkdir(sourceRoot, { recursive: true });
+  const config = resolveLegacyConfig({
+    sourceRoot,
+    workRoot,
+    databasePath: 'ledger.sqlite',
+    ruleVersion: 'test-v1',
+    chromiumWorkers: 1,
+  });
+  await ensureWorkLayout(config);
+  const ledger = new LegacyLedger({ databasePath: config.databasePath });
+  try {
+    const run = ledger.createRun({ command: 'run', ruleVersion: config.ruleVersion, sourceRoot, workRoot });
+    const context = artifactContext(config, ledger, run.id);
+    const activate = async (input: {
+      slug: string;
+      files?: ReadonlyMap<string, string | Uint8Array>;
+      ledgerPage?: boolean;
+      resultHash?: string;
+    }) => {
+      const template = ledger.upsertTemplate(run.id, {
+        legacySlug: input.slug,
+        niche: 'aromatherapy',
+        sourcePath: join(sourceRoot, input.slug),
+        sourceHash: sha256(`source:${input.slug}`),
+        pageCount: 1,
+        stage: 'repair_pending',
+      }, config.ruleVersion);
+      const artifact = input.files
+        ? await materializeArtifact(context, template, input.files)
+        : undefined;
+      if (input.ledgerPage !== false) {
+        ledger.upsertPage({
+          templateId: template.id,
+          relativePath: 'index.html',
+          sourceHash: sha256(`page:${input.slug}`),
+          resultHash: sha256(`result:${input.slug}`),
+          stage: 'static-passed',
+        });
+      }
+      const lease = ledger.leaseTemplates({
+        stages: ['repair_pending'],
+        legacySlugs: [input.slug],
+        claimedStage: 'repairing',
+        owner: `repair-${input.slug}`,
+        limit: 1,
+        runId: run.id,
+      })[0]!;
+      assert.ok(lease);
+      assert.equal(ledger.completeTemplateLease({
+        templateId: template.id,
+        leaseToken: lease.leaseToken,
+        stage: 'render_pending',
+        resultHash: input.resultHash ?? artifact?.treeHash,
+      }), true);
+      return { template, artifact };
+    };
+    const files = (slug: string, manifest: string) => new Map<string, string | Uint8Array>([
+      ['index.html', `<!doctype html><html><body><main>${slug}</main></body></html>`],
+      ['template.json', manifest],
+      ['.dailyclarity/rehabilitation.json', `${JSON.stringify({
+        version: 1,
+        ruleVersion: config.ruleVersion,
+        sourceHash: sha256(`source:${slug}`),
+        repairMode: 'deterministic',
+        renderRemediation: null,
+        sourcePreserved: true,
+      })}\n`],
+    ]);
+
+    const missing = await activate({
+      slug: 'a-missing-artifact',
+      resultHash: 'f'.repeat(64),
+    });
+    const corrupt = await activate({
+      slug: 'b-corrupt-artifact',
+      files: files('b-corrupt-artifact', JSON.stringify({ pages: ['index.html'] })),
+    });
+    assert.ok(corrupt.artifact);
+    await writeFile(
+      join(corrupt.artifact.directory, 'index.html'),
+      '<!doctype html><html><body>corrupted after static verification</body></html>',
+    );
+    const malformed = await activate({
+      slug: 'c-malformed-manifest',
+      files: files('c-malformed-manifest', '{'),
+    });
+    const invalidPages = await activate({
+      slug: 'd-invalid-page-array',
+      files: files('d-invalid-page-array', JSON.stringify({ pages: [1] })),
+    });
+    const missingLedger = await activate({
+      slug: 'e-missing-ledger-page',
+      files: files('e-missing-ledger-page', JSON.stringify({ pages: ['index.html'] })),
+      ledgerPage: false,
+    });
+    const staleLedger = await activate({
+      slug: 'f-stale-ledger-page',
+      files: files('f-stale-ledger-page', JSON.stringify({ pages: ['index.html'] })),
+    });
+    const stalePageId = ledger.upsertPage({
+      templateId: staleLedger.template.id,
+      relativePath: 'invented.html',
+      sourceHash: sha256('invented-source-page'),
+      resultHash: sha256('invented-result-page'),
+      stage: 'static-passed',
+    });
+    const healthy = await activate({
+      slug: 'z-healthy-sibling',
+      files: files('z-healthy-sibling', JSON.stringify({ pages: ['index.html'] })),
+    });
+
+    const renderedTaskSlugs: string[] = [];
+    const fakeRenderer: typeof import('./render.js').renderTemplateTasks = async (_serverRoot, tasks, options) => {
+      renderedTaskSlugs.push(...tasks.map((task) => task.slug));
+      const evidence = tasks.flatMap((task) => (['desktop', 'mobile'] as const).map((viewport) => ({
+        key: task.key,
+        page: task.page,
+        viewport,
+        passed: true,
+        attempts: 1,
+        durationMs: 1,
+        screenshotSha256: sha256(`${task.slug}:${viewport}:screenshot`),
+        perceptualHash: viewport === 'desktop' ? '0000000000000000' : '1111111111111111',
+        thumbnailPath: join(config.renderRoot, `${task.slug}-${viewport}.webp`),
+        thumbnailSha256: sha256(`${task.slug}:${viewport}:thumbnail`),
+        thumbnailBytes: 100,
+        visibleTextLength: 100,
+        editSlotCount: 1,
+        imageSlotCount: 1,
+        issues: [],
+      })));
+      for (const item of evidence) await options.onEvidence?.(item);
+      return evidence;
+    };
+    const summary = await renderPendingBatch(context, undefined, 0, fakeRenderer);
+
+    assert.deepEqual(renderedTaskSlugs, ['z-healthy-sibling']);
+    assert.equal(summary.leasedTemplates, 7);
+    assert.equal(summary.passedTemplates, 1);
+    assert.equal(summary.failedTemplates, 0);
+    assert.equal(summary.neutralFallbacks, 0);
+    assert.equal(ledger.getTemplate(healthy.template.id)?.stage, 'verified');
+    for (const poisoned of [missing, corrupt, malformed, invalidPages, missingLedger, staleLedger]) {
+      const reset = ledger.getTemplate(poisoned.template.id)!;
+      assert.equal(reset.stage, 'repair_pending', poisoned.template.legacySlug);
+      assert.equal(reset.resultHash, null, poisoned.template.legacySlug);
+      assert.equal(reset.qualityReceipt, null, poisoned.template.legacySlug);
+      assert.equal(reset.leaseOwner, null, poisoned.template.legacySlug);
+      assert.ok(ledger.listIssues({ unresolved: true, current: true })
+        .some((issue) => issue.templateId === poisoned.template.id && issue.code === 'render_preparation_failed'));
+    }
+    assert.equal(ledger.getPage(stalePageId)?.stage, 'superseded');
+    await assert.rejects(readFile(join(corrupt.artifact.directory, 'index.html')), /ENOENT/);
+  } finally {
+    ledger.close();
     await rm(scratch, { recursive: true, force: true });
   }
 });
@@ -772,6 +1052,7 @@ test('pilot gate rejects a stranded render, zero evidence, and partial catalogue
       gates: {
         minimumPilotSizeMet: boolean;
         exactCatalogCoverage: boolean;
+        exactPageLineage: boolean;
         everyObservedDimensionCovered: boolean;
         currentEvidenceComplete: boolean;
       };
@@ -780,6 +1061,7 @@ test('pilot gate rejects a stranded render, zero evidence, and partial catalogue
     assert.equal(payload.version, LEGACY_PILOT_GATE_VERSION);
     assert.equal(payload.gates.minimumPilotSizeMet, true);
     assert.equal(payload.gates.exactCatalogCoverage, false);
+    assert.equal(payload.gates.exactPageLineage, false);
     assert.equal(payload.gates.everyObservedDimensionCovered, false);
     assert.equal(payload.gates.currentEvidenceComplete, false);
     assert.ok(payload.coverage.missing.some((item) => item === 'niches:sound_bath'));
@@ -836,6 +1118,7 @@ test('full-run authorization requires complete, internally consistent dimension 
       minimumPilotSizeMet: true,
       uniqueSelection: true,
       exactCatalogCoverage: true,
+      exactPageLineage: true,
       everyObservedDimensionCovered: true,
       currentEvidenceComplete: true,
       everyPilotTemplatePassed: true,
@@ -843,6 +1126,13 @@ test('full-run authorization requires complete, internally consistent dimension 
     },
   };
   assert.equal(validatePilotGateAuthorization(gate, 'test-v1').coverageUniverseHash, gate.coverage.universeHash);
+  assert.throws(
+    () => validatePilotGateAuthorization({
+      ...gate,
+      gates: { ...gate.gates, exactPageLineage: false },
+    }, 'test-v1'),
+    /complete passing authorization evidence/i,
+  );
   assert.throws(
     () => validatePilotGateAuthorization({
       ...gate,

@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { Buffer } from 'node:buffer';
 import { readFile } from 'node:fs/promises';
 
 export const LEGACY_MODEL_POLICY = Object.freeze({
@@ -10,6 +11,16 @@ export const LEGACY_MODEL_POLICY = Object.freeze({
   maxOutputTokensPerFragment: 1_500,
   completionWindow: '24h',
 });
+
+/**
+ * JSONL bytes already provide a tokenizer-independent upper bound for the
+ * caller-controlled request: byte-level model tokenizers cannot produce more
+ * tokens than input bytes. Keep an additional fixed allowance for Responses
+ * framing that is added by the service rather than serialized in the batch
+ * line. This intentionally favors a neutral fallback over an uncertain bill.
+ */
+export const LEGACY_MODEL_FRAMING_TOKEN_ALLOWANCE = 1_024;
+export const LEGACY_MODEL_MAX_USD_PER_MILLION_TOKENS = 25;
 
 export type PatchOperation =
   | { op: 'replace_text'; nodeId: string; value: string }
@@ -52,6 +63,13 @@ export interface BudgetReservation {
   reason?: 'token_ceiling' | 'cost_ceiling' | 'attempt_ceiling';
   reservedTokens: number;
   reservedUsd: number;
+}
+
+export interface BatchInputReservationEstimate {
+  inputTokens: number;
+  outputTokens: number;
+  totalTokens: number;
+  costUsd: number;
 }
 
 const PATCH_SCHEMA = {
@@ -143,9 +161,9 @@ export function validateFragment(fragment: UnresolvedFragment): void {
 }
 
 export function estimateTokens(text: string): number {
-  // A deliberately conservative local estimate. The ledger later reconciles
-  // this reservation with the API's actual token usage.
-  return Math.ceil(text.length / 3.2);
+  // UTF-16 character counts under-reserve non-ASCII input. UTF-8 bytes are a
+  // safe, tokenizer-independent upper bound for caller-controlled text.
+  return Buffer.byteLength(text, 'utf8');
 }
 
 export class ModelBudget {
@@ -175,12 +193,11 @@ export class ModelBudget {
     if (fragment.attempt > LEGACY_MODEL_POLICY.maxAttemptsPerFragment) {
       return { allowed: false, reason: 'attempt_ceiling', reservedTokens: 0, reservedUsd: 0 };
     }
-    const input = estimateTokens(fragment.fragment) + 500;
-    const output = LEGACY_MODEL_POLICY.maxOutputTokensPerFragment;
-    const reservedTokens = input + output;
-    // $25/million is intentionally pessimistic and ensures the independent
-    // dollar ceiling cannot be skipped even if model pricing changes.
-    const reservedUsd = (reservedTokens / 1_000_000) * 25;
+    const estimate = estimateBatchInputReservation(buildBatchInput(fragment));
+    const input = estimate.inputTokens;
+    const output = estimate.outputTokens;
+    const reservedTokens = estimate.totalTokens;
+    const reservedUsd = estimate.costUsd;
     if (this.#usage.totalTokens + reservedTokens > this.maxTokens) {
       return { allowed: false, reason: 'token_ceiling', reservedTokens, reservedUsd };
     }
@@ -194,12 +211,38 @@ export class ModelBudget {
     return { allowed: true, reservedTokens, reservedUsd };
   }
 
-  reconcile(reservation: BudgetReservation, actual: UsageTotals): void {
-    if (!reservation.allowed) return;
-    this.#usage.totalTokens += actual.totalTokens - reservation.reservedTokens;
-    this.#usage.inputTokens += actual.inputTokens - Math.max(0, reservation.reservedTokens - LEGACY_MODEL_POLICY.maxOutputTokensPerFragment);
-    this.#usage.outputTokens += actual.outputTokens - LEGACY_MODEL_POLICY.maxOutputTokensPerFragment;
-    this.#usage.costUsd += actual.costUsd - reservation.reservedUsd;
+  reconcile(reservation: BudgetReservation, actual: UsageTotals): boolean {
+    if (!reservation.allowed) return false;
+    if (
+      !Number.isSafeInteger(actual.inputTokens) || actual.inputTokens < 0
+      || !Number.isSafeInteger(actual.outputTokens) || actual.outputTokens < 0
+      || !Number.isSafeInteger(actual.totalTokens) || actual.totalTokens < 0
+      || actual.totalTokens !== actual.inputTokens + actual.outputTokens
+      || !Number.isFinite(actual.costUsd) || actual.costUsd < 0
+    ) {
+      throw new Error('Actual model usage is invalid');
+    }
+    const nextTotalTokens = this.#usage.totalTokens + actual.totalTokens - reservation.reservedTokens;
+    const nextCostUsd = this.#usage.costUsd + actual.costUsd - reservation.reservedUsd;
+    const nextInputTokens = this.#usage.inputTokens + actual.inputTokens
+      - Math.max(0, reservation.reservedTokens - LEGACY_MODEL_POLICY.maxOutputTokensPerFragment);
+    const nextOutputTokens = this.#usage.outputTokens + actual.outputTokens
+      - LEGACY_MODEL_POLICY.maxOutputTokensPerFragment;
+    if (nextTotalTokens > this.maxTokens || nextCostUsd > this.maxUsd) {
+      // Preserve component telemetry while saturating authorization counters.
+      // A rejected reconciliation must never leave apparent headroom for a
+      // second request.
+      this.#usage.inputTokens = nextInputTokens;
+      this.#usage.outputTokens = nextOutputTokens;
+      this.#usage.totalTokens = Math.min(this.maxTokens, nextTotalTokens);
+      this.#usage.costUsd = Math.min(this.maxUsd, nextCostUsd);
+      return false;
+    }
+    this.#usage.totalTokens = nextTotalTokens;
+    this.#usage.inputTokens = nextInputTokens;
+    this.#usage.outputTokens = nextOutputTokens;
+    this.#usage.costUsd = nextCostUsd;
+    return true;
   }
 }
 
@@ -235,6 +278,28 @@ export function buildBatchInput(fragment: UnresolvedFragment): BatchInputLine {
         },
       },
     },
+  };
+}
+
+/**
+ * Reserve against the exact JSONL request line that will be uploaded, not just
+ * its DOM fragment. This covers instructions, niche/role metadata, the strict
+ * output schema, the fragment, JSON escaping, and the terminating newline.
+ */
+export function estimateBatchInputReservation(input: BatchInputLine): BatchInputReservationEstimate {
+  const serializedLine = `${JSON.stringify(input)}\n`;
+  const inputTokens = estimateTokens(serializedLine) + LEGACY_MODEL_FRAMING_TOKEN_ALLOWANCE;
+  const configuredOutput = input.body.max_output_tokens;
+  if (!Number.isSafeInteger(configuredOutput) || Number(configuredOutput) < 0) {
+    throw new Error('Batch input has an invalid max_output_tokens value');
+  }
+  const outputTokens = Number(configuredOutput);
+  const totalTokens = inputTokens + outputTokens;
+  return {
+    inputTokens,
+    outputTokens,
+    totalTokens,
+    costUsd: (totalTokens / 1_000_000) * LEGACY_MODEL_MAX_USD_PER_MILLION_TOKENS,
   };
 }
 

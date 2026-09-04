@@ -9,6 +9,7 @@ import {
   mkdir,
   readFile,
   readdir,
+  realpath,
   rename,
   rm,
   stat,
@@ -21,7 +22,14 @@ import {
   extractTemplateTokens,
   validateTemplateContract,
 } from '../template-contract.js';
-import { AssetVendor, assetLicenseManifest, vendorRemoteAssets } from './assets.js';
+import {
+  AssetVendor,
+  assetLicenseManifest,
+  readAssetLicenseManifest,
+  reconcileAssetLicenseManifest,
+  validateAssetLicenseManifest,
+  vendorRemoteAssets,
+} from './assets.js';
 import { applyContentPreset, applyThemePreset, repairLegacyTemplate } from './compose.js';
 import type { HtmlNode } from './repair.js';
 import {
@@ -77,10 +85,13 @@ import {
   type LegacyTemplateInventory,
 } from './inventory.js';
 import {
+  compareViewportScreenshotPixels,
   hammingDistance,
   LEGACY_VIEWPORTS,
+  removeTemporaryComparisonScreenshots,
   renderTemplateTasks,
-  thumbnailSsim,
+  temporaryComparisonScreenshotPath,
+  verifyRetainedThumbnailEvidence,
   type ContrastRepair,
   type LinkInTextBlockRepair,
   type RenderEvidence,
@@ -98,6 +109,15 @@ import type {
   LeasedTemplate,
 } from './types.js';
 import {
+  containsUnsafeCssReferences,
+  containsUnsafeSrcset,
+  isEmbeddedUrl,
+  isSafeEmbeddedRasterDataUrl,
+  isUnsafeStaticUrl,
+} from './url-safety.js';
+import {
+  FINAL_QUALITY_RECEIPT_VERSION,
+  FINAL_RENDER_PROTOCOL,
   LEGACY_PILOT_GATE_VERSION,
   MINIMUM_LEGACY_PILOT_SIZE,
   throwIfLegacyCancelled,
@@ -211,6 +231,10 @@ export function composeVisualAliasArtifactFiles(input: {
     throw new Error('A visual alias must retain the same page paths');
   }
 
+  const assetProvenance = [
+    ...readAssetLicenseManifest(input.sourceFiles),
+    ...readAssetLicenseManifest(input.canonicalFiles ?? new Map()),
+  ];
   const files = new Map(input.sourceFiles);
   // Bring across canonical-only support files (for example icon sprites or
   // fonts) without overwriting assets selected by this legacy slug's image or
@@ -218,7 +242,7 @@ export function composeVisualAliasArtifactFiles(input: {
   for (const [path, value] of input.canonicalFiles ?? []) {
     if (
       /\.html?$/i.test(path)
-      || /\.css$/i.test(path)
+      || (/\.css$/i.test(path) && !/^assets\/vendor\//i.test(path))
       || path === 'template.json'
       || path === 'fields.json'
       || path.startsWith('.dailyclarity/')
@@ -301,6 +325,10 @@ export function composeVisualAliasArtifactFiles(input: {
   };
   files.set('.dailyclarity/rehabilitation.json', `${JSON.stringify(nextRehabilitation, null, 2)}\n`);
   files.delete('.dailyclarity/quality-receipt.json');
+
+  const reconciledAssets = reconcileAssetLicenseManifest(files, assetProvenance);
+  files.clear();
+  for (const [path, value] of reconciledAssets.files) files.set(path, value);
 
   // The local receipt is deliberately a deterministic static-preflight
   // receipt. Browser-final evidence is written separately after the immutable
@@ -444,7 +472,7 @@ async function validateMaterializedArtifact(root: string, expected: ArtifactTree
   }
 }
 
-async function validateRecordedArtifact(root: string, expectedHash: string): Promise<void> {
+async function validateRecordedArtifact(root: string, expectedHash: string): Promise<ArtifactTree> {
   const treePath = resolve(root, '.dailyclarity', 'artifact-tree.json');
   if (!isWithin(root, treePath)) throw new Error(`Artifact tree path escaped its root: ${treePath}`);
   const treeDetails = await lstat(treePath).catch(() => null);
@@ -491,6 +519,7 @@ async function validateRecordedArtifact(root: string, expectedHash: string): Pro
     throw new Error(`Materialized artifact tree records do not hash to ${expectedHash}`);
   }
   await validateMaterializedArtifact(root, { hash: expectedHash, files });
+  return { hash: expectedHash, files };
 }
 
 export async function materializeArtifact(
@@ -746,20 +775,40 @@ function localReferenceErrors(
       if (node.tagName) {
         for (const attr of node.attrs ?? []) {
           const name = attr.name.toLowerCase();
-          if (['src', 'href', 'poster', 'action', 'formaction', 'xlink:href'].includes(name)) references.push(attr.value.trim());
+          if (['src', 'href', 'poster', 'action', 'formaction', 'xlink:href'].includes(name)) {
+            if (isUnsafeStaticUrl(node.tagName, name, attr.value)) {
+              errors.push({ code: 'unsafe_embedded_url', page: filename, detail: `${node.tagName}[${name}]` });
+            }
+            references.push(attr.value.trim());
+          }
           if (name === 'srcset') {
+            if (containsUnsafeSrcset(attr.value)) {
+              errors.push({ code: 'unsafe_embedded_url', page: filename, detail: `${node.tagName}[srcset]` });
+            }
             for (const candidate of attr.value.split(',')) references.push(candidate.trim().split(/\s+/, 1)[0] ?? '');
           }
-          if (name === 'style') references.push(...cssReferences(attr.value));
+          if (name === 'style') {
+            if (containsUnsafeCssReferences(attr.value)) {
+              errors.push({ code: 'unsafe_embedded_url', page: filename, detail: `${node.tagName}[style]` });
+            }
+            references.push(...cssReferences(attr.value));
+          }
         }
         if (node.tagName === 'style') {
-          references.push(...cssReferences((node.childNodes ?? []).map((child) => child.value ?? '').join('')));
+          const css = (node.childNodes ?? []).map((child) => child.value ?? '').join('');
+          if (containsUnsafeCssReferences(css)) {
+            errors.push({ code: 'unsafe_embedded_url', page: filename, detail: 'style element' });
+          }
+          references.push(...cssReferences(css));
         }
       }
       for (const child of node.childNodes ?? []) walk(child);
     };
     walk(document);
   } else if (/\.css$/i.test(filename)) {
+    if (containsUnsafeCssReferences(text)) {
+      errors.push({ code: 'unsafe_embedded_url', page: filename, detail: 'stylesheet' });
+    }
     references.push(...cssReferences(text));
   }
   const decodeHtmlReference = (value: string): string => value
@@ -774,7 +823,13 @@ function localReferenceErrors(
     .trim();
   for (const rawReference of references) {
     const reference = decodeHtmlReference(rawReference);
-    if (!reference || reference.startsWith('#') || reference.startsWith('{{') || /^(?:data|blob|mailto|tel):/i.test(reference)) continue;
+    if (!reference || reference.startsWith('#') || reference.startsWith('{{') || /^(?:mailto|tel):/i.test(reference)) continue;
+    if (isEmbeddedUrl(reference)) {
+      if (!isSafeEmbeddedRasterDataUrl(reference)) {
+        errors.push({ code: 'unsafe_embedded_url', page: filename, detail: reference.slice(0, 160) });
+      }
+      continue;
+    }
     if (/^(?:https?:)?\/\//i.test(reference)) {
       errors.push({ code: 'remote_dependency', page: filename, detail: reference });
       continue;
@@ -913,18 +968,79 @@ export function verifyStaticArtifact(
         const id = attributesOf(form).get('id');
         if (id && !formById.has(id)) formById.set(id, form);
       }
+      const ownerOfControl = (control: HtmlNode): HtmlNode | undefined => {
+        const explicitOwner = attributesOf(control).get('form');
+        if (explicitOwner !== undefined) return formById.get(explicitOwner);
+        let cursor = control.parentNode;
+        while (cursor) {
+          if (cursor.tagName === 'form') return cursor;
+          cursor = cursor.parentNode;
+        }
+        return undefined;
+      };
+      const inquiryRules = new Map<string, { tag: string; type?: string; required: boolean }>([
+        ['name', { tag: 'input', type: 'text', required: true }],
+        ['email', { tag: 'input', type: 'email', required: true }],
+        ['phone', { tag: 'input', type: 'tel', required: false }],
+        ['message', { tag: 'textarea', required: true }],
+      ]);
+      for (const [formIndex, form] of forms.entries()) {
+        const formAttributes = attributesOf(form);
+        const schemaErrors: string[] = [];
+        if (formAttributes.get('data-dc-standard-form') !== 'contact') schemaErrors.push('marker');
+        if (formAttributes.get('name') !== 'contact') schemaErrors.push('name');
+        if ((formAttributes.get('method') ?? '').toLowerCase() !== 'post') schemaErrors.push('method');
+        if ((formAttributes.get('data-netlify') ?? '').toLowerCase() !== 'true') schemaErrors.push('submission');
+        if (formAttributes.has('action')) schemaErrors.push('action');
+        const seen = new Map<string, number>();
+        for (const control of controls.filter((candidate) => ownerOfControl(candidate) === form)) {
+          const attributes = attributesOf(control);
+          const name = (attributes.get('name') ?? '').trim().toLowerCase();
+          const rule = inquiryRules.get(name);
+          if (attributes.has('form')) schemaErrors.push(`external:${name || control.tagName}`);
+          if (!rule || control.tagName !== rule.tag) {
+            schemaErrors.push(`control:${name || control.tagName}`);
+            continue;
+          }
+          const type = control.tagName === 'input' ? (attributes.get('type') ?? 'text').toLowerCase() : undefined;
+          if (rule.type && type !== rule.type) schemaErrors.push(`type:${name}`);
+          if (attributes.has('required') !== rule.required) schemaErrors.push(`required:${name}`);
+          seen.set(name, (seen.get(name) ?? 0) + 1);
+        }
+        for (const name of inquiryRules.keys()) {
+          if (seen.get(name) !== 1) schemaErrors.push(`count:${name}`);
+        }
+        if (schemaErrors.length > 0) {
+          errors.push({
+            code: 'invalid_standard_inquiry_form',
+            page: path,
+            detail: `Form ${formIndex + 1} violates the standard inquiry schema: ${[...new Set(schemaErrors)].join(', ')}`,
+          });
+        }
+      }
+      const externallyAssociatedControls = controls.filter((control) => attributesOf(control).has('form'));
+      if (externallyAssociatedControls.length > 0) {
+        errors.push({
+          code: 'external_form_controls',
+          page: path,
+          detail: `${externallyAssociatedControls.length} externally associated controls are outside the standard inquiry schema`,
+        });
+      }
+      const nonstandardControls = controls.filter((control) => {
+        const owner = ownerOfControl(control);
+        return !owner || attributesOf(owner).get('data-dc-standard-form') !== 'contact';
+      });
+      if (nonstandardControls.length > 0) {
+        errors.push({
+          code: 'nonstandard_form_controls',
+          page: path,
+          detail: `${nonstandardControls.length} controls are outside an audited standard inquiry form`,
+        });
+      }
       const unnamedControls: string[] = [];
       for (const control of controls) {
         const attributes = attributesOf(control);
-        const explicitOwner = attributes.get('form');
-        let owner = explicitOwner === undefined ? undefined : formById.get(explicitOwner);
-        if (explicitOwner === undefined) {
-          let cursor = control.parentNode;
-          while (cursor && !owner) {
-            if (cursor.tagName === 'form') owner = cursor;
-            cursor = cursor.parentNode;
-          }
-        }
+        const owner = ownerOfControl(control);
         if (!owner || !attributesOf(owner).has('data-dc-standard-form')) continue;
         const excludedInput = control.tagName === 'input' && /^(?:button|submit|reset|image)$/i.test(attributes.get('type') ?? 'text');
         if (!excludedInput && !attributes.get('name')?.trim()) {
@@ -977,7 +1093,13 @@ export function verifyStaticArtifact(
       });
     }
   }
-  const contract = validateTemplateContract(pages, fields);
+  errors.push(...validateAssetLicenseManifest(files).map((detail) => ({
+    code: 'asset_manifest_integrity',
+    detail,
+  })));
+  const contract = validateTemplateContract(pages, fields, {
+    requireStandardInquiryForms: true,
+  });
   errors.push(...contract.errors.map((detail) => ({ code: 'publication_contract', detail })));
   return {
     passed: errors.length === 0,
@@ -1560,6 +1682,8 @@ function recordRenderEvidence(
     status: evidence.passed ? 'passed' : 'failed',
     screenshotHash: evidence.screenshotSha256,
     perceptualHash: evidence.perceptualHash,
+    thumbnailHash: evidence.thumbnailSha256,
+    thumbnailBytes: evidence.thumbnailBytes,
     consoleErrors: evidence.issues.filter((issue) => issue.code === 'console_error' || issue.code === 'page_exception').length,
     failedRequests: evidence.issues.filter((issue) => issue.code === 'failed_request' || issue.code === 'broken_images').length,
     axeCritical: evidence.issues.filter((issue) => issue.code.startsWith('axe_') && issue.severity === 'critical').length,
@@ -1588,7 +1712,7 @@ export function hasCompletePassingRenderMatrix(
 }
 
 export interface FinalPageEvidenceMatrixIssue {
-  code: 'manifest_page_matrix' | 'ledger_page_matrix' | 'render_page_matrix' | 'receipt_page_matrix';
+  code: 'source_page_lineage' | 'manifest_page_matrix' | 'ledger_page_matrix' | 'render_page_matrix' | 'receipt_protocol' | 'receipt_page_matrix';
   detail: string;
   recoveryStage: 'repair_pending' | 'render_pending';
 }
@@ -1600,11 +1724,16 @@ export interface FinalPageEvidenceMatrixIssue {
  * receipt must describe the exact same page x viewport matrix.
  */
 export function validateFinalPageEvidenceMatrix(input: {
+  sourcePages: unknown;
+  artifactPages: unknown;
   manifestPages: unknown;
   ledgerPages: readonly Pick<LegacyPageRecord, 'id' | 'relativePath' | 'stage'>[];
   renders: readonly Pick<LegacyRenderRecord,
     'pageId' | 'viewport' | 'width' | 'height' | 'status' | 'screenshotHash' | 'perceptualHash'
-    | 'consoleErrors' | 'failedRequests' | 'axeCritical' | 'axeSerious' | 'horizontalOverflowPx'>[];
+    | 'thumbnailHash' | 'thumbnailBytes' | 'consoleErrors' | 'failedRequests' | 'axeCritical'
+    | 'axeSerious' | 'horizontalOverflowPx' | 'artifactPath'>[];
+  receiptVersion: unknown;
+  receiptRenderProtocol: unknown;
   receiptPages: unknown;
 }): FinalPageEvidenceMatrixIssue[] {
   const issues: FinalPageEvidenceMatrixIssue[] = [];
@@ -1613,6 +1742,81 @@ export function validateFinalPageEvidenceMatrix(input: {
     detail: string,
     recoveryStage: FinalPageEvidenceMatrixIssue['recoveryStage'],
   ): void => { issues.push({ code, detail, recoveryStage }); };
+
+  if (!Array.isArray(input.sourcePages)) {
+    add('source_page_lineage', 'source inventory has no page list', 'repair_pending');
+    return issues;
+  }
+  const sourcePages: string[] = [];
+  for (const value of input.sourcePages) {
+    if (typeof value !== 'string') {
+      add('source_page_lineage', 'source inventory contains a non-string page', 'repair_pending');
+      continue;
+    }
+    try {
+      const page = normalizeRelativePath(value);
+      if (!/\.html?$/i.test(page)) {
+        add('source_page_lineage', `source inventory declares a non-HTML page: ${page}`, 'repair_pending');
+      } else {
+        sourcePages.push(page);
+      }
+    } catch (error) {
+      add(
+        'source_page_lineage',
+        `source inventory has an unsafe page: ${error instanceof Error ? error.message : String(error)}`,
+        'repair_pending',
+      );
+    }
+  }
+  if (new Set(sourcePages).size !== sourcePages.length) {
+    add('source_page_lineage', 'source inventory repeats a page', 'repair_pending');
+  }
+  if (issues.some((issue) => issue.code === 'source_page_lineage')) return issues;
+  const expectedEmittedPages = sourcePages.some((page) => page.toLowerCase() === 'index.html')
+    ? sourcePages
+    : [...sourcePages, 'index.html'];
+
+  if (!Array.isArray(input.artifactPages)) {
+    add('source_page_lineage', 'candidate artifact has no attestable HTML file list', 'repair_pending');
+    return issues;
+  }
+  const artifactPages: string[] = [];
+  for (const value of input.artifactPages) {
+    if (typeof value !== 'string') {
+      add('source_page_lineage', 'candidate artifact contains an unaddressable HTML page', 'repair_pending');
+      continue;
+    }
+    try {
+      const page = normalizeRelativePath(value);
+      if (!/\.html?$/i.test(page)) {
+        add('source_page_lineage', `candidate artifact declares a non-HTML page as HTML: ${page}`, 'repair_pending');
+      } else {
+        artifactPages.push(page);
+      }
+    } catch (error) {
+      add(
+        'source_page_lineage',
+        `candidate artifact has an unsafe HTML page: ${error instanceof Error ? error.message : String(error)}`,
+        'repair_pending',
+      );
+    }
+  }
+  if (new Set(artifactPages).size !== artifactPages.length) {
+    add('source_page_lineage', 'candidate artifact repeats an HTML page', 'repair_pending');
+  }
+  if (!sameStringSet(artifactPages, expectedEmittedPages)) {
+    const expectedSet = new Set(expectedEmittedPages);
+    const artifactSet = new Set(artifactPages);
+    const missing = expectedEmittedPages.filter((page) => !artifactSet.has(page));
+    const extra = artifactPages.filter((page) => !expectedSet.has(page));
+    add(
+      'source_page_lineage',
+      `candidate HTML files do not preserve the exact source page set plus only a generated index.html when absent `
+      + `(missing=${missing.join(',') || 'none'}; extra=${extra.join(',') || 'none'})`,
+      'repair_pending',
+    );
+  }
+  if (issues.some((issue) => issue.code === 'source_page_lineage')) return issues;
 
   if (!Array.isArray(input.manifestPages) || input.manifestPages.length === 0) {
     add('manifest_page_matrix', 'emitted template manifest has no page list', 'repair_pending');
@@ -1642,6 +1846,24 @@ export function validateFinalPageEvidenceMatrix(input: {
   const manifestSet = new Set(manifestPages);
   if (manifestSet.size !== manifestPages.length) {
     add('manifest_page_matrix', 'emitted template manifest repeats a page', 'repair_pending');
+  }
+  if (!sameStringSet(manifestPages, expectedEmittedPages)) {
+    const expectedSet = new Set(expectedEmittedPages);
+    const missing = expectedEmittedPages.filter((page) => !manifestSet.has(page));
+    const extra = manifestPages.filter((page) => !expectedSet.has(page));
+    add(
+      'source_page_lineage',
+      `emitted pages do not preserve the exact source page set plus only a generated index.html when absent `
+      + `(missing=${missing.join(',') || 'none'}; extra=${extra.join(',') || 'none'})`,
+      'repair_pending',
+    );
+  }
+  if (!sameStringSet(manifestPages, artifactPages)) {
+    add(
+      'manifest_page_matrix',
+      'emitted template manifest does not enumerate the exact attested HTML file set',
+      'repair_pending',
+    );
   }
   if (issues.some((issue) => issue.code === 'manifest_page_matrix')) return issues;
 
@@ -1696,6 +1918,11 @@ export function validateFinalPageEvidenceMatrix(input: {
       || (render.horizontalOverflowPx ?? 0) > 1
       || !render.screenshotHash
       || !render.perceptualHash
+      || !render.thumbnailHash
+      || !/^[0-9a-f]{64}$/.test(render.thumbnailHash)
+      || !Number.isSafeInteger(render.thumbnailBytes)
+      || (render.thumbnailBytes ?? 0) <= 0
+      || !render.artifactPath
     ) {
       add('render_page_matrix', `current render is not passing for ${page}/${viewport}`, 'render_pending');
     }
@@ -1710,6 +1937,17 @@ export function validateFinalPageEvidenceMatrix(input: {
     add(
       'render_page_matrix',
       `current render matrix has ${renderByKey.size}/${expectedKeys.size} unique expected entries`,
+      'render_pending',
+    );
+  }
+
+  if (
+    input.receiptVersion !== FINAL_QUALITY_RECEIPT_VERSION
+    || input.receiptRenderProtocol !== FINAL_RENDER_PROTOCOL
+  ) {
+    add(
+      'receipt_protocol',
+      `final quality receipt does not use evidence protocol v${FINAL_QUALITY_RECEIPT_VERSION}/${FINAL_RENDER_PROTOCOL}`,
       'render_pending',
     );
   }
@@ -1750,6 +1988,8 @@ export function validateFinalPageEvidenceMatrix(input: {
       || !render
       || evidence.screenshotSha256 !== render.screenshotHash
       || evidence.perceptualHash !== render.perceptualHash
+      || evidence.thumbnailSha256 !== render.thumbnailHash
+      || evidence.thumbnailBytes !== render.thumbnailBytes
       || !Array.isArray(evidence.issues)
       || evidence.issues.length !== 0
     ) {
@@ -1788,7 +2028,8 @@ async function writeFinalReceipt(
     sourcePreserved?: unknown;
   };
   const bodyWithoutId = {
-    version: 1,
+    version: FINAL_QUALITY_RECEIPT_VERSION,
+    renderProtocol: FINAL_RENDER_PROTOCOL,
     legacySlug: template.legacySlug,
     niche: template.niche,
     sourceHash: template.sourceHash,
@@ -1811,6 +2052,8 @@ async function writeFinalReceipt(
       passed: item.passed,
       screenshotSha256: item.screenshotSha256,
       perceptualHash: item.perceptualHash,
+      thumbnailSha256: item.thumbnailSha256,
+      thumbnailBytes: item.thumbnailBytes,
       editSlots: item.editSlotCount,
       imageSlots: item.imageSlotCount,
       issues: item.issues,
@@ -1965,7 +2208,12 @@ async function rematerializeRenderFallback(
     renderRemediation: mode,
     sourcePreserved: true,
   }, null, 2)}\n`);
-  repaired.files.set('.dailyclarity/assets.json', repaired.files.get('.dailyclarity/assets.json') ?? assetLicenseManifest([]));
+  const reconciledAssets = reconcileAssetLicenseManifest(
+    repaired.files,
+    readAssetLicenseManifest(inputFiles),
+  );
+  repaired.files.clear();
+  for (const [path, value] of reconciledAssets.files) repaired.files.set(path, value);
   const verification = verifyStaticArtifact(repaired.files, repaired.fields);
   if (!verification.passed) return false;
   const artifact = await materializeArtifact(context, template, repaired.files);
@@ -2028,10 +2276,11 @@ async function rematerializeRenderFallback(
   return true;
 }
 
-async function renderPendingBatch(
+export async function renderPendingBatch(
   context: LegacyCommandContext,
   allowedSlugs?: readonly string[],
   remediationDepth = 0,
+  runRenderTasks: typeof renderTemplateTasks = renderTemplateTasks,
 ): Promise<RenderSummary & { leasedTemplates: number }> {
   checkCancellation(context);
   const allowed = allowedSlugs ? [...new Set(allowedSlugs)] : undefined;
@@ -2060,31 +2309,151 @@ async function renderPendingBatch(
   }
   const pageLookup = new Map<string, { template: LeasedTemplate; pageId: number; artifactHash: string }>();
   const expectedPagesByTemplate = new Map<number, string[]>();
+  const preparationRequeuedIds = new Set<number>();
   const tasks: RenderTask[] = [];
   let renderedEvidenceCount = 0;
   for (const template of leases) {
-    const artifact = artifactForTemplate(context, template);
-    if (!artifact) {
+    let artifact: LegacyArtifactRecord | undefined;
+    let templateDir: string | undefined;
+    let artifactIntegrityFailed = false;
+    try {
+      artifact = artifactForTemplate(context, template);
+      if (!artifact) throw new Error('current candidate artifact registration is missing');
+      const candidateRoot = resolve(
+        context.config.artifactRoot,
+        'candidates',
+        template.niche,
+        template.legacySlug,
+      );
+      templateDir = resolve(context.config.workRoot, artifact.relativePath);
+      const expectedTemplateDir = resolve(candidateRoot, artifact.contentHash);
+      if (
+        !isWithin(candidateRoot, templateDir)
+        || templateDir === candidateRoot
+        || templateDir !== expectedTemplateDir
+      ) {
+        throw new Error(`candidate artifact is outside its exact content-addressed template root: ${artifact.relativePath}`);
+      }
+      const candidateStorageReal = await realpath(resolve(context.config.artifactRoot, 'candidates'));
+      const templateDirReal = await realpath(templateDir);
+      if (!isWithin(candidateStorageReal, templateDirReal)) {
+        throw new Error(`candidate artifact resolves outside candidate storage: ${artifact.relativePath}`);
+      }
+
+      let recordedTree: ArtifactTree;
+      try {
+        recordedTree = await validateRecordedArtifact(templateDir, artifact.contentHash);
+      } catch (error) {
+        artifactIntegrityFailed = true;
+        throw error;
+      }
+      const artifactPages = recordedTree.files
+        .map((file) => file.path)
+        .filter((path) => /\.html?$/i.test(path));
+      if (artifactPages.length === 0) throw new Error('candidate artifact contains no HTML pages');
+
+      const manifestPath = resolve(templateDir, 'template.json');
+      if (!isWithin(templateDir, manifestPath)) throw new Error('template manifest escaped its artifact root');
+      const manifestValue = JSON.parse(await readFile(manifestPath, 'utf8')) as unknown;
+      if (!manifestValue || typeof manifestValue !== 'object' || Array.isArray(manifestValue)) {
+        throw new Error('template manifest is not an object');
+      }
+      const rawPages = (manifestValue as Record<string, unknown>).pages;
+      if (!Array.isArray(rawPages) || rawPages.length === 0) {
+        throw new Error('template manifest has no page array');
+      }
+      const pages = rawPages.map((value) => {
+        if (typeof value !== 'string') throw new Error('template manifest contains a non-string page');
+        const page = normalizeRelativePath(value);
+        if (page !== value || !/\.html?$/i.test(page)) {
+          throw new Error(`template manifest contains a non-canonical HTML page: ${JSON.stringify(value)}`);
+        }
+        return page;
+      });
+      if (new Set(pages).size !== pages.length) throw new Error('template manifest repeats a page');
+
+      const records = context.ledger.listPages(template.id).filter((page) => page.stage !== 'superseded');
+      if (records.length === 0) throw new Error('ledger contains no active page records');
+      const ledgerPages = records.map((page) => {
+        const normalized = normalizeRelativePath(page.relativePath);
+        if (normalized !== page.relativePath || !/\.html?$/i.test(normalized)) {
+          throw new Error(`ledger contains a non-canonical HTML page: ${JSON.stringify(page.relativePath)}`);
+        }
+        if (page.stage !== 'static-passed') {
+          throw new Error(`ledger page has not passed static verification: ${page.relativePath}/${page.stage}`);
+        }
+        return normalized;
+      });
+      if (new Set(ledgerPages).size !== ledgerPages.length) throw new Error('ledger repeats an active page');
+      const generatedPages = records.filter((page) => page.sourceHash === digest('generated'));
+      if (
+        generatedPages.length > 1
+        || generatedPages.some((page) => page.relativePath !== 'index.html')
+        || records.length !== template.pageCount + generatedPages.length
+      ) {
+        throw new Error(
+          `ledger page lineage is invalid: source=${template.pageCount}, active=${records.length}, generated=${generatedPages.length}`,
+        );
+      }
+      if (!sameStringSet(pages, ledgerPages) || !sameStringSet(pages, artifactPages)) {
+        throw new Error('candidate artifact, manifest, and current static ledger page sets differ');
+      }
+
+      expectedPagesByTemplate.set(template.id, pages);
+      const recordsByPath = new Map(records.map((page) => [page.relativePath, page]));
+      for (const page of pages) {
+        const pageRecord = recordsByPath.get(page)!;
+        const key = `${template.id}\0${page}`;
+        pageLookup.set(key, { template, pageId: pageRecord.id, artifactHash: artifact.contentHash });
+        tasks.push({
+          key: String(template.id),
+          niche: template.niche,
+          slug: template.legacySlug,
+          page,
+          templateDir,
+          // Foundation aliases use exact structure identity. Only the irregular
+          // cohort needs temporary native-pixel evidence for visual dedupe.
+          retainComparisonScreenshot: !template.foundationId,
+        });
+      }
+    } catch (error) {
+      let reason = error instanceof Error ? error.message : String(error);
+      if (artifactIntegrityFailed && templateDir) {
+        try {
+          const candidateRoot = resolve(context.config.artifactRoot, 'candidates');
+          if (!isWithin(candidateRoot, templateDir) || templateDir === candidateRoot) {
+            throw new Error(`refusing to remove candidate outside dedicated storage: ${templateDir}`);
+          }
+          const details = await lstat(templateDir).catch(() => null);
+          if (details?.isSymbolicLink()) throw new Error(`refusing to remove symbolic-link candidate: ${templateDir}`);
+          if (details?.isDirectory()) await rm(templateDir, { recursive: true, force: true });
+        } catch (cleanupError) {
+          reason += `; corrupt candidate cleanup failed: ${cleanupError instanceof Error ? cleanupError.message : String(cleanupError)}`;
+        }
+      }
+      const requeued = context.ledger.requeueLeasedTemplateForRepair({
+        templateId: template.id,
+        leaseToken: template.leaseToken,
+        reason: `Render preparation failed: ${reason}`.slice(0, 8_000),
+        runId: context.runId,
+        details: {
+          priorArtifactHash: artifact?.contentHash ?? template.resultHash,
+          artifactIntegrityFailed,
+        },
+      });
+      if (!requeued) throw new Error(`Render preparation lease expired for ${template.legacySlug}`);
+      preparationRequeuedIds.add(template.id);
+      await logEvent(context, 'template.render_preparation_requeued', {
+        niche: template.niche,
+        legacySlug: template.legacySlug,
+        priorArtifactHash: artifact?.contentHash ?? template.resultHash,
+        reason,
+      });
       continue;
-    }
-    const templateDir = resolve(context.config.workRoot, artifact.relativePath);
-    if (!isWithin(context.config.workRoot, templateDir)) throw new Error(`Artifact escaped work root: ${artifact.relativePath}`);
-    const manifest = JSON.parse(await readFile(join(templateDir, 'template.json'), 'utf8')) as { pages?: unknown };
-    const pages = Array.isArray(manifest.pages)
-      ? manifest.pages.filter((page): page is string => typeof page === 'string')
-      : [];
-    expectedPagesByTemplate.set(template.id, pages);
-    const records = new Map(context.ledger.listPages(template.id).map((page) => [page.relativePath, page]));
-    for (const page of pages) {
-      const pageRecord = records.get(page);
-      if (!pageRecord) throw new Error(`Ledger page is missing for ${template.legacySlug}/${page}`);
-      const key = `${template.id}\0${page}`;
-      pageLookup.set(key, { template, pageId: pageRecord.id, artifactHash: artifact.contentHash });
-      tasks.push({ key: String(template.id), niche: template.niche, slug: template.legacySlug, page, templateDir });
     }
   }
 
-  const evidence = await renderTemplateTasks(context.config.artifactRoot, tasks, {
+  const evidence = tasks.length === 0 ? [] : await runRenderTasks(context.config.artifactRoot, tasks, {
     evidenceRoot: context.config.renderRoot,
     workers: context.config.chromiumWorkers,
     retries: 3,
@@ -2117,6 +2486,7 @@ async function renderPendingBatch(
   const remediatedSlugs: string[] = [];
   let neutralFallbacks = 0;
   for (const template of leases) {
+    if (preparationRequeuedIds.has(template.id)) continue;
     const values = evidenceByTemplate.get(template.id) ?? [];
     const expectedPages = expectedPagesByTemplate.get(template.id) ?? [];
     const repairedPages = context.ledger.listPages(template.id)
@@ -2360,17 +2730,35 @@ async function buildVisualAliasEvidence(
         if (
           !leftDesktop?.perceptualHash || !rightDesktop?.perceptualHash
           || !leftMobile?.perceptualHash || !rightMobile?.perceptualHash
-          || !leftDesktop.artifactPath || !rightDesktop.artifactPath
-          || !leftMobile.artifactPath || !rightMobile.artifactPath
+          || !leftDesktop.screenshotHash || !rightDesktop.screenshotHash
+          || !leftMobile.screenshotHash || !rightMobile.screenshotHash
         ) return null;
         const desktopPerceptualHashDistance = hammingDistance(leftDesktop.perceptualHash, rightDesktop.perceptualHash);
         const mobilePerceptualHashDistance = hammingDistance(leftMobile.perceptualHash, rightMobile.perceptualHash);
-        const [desktopSsim, mobileSsim] = desktopPerceptualHashDistance <= 4 && mobilePerceptualHashDistance <= 4
-          ? await Promise.all([
-            thumbnailSsim(leftDesktop.artifactPath, rightDesktop.artifactPath),
-            thumbnailSsim(leftMobile.artifactPath, rightMobile.artifactPath),
-          ])
-          : [0, 0];
+        const { desktopSsim, mobileSsim } = desktopPerceptualHashDistance <= 4 && mobilePerceptualHashDistance <= 4
+          ? await compareViewportScreenshotPixels({
+            desktop: {
+              first: {
+                path: temporaryComparisonScreenshotPath(context.config.renderRoot, leftDesktop.screenshotHash),
+                sha256: leftDesktop.screenshotHash,
+              },
+              second: {
+                path: temporaryComparisonScreenshotPath(context.config.renderRoot, rightDesktop.screenshotHash),
+                sha256: rightDesktop.screenshotHash,
+              },
+            },
+            mobile: {
+              first: {
+                path: temporaryComparisonScreenshotPath(context.config.renderRoot, leftMobile.screenshotHash),
+                sha256: leftMobile.screenshotHash,
+              },
+              second: {
+                path: temporaryComparisonScreenshotPath(context.config.renderRoot, rightMobile.screenshotHash),
+                sha256: rightMobile.screenshotHash,
+              },
+            },
+          })
+          : { desktopSsim: 0, mobileSsim: 0 };
         return {
           page,
           desktopSsim,
@@ -2619,6 +3007,10 @@ export async function certifyVisualAliasCompositions(
       slug: `${item.plan.template.legacySlug}--visual-${item.artifactHash.slice(0, 12)}`,
       page,
       templateDir: item.directory,
+      // This render becomes the candidate's current evidence if composition
+      // passes, so keep its native PNG available for later comparisons in the
+      // same loop and for the full run after a pilot.
+      retainComparisonScreenshot: true,
     })));
     if (tasks.length > 0) {
       rendered = await renderTasks(context.config.artifactRoot, tasks, {
@@ -3004,6 +3396,10 @@ async function composeCatalog(
     sourceTemplates: document.sourceTemplates,
     canonicalDesigns: document.canonicalDesigns,
   });
+  // The full, lossless PNGs exist only to certify irregular visual aliases.
+  // Keep the pilot subset for the subsequent full run; once every durable
+  // catalogue result is written, only hashes, metrics, and thumbnails stay.
+  if (!allowed) await removeTemporaryComparisonScreenshots(context.config.renderRoot);
   return document;
 }
 
@@ -3079,6 +3475,9 @@ interface PilotEvidenceAudit {
   selectedCount: number;
   uniqueSelectedCount: number;
   catalogSourceTemplates: number;
+  sourcePageCount: number;
+  expectedEmittedPageCount: number;
+  observedEmittedPageCount: number;
   selectionHash: string;
 }
 
@@ -3154,6 +3553,11 @@ async function auditPilotEvidence(
 ): Promise<PilotEvidenceAudit> {
   const selectedSlugs = selected.map((template) => template.slug);
   const uniqueSlugs = [...new Set(selectedSlugs)].sort();
+  const sourcePageCount = selected.reduce((sum, template) => sum + template.pages.length, 0);
+  const expectedEmittedPageCount = selected.reduce((sum, template) => (
+    sum + template.pages.length + (template.pages.some((page) => page.name.toLowerCase() === 'index.html') ? 0 : 1)
+  ), 0);
+  let observedEmittedPageCount = 0;
   const issues: string[] = [];
   const fallbackSlugs: string[] = [];
   const recoveryBySlug = new Map<string, { stage: 'repair_pending' | 'render_pending'; reasons: string[] }>();
@@ -3201,6 +3605,13 @@ async function auditPilotEvidence(
     }
     if (template.ruleVersion !== context.config.ruleVersion) addTemplateIssue(slug, `${slug}: stale template rule version`, 'repair_pending');
     if (template.sourceHash !== inventory.sourceTreeHash) addTemplateIssue(slug, `${slug}: stale template source hash`, 'repair_pending');
+    if (template.pageCount !== inventory.pages.length) {
+      addTemplateIssue(
+        slug,
+        `${slug}: ledger source page count ${template.pageCount} does not match inventory ${inventory.pages.length}`,
+        'repair_pending',
+      );
+    }
     if (template.stage !== 'complete') addTemplateIssue(slug, `${slug}: stage is ${template.stage}, expected complete`);
     if (template.terminalDisposition !== 'passing_design' && template.terminalDisposition !== 'passing_alias') {
       addTemplateIssue(slug, `${slug}: terminal disposition is not passing`);
@@ -3240,6 +3651,7 @@ async function auditPilotEvidence(
     }
 
     const artifact = artifactForTemplate(context, template);
+    let emittedArtifactPages: unknown;
     let emittedManifestPages: unknown;
     if (!artifact) {
       addTemplateIssue(slug, `${slug}: missing current candidate artifact`, 'repair_pending');
@@ -3254,7 +3666,12 @@ async function auditPilotEvidence(
         addTemplateIssue(slug, `${slug}: candidate artifact escapes the work root`, 'repair_pending');
       } else {
         try {
-          await validateRecordedArtifact(artifactRoot, artifact.contentHash);
+          const artifactTreeEvidence = await validateRecordedArtifact(artifactRoot, artifact.contentHash);
+          const artifactPages = artifactTreeEvidence.files
+            .map((file) => file.path)
+            .filter((path) => /\.html?$/i.test(path));
+          emittedArtifactPages = artifactPages;
+          observedEmittedPageCount += artifactPages.length;
         } catch (error) {
           addTemplateIssue(slug, `${slug}: current candidate artifact failed integrity validation (${error instanceof Error ? error.message : String(error)})`, 'repair_pending');
         }
@@ -3306,7 +3723,31 @@ async function auditPilotEvidence(
       addTemplateIssue(slug, `${slug}: no current static-passed pages`, 'repair_pending');
     }
     const renders = context.ledger.listRenders(template.id);
+    let receiptVersion: unknown;
+    let receiptRenderProtocol: unknown;
     let receiptPages: unknown;
+
+    for (const render of renders.filter((candidate) => candidate.status === 'passed')) {
+      if (!render.artifactPath || !render.thumbnailHash || render.thumbnailBytes === null) {
+        addTemplateIssue(slug, `${slug}: retained thumbnail evidence is incomplete`, 'render_pending');
+        continue;
+      }
+      const thumbnailPath = resolve(context.config.workRoot, render.artifactPath);
+      try {
+        await verifyRetainedThumbnailEvidence({
+          renderRoot: context.config.renderRoot,
+          thumbnailPath,
+          expectedSha256: render.thumbnailHash,
+          expectedBytes: render.thumbnailBytes,
+        });
+      } catch (error) {
+        addTemplateIssue(
+          slug,
+          `${slug}: retained thumbnail evidence failed validation (${error instanceof Error ? error.message : String(error)})`,
+          'render_pending',
+        );
+      }
+    }
 
     if (template.qualityReceipt) {
       const receiptHash = template.qualityReceipt.replace(/^receipt_/, '');
@@ -3329,6 +3770,8 @@ async function auditPilotEvidence(
               throw new Error('receipt is not an object');
             }
             const document = parsed as {
+              version?: unknown;
+              renderProtocol?: unknown;
               id?: unknown;
               legacySlug?: unknown;
               niche?: unknown;
@@ -3339,6 +3782,8 @@ async function auditPilotEvidence(
               checks?: { static?: unknown; desktop?: unknown; mobile?: unknown; criticalDefects?: unknown; seriousDefects?: unknown };
               pages?: unknown;
             };
+            receiptVersion = document.version;
+            receiptRenderProtocol = document.renderProtocol;
             receiptPages = document.pages;
             const { id: recordedId, ...receiptBody } = parsed as Record<string, unknown>;
             const computedId = `receipt_${sha256(stableStringify(receiptBody)).slice(0, 24)}`;
@@ -3368,9 +3813,13 @@ async function auditPilotEvidence(
     }
     if (artifact) {
       for (const matrixIssue of validateFinalPageEvidenceMatrix({
+        sourcePages: inventory.pages.map((page) => page.name),
+        artifactPages: emittedArtifactPages,
         manifestPages: emittedManifestPages,
         ledgerPages: pages,
         renders,
+        receiptVersion,
+        receiptRenderProtocol,
         receiptPages,
       })) {
         addTemplateIssue(
@@ -3380,6 +3829,13 @@ async function auditPilotEvidence(
         );
       }
     }
+  }
+
+  if (observedEmittedPageCount !== expectedEmittedPageCount) {
+    issues.push(
+      `Emitted page aggregate is ${observedEmittedPageCount}/${expectedEmittedPageCount} `
+      + `for ${sourcePageCount} immutable source pages`,
+    );
   }
 
   return {
@@ -3393,6 +3849,9 @@ async function auditPilotEvidence(
     selectedCount: selectedSlugs.length,
     uniqueSelectedCount: uniqueSlugs.length,
     catalogSourceTemplates: catalog?.sourceTemplates ?? 0,
+    sourcePageCount,
+    expectedEmittedPageCount,
+    observedEmittedPageCount,
     selectionHash: pilotSelectionHash(uniqueSlugs),
   };
 }
@@ -3513,6 +3972,7 @@ export function validatePilotGateAuthorization(
     || gates.minimumPilotSizeMet !== true
     || gates.uniqueSelection !== true
     || gates.exactCatalogCoverage !== true
+    || gates.exactPageLineage !== true
     || gates.everyObservedDimensionCovered !== true
     || gates.currentEvidenceComplete !== true
     || gates.everyPilotTemplatePassed !== true
@@ -3567,6 +4027,9 @@ export async function writePilotGate(
     selectedCount: evidence.selectedCount,
     uniqueSelectedCount: evidence.uniqueSelectedCount,
     catalogSourceTemplates: evidence.catalogSourceTemplates,
+    sourcePageCount: evidence.sourcePageCount,
+    expectedEmittedPageCount: evidence.expectedEmittedPageCount,
+    observedEmittedPageCount: evidence.observedEmittedPageCount,
     selectionHash: evidence.selectionHash,
     coverage,
     canonicalDesigns: catalog?.canonicalDesigns ?? 0,
@@ -3579,6 +4042,8 @@ export async function writePilotGate(
         && catalog.sourceTemplates === evidence.uniqueSelectedCount
         && catalog.templates.length === evidence.uniqueSelectedCount
         && sameStringSet(catalog.templates.map((template) => template.legacySlug), selected.map((template) => template.slug)),
+      exactPageLineage: evidence.observedEmittedPageCount === evidence.expectedEmittedPageCount
+        && !evidence.issues.some((issue) => issue.includes('source_page_lineage')),
       everyObservedDimensionCovered: coverage.missing.length === 0,
       currentEvidenceComplete,
       everyPilotTemplatePassed: deterministicFailures === 0 && currentEvidenceComplete,
@@ -3701,6 +4166,8 @@ async function runCommand(context: LegacyCommandContext): Promise<LegacyCommandO
   assertNoNeutralFallbacks('Full catalogue completion', finalEvidence.fallbackSlugs);
   await logEvent(context, 'catalog.current_evidence_verified', {
     templates: finalEvidence.uniqueSelectedCount,
+    sourcePages: finalEvidence.sourcePageCount,
+    emittedPages: finalEvidence.observedEmittedPageCount,
     neutralFallbacks: finalEvidence.fallbackSlugs.length,
   });
   const finalInventory = await inventoryLegacyCatalog(context.config.sourceRoot, {
@@ -3719,7 +4186,13 @@ async function runCommand(context: LegacyCommandContext): Promise<LegacyCommandO
   });
   return {
     message: `Full rehabilitation completed: ${catalog.sourceTemplates.toLocaleString()} source slugs -> ${catalog.canonicalDesigns.toLocaleString()} canonical designs.`,
-    details: { repair, render, catalogPath: join(context.config.reportRoot, 'catalog-v3.json') },
+    details: {
+      repair,
+      render,
+      sourcePages: finalEvidence.sourcePageCount,
+      emittedPages: finalEvidence.observedEmittedPageCount,
+      catalogPath: join(context.config.reportRoot, 'catalog-v3.json'),
+    },
   };
 }
 
@@ -4161,6 +4634,8 @@ async function promoteCommand(context: LegacyCommandContext): Promise<LegacyComm
     sourceCatalogHash: finalInventory.catalogHash,
     stagingRoot,
     sourceTemplates: templates.length,
+    sourcePages: promotionEvidence.sourcePageCount,
+    emittedPages: promotionEvidence.observedEmittedPageCount,
     aliases: aliases.length,
     uploaderOutput,
     customizationVerification,
@@ -4267,13 +4742,15 @@ async function reportCommand(
   }
   await Promise.all(sample.map(async (render) => {
     const thumbnailPath = resolve(context.config.workRoot, render.artifactPath!);
-    if (!isWithin(context.config.renderRoot, thumbnailPath)) {
-      throw new Error(`Contact-sheet thumbnail escaped the render root: ${render.artifactPath}`);
+    if (!render.thumbnailHash || render.thumbnailBytes === null) {
+      throw new Error(`Contact-sheet thumbnail lacks integrity evidence: ${render.artifactPath}`);
     }
-    const details = await lstat(thumbnailPath).catch(() => null);
-    if (!details?.isFile() || details.isSymbolicLink() || details.size === 0) {
-      throw new Error(`Contact-sheet thumbnail is missing or unsafe: ${thumbnailPath}`);
-    }
+    await verifyRetainedThumbnailEvidence({
+      renderRoot: context.config.renderRoot,
+      thumbnailPath,
+      expectedSha256: render.thumbnailHash,
+      expectedBytes: render.thumbnailBytes,
+    });
   }));
   const cards = sample.map((render) => {
     const template = context.ledger.getTemplate(render.templateId);
@@ -4301,6 +4778,8 @@ async function reportCommand(
         sourceHash: template.sourceTreeHash,
         screenshotHash: render.screenshotHash,
         perceptualHash: render.perceptualHash,
+        thumbnailHash: render.thumbnailHash,
+        thumbnailBytes: render.thumbnailBytes,
         artifactPath: relative(context.config.workRoot, render.artifactPath!).replace(/\\/g, '/'),
       };
     }),

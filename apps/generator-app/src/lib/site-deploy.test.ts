@@ -72,7 +72,6 @@ describe('site customization safety', () => {
       'index.html': [
         { nodeId: 'pb-index-0001', original: 'Old', updated: 'New' },
         { nodeId: 'hero-copy', updated: 'New without original' },
-        { original: 'Other', updated: 'Changed' },
       ],
     })
   })
