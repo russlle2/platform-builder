@@ -316,7 +316,8 @@ test('neutralizes fixed prices in visible copy and pricing control attributes', 
   assert.match(html, /aria-valuetext="Contact for current pricing"/);
   assert.match(html, /label="Contact for current pricing plan"/);
   assert.match(html, /Investment range: Contact for current pricing\./);
-  assert.match(html, /class="split-price"[^>]*><strong[^>]*>Starting at <\/strong><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Contact for current pricing<\/span><span class="amount"><\/span><svg[^>]*><path d="M0 0h1"><\/path><\/svg><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">\. <\/span><a href="pricing\.html"><em[^>]*>See plan details<\/em><\/a><\/p>/);
+  assert.match(html, /class="split-price"[^>]*><strong[^>]*>Starting at <\/strong><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Contact for current pricing<\/span><span class="amount"><\/span><svg[^>]*><path d="M0 0h1"><\/path><\/svg>\. <a href="pricing\.html"><em[^>]*>See plan details<\/em><\/a><\/p>/);
+  assert.doesNotMatch(html, /data-dc-edit-wrapper="direct-text"[^>]*>\. <\/span>/);
   assert.match(html, /class="range-prices"[^>]*>Contact for current pricing; Contact for current pricing; Contact for current pricing package\.<\/p>/);
   assert.ok(result.transformations.some((item) => item.rule === 'replace-fixed-price'));
   assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
@@ -1324,7 +1325,7 @@ test('emits only leaf text slots while preserving navigation and form descendant
     niche: 'wellness_coach',
     files: new Map<string, string | Uint8Array>([
       ['index.html', `<!doctype html><html lang="en"><head><title>Legacy</title></head><body>
-        <header><nav>Explore <a href="about.html"><strong>About us</strong></a></nav></header>
+        <header><nav>Explore <a href="about.html"><strong>About us</strong></a> · <a href="mailto:{{EMAIL}}">Email</a></nav></header>
         <main><h1>{{BUSINESS_NAME}}</h1><p>Tell us about your current priorities.</p>
         <button type="button"><svg aria-hidden="true" viewBox="0 0 1 1"><path d="M0 0h1v1z"></path></svg> Open menu</button>
         <a href="mailto:{{EMAIL}}">Contact</a></main>
@@ -1361,7 +1362,8 @@ test('emits only leaf text slots while preserving navigation and form descendant
       );
     }
   }
-  assert.match(html, /<nav[^>]*><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Explore <\/span><a href="about\.html"><strong data-dc-edit-id="txt_[a-f0-9]{18}">About us<\/strong><\/a><\/nav>/);
+  assert.match(html, /<nav[^>]*><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Explore <\/span><a href="about\.html"><strong data-dc-edit-id="txt_[a-f0-9]{18}">About us<\/strong><\/a> · <a href="mailto:\{\{EMAIL\}\}" data-dc-edit-id="txt_[a-f0-9]{18}">Email<\/a><\/nav>/);
+  assert.doesNotMatch(html, /data-dc-edit-wrapper="direct-text"[^>]*> · <\/span>/);
   assert.match(html, /<label><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Your name <\/span><input name="name" autocomplete="name" required="">/);
   assert.doesNotMatch(html, /<input[^>]*data-dc-edit-id=/);
   assert.match(html, /<textarea name="message" rows="5" required=""><\/textarea>/);

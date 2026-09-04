@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
 export const LEGACY_CATALOG_CONTRACT_VERSION = 3 as const;
-export const LEGACY_REPAIR_RULE_VERSION = 'legacy-rehab-1.0.28' as const;
+export const LEGACY_REPAIR_RULE_VERSION = 'legacy-rehab-1.0.29' as const;
 export const COMPATIBILITY_SCRIPT_PATH = 'assets/js/dc-compat.js' as const;
 
 export type IssueSeverity = 'info' | 'warning' | 'error' | 'critical';

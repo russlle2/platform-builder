@@ -2444,6 +2444,34 @@ function annotateEditableNodes(
       || role === 'button' || role === 'link';
   };
 
+  // Punctuation and layout separators are not customer copy. Advertising a
+  // tiny middle-dot/pipe wrapper as editable creates a practically impossible
+  // hit target on mobile and lets a customer accidentally damage formatting.
+  // Letters and numbers include all personalization tokens and meaningful
+  // prose while intentionally excluding symbol-only controls and ornaments.
+  const hasCustomerEditableText = (value: string): boolean => /[\p{L}\p{N}]/u.test(value);
+
+  // Older compiler passes may already have wrapped a separator. Unwrap that
+  // generated node before rebuilding IDs so remediation remains byte-stable
+  // with a fresh compile under this rule.
+  const obsoleteDirectTextWrappers: HtmlNode[] = [];
+  walk(document, (node) => {
+    if (
+      node.tagName === 'span'
+      && getAttr(node, 'data-dc-edit-wrapper') === 'direct-text'
+      && !hasCustomerEditableText(textContent(node))
+    ) obsoleteDirectTextWrappers.push(node);
+  });
+  for (const wrapper of obsoleteDirectTextWrappers) {
+    const parent = wrapper.parentNode;
+    if (!parent?.childNodes) continue;
+    const index = parent.childNodes.indexOf(wrapper);
+    if (index < 0) continue;
+    const children = wrapper.childNodes ?? [];
+    for (const child of children) child.parentNode = parent;
+    parent.childNodes.splice(index, 1, ...children);
+  }
+
   // Compiler IDs are derived output, never immutable source content. Clear
   // both current and v2 namespaces before rebuilding them so a second pass
   // cannot keep advertising a slot that has since become hidden/decorative.
@@ -2477,7 +2505,7 @@ function annotateEditableNodes(
       && (TEXT_TAGS.has(node.tagName) || FALLBACK_TEXT_TAGS.has(node.tagName))
     ) {
       for (const child of [...(node.childNodes ?? [])]) {
-        if (child.nodeName !== '#text' || !child.value?.trim()) continue;
+        if (child.nodeName !== '#text' || !child.value?.trim() || !hasCustomerEditableText(child.value)) continue;
         const fragment = parseFragment('<span data-dc-edit-wrapper="direct-text"></span>') as unknown as HtmlNode;
         const wrapper = fragment.childNodes?.[0];
         if (!wrapper) continue;
@@ -2494,7 +2522,7 @@ function annotateEditableNodes(
     const text = textContent(node).replace(/\s+/g, ' ').trim();
     const directText = (node.childNodes ?? []).some((child) => child.nodeName === '#text' && Boolean(child.value?.trim()));
     const hasElementChildren = (node.childNodes ?? []).some((child) => Boolean(child.tagName));
-    const textCandidate = !editableAncestor && !hasElementChildren && Boolean(text) && (
+    const textCandidate = !editableAncestor && !hasElementChildren && hasCustomerEditableText(text) && (
       TEXT_TAGS.has(node.tagName) || (FALLBACK_TEXT_TAGS.has(node.tagName) && directText)
     );
     const shouldEdit = !unavailable && textCandidate;
