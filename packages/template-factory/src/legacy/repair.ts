@@ -997,6 +997,27 @@ function markDecorativeHitLayers(document: HtmlNode): number {
   return count;
 }
 
+/**
+ * Flag content-heavy inline flex rows that have no responsive class hook.
+ * Their `flex:1` children otherwise collapse into one-character columns after
+ * the global overflow guard removes their intrinsic minimum width.
+ */
+function markMobileStackContainers(document: HtmlNode): number {
+  let count = 0;
+  walk(document, (node) => {
+    if (!node.tagName || !['article', 'aside', 'div', 'footer', 'main', 'section'].includes(node.tagName)) return;
+    const style = getAttr(node, 'style') ?? '';
+    if (!/(?:^|;)\s*display\s*:\s*(?:inline-)?flex(?:\s*!important)?\s*(?:;|$)/i.test(style)) return;
+    const children = (node.childNodes ?? []).filter((child) => Boolean(child.tagName));
+    if (children.length < 2 || textContent(node).replace(/\s+/g, ' ').trim().length < 80) return;
+    const hasFlexibleChild = children.some((child) => /(?:^|;)\s*(?:flex(?:-grow)?\s*:\s*(?:1|[1-9]\d*)|flex\s*:\s*(?:auto|[1-9]\d*))(?:\s|;|$)/i.test(getAttr(child, 'style') ?? ''));
+    if (!hasFlexibleChild) return;
+    if (getAttr(node, 'data-dc-mobile-stack') !== 'true') count += 1;
+    setAttr(node, 'data-dc-mobile-stack', 'true');
+  });
+  return count;
+}
+
 function neutralizeSensitiveFormMarker(value: string): string {
   return value.replace(new RegExp(UNSAFE_FORM_MARKER.source, 'gi'), 'contact');
 }
@@ -3251,6 +3272,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const headings = ensureHeading(document, options.file);
   const accessibility = normalizeAccessibility(document);
   const decorativeHitLayers = markDecorativeHitLayers(document);
+  const mobileStackContainers = markMobileStackContainers(document);
   const duplicateIds = ensureUniqueDomIds(document, options.file);
   if (scripts) transformations.push({ rule: 'replace-scripts-with-audited-runtime', file: options.file, count: scripts });
   if (unsafeAttrs) transformations.push({ rule: 'strip-event-and-unsafe-url-attributes', file: options.file, count: unsafeAttrs });
@@ -3264,6 +3286,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   if (headings) transformations.push({ rule: 'restore-page-heading', file: options.file, count: headings });
   if (accessibility) transformations.push({ rule: 'normalize-accessibility-semantics', file: options.file, count: accessibility });
   if (decorativeHitLayers) transformations.push({ rule: 'make-decorative-layers-pointer-transparent', file: options.file, count: decorativeHitLayers });
+  if (mobileStackContainers) transformations.push({ rule: 'make-inline-flex-content-responsive', file: options.file, count: mobileStackContainers });
   if (duplicateIds) transformations.push({ rule: 'deduplicate-dom-ids', file: options.file, count: duplicateIds });
   if (standardizedForms) transformations.push({ rule: 'standardize-contact-form', file: options.file, count: standardizedForms });
   if (namedFormFields) transformations.push({ rule: 'name-form-controls', file: options.file, count: namedFormFields });

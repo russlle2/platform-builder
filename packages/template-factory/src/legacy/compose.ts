@@ -88,6 +88,7 @@ const REPAIR_STYLESHEET = [
   'svg[aria-hidden="true"],[data-dc-decoration="pointer-layer"]{pointer-events:none!important}',
   ':is(p,blockquote,figcaption,dd,td)>a{text-decoration-line:underline;text-underline-offset:.12em}',
   '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}',
+  '[data-dc-mobile-stack="true"]{flex-wrap:wrap!important}[data-dc-mobile-stack="true"]>*{flex:1 1 min(100%,18rem)!important;min-width:min(100%,18rem)!important}',
   'body :is(nav,header,[class*="nav"],[class*="row"],[class*="flex"]){flex-wrap:wrap!important}',
   'body :is(.grid,[class*="-grid"],[class*="grid-"]){grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))!important}',
   'body>svg[aria-hidden]{inset-inline:1px!important;margin-inline:auto!important;max-width:calc(100vw - 2px)!important}',

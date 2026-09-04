@@ -1161,6 +1161,8 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
       ['index.html', `<!doctype html><html lang="en"><head><title>Legacy</title><link rel="stylesheet" href="styles.css"></head><body>
         <main><section class="hero"><div class="hero-bg"><img src="assets/img/pattern.svg" alt="Decorative pattern" aria-hidden="true"><div class="hero-gradient"></div></div>
         <div class="hero-inner"><h1>{{BUSINESS_NAME}}</h1><p>Visible customer introduction.</p></div></section>
+        <section id="content-row" style="margin-top:18px;display:flex;gap:12px"><div><h2>How it works</h2><p>Review the practical guidance and choose a next step that fits your current priorities and schedule.</p></div><div style="flex:1"><h2>Current workshops</h2><p>Ask which educational sessions are currently available and what to expect before reserving a place.</p></div></section>
+        <section id="compact-row" style="display:flex"><a href="#details" style="flex:1">Details</a><a href="mailto:{{EMAIL}}">Contact</a></section>
         <div class="editorial-background"></div></main>
         <footer><nav aria-label="Footer"><a href="mailto:{{EMAIL}}">Contact</a></nav><nav class="footer-nav">Privacy Terms</nav></footer>
       </body></html>`],
@@ -1180,8 +1182,12 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.doesNotMatch(html, /class="editorial-background"[^>]*data-dc-decoration/);
   assert.doesNotMatch(html, /<nav[^>]*aria-label="Footer"[^>]*data-dc-edit-id/);
   assert.match(html, /<nav class="footer-nav"><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Privacy Terms<\/span><\/nav>/);
+  assert.match(html, /id="content-row"[^>]*data-dc-mobile-stack="true"/);
+  assert.doesNotMatch(html, /id="compact-row"[^>]*data-dc-mobile-stack/);
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-decoration="pointer-layer"\]\{pointer-events:none!important\}/);
+  assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-stack="true"\]\{flex-wrap:wrap!important\}/);
   assert.ok(result.transformations.some((item) => item.rule === 'make-decorative-layers-pointer-transparent'));
+  assert.ok(result.transformations.some((item) => item.rule === 'make-inline-flex-content-responsive'));
   assert.equal(result.qualityReceipt.status, 'passed', JSON.stringify(result.qualityReceipt.checks, null, 2));
 });
 
