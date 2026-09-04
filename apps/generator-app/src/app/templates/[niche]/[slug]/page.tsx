@@ -19,6 +19,7 @@ import {
   saveImageSwaps,
 } from '@/lib/image-swaps'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
+import { getStoredPortalToken } from '@/lib/portal-token-client'
 
 interface TemplateField {
   name: string
@@ -431,18 +432,25 @@ export default function TemplateCustomizePage({
     if (!portalSlug) return
     setPublishStatus('saving')
     try {
-      const res = await fetch('/api/portal/site', {
+      // Use the customer portal API (portal-token authenticated) instead of
+      // the admin-only /api/portal/site route.
+      const token = getStoredPortalToken(portalSlug) || ''
+      const res = await fetch('/api/portal/customer', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'x-portal-token': token } : {}),
+        },
         body: JSON.stringify({
           slug: portalSlug,
+          token,
           customerValues: values,
           inlineEdits,
           imageSwaps: imageSwapsRef.current,
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Publish failed')
+      if (!res.ok) throw new Error((data as { error?: string }).error || 'Publish failed')
       setPublishStatus('done')
     } catch {
       setPublishStatus('error')
@@ -468,7 +476,8 @@ export default function TemplateCustomizePage({
         <div className="container-wide text-center py-20">
           <h1 className="text-4xl font-bold text-white">Template not found</h1>
           <p className="text-slate-400 mt-4">{error}</p>
-          <Link href={`/templates/${params.niche}`} className="text-cyan-300 mt-4 inline-block">
+          <Link href={`/preview-your-business?niche=${encodeURIComponent(params.niche)}`} className="text-cyan-300 mt-4 inline-block">
+            Start preview wizard →
             ← Back to templates
           </Link>
         </div>
@@ -497,8 +506,8 @@ export default function TemplateCustomizePage({
             {nicheLabel}
           </Link>
           <span>/</span>
-          <Link href={`/templates/${params.niche}`} className="hover:text-white transition-colors">
-            Templates
+          <Link href={`/preview-your-business?niche=${encodeURIComponent(params.niche)}`} className="hover:text-white transition-colors">
+            Intake
           </Link>
           <span>/</span>
           <span className="text-white">{template.name}</span>
@@ -788,10 +797,10 @@ function FormStep({
           {/* Back to templates link */}
           <div className="text-center pt-2">
             <Link
-              href={`/templates/${niche}`}
+              href={`/portal`}
               className="text-sm text-slate-500 hover:text-white transition-colors"
             >
-              ← Back to {nicheLabel} Templates
+              ← Back to Portal
             </Link>
           </div>
         </div>
@@ -1197,10 +1206,10 @@ function PreviewStep({
             Purchase This Site
           </Link>
           <Link
-            href={`/templates/${niche}`}
+            href="/portal"
             className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
           >
-            Browse Other Templates
+            Back to Portal
           </Link>
         </div>
       </div>

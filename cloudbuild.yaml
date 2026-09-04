@@ -1,0 +1,15 @@
+steps:
+  - name: 'gcr.io/k8s-skaffold/pack'
+    args:
+      - 'build'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/app/ai-agent'
+      - '--builder=gcr.io/buildpacks/builder:v1'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'ai-agent-service'
+      - '--image=us-central1-docker.pkg.dev/$PROJECT_ID/app/ai-agent'
+      - '--region=us-central1'
+      - '--service-account=site-ai-optimizer-agent@$PROJECT_ID.iam.gserviceaccount.com'

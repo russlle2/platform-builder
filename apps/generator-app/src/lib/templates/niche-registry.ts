@@ -1,5 +1,9 @@
 import fs from 'fs'
 import path from 'path'
+import { getStore } from '@netlify/blobs'
+import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
+
+export { NICHE_META, NICHE_SLUGS, getNicheSlugs }
 
 /* ------------------------------------------------------------------ */
 /* Types                                                               */
@@ -22,8 +26,17 @@ export interface TemplateMeta {
   voiceFamily?: string
   /** Gallery ordering key (lower = earlier). Undefined sorts last. */
   order?: number
+  /** Featured on niche landing pages */
+  featured?: boolean
+  /** Showcase card order on niche landing (lower = earlier) */
+  showcaseOrder?: number
   pages: string[]
-  dir: string          // absolute path on disk
+  /**
+   * Path to the template's directory RELATIVE to the templates root
+   * (e.g. `"aromatherapy/aromatherapy-2026-02-16T14-59-46-083Z-001"`).
+   * The registry composes both filesystem paths and CDN URLs from this.
+   */
+  dir: string
   fields: TemplateField[]
   /** First 160 chars of visible text from index.html (for card preview) */
   snippet: string
@@ -38,327 +51,130 @@ export interface NicheInfo {
   templateCount: number
 }
 
-/* ------------------------------------------------------------------ */
-/* Niche metadata – one entry per qualifying niche (20+ templates)      */
-/* ------------------------------------------------------------------ */
-
-export const NICHE_META: Record<string, Omit<NicheInfo, 'slug' | 'templateCount'>> = {
-  aromatherapy: {
-    label: 'Aromatherapy',
-    description: 'Premium websites for aromatherapy practices, essential oil studios, and holistic scent healing businesses.',
-    icon: '🌿',
-    accent: 'emerald',
-  },
-  holistic_medicine: {
-    label: 'Holistic Medicine',
-    description: 'Professional websites for integrative health practitioners, naturopathic doctors, and holistic healing centers.',
-    icon: '🧘',
-    accent: 'violet',
-  },
-  // NOTE: Deactivated categories. A niche only becomes browsable when present in
-  // NICHE_META — removing/omitting an entry hides it from the gallery, landing pages,
-  // niche API, and static generation (its template folder stays on disk, untouched).
-  // Re-add an entry to reactivate. Currently deactivated: hvac, dental, injury_law (legal).
-  // hvac: {
-  //   label: 'HVAC',
-  //   description: 'Conversion-focused websites for heating, cooling, and air quality professionals.',
-  //   icon: '❄️',
-  //   accent: 'cyan',
-  // },
-  // dental: {
-  //   label: 'Dental',
-  //   description: 'Patient-focused websites for dental practices and orthodontic clinics.',
-  //   icon: '🦷',
-  //   accent: 'cyan',
-  // },
-  // injury_law: {
-  //   label: 'Personal Injury Law',
-  //   description: 'Conversion-focused websites for personal injury and accident law firms.',
-  //   icon: '⚖️',
-  //   accent: 'amber',
-  // },
-  private_practice_therapist: {
-    label: 'Private Practice Therapist',
-    description: 'Warm, trust-building websites for therapists, counselors, and mental health professionals in private practice.',
-    icon: '💬',
-    accent: 'amber',
-  },
-  sound_bath: {
-    label: 'Sound Bath',
-    description: 'Immersive, beautifully designed websites for sound healing practitioners and meditation studios.',
-    icon: '🔔',
-    accent: 'indigo',
-  },
-  wellness_coach: {
-    label: 'Wellness Coach',
-    description: 'Results-driven websites for health coaches, wellness consultants, and lifestyle transformation experts.',
-    icon: '✨',
-    accent: 'rose',
-  },
-}
+type ManifestShape = Record<string, TemplateMeta[]>
 
 /* ------------------------------------------------------------------ */
-/* Helpers                                                              */
+/* Filesystem + URL roots                                              */
 /* ------------------------------------------------------------------ */
 
-const TEMPLATES_ROOT = path.join(process.cwd(), '..', '..', 'platform-builder')
+/**
+ * Candidate locations for the templates directory. Local dev reads from the
+ * checked-out `platform-builder/` directory. The `public/_templates` paths
+ * are kept as legacy candidates for any env that still mirrors there.
+ */
+const FS_ROOT_CANDIDATES: string[] = [
+  path.join(process.cwd(), 'public', '_templates'),
+  path.join(process.cwd(), 'apps', 'generator-app', 'public', '_templates'),
+  path.join(process.cwd(), '..', '..', 'platform-builder'),
+  path.join(process.cwd(), 'platform-builder'),
+]
 
-function extractSnippet(htmlPath: string): string {
-  try {
-    const html = fs.readFileSync(htmlPath, 'utf-8')
-    // strip tags, collapse whitespace, take first 160 chars
-    const text = html
-      .replace(/<script[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[\s\S]*?<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\{\{[^}]+\}\}/g, '')
-      .replace(/\s+/g, ' ')
-      .trim()
-    return text.slice(0, 160)
-  } catch {
-    return ''
-  }
-}
-
-/** Strip leading/trailing {{ }} from a key string */
-function stripBraces(key: string): string {
-  return key.replace(/^\{\{/, '').replace(/\}\}$/, '')
-}
-
-/** Type-name keywords that should be treated as a field *type*, not a default value */
-const TYPE_KEYWORDS = new Set([
-  'string', 'text', 'textarea', 'email', 'tel', 'phone', 'url', 'number',
-  'int', 'integer', 'boolean', 'bool', 'date', 'datetime', 'time', 'json', 'array', 'object',
-])
-
-/** Infer an input type from a field name */
-function inferType(name: string): string {
-  const n = name.toLowerCase()
-  if (n.includes('email')) return 'email'
-  if (n.includes('phone')) return 'tel'
-  if (n.includes('url') || n.includes('link') || n.includes('website')) return 'url'
-  return 'text'
-}
-
-/** Normalize a single raw field object into a TemplateField */
-function normalizeField(f: any): TemplateField {
-  const rawKey = f.key || f.name || ''
-  const name = stripBraces(rawKey)
-  return {
-    name,
-    label: f.label || name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-    type: f.type || inferType(name),
-    required: f.required ?? true,
-    default: f.default ?? f.placeholder ?? f.example ?? undefined,
-  }
-}
-
-/** Build a field from an object-map entry: value may be a type keyword, a default, or a config object */
-function fieldFromMapEntry(key: string, val: unknown): TemplateField {
-  const name = stripBraces(key)
-  if (val && typeof val === 'object' && !Array.isArray(val)) {
-    return normalizeField({ key: name, ...(val as Record<string, unknown>) })
-  }
-  if (typeof val === 'string') {
-    const lower = val.trim().toLowerCase()
-    // e.g. { "BUSINESS_NAME": "string" } → type hint, no default
-    if (TYPE_KEYWORDS.has(lower)) {
-      return normalizeField({ key: name, type: lower === 'string' ? inferType(name) : lower })
-    }
-    // a real default value (skip unresolved placeholder tokens)
-    if (!val.startsWith('{{') && !val.startsWith('[')) {
-      return normalizeField({ key: name, default: val })
-    }
-  }
-  return normalizeField({ key: name })
-}
-
-/** Dedupe fields by name, keeping the first occurrence (which carries richest metadata) */
-function dedupeFields(fields: TemplateField[]): TemplateField[] {
-  const seen = new Set<string>()
-  const out: TemplateField[] = []
-  for (const f of fields) {
-    if (!f.name || seen.has(f.name)) continue
-    seen.add(f.name)
-    out.push(f)
-  }
-  return out
-}
-
-/** Derive fields from a list of {{PLACEHOLDER}} tokens (from template.json or raw HTML) */
-function fieldsFromPlaceholders(placeholders: string[]): TemplateField[] {
-  return placeholders.map((p) => normalizeField({ key: stripBraces(p) }))
-}
-
-/** Scan raw HTML for {{TOKEN}} placeholders and build fields from them */
-function fieldsFromHtml(htmlPath: string): TemplateField[] {
-  try {
-    const html = fs.readFileSync(htmlPath, 'utf-8')
-    const tokens = new Set<string>()
-    const re = /\{\{\s*([A-Za-z0-9_]+)\s*\}\}/g
-    let m: RegExpExecArray | null
-    while ((m = re.exec(html)) !== null) tokens.add(m[1])
-    return fieldsFromPlaceholders([...tokens])
-  } catch {
-    return []
-  }
-}
-
-function parseFields(fieldsPath: string): TemplateField[] {
-  try {
-    const raw = JSON.parse(fs.readFileSync(fieldsPath, 'utf-8'))
-
-    // Format A: Top-level array of field objects  [{ key, label, type }]
-    if (Array.isArray(raw)) {
-      return raw.map(normalizeField)
-    }
-
-    // Format B: { groups: [{ label, fields: [...] }] }  (grouped / premium style)
-    if (raw.groups && Array.isArray(raw.groups)) {
-      const all: TemplateField[] = []
-      for (const group of raw.groups) {
-        if (Array.isArray(group.fields)) {
-          all.push(...group.fields.map(normalizeField))
-        }
-      }
-      return all
-    }
-
-    // Format C: { fields: [{ key/name, label, type }] }
-    if (Array.isArray(raw.fields)) {
-      return raw.fields.map(normalizeField)
-    }
-
-    // Format C2: { fields: { KEY: "string" | "default" | { type, label, ... } } }
-    // (object map — the most common shape across the template library; previously
-    // unhandled, which caused those templates to show ZERO customizable fields)
-    if (raw.fields && typeof raw.fields === 'object' && !Array.isArray(raw.fields)) {
-      return Object.entries(raw.fields).map(([key, val]) => fieldFromMapEntry(key, val))
-    }
-
-    // Format D: { placeholders: { KEY: "default" } }
-    if (raw.placeholders && typeof raw.placeholders === 'object') {
-      return Object.entries(raw.placeholders).map(([key, val]) => {
-        const name = stripBraces(key)
-        return {
-          name,
-          label: name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-          type: name.toLowerCase().includes('email') ? 'email' : name.toLowerCase().includes('phone') ? 'tel' : 'text',
-          required: Array.isArray(raw.required) ? raw.required.includes(key) : true,
-          default: typeof val === 'string' && !val.startsWith('{{') ? val : undefined,
-        }
-      })
-    }
-
-    // Format E: flat object with keys = field names, values = defaults (therapist style)
-    if (typeof raw === 'object' && (raw.BUSINESS_NAME !== undefined || raw.business_name !== undefined)) {
-      return Object.entries(raw)
-        .filter(([k]) => k !== 'notes')
-        .map(([key, val]) => {
-          const name = stripBraces(key)
-          return {
-            name,
-            label: name.replace(/_/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-            type: name.toLowerCase().includes('email') ? 'email' : name.toLowerCase().includes('phone') ? 'tel' : 'text',
-            required: true,
-            default: typeof val === 'string' && !val.startsWith('[') && !val.startsWith('{{') ? val : undefined,
-          }
-        })
-    }
-
-    return []
-  } catch {
-    return []
-  }
-}
-
-function parseTemplateMeta(templateDir: string, niche: string): TemplateMeta | null {
-  const indexPath = path.join(templateDir, 'index.html')
-  if (!fs.existsSync(indexPath)) return null
-
-  const templateJsonPath = path.join(templateDir, 'template.json')
-  const fieldsJsonPath = path.join(templateDir, 'fields.json')
-
-  let meta: any = {}
-  if (fs.existsSync(templateJsonPath)) {
+let _fsRoot: string | null | undefined
+function getFsRoot(): string | null {
+  if (_fsRoot !== undefined) return _fsRoot
+  for (const candidate of FS_ROOT_CANDIDATES) {
     try {
-      meta = JSON.parse(fs.readFileSync(templateJsonPath, 'utf-8'))
+      if (fs.existsSync(candidate)) {
+        _fsRoot = candidate
+        return _fsRoot
+      }
     } catch { /* ignore */ }
   }
+  _fsRoot = null
+  return null
+}
 
-  const slug = meta.slug || path.basename(templateDir)
-  const pages = meta.pages || fs.readdirSync(templateDir).filter((f: string) => f.endsWith('.html'))
+/** Base URL used to fetch template assets at runtime as a last resort. */
+function templateBaseUrl(): string {
+  return (
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    process.env.URL ||
+    process.env.DEPLOY_PRIME_URL ||
+    process.env.DEPLOY_URL ||
+    `http://localhost:${process.env.PORT || 3000}`
+  )
+}
 
-  // Resolve customizable fields with a robust fallback chain so that EVERY
-  // template with any placeholders becomes editable:
-  //   1. fields.json (all supported shapes)
-  //   2. template.json "placeholders" array
-  //   3. {{TOKENS}} scanned directly from index.html
-  let fields = fs.existsSync(fieldsJsonPath) ? parseFields(fieldsJsonPath) : []
-  if (fields.length === 0 && Array.isArray(meta.placeholders)) {
-    fields = fieldsFromPlaceholders(meta.placeholders as string[])
+/** Obtain a Netlify Blobs store, or null if the env is not configured. */
+function getBlobsStore() {
+  try {
+    return getStore({ name: 'templates', consistency: 'strong' })
+  } catch {
+    return null
   }
-  if (fields.length === 0) {
-    fields = fieldsFromHtml(indexPath)
-  }
-  fields = dedupeFields(fields)
+}
 
-  return {
-    slug,
-    name: meta.name || slug.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase()),
-    niche,
-    nicheSlug: niche,
-    layoutFamily: meta.layoutFamily,
-    voiceFamily: meta.voiceFamily,
-    order: typeof meta.order === 'number' ? meta.order : undefined,
-    pages,
-    dir: templateDir,
-    fields,
-    snippet: extractSnippet(indexPath),
+/* ------------------------------------------------------------------ */
+/* Manifest loading                                                    */
+/* ------------------------------------------------------------------ */
+
+const MANIFEST_RELATIVE = '_manifest.json'
+
+let _manifestPromise: Promise<ManifestShape> | null = null
+
+function loadManifest(): Promise<ManifestShape> {
+  if (_manifestPromise) return _manifestPromise
+  _manifestPromise = (async () => {
+    // 1. Filesystem (local dev / build)
+    const fsRoot = getFsRoot()
+    if (fsRoot) {
+      const p = path.join(fsRoot, MANIFEST_RELATIVE)
+      try {
+        if (fs.existsSync(p)) {
+          const raw = fs.readFileSync(p, 'utf-8')
+          return JSON.parse(raw) as ManifestShape
+        }
+      } catch (err) {
+        console.error('[niche-registry] failed reading manifest from fs:', err)
+      }
+    }
+
+    // 2. Netlify Blobs (production runtime)
+    try {
+      const store = getBlobsStore()
+      if (store) {
+        const data = await store.get('_manifest.json', { type: 'json' })
+        if (data) return data as ManifestShape
+      }
+    } catch (err) {
+      console.error('[niche-registry] failed reading manifest from Blobs:', err)
+    }
+
+    // 3. HTTP fallback (last resort)
+    try {
+      const url = `${templateBaseUrl()}/_templates/${MANIFEST_RELATIVE}`
+      const res = await fetch(url)
+      if (res.ok) {
+        return (await res.json()) as ManifestShape
+      }
+      console.error(`[niche-registry] manifest fetch ${url} -> ${res.status}`)
+    } catch (err) {
+      console.error('[niche-registry] failed fetching manifest:', err)
+    }
+
+    return {}
+  })()
+  // Allow retry on next call if the load throws.
+  _manifestPromise.catch(() => { _manifestPromise = null })
+  return _manifestPromise
+}
+
+async function getCache(): Promise<Map<string, TemplateMeta[]>> {
+  const manifest = await loadManifest()
+  const out = new Map<string, TemplateMeta[]>()
+  for (const nicheSlug of Object.keys(NICHE_META)) {
+    out.set(nicheSlug, manifest[nicheSlug] || [])
   }
+  return out
 }
 
 /* ------------------------------------------------------------------ */
 /* Public API                                                          */
 /* ------------------------------------------------------------------ */
 
-let _cache: Map<string, TemplateMeta[]> | null = null
-
-function ensureCache(): Map<string, TemplateMeta[]> {
-  if (_cache) return _cache
-
-  _cache = new Map()
-
-  for (const nicheSlug of Object.keys(NICHE_META)) {
-    const nicheDir = path.join(TEMPLATES_ROOT, nicheSlug)
-    if (!fs.existsSync(nicheDir)) continue
-
-    const templates: TemplateMeta[] = []
-    for (const entry of fs.readdirSync(nicheDir)) {
-      const templateDir = path.join(nicheDir, entry)
-      if (!fs.statSync(templateDir).isDirectory()) continue
-      const t = parseTemplateMeta(templateDir, nicheSlug)
-      if (t) templates.push(t)
-    }
-
-    // Order by the explicit numeric `order` from template.json (ascending).
-    // Templates without an order sort last, then alphabetically by name.
-    templates.sort((a, b) => {
-      const ao = typeof a.order === 'number' ? a.order : Number.POSITIVE_INFINITY
-      const bo = typeof b.order === 'number' ? b.order : Number.POSITIVE_INFINITY
-      if (ao !== bo) return ao - bo
-      return a.name.localeCompare(b.name)
-    })
-
-    _cache.set(nicheSlug, templates)
-  }
-
-  return _cache
-}
-
 /** Get all niches with their metadata and counts */
-export function getNiches(): NicheInfo[] {
-  const cache = ensureCache()
+export async function getNiches(): Promise<NicheInfo[]> {
+  const cache = await getCache()
   return Object.entries(NICHE_META).map(([slug, meta]) => ({
     slug,
     ...meta,
@@ -367,26 +183,125 @@ export function getNiches(): NicheInfo[] {
 }
 
 /** Get all templates for a niche */
-export function getTemplatesForNiche(nicheSlug: string): TemplateMeta[] {
-  const cache = ensureCache()
+export async function getTemplatesForNiche(nicheSlug: string): Promise<TemplateMeta[]> {
+  const cache = await getCache()
   return cache.get(nicheSlug) || []
 }
 
+/** Featured templates for niche landing showcase, ordered by showcaseOrder */
+export async function getFeaturedTemplatesForNiche(nicheSlug: string): Promise<TemplateMeta[]> {
+  const templates = await getTemplatesForNiche(nicheSlug)
+  return templates
+    .filter((t) => t.featured)
+    .sort((a, b) => {
+      const ao = typeof a.showcaseOrder === 'number' ? a.showcaseOrder : Number.POSITIVE_INFINITY
+      const bo = typeof b.showcaseOrder === 'number' ? b.showcaseOrder : Number.POSITIVE_INFINITY
+      return ao - bo
+    })
+}
+
 /** Get a single template by niche + slug */
-export function getTemplate(nicheSlug: string, templateSlug: string): TemplateMeta | null {
-  const templates = getTemplatesForNiche(nicheSlug)
+export async function getTemplate(nicheSlug: string, templateSlug: string): Promise<TemplateMeta | null> {
+  const templates = await getTemplatesForNiche(nicheSlug)
   return templates.find((t) => t.slug === templateSlug) || null
 }
 
-/** Read a template file (html, css, js, etc.) and return contents */
-export function readTemplateFile(nicheSlug: string, templateSlug: string, filePath: string): string | null {
-  const template = getTemplate(nicheSlug, templateSlug)
+/* ------------------------------------------------------------------ */
+/* Body-content reads                                                  */
+/* ------------------------------------------------------------------ */
+
+function safeJoin(root: string, ...parts: string[]): string | null {
+  const full = path.join(root, ...parts)
+  const normRoot = path.resolve(root) + path.sep
+  if (!path.resolve(full).startsWith(normRoot.slice(0, -1))) return null
+  return full
+}
+
+/**
+ * Read a template file (html, css, js, etc.) and return contents as a UTF-8
+ * string. Resolution order: filesystem → Netlify Blobs → HTTP.
+ */
+export async function readTemplateFile(
+  nicheSlug: string,
+  templateSlug: string,
+  filePath: string,
+): Promise<string | null> {
+  const template = await getTemplate(nicheSlug, templateSlug)
   if (!template) return null
-  const fullPath = path.join(template.dir, filePath)
-  // safety: must stay within the template dir
-  if (!fullPath.startsWith(template.dir)) return null
+
+  // 1. Filesystem (local dev / build)
+  const fsRoot = getFsRoot()
+  if (fsRoot) {
+    const fullPath = safeJoin(fsRoot, template.dir, filePath)
+    if (fullPath) {
+      try {
+        if (fs.existsSync(fullPath)) {
+          return fs.readFileSync(fullPath, 'utf-8')
+        }
+      } catch { /* fall through */ }
+    }
+  }
+
+  // 2. Netlify Blobs (production runtime)
   try {
-    return fs.readFileSync(fullPath, 'utf-8')
+    const store = getBlobsStore()
+    if (store) {
+      const text = await store.get(`${template.dir}/${filePath}`)
+      if (text !== null) return text
+    }
+  } catch { /* fall through */ }
+
+  // 3. HTTP fallback (last resort)
+  try {
+    const url = `${templateBaseUrl()}/_templates/${template.dir}/${filePath}`
+    const res = await fetch(url)
+    if (!res.ok) return null
+    return await res.text()
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Read a template asset as raw bytes. Resolution order: filesystem → Netlify Blobs → HTTP.
+ */
+export async function readTemplateFileBuffer(
+  nicheSlug: string,
+  templateSlug: string,
+  filePath: string,
+): Promise<Buffer | null> {
+  const template = await getTemplate(nicheSlug, templateSlug)
+  if (!template) return null
+
+  // 1. Filesystem (local dev / build)
+  const fsRoot = getFsRoot()
+  if (fsRoot) {
+    const fullPath = safeJoin(fsRoot, template.dir, filePath)
+    if (fullPath) {
+      try {
+        if (fs.existsSync(fullPath)) {
+          return fs.readFileSync(fullPath)
+        }
+      } catch { /* fall through */ }
+    }
+  }
+
+  // 2. Netlify Blobs (production runtime)
+  try {
+    const store = getBlobsStore()
+    if (store) {
+      const buf = await store.get(`${template.dir}/${filePath}`, { type: 'arrayBuffer' })
+      if (buf !== null) return Buffer.from(buf)
+    }
+  } catch { /* fall through */ }
+
+  // 3. HTTP fallback (last resort)
+  try {
+    const url = `${templateBaseUrl()}/_templates/${template.dir}/${filePath}`
+    const res = await fetch(url)
+    if (!res.ok) return null
+    const arr = await res.arrayBuffer()
+    return Buffer.from(arr)
   } catch {
     return null
   }
@@ -399,7 +314,6 @@ export function hydrateTemplate(html: string, values: Record<string, string>): s
     const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g')
     result = result.replace(regex, value)
   }
-  // Clear any remaining placeholders
   result = result.replace(/\{\{[A-Z_]+\}\}/g, '')
   return result
 }

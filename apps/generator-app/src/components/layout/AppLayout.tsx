@@ -1,16 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
+import { getNicheNavLinks } from '@/lib/templates/niche-meta';
 
-const nicheLinks = [
-  { label: '🌿 Aromatherapy', href: '/aromatherapy' },
-  { label: '🧘 Holistic Medicine', href: '/holistic_medicine' },
-  { label: '💬 Therapist', href: '/private_practice_therapist' },
-  { label: '🔔 Sound Bath', href: '/sound_bath' },
-  { label: '✨ Wellness Coach', href: '/wellness_coach' },
-];
+const nicheLinks = getNicheNavLinks();
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [templatesOpen, setTemplatesOpen] = useState(false);
@@ -23,8 +19,23 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex-shrink-0">
-              <Link href="/" className="text-2xl font-bold text-white tracking-[0.2em] uppercase">
-                Platform<span className="text-cyan-300">Builder</span>
+              <Link href="/" className="flex items-center gap-3 leading-none">
+                <Image
+                  src="/logo.png"
+                  alt="DailyClarity"
+                  width={40}
+                  height={40}
+                  className="h-8 w-8 sm:h-10 sm:w-10"
+                  priority
+                />
+                <span className="flex flex-col">
+                  <span className="text-2xl font-bold text-white tracking-[0.15em] uppercase">
+                    Daily<span className="text-cyan-300">Clarity</span>
+                  </span>
+                  <span className="hidden sm:block text-[0.6rem] font-semibold uppercase tracking-[0.35em] text-slate-400">
+                    Platform Builder
+                  </span>
+                </span>
               </Link>
             </div>
             {/* Desktop nav */}
@@ -66,9 +77,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 Preview Your Business
               </Link>
               {[
-                { label: 'Live Demo', href: '/demo' },
+                { label: 'Watch Demo', href: '/demo/platform-builder' },
                 { label: 'Pricing', href: '/pricing' },
                 { label: 'Portal', href: '/portal' },
+                { label: 'My Dashboard', href: '/dashboard' },
                 { label: 'Contact', href: '/contact' },
               ].map((item) => (
                 <Link
@@ -106,9 +118,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   {item.label}
                 </Link>
               ))}
-              <Link href="/demo" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Live Demo</Link>
+              <Link href="/demo/platform-builder" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Watch Demo</Link>
               <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Pricing</Link>
               <Link href="/portal" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Portal</Link>
+              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">My Dashboard</Link>
               <Link href="/contact" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Contact</Link>
               <Link href="/preview-your-business" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm font-semibold text-cyan-300 hover:text-white">Preview Your Business</Link>
             </div>

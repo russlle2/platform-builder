@@ -54,14 +54,10 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
         onUpload(data.url)
         setPreview(data.url)
       } else {
-        onUpload(localPreviewUrl)
-        setPreview(localPreviewUrl)
-        setError(data.error || 'Upload service unavailable. Using embedded image.')
+        setError(data.error || 'Image upload failed. Please check your Supabase configuration.')
       }
     } catch (err) {
-      onUpload(localPreviewUrl)
-      setPreview(localPreviewUrl)
-      setError('Upload service unavailable. Using embedded image.')
+      setError('Image upload failed. Please check your Supabase configuration.')
     } finally {
       setUploading(false)
     }

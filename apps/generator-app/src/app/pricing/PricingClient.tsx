@@ -1,55 +1,30 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
+import { PLAN_LIST, AUTOMATED_FEATURES, MANAGED_FEATURES } from '@/lib/plans'
 
-// Track pricing page view
+const pricingTiers = PLAN_LIST
 
-const pricingTiers = [
-  {
-    name: 'Basic Services',
-    price: 20,
-    period: 'monthly',
-    planKey: 'basic',
-    description: 'Your automated website platform — launched and self-serve',
-    features: [
-      'Template-driven site launch',
-      'Hosted subdomain included',
-      'Postmark transactional email setup',
-      'Supabase storage & database',
-      'Stripe payments connected',
-      'Self-serve portal — edit & publish anytime',
-      'Template & style switching',
-      '7-day free trial',
-    ],
-    highlight: false,
-    badge: 'Starter',
-  },
-  {
-    name: 'Growth Partner',
-    price: 80,
-    period: 'monthly',
-    planKey: 'growth',
-    description: 'Everything in Basic, plus monitoring and promo check-ins',
-    features: [
-      'Everything in Basic Services',
-      'Platform & uptime monitoring, checked weekly',
-      'Promo & ad setup, reviewed a few times a week',
-    ],
-    highlight: true,
-    badge: 'Most Popular',
-  },
-]
+const CHECKOUT_CONTEXT_KEY = 'pb_checkout_context'
+
+type CheckoutContext = {
+  slug: string | null
+  template: string | null
+  niche: string | null
+  colorScheme: string
+  fontVariation: string
+  structureVariation: string
+}
 
 export default function PricingClient() {
   const billingPeriod: 'monthly' | 'annual' = 'monthly'
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
-  const [checkoutReady, setCheckoutReady] = useState<boolean | null>(null)
-  const [fulfillmentReady, setFulfillmentReady] = useState<boolean | null>(null)
   const [trialDays, setTrialDays] = useState(7)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
+  const [checkoutReady, setCheckoutReady] = useState(false)
   const [testRunning, setTestRunning] = useState(false)
   const [testResult, setTestResult] = useState<{ success: boolean; slug: string; siteUrl: string | null; log: string[] } | null>(null)
   const searchParams = useSearchParams()
@@ -60,38 +35,28 @@ export default function PricingClient() {
   const fontVariation = useMemo(() => searchParams.get('font') || 'original', [searchParams])
   const structureVariation = useMemo(() => searchParams.get('structure') || 'original', [searchParams])
 
-  useEffect(() => {
-    track('pricing_view', {})
+  // The wizard/template pages pass slug/template/niche/style via URL. Persist
+  // that context so a customer can revisit pricing without losing their build.
+  const readCheckoutContext = useCallback((): CheckoutContext => {
+    let stored: Partial<CheckoutContext> = {}
+    try {
+      const raw = sessionStorage.getItem(CHECKOUT_CONTEXT_KEY)
+      if (raw) stored = JSON.parse(raw)
+    } catch { /* ignore */ }
+    return {
+      slug: slug ?? stored.slug ?? null,
+      template: template ?? stored.template ?? null,
+      niche: niche ?? stored.niche ?? null,
+      colorScheme: searchParams.get('color') || stored.colorScheme || 'original',
+      fontVariation: searchParams.get('font') || stored.fontVariation || 'original',
+      structureVariation: searchParams.get('structure') || stored.structureVariation || 'original',
+    }
+  }, [slug, template, niche, searchParams])
 
-    fetch('/api/integrations/status')
-      .then((res) => {
-        if (!res.ok) return null
-        return res.json()
-      })
-      .then((data) => {
-        if (!data) return
-        setCheckoutReady(!!data?.checkoutReady)
-        setFulfillmentReady(!!data?.fulfillmentReady)
-      })
-      .catch(() => {
-        // Admin-only endpoint — no auth in browser context, stay null
-      })
-
-    fetch('/api/platform/config')
-      .then((res) => res.json())
-      .then((data) => {
-        if (typeof data?.trialDays === 'number' && data.trialDays > 0) {
-          setTrialDays(data.trialDays)
-        }
-      })
-      .catch(() => {})
-  }, [])
-
-  const startCheckout = async (planKey: string) => {
+  const startCheckout = useCallback(async (planKey: string) => {
     try {
       track('checkout_start', { planKey })
       setCheckoutError(null)
-      setIsSubmitting(planKey)
 
       // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
@@ -108,17 +73,40 @@ export default function PricingClient() {
         imageOwner = sessionStorage.getItem('pb_image_owner') || ''
       } catch { /* ignore */ }
 
+      const ctx = readCheckoutContext()
+
+      // A paid order must include enough information to provision a real site.
+      // Send direct pricing visitors into the preview flow instead of failing
+      // after they click a button that appears to start checkout.
+      const businessName = (customerValues.BUSINESS_NAME || '').trim()
+      const email = (customerValues.EMAIL || '').trim()
+      if (!businessName || !email || !ctx.template || !ctx.niche) {
+        sessionStorage.setItem('pb_selected_plan', planKey)
+        track('checkout_prerequisite_redirect', {
+          planKey,
+          hasBusinessName: Boolean(businessName),
+          hasEmail: Boolean(email),
+          hasTemplate: Boolean(ctx.template),
+          hasNiche: Boolean(ctx.niche),
+        })
+        window.location.assign(`/preview-your-business?plan=${encodeURIComponent(planKey)}`)
+        return
+      }
+
+      // The customer already reviewed these details in the live preview. Go
+      // directly to Stripe instead of inserting another confirmation page.
+      setIsSubmitting(planKey)
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planKey,
-          slug: slug || template,
-          template,
-          niche,
-          colorScheme,
-          fontVariation,
-          structureVariation,
+          slug: ctx.slug,
+          template: ctx.template,
+          niche: ctx.niche,
+          colorScheme: ctx.colorScheme,
+          fontVariation: ctx.fontVariation,
+          structureVariation: ctx.structureVariation,
           customerValues,
           inlineEdits,
           imageSwaps,
@@ -143,7 +131,51 @@ export default function PricingClient() {
     } finally {
       setIsSubmitting(null)
     }
-  }
+  }, [readCheckoutContext])
+
+  useEffect(() => {
+    track('pricing_view', {})
+
+    // Persist any wizard context that arrived via URL.
+    if (template || niche || slug) {
+      try {
+        sessionStorage.setItem(
+          CHECKOUT_CONTEXT_KEY,
+          JSON.stringify({
+            slug,
+            template,
+            niche,
+            colorScheme,
+            fontVariation,
+            structureVariation,
+          }),
+        )
+      } catch { /* ignore */ }
+    }
+
+    try {
+      const saved = sessionStorage.getItem('pb_template_values')
+      const customerValues = saved ? JSON.parse(saved) as Record<string, string> : {}
+      const ctx = readCheckoutContext()
+      setCheckoutReady(Boolean(
+        customerValues.BUSINESS_NAME?.trim() &&
+        customerValues.EMAIL?.trim() &&
+        ctx.template &&
+        ctx.niche
+      ))
+    } catch {
+      setCheckoutReady(false)
+    }
+
+    fetch('/api/platform/config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data?.trialDays === 'number' && data.trialDays > 0) {
+          setTrialDays(data.trialDays)
+        }
+      })
+      .catch(() => {})
+  }, [template, niche, slug, colorScheme, fontVariation, structureVariation, readCheckoutContext])
 
   return (
     <main className="relative min-h-screen pt-24 pb-20">
@@ -165,9 +197,9 @@ export default function PricingClient() {
                 )}
               </p>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-                <span>⚡ 30-member cap</span>
-                <span>🔐 Portal edits included</span>
-                <span>📈 Monitoring + promo on Growth</span>
+                <span>Fully automated setup</span>
+                <span>Portal edits included</span>
+                <span>Done-for-you ads + security on the $80 plan</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
@@ -189,9 +221,9 @@ export default function PricingClient() {
         <section className="container-wide pb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Customer rating</p>
-              <p className="text-3xl font-bold text-white">4.9 / 5</p>
-              <p className="text-sm text-slate-300">Based on early wellness &amp; practice client pilots</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Built for</p>
+              <p className="text-3xl font-bold text-white">Wellness</p>
+              <p className="text-sm text-slate-300">Therapy, coaching, sound, scent &amp; integrative care</p>
             </div>
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Avg launch time</p>
@@ -201,7 +233,7 @@ export default function PricingClient() {
             <div className="stat-card">
               <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Platform uptime</p>
               <p className="text-3xl font-bold text-white">Hosted 24/7</p>
-              <p className="text-sm text-slate-300">Monitored weekly on Growth</p>
+              <p className="text-sm text-slate-300">Managed security on the $80 plan</p>
             </div>
           </div>
         </section>
@@ -217,15 +249,6 @@ export default function PricingClient() {
               </p>
             </div>
           )}
-          {checkoutReady && fulfillmentReady === false && (
-            <div className="mb-8 rounded-2xl border border-cyan-400/30 bg-cyan-500/10 p-6 text-cyan-50">
-              <p className="font-semibold">Checkout works — auto-launch needs Netlify</p>
-              <p className="mt-2 text-sm text-cyan-100/90">
-                Payments can be taken, but customer sites will not deploy until
-                NETLIFY_ACCESS_TOKEN is set.
-              </p>
-            </div>
-          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {pricingTiers.map((tier) => (
               <PricingCard
@@ -233,9 +256,9 @@ export default function PricingClient() {
                 tier={tier}
                 billingPeriod={billingPeriod}
                 trialDays={trialDays}
-                onCheckout={() => startCheckout(tier.planKey)}
-                isSubmitting={isSubmitting === tier.planKey}
-                checkoutDisabled={checkoutReady === false}
+                onCheckout={() => startCheckout(tier.key)}
+                isSubmitting={isSubmitting === tier.key}
+                checkoutReady={checkoutReady}
               />
             ))}
           </div>
@@ -253,6 +276,41 @@ export default function PricingClient() {
               Contact us before checkout
             </Link>
           </p>
+        </section>
+
+        <section id="custom-build" className="container-wide pb-16">
+          <div className="rounded-3xl border border-amber-300/35 bg-gradient-to-br from-amber-500/15 via-slate-900/80 to-cyan-500/10 p-8 md:p-10">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-center">
+              <div>
+                <span className="inline-flex px-3 py-1 rounded-full bg-amber-400/15 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-[0.2em]">
+                  One-time custom build
+                </span>
+                <h2 className="text-3xl md:text-4xl font-bold text-white mt-5">
+                  Want a website designed around your exact instructions?
+                </h2>
+                <p className="text-slate-200 mt-4 max-w-3xl leading-relaxed">
+                  Describe how your site should look and function in detail. Your brief is saved,
+                  you make one immediate $500 Stripe payment, and the request is delivered to our
+                  manual custom-build queue.
+                </p>
+                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-sm text-slate-300">
+                  <span>Detailed design brief</span>
+                  <span>Custom functionality request</span>
+                  <span>No monthly plan required</span>
+                </div>
+              </div>
+              <div className="lg:text-right min-w-[230px]">
+                <div className="flex lg:justify-end items-baseline gap-2">
+                  <span className="text-5xl font-bold text-white">$500</span>
+                  <span className="text-slate-300">one time</span>
+                </div>
+                <p className="text-sm text-amber-200 mt-2 mb-5">Charged immediately</p>
+                <Link href="/custom-build" className="cta-button inline-flex justify-center">
+                  Start my custom build
+                </Link>
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* ═══ DEV-ONLY: Test Purchase ═══ */}
@@ -362,41 +420,27 @@ export default function PricingClient() {
 
         <section className="container-wide pb-20">
           <div className="glass-panel rounded-3xl p-10">
-            <h2 className="text-3xl font-bold text-white mb-6">Compare plans</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-sm text-slate-200">
-              <div className="space-y-3">
-                <p className="text-slate-400 uppercase tracking-[0.3em] text-xs">Included</p>
-                <p>Hosted website platform + subdomain</p>
-                <p>Postmark email + Supabase</p>
-                <p>Stripe payments connected</p>
-                <p>Self-serve portal edits</p>
-                <p>Template &amp; style switching</p>
-                <p>7-day free trial</p>
-                <p>Platform &amp; uptime monitoring</p>
-                <p>Promo &amp; ad setup check-ins</p>
-              </div>
-              <div className="space-y-3">
-                <p className="text-cyan-200 uppercase tracking-[0.3em] text-xs">Basic</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p className="text-slate-500">—</p>
-                <p className="text-slate-500">—</p>
-              </div>
-              <div className="space-y-3">
-                <p className="text-amber-200 uppercase tracking-[0.3em] text-xs">Growth</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Included</p>
-                <p>Checked weekly</p>
-                <p>Reviewed a few times/week</p>
-              </div>
+            <h2 className="text-3xl font-bold text-white mb-2">Compare plans</h2>
+            <p className="text-slate-300 mb-8 max-w-2xl">
+              Everything in the platform is automated and included in both plans. The
+              <strong className="text-white"> Security + Ads</strong> plan adds one done-for-you
+              service we run for you by hand.
+            </p>
+            <div className="grid grid-cols-[1.6fr_repeat(2,1fr)] gap-x-6 gap-y-3 text-sm text-slate-200">
+              <p className="text-slate-400 uppercase tracking-[0.3em] text-xs">Feature</p>
+              <p className="text-cyan-200 uppercase tracking-[0.3em] text-xs">Basic · $20</p>
+              <p className="text-amber-200 uppercase tracking-[0.3em] text-xs">Security + Ads · $80</p>
+
+              {AUTOMATED_FEATURES.map((feature) => (
+                <FragmentRow key={feature} label={feature} basic="Included" premium="Included" />
+              ))}
+
+              <p className="col-span-3 pt-3 text-slate-400 uppercase tracking-[0.3em] text-xs">
+                Done for you (managed by our team)
+              </p>
+              {MANAGED_FEATURES.map((feature) => (
+                <FragmentRow key={feature} label={feature} basic="—" premium="Managed by us" />
+              ))}
             </div>
           </div>
         </section>
@@ -442,12 +486,16 @@ export default function PricingClient() {
             </h2>
             <div className="max-w-3xl mx-auto space-y-6">
               <FAQItem
-                question="What's included in Basic Services?"
-                answer="Basic is the fully automated platform: we launch your site on a hosted subdomain and connect Postmark for email, Supabase for storage, and Stripe for payments. From there it's self-serve — switch templates and styles, edit, and publish anytime through your portal, with a 7-day free trial to start."
+                question="What's included in Basic ($20)?"
+                answer="Basic is the fully automated platform: we build and launch your site on a hosted subdomain with SSL, and connect email notifications, secure storage, and online payments. From there it's self-serve — switch templates and styles, edit, and publish anytime through your portal, with a 7-day free trial to start."
               />
               <FAQItem
-                question="What does Growth Partner add?"
-                answer="Growth includes everything in Basic, plus a light human touch: we keep an eye on your platform and uptime each week, and set up and review your promos and ads a few times a week. It's hands-on monitoring rather than a guarantee — a good fit if you'd rather not watch the dashboard yourself."
+                question="What does Security + Ads ($80) add?"
+                answer="Everything in Basic is still fully automated. On top of that, we personally run one done-for-you service: we set up and manage your ad and promo campaigns, and we harden and monitor your site's security and uptime. It's hands-on work delivered by our team — the rest of the platform stays self-serve."
+              />
+              <FAQItem
+                question="How does the $500 custom website build work?"
+                answer="Choose Custom Website Build, submit a detailed description of the appearance and functionality you want, and complete one immediate $500 Stripe payment. Your full brief is saved before checkout and delivered to our manual build queue after Stripe confirms payment. We then review the scope and contact you by email with next steps."
               />
               <FAQItem
                 question="How fast can I launch?"
@@ -508,23 +556,33 @@ export default function PricingClient() {
   )
 }
 
+function FragmentRow({ label, basic, premium }: { label: string; basic: string; premium: string }) {
+  return (
+    <>
+      <p className="text-slate-300">{label}</p>
+      <p className={basic === '—' ? 'text-slate-500' : 'text-slate-100'}>{basic}</p>
+      <p className={premium === '—' ? 'text-slate-500' : 'text-emerald-200'}>{premium}</p>
+    </>
+  )
+}
+
 function PricingCard({
   tier,
   billingPeriod,
   trialDays,
   onCheckout,
   isSubmitting,
-  checkoutDisabled,
+  checkoutReady,
 }: {
   tier: (typeof pricingTiers)[0]
   billingPeriod: 'monthly' | 'annual'
   trialDays: number
   onCheckout: () => void
   isSubmitting: boolean
-  checkoutDisabled: boolean
+  checkoutReady: boolean
 }) {
   const displayPrice = tier.price
-  const isPeriodic = tier.period !== 'one-time'
+  const isPeriodic = true
 
   return (
     <div
@@ -583,21 +641,26 @@ function PricingCard({
       <button
         type="button"
         onClick={onCheckout}
-        disabled={isSubmitting || checkoutDisabled}
+        disabled={isSubmitting}
         className={`block w-full text-center px-6 py-3 rounded-lg font-bold transition-all ${
           tier.highlight
             ? 'bg-cyan-400 hover:bg-cyan-300 text-slate-900 shadow-lg hover:shadow-xl'
             : 'bg-white/10 hover:bg-white/20 text-white'
-        } ${isSubmitting || checkoutDisabled ? 'opacity-70 cursor-not-allowed' : ''}`}
+        } ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
-        {checkoutDisabled
-          ? 'Checkout unavailable'
-          : isSubmitting
-            ? 'Redirecting…'
-            : trialDays > 0
-              ? `Start ${trialDays}-day trial`
-              : 'Choose Plan'}
+        {isSubmitting
+          ? 'Redirecting…'
+          : !checkoutReady
+            ? 'Build preview to start trial'
+          : trialDays > 0
+            ? `Start ${trialDays}-day trial`
+            : 'Choose Plan'}
       </button>
+      <p className="text-center text-xs text-slate-300 mt-3">
+        {checkoutReady
+          ? 'Secure Stripe checkout. Pay by card without creating a Stripe Link account.'
+          : 'Choose a template and add your business details before payment.'}
+      </p>
       <p className="text-center text-xs text-slate-400 mt-3">
         Need help choosing?{' '}
         <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">

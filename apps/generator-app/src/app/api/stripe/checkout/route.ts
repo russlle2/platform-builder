@@ -4,12 +4,30 @@ import Stripe from 'stripe'
 import { getStripeTrialDays } from '@/lib/platform-config'
 import { chunkJsonToMetadata } from '@/lib/site-deploy'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
+import { getPlan, normalizePlanKey } from '@/lib/plans'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 
-const priceMap: Record<string, string | undefined> = {
-  basic: process.env.STRIPE_PRICE_BASIC,
-  growth: process.env.STRIPE_PRICE_GROWTH,
+/** Resolve the Stripe price ID for a (normalized) plan from its env var. */
+function resolvePriceId(planKey: string): string | undefined {
+  const plan = getPlan(planKey)
+  if (!plan) return undefined
+  return process.env[plan.stripePriceEnv]
+}
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40)
+}
+
+/** Short, collision-resistant suffix for auto-generated slugs. */
+function randomSuffix(): string {
+  return Math.random().toString(36).slice(2, 6)
 }
 
 export async function POST(req: NextRequest) {
@@ -29,8 +47,28 @@ export async function POST(req: NextRequest) {
     })
 
     const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customerValues, inlineEdits, imageSwaps, imageOwner } = await req.json()
-    const priceId = priceMap[planKey]
 
+    const canonicalPlan = normalizePlanKey(planKey)
+    if (!canonicalPlan) {
+      return NextResponse.json(
+        { error: 'Invalid or unknown plan.' },
+        { status: 400 }
+      )
+    }
+
+    // Validate required profile fields
+    const businessName = (customerValues?.BUSINESS_NAME || '').trim()
+    const email = (customerValues?.EMAIL || '').trim()
+    if (customerValues && typeof customerValues === 'object') {
+      if (!businessName) {
+        return NextResponse.json({ error: 'Business name is required.' }, { status: 400 })
+      }
+      if (!email) {
+        return NextResponse.json({ error: 'Email address is required.' }, { status: 400 })
+      }
+    }
+
+    const priceId = resolvePriceId(canonicalPlan)
     if (!priceId) {
       return NextResponse.json(
         { error: 'Invalid or missing price configuration.' },
@@ -38,12 +76,22 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const origin = (await headers()).get('origin') || 'http://localhost:3000'
+    // Derive a stable, unique slug. Never fall back to the (shared) template
+    // slug — that causes collisions/overwrites across customers. Prefer an
+    // explicit slug, otherwise generate one from the business name.
+    const templateSlug = typeof template === 'string' ? template : ''
+    let resolvedSlug = typeof slug === 'string' ? slugify(slug) : ''
+    if (!resolvedSlug || resolvedSlug === slugify(templateSlug)) {
+      const base = slugify(businessName) || slugify(templateSlug) || 'site'
+      resolvedSlug = `${base}-${randomSuffix()}`
+    }
+
+    const origin = (await headers()).get('origin') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 
     const metadata: Record<string, string> = {
-      planKey,
-      slug: typeof slug === 'string' ? slug : '',
-      template: typeof template === 'string' ? template : '',
+      planKey: canonicalPlan,
+      slug: resolvedSlug,
+      template: templateSlug,
       niche: typeof niche === 'string' ? niche : '',
       colorScheme: typeof colorScheme === 'string' ? colorScheme : 'original',
       fontVariation: typeof fontVariation === 'string' ? fontVariation : 'original',
@@ -81,6 +129,7 @@ export async function POST(req: NextRequest) {
       cancel_url: `${origin}/cancel`,
       allow_promotion_codes: true,
       payment_method_collection: 'always',
+      ...(email ? { customer_email: email } : {}),
       metadata,
       subscription_data: subscriptionData,
     })

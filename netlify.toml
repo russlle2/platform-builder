@@ -1,11 +1,17 @@
 [build]
-  # Run from root to ensure workspace dependencies like ui-components are installed correctly
+  # Monorepo: install from repo root so workspace:* deps resolve (do not set base to apps/generator-app).
+  # Netlify auto-detects pnpm from pnpm-lock.yaml — no corepack needed.
   base = "/"
   command = "pnpm install --frozen-lockfile && pnpm run generator:build"
   publish = "apps/generator-app/.next"
 
 [build.environment]
   NODE_VERSION = "20"
+  NEXT_TELEMETRY_DISABLED = "1"
+  NODE_OPTIONS = "--max-old-space-size=4096"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
 
 [context.production]
   command = "pnpm install --frozen-lockfile && pnpm run generator:build"

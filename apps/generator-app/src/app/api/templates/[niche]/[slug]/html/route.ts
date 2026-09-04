@@ -15,12 +15,14 @@ export async function GET(
   const page = url.searchParams.get('page') || 'index.html'
   const browse = url.searchParams.get('browse') === '1'
 
-  const template = getTemplate(niche, slug)
+  const [template, html, cssFile] = await Promise.all([
+    getTemplate(niche, slug),
+    readTemplateFile(niche, slug, page),
+    readTemplateFile(niche, slug, 'assets/css/styles.css'),
+  ])
   if (!template) {
     return new NextResponse('Template not found', { status: 404 })
   }
-
-  const html = readTemplateFile(niche, slug, page)
   if (!html) {
     return new NextResponse('Page not found', { status: 404 })
   }
@@ -40,8 +42,6 @@ export async function GET(
     }
   )
 
-  // Inline the CSS if available
-  const cssFile = readTemplateFile(niche, slug, 'assets/css/styles.css')
   if (cssFile) {
     output = output.replace('</head>', `<style>${cssFile}</style></head>`)
   }
@@ -72,7 +72,8 @@ export async function GET(
   return new NextResponse(output, {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+      'Netlify-CDN-Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
     },
   })
 }

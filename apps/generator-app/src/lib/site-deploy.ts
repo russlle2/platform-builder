@@ -100,7 +100,9 @@ function buildContactFormScript(slug: string): string {
  *
  * Returns `null` when the template can't be found.
  */
-export function buildDeployFiles(opts: BuildSiteOptions): Record<string, string> | null {
+export async function buildDeployFiles(
+  opts: BuildSiteOptions,
+): Promise<Record<string, string> | null> {
   const {
     niche,
     templateSlug,
@@ -113,19 +115,24 @@ export function buildDeployFiles(opts: BuildSiteOptions): Record<string, string>
     slug,
   } = opts
 
-  const templateData = getTemplate(niche, templateSlug)
+  const templateData = await getTemplate(niche, templateSlug)
   if (!templateData) return null
 
   const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)
-  const cssFile = readTemplateFile(niche, templateSlug, 'assets/css/styles.css')
-  const jsFile = readTemplateFile(niche, templateSlug, 'assets/js/main.js')
+  // Fetch shared assets + every page in parallel — each read is a CDN
+  // round-trip in production, so serial loops blow up latency.
+  const [cssFile, jsFile, ...rawPages] = await Promise.all([
+    readTemplateFile(niche, templateSlug, 'assets/css/styles.css'),
+    readTemplateFile(niche, templateSlug, 'assets/js/main.js'),
+    ...templateData.pages.map((page) => readTemplateFile(niche, templateSlug, page)),
+  ])
   const contactScript = buildContactFormScript(slug)
 
   const deployFiles: Record<string, string> = {}
 
-  for (const page of templateData.pages) {
-    const rawHtml = readTemplateFile(niche, templateSlug, page)
-    if (!rawHtml) continue
+  templateData.pages.forEach((page, i) => {
+    const rawHtml = rawPages[i]
+    if (!rawHtml) return
 
     let html = hydrateTemplate(rawHtml, customerValues)
     html = applyInlineTextEdits(html, inlineEdits?.[page])
@@ -140,7 +147,7 @@ export function buildDeployFiles(opts: BuildSiteOptions): Record<string, string>
 
     html = html.replace('</body>', contactScript + '</body>')
     deployFiles[page] = html
-  }
+  })
 
   if (cssFile) deployFiles['assets/css/styles.css'] = cssFile
   if (jsFile) deployFiles['assets/js/main.js'] = jsFile

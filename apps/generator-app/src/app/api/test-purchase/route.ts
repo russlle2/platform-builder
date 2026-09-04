@@ -5,6 +5,8 @@ import { getTemplate } from '@/lib/templates/niche-registry'
 import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
 import type { ImageSwap } from '@/lib/image-swaps'
 import { migrateImagesToSiteSlug, rewriteImageSwapUrls } from '@/lib/customer-images'
+import { createPortalAccessCredentials } from '@/lib/portal-auth'
+import { sendOrderConfirmationEmail } from '@/lib/email'
 
 /**
  * POST /api/test-purchase
@@ -86,6 +88,7 @@ export async function POST(req: Request) {
   let siteUrl = ''
   let siteId = ''
   let resolvedImageSwaps = imageSwaps as Record<string, ImageSwap[]>
+  const portalCredentials = createPortalAccessCredentials()
 
   if (imageOwner && imageOwner.startsWith('draft-')) {
     try {
@@ -124,7 +127,7 @@ export async function POST(req: Request) {
       // ── 3. Build & deploy customized template ────────────────────
       if (templateSlug && niche) {
         try {
-          const deployFiles = buildDeployFiles({
+          const deployFiles = await buildDeployFiles({
             niche,
             templateSlug,
             customerValues,
@@ -168,6 +171,7 @@ export async function POST(req: Request) {
           .upsert({
             slug: normalizedSlug,
             status: 'active',
+            portal_token_hash: portalCredentials?.hash ?? null,
             data: {
               niche,
               template: templateSlug,
@@ -187,6 +191,15 @@ export async function POST(req: Request) {
           }, { onConflict: 'slug' })
 
         log.push('Supabase records updated (site_slugs + portal_sites)')
+
+        const customerEmail = customerValues.EMAIL || ''
+        const businessName = customerValues.BUSINESS_NAME || normalizedSlug
+        if (customerEmail) {
+          await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials?.token, niche).catch((err) =>
+            console.error('[test-purchase] order confirmation email failed:', err),
+          )
+          log.push(`Order confirmation email sent to ${customerEmail}`)
+        }
       }
     } catch (err) {
       log.push(`Netlify provisioning failed: ${err}`)
@@ -194,10 +207,19 @@ export async function POST(req: Request) {
   } else {
     log.push('NETLIFY_ACCESS_TOKEN not set — skipping site provisioning')
     if (templateSlug && niche) {
-      const templateData = getTemplate(niche, templateSlug)
+      const templateData = await getTemplate(niche, templateSlug)
       if (templateData) {
         log.push(`Template "${templateData.name}" found with ${templateData.pages.length} pages — would deploy on purchase`)
       }
+    }
+    // Send confirmation email even without Netlify (so customers know their order was received)
+    const customerEmail = customerValues.EMAIL || ''
+    const businessName = customerValues.BUSINESS_NAME || normalizedSlug
+    if (customerEmail) {
+      await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials?.token, niche).catch((err) =>
+        console.error('[test-purchase] order confirmation email failed:', err),
+      )
+      log.push(`Order confirmation email sent to ${customerEmail}`)
     }
   }
 
@@ -206,6 +228,10 @@ export async function POST(req: Request) {
     slug: normalizedSlug,
     siteUrl: siteUrl || null,
     siteId: siteId || null,
+    portalAccessToken: portalCredentials?.token ?? null,
+    portalUrl: portalCredentials
+      ? `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/portal?slug=${encodeURIComponent(normalizedSlug)}&token=${encodeURIComponent(portalCredentials.token)}`
+      : null,
     log,
   })
 }

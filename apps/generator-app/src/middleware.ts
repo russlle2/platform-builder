@@ -1,17 +1,62 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
-export default function middleware(req: NextRequest) {
-  const res = NextResponse.next()
+/** Public template catalog routes redirect to intake; portal edit keeps ?portalSlug= */
+function templateCatalogRedirect(req: NextRequest): NextResponse | null {
+  const { pathname, searchParams } = req.nextUrl
 
-  res.headers.set('X-Frame-Options', 'DENY')
-  res.headers.set('X-Content-Type-Options', 'nosniff')
-  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  res.headers.set(
+  if (pathname === '/templates') {
+    return NextResponse.redirect(new URL('/preview-your-business', req.url))
+  }
+
+  const nicheOnly = pathname.match(/^\/templates\/([^/]+)$/)
+  if (nicheOnly) {
+    return NextResponse.redirect(
+      new URL(`/preview-your-business?niche=${encodeURIComponent(nicheOnly[1])}`, req.url),
+    )
+  }
+
+  const viewPath = pathname.match(/^\/templates\/([^/]+)\/([^/]+)\/view$/)
+  if (viewPath) {
+    return NextResponse.redirect(
+      new URL(`/preview-your-business?niche=${encodeURIComponent(viewPath[1])}`, req.url),
+    )
+  }
+
+  const slugPath = pathname.match(/^\/templates\/([^/]+)\/([^/]+)$/)
+  if (slugPath && !searchParams.has('portalSlug')) {
+    return NextResponse.redirect(
+      new URL(`/preview-your-business?niche=${encodeURIComponent(slugPath[1])}`, req.url),
+    )
+  }
+
+  return null
+}
+
+export default async function middleware(req: NextRequest) {
+  const catalogRedirect = templateCatalogRedirect(req)
+  if (catalogRedirect) return catalogRedirect
+
+  // Refresh the Supabase auth session on every request (required for @supabase/ssr).
+  const { supabaseResponse, user } = await updateSession(req)
+
+  // Protect /dashboard: unauthenticated visitors are sent to /login.
+  if (req.nextUrl.pathname.startsWith('/dashboard') && !user) {
+    const loginUrl = new URL('/login', req.url)
+    loginUrl.searchParams.set('next', req.nextUrl.pathname)
+    return NextResponse.redirect(loginUrl)
+  }
+
+  // Apply security headers to the final response.
+  supabaseResponse.headers.set('X-Frame-Options', 'DENY')
+  supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff')
+  supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  supabaseResponse.headers.set(
     'Permissions-Policy',
     'camera=(), microphone=(), geolocation=()'
   )
-  res.headers.set(
+  supabaseResponse.headers.set(
     'Content-Security-Policy',
     [
       "default-src 'self'",
@@ -25,7 +70,7 @@ export default function middleware(req: NextRequest) {
     ].join('; ')
   )
 
-  return res
+  return supabaseResponse
 }
 
 export const config = {

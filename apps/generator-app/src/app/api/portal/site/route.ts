@@ -108,7 +108,7 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
   if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.niche || !data.template) {
     return false
   }
-  const deployFiles = buildDeployFiles({
+  const deployFiles = await buildDeployFiles({
     niche: data.niche,
     templateSlug: data.template,
     customerValues: data.customerValues || {},

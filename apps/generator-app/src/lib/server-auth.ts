@@ -117,3 +117,7 @@ export function requireInternalAdminOrThrow(req: NextRequest | Request): NextRes
   }
   return null
 }
+
+export function isInternalAdmin(req: NextRequest | Request): boolean {
+  return requireInternalAdmin(req)
+}

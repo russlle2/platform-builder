@@ -12,10 +12,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,6 +28,7 @@ jobs:
         run: pnpm run generator:build
       
       - name: Deploy to Netlify
+        continue-on-error: true
         uses: nwtgck/actions-netlify@v2
         with:
           publish-dir: './apps/generator-app/.next'
@@ -46,10 +45,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Enable Corepack
+        run: corepack enable
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -64,6 +61,7 @@ jobs:
         run: pnpm run client:build
       
       - name: Deploy to Netlify
+        continue-on-error: true
         uses: nwtgck/actions-netlify@v2
         with:
           publish-dir: './apps/client-template/.next'

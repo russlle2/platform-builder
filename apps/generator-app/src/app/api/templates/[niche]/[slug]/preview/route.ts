@@ -22,23 +22,26 @@ export async function POST(
     structureVariation?: string
   }
 
-  const html = readTemplateFile(niche, slug, page)
+  const [html, cssFile] = await Promise.all([
+    readTemplateFile(niche, slug, page),
+    readTemplateFile(niche, slug, 'assets/css/styles.css'),
+  ])
   if (!html) {
     return NextResponse.json({ error: 'Template file not found' }, { status: 404 })
   }
 
   const hydrated = hydrateTemplate(html, values)
 
-  // Also hydrate linked CSS/JS if in the same template
-  const cssFile = readTemplateFile(niche, slug, 'assets/css/styles.css')
-
   // Build variation CSS overrides
   const variationCSS = buildVariationCSS(colorScheme, fontVariation, structureVariation)
 
-  return NextResponse.json({
+  const res = NextResponse.json({
     html: hydrated,
     css: cssFile || null,
     variationCSS: variationCSS || null,
     page,
   })
+  res.headers.set('Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+  res.headers.set('Netlify-CDN-Cache-Control', 'public, s-maxage=3600, stale-while-revalidate=86400')
+  return res
 }

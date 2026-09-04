@@ -6,7 +6,7 @@ export async function GET(
   { params }: { params: Promise<{ niche: string; slug: string }> }
 ) {
   const { niche, slug } = await params
-  const template = getTemplate(niche, slug)
+  const template = await getTemplate(niche, slug)
 
   if (!template) {
     return NextResponse.json({ error: 'Template not found' }, { status: 404 })

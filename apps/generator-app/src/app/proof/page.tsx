@@ -230,10 +230,10 @@ export default function ProofPage() {
             Ready to build yours?
           </h2>
           <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-            Browse templates in your niche, preview the full site, and launch when you&apos;re ready.
+            Add your business details, preview your full site with real content, and launch when you&apos;re ready.
           </p>
-          <Link href="/#niches" className="cta-button">
-            View Custom Templates
+          <Link href="/preview-your-business" className="cta-button">
+            Build My Preview
           </Link>
         </div>
       </section>

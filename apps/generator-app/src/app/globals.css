@@ -29,6 +29,15 @@
   --signal-ember: #f97316;
   --signal-night: #0b1220;
   --signal-steel: #172235;
+
+  /* Modern surface system (replaces legacy wood-grain look) */
+  --surface-1: #0e1626;
+  --surface-2: #131d30;
+  --surface-border: rgba(148, 163, 184, 0.14);
+  --surface-border-strong: rgba(148, 163, 184, 0.28);
+  --brand-from: #22d3ee;
+  --brand-to: #3b82f6;
+  --ring-glow: rgba(34, 211, 238, 0.35);
 }
 
 @layer base {
@@ -39,13 +48,22 @@
   body {
     @apply bg-slate-950 text-white antialiased;
     font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: -0.02em;
+  text-wrap: balance;
 }
+
+h1 { line-height: 1.05; }
+h2 { line-height: 1.12; }
+
+p { text-wrap: pretty; }
 
 /* Global dark base — each page layers its own atmosphere on top */
 body::before {
@@ -61,71 +79,36 @@ body::before {
     linear-gradient(180deg, #050810 0%, #0a1020 50%, #080d1a 100%);
 }
 
-/* Mahogany Surface Component Class */
+/* Modern elevated surface (was: mahogany wood-grain).
+   Class name kept for backwards compatibility across the app. */
 .mahogany-surface {
-  background: linear-gradient(
-    135deg,
-    var(--mahogany-primary) 0%,
-    var(--mahogany-gloss) 50%,
-    var(--mahogany-primary) 100%
-  );
-  box-shadow: 
-    0 10px 40px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(139, 69, 19, 0.3),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(139, 69, 19, 0.2);
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(34, 211, 238, 0.06), transparent 45%),
+    linear-gradient(160deg, var(--surface-2) 0%, var(--surface-1) 100%);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 24px 60px -24px rgba(2, 6, 18, 0.8);
+  border: 1px solid var(--surface-border);
   position: relative;
   overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-/* Wood grain texture overlay */
+/* Subtle top edge highlight for depth */
 .mahogany-surface::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: 
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 0, 0, 0.03) 2px,
-      rgba(0, 0, 0, 0.03) 4px
-    ),
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 1px,
-      rgba(139, 69, 19, 0.02) 1px,
-      rgba(139, 69, 19, 0.02) 2px
-    );
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
   pointer-events: none;
-  opacity: 0.6;
 }
 
-/* High gloss finish */
-.mahogany-surface::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 50%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.1) 50%,
-    transparent
-  );
-  pointer-events: none;
-  animation: gloss-shine 8s ease-in-out infinite;
-}
-
-@keyframes gloss-shine {
-  0%, 100% { left: -100%; }
-  50% { left: 150%; }
+.mahogany-surface:hover {
+  border-color: var(--surface-border-strong);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 30px 70px -28px rgba(2, 6, 18, 0.9);
 }
 
 /* Text Shadow for High Contrast */
@@ -157,31 +140,51 @@ body::before {
   will-change: transform;
 }
 
-/* Button Hover Effects */
+/* Primary call-to-action */
 .cta-button {
-  @apply px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300;
-  @apply text-bright-white bg-gradient-to-r from-cyan-500 to-blue-600;
-  @apply shadow-lg hover:shadow-xl hover:scale-105;
-  @apply border border-cyan-200/40;
+  @apply inline-flex items-center justify-center px-8 py-4 text-lg font-bold rounded-xl transition-all duration-300;
+  @apply text-white;
+  background: linear-gradient(135deg, var(--brand-from), var(--brand-to));
+  box-shadow: 0 10px 30px -10px rgba(34, 211, 238, 0.5);
+  border: 1px solid rgba(165, 243, 252, 0.35);
 }
 
 .cta-button:hover {
-  @apply from-cyan-400 to-blue-500;
-  box-shadow: 0 0 30px rgba(34, 211, 238, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px -12px rgba(34, 211, 238, 0.6);
+}
+
+.cta-button:active {
+  transform: translateY(0);
 }
 
 .glass-panel {
-  background: linear-gradient(140deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.4));
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  box-shadow: 0 20px 60px rgba(3, 7, 18, 0.45);
-  backdrop-filter: blur(12px);
+  background: linear-gradient(140deg, rgba(17, 26, 44, 0.78), rgba(11, 17, 32, 0.55));
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 24px 70px -28px rgba(2, 6, 18, 0.85);
+  backdrop-filter: blur(14px);
 }
 
 .signal-chip {
   @apply inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em];
-  background: rgba(34, 211, 238, 0.15);
+  background: rgba(34, 211, 238, 0.12);
   color: #67e8f9;
-  border: 1px solid rgba(34, 211, 238, 0.35);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+/* Clean icon chip to replace emoji feature icons */
+.feature-icon {
+  @apply inline-flex items-center justify-center rounded-xl flex-shrink-0;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: #67e8f9;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(59, 130, 246, 0.1));
+  border: 1px solid rgba(34, 211, 238, 0.28);
+}
+
+.feature-icon svg {
+  width: 1.35rem;
+  height: 1.35rem;
 }
 
 .hero-grid {
@@ -189,9 +192,14 @@ body::before {
 }
 
 .stat-card {
-  @apply rounded-2xl p-6;
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.4));
-  border: 1px solid rgba(148, 163, 184, 0.2);
+  @apply rounded-2xl p-6 transition-all duration-300;
+  background: linear-gradient(135deg, rgba(17, 26, 44, 0.85), rgba(19, 29, 48, 0.45));
+  border: 1px solid var(--surface-border);
+}
+
+.stat-card:hover {
+  border-color: var(--surface-border-strong);
+  transform: translateY(-2px);
 }
 
 .floating-orb {

@@ -10,9 +10,10 @@ const nicheAccentClasses: Record<string, { border: string; text: string; bg: str
   rose: { border: 'border-rose-400/30', text: 'text-rose-300', bg: 'bg-rose-500/10', glow: 'hover:shadow-rose-500/20' },
 }
 
-export default function HomePage() {
-  const niches = getNiches()
+export default async function HomePage() {
+  const niches = await getNiches()
   const totalTemplates = niches.reduce((sum, n) => sum + n.templateCount, 0)
+  const hasTemplateCounts = totalTemplates > 0
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
@@ -61,25 +62,27 @@ export default function HomePage() {
             <div className="space-y-8">
               <span className="signal-chip">DailyClarity Platform Builder</span>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white">
-                Launch a premium website for your wellness or professional brand.
-                <span className="block text-cyan-200">One guided flow. Live preview. No designer needed.</span>
+                Turn your wellness offer into a client-booking website.
+                <span className="block text-cyan-200">One guided flow. Live preview. Launch support built in.</span>
               </h1>
               <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
-                Choose your niche, preview a polished site, customize the details, and launch without hiring a designer or waiting weeks.
+                Preview a complete website with your real business info, edit the copy and images
+                live, then launch with hosting, contact forms, SEO structure, booking-ready pages,
+                and a customer portal.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/preview-your-business" className="cta-button">
-                  Preview Your Business
+                  Build My Client-Ready Preview
                 </Link>
                 <Link
-                  href="/preview-your-business"
+                  href="/demo/platform-builder"
                   className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
                 >
-                  See Live Demo
+                  Watch Demo
                 </Link>
               </div>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-                <span>No code. No generic templates. Built for service businesses that need leads.</span>
+                <span>Not a blank-canvas builder — a client-conversion launch system for wellness and service businesses.</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
@@ -89,8 +92,8 @@ export default function HomePage() {
               </div>
               <div className="space-y-4">
                 {[
-                  'Browse templates in your niche',
-                  'Enter your info — it fills every page',
+                  'Share your business details once',
+                  'Your info fills every page automatically',
                   'Preview your complete site live',
                   'Purchase & launch with integrations',
                 ].map((item) => (
@@ -107,23 +110,81 @@ export default function HomePage() {
                 </div>
                 <div className="stat-card">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Templates</p>
-                  <p className="text-3xl font-bold text-white">{totalTemplates}+</p>
+                  <p className="text-3xl font-bold text-white">
+                    {hasTemplateCounts ? `${totalTemplates}+` : 'Curated'}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
+        {/* Why this is different */}
+        <section className="container-wide py-16">
+          <div className="text-center mb-12 space-y-4">
+            <span className="signal-chip">Why this is different</span>
+            <h2 className="text-4xl md:text-5xl font-bold text-white max-w-4xl mx-auto">
+              Most website builders give you a blank canvas. DailyClarity gives you a business-ready funnel.
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              {
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.4" fill="currentColor" stroke="none" />
+                  </svg>
+                ),
+                title: 'Offer clarity',
+                copy: 'Helps visitors understand what you sell and why it matters within seconds.',
+              },
+              {
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6l7-3z" /><path strokeLinecap="round" strokeLinejoin="round" d="M9.5 12l1.8 1.8L15 10" />
+                  </svg>
+                ),
+                title: 'Trust structure',
+                copy: 'Sections for credentials, testimonials, approach, FAQs, and what to expect.',
+              },
+              {
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <rect x="3.5" y="5" width="17" height="15" rx="2" /><path strokeLinecap="round" d="M3.5 9.5h17M8 3.5v3M16 3.5v3" /><path strokeLinecap="round" strokeLinejoin="round" d="M8.5 14l2 2 4-4" />
+                  </svg>
+                ),
+                title: 'Booking path',
+                copy: 'Every page guides visitors toward calling, booking, messaging, or joining.',
+              },
+              {
+                icon: (
+                  <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 15c0-5 3-10 7-12 4 2 7 7 7 12l-3.5-1.5L12 19l-3.5-5.5L5 15z" /><circle cx="12" cy="9" r="1.6" />
+                  </svg>
+                ),
+                title: 'Launch system',
+                copy: 'Preview, edit, checkout, portal, and publish support are part of one flow.',
+              },
+            ].map((item) => (
+              <div key={item.title} className="card-mahogany space-y-4">
+                <span className="feature-icon">{item.icon}</span>
+                <h3 className="text-2xl font-bold text-bright-white">{item.title}</h3>
+                <p className="text-gray-300 leading-relaxed">{item.copy}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
         {/* Niche Cards — main CTA section */}
         <section id="niches" className="container-wide py-16">
           <div className="text-center mb-12 space-y-4">
-            <span className="signal-chip">Choose Your Industry</span>
+            <span className="signal-chip">Built for real wellness businesses</span>
             <h2 className="text-4xl md:text-5xl font-bold text-white">
-              Templates built for your business
+              Templates shaped around how your clients decide
             </h2>
             <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-              Every niche has dozens of unique, professionally designed templates.
-              Pick your industry to start browsing.
+              Pick your practice to see conversion-focused templates designed for the way your
+              clients research, build trust, and book.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -138,7 +199,7 @@ export default function HomePage() {
                   <div className="flex items-center justify-between">
                     <span className="text-4xl">{niche.icon}</span>
                     <span className={`text-xs font-bold px-3 py-1 rounded-full ${accent.bg} ${accent.text} border ${accent.border}`}>
-                      {niche.templateCount} templates
+                      {niche.templateCount > 0 ? `${niche.templateCount} templates` : 'Multiple styles'}
                     </span>
                   </div>
                   <h3 className="text-2xl font-bold text-bright-white group-hover:scale-[1.01] transition-transform">
@@ -148,7 +209,7 @@ export default function HomePage() {
                     {niche.description}
                   </p>
                   <span className={`inline-flex items-center gap-1 text-sm font-semibold ${accent.text} group-hover:gap-2 transition-all`}>
-                    View Custom Templates <span aria-hidden="true">→</span>
+                    View example styles →
                   </span>
                 </Link>
               )
@@ -169,26 +230,18 @@ export default function HomePage() {
               </Link>
             </div>
             {[
-              {
-                step: '01',
-                title: 'Browse & pick',
-                copy: 'Choose from hundreds of unique templates in your industry.',
-              },
-              {
-                step: '02',
-                title: 'Enter your info',
-                copy: 'Your content fills in across every page instantly.',
-              },
-              {
-                step: '03',
-                title: 'Preview & purchase',
-                copy: 'See your real site live, then buy and launch when ready.',
-              },
+              { step: '01', title: 'Choose your niche', copy: 'Pick your practice and fill in your business details.' },
+              { step: '02', title: 'Match & customize', copy: 'Match with a template and customize it live.' },
+              { step: '03', title: 'Checkout', copy: 'Check out with the plan that fits your launch.' },
+              { step: '04', title: 'We provision', copy: 'We provision your site and subdomain for you.' },
+              { step: '05', title: 'Manage in portal', copy: 'Manage future edits through your customer portal.' },
             ].map((item) => (
-              <div key={item.step} className="card-mahogany space-y-3">
-                <span className="text-sm text-cyan-200">{item.step}</span>
-                <h3 className="text-2xl font-bold text-white">{item.title}</h3>
-                <p className="text-slate-200">{item.copy}</p>
+              <div key={item.step} className="glass-panel rounded-2xl p-6 space-y-3">
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-cyan-500/15 text-cyan-200 font-bold border border-cyan-400/30">
+                  {item.step}
+                </span>
+                <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                <p className="text-slate-200 text-sm leading-relaxed">{item.copy}</p>
               </div>
             ))}
           </div>
@@ -224,21 +277,20 @@ export default function HomePage() {
         <section className="container-wide py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-              Your new website is one guided flow away.
+              Your website should do more than look good.
             </h2>
             <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-              Browse {totalTemplates}+ professionally designed templates, enter your details,
-              preview it live, and launch. No coding. No hassle.
+              It should explain your offer, build trust, and move people toward the next step.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/preview-your-business" className="cta-button">
-                Preview Your Business
+                Build My Preview
               </Link>
               <Link
-                href="/pricing"
+                href="/demo/platform-builder"
                 className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
               >
-                See Pricing
+                Watch Demo
               </Link>
             </div>
           </div>
@@ -283,14 +335,14 @@ export default function HomePage() {
   )
 }
 
-function FeatureCard({ 
-  icon, 
-  title, 
-  description 
-}: { 
+function FeatureCard({
+  icon,
+  title,
+  description,
+}: {
   icon: string
   title: string
-  description: string 
+  description: string
 }) {
   return (
     <div className="card-mahogany text-center space-y-4 hover:scale-105 transition-transform">
