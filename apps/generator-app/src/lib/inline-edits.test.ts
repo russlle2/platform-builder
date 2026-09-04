@@ -84,6 +84,14 @@ describe('inline edit targeting', () => {
     expect(annotateEditableElements(html)).not.toMatch(/<(?:nav|ul|li|a|form|label)\b[^>]*data-dc-edit-id=/)
   })
 
+  it('respects the compiler-v3 document marker even when the page has zero text slots', () => {
+    const html = '<!doctype html><html data-dc-catalog-version="3"><body><div aria-hidden="true">Application copy</div></body></html>'
+
+    expect(annotateEditableElements(html)).toBe(html)
+    expect(annotateEditableElements('<html><body><p>Legacy copy</p></body></html>'))
+      .toContain('data-dc-edit-id="dc-edit-index-0001"')
+  })
+
   it('fails closed for an ID text edit whose target owns descendant markup', () => {
     const html = '<li data-dc-edit-id="legacy-parent"><a href="about.html">About</a></li>'
     const result = applyInlineEditsToHtmlWithReport(html, [{

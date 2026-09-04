@@ -85,7 +85,7 @@ const REPAIR_STYLESHEET = [
   '.dc-contact-form{display:grid!important;visibility:visible!important;content-visibility:visible!important;opacity:1!important;gap:1rem;max-width:42rem;margin-top:2rem}',
   '.dc-contact-form label{display:grid;gap:.35rem}',
   '.dc-contact-form input,.dc-contact-form textarea{width:100%;padding:.75rem;border:1px solid currentColor;border-radius:.4rem;font:inherit}',
-  'svg[aria-hidden="true"]{pointer-events:none!important}',
+  'svg[aria-hidden="true"],[data-dc-decoration="pointer-layer"]{pointer-events:none!important}',
   ':is(p,blockquote,figcaption,dd,td)>a{text-decoration-line:underline;text-underline-offset:.12em}',
   '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}',
   'body :is(nav,header,[class*="nav"],[class*="row"],[class*="flex"]){flex-wrap:wrap!important}',

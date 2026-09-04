@@ -377,6 +377,51 @@ test('neutral fallback keeps the off-screen skip link out of customer editing an
   }
 });
 
+test('compiler-v3 zero-image pages keep decorative hero layers while every advertised edit remains physically reachable', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-decorative-layer-'));
+  const templateDir = join(root, 'niche', 'decorative-layer');
+  const evidenceRoot = join(root, 'evidence');
+  try {
+    const repaired = repairLegacyTemplate({
+      slug: 'decorative-layer',
+      niche: 'aromatherapy',
+      files: new Map<string, string | Uint8Array>([
+        ['index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Decorative layer</title><link rel="stylesheet" href="assets/css/styles.css"></head><body>
+          <header><nav aria-label="Primary"><a href="#main">Overview</a></nav></header><main id="main"><section class="hero">
+          <div class="hero-bg"><img src="assets/img/pattern.svg" alt="" aria-hidden="true"><div class="hero-gradient"></div></div>
+          <div class="hero-inner"><h1>{{BUSINESS_NAME}}</h1><p>This complete introduction gives customers clear information about current aromatherapy services, practical expectations, scheduling, and the next step without making unsupported promises.</p><a href="mailto:{{EMAIL}}">Ask about availability</a></div>
+          </section></main></body></html>`],
+        ['assets/css/styles.css', ':root{--surface:#fff;--ink:#111;--accent:#315f46}*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);font:16px Arial,sans-serif}header,main{position:relative}nav,.hero-inner{width:min(70rem,92vw);margin:auto}.hero{position:relative;min-height:32rem;padding:5rem 0}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-bg img{width:100%;height:100%;object-fit:cover;opacity:.15}.hero-gradient{background:linear-gradient(120deg,rgba(49,95,70,.12),transparent)}.hero-inner{position:relative}a{color:#17472f}'],
+        ['assets/img/pattern.svg', '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><path fill="#dbe9e0" d="M0 0h10v10H0z"/></svg>'],
+        ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+      ]),
+    });
+    const html = String(repaired.files.get('index.html'));
+    assert.match(html, /<html[^>]*data-dc-catalog-version="3"/);
+    assert.doesNotMatch(html, /data-dc-image-id/);
+    assert.doesNotMatch(html, /<nav[^>]*data-dc-edit-id/);
+    assert.match(html, /data-dc-decoration="pointer-layer"/);
+    for (const [relativePath, contents] of repaired.files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+
+    const evidence = await renderTemplateTasks(root, [{
+      key: 'decorative-layer',
+      niche: 'aromatherapy',
+      slug: 'decorative-layer',
+      page: 'index.html',
+      templateDir,
+    }], { evidenceRoot, workers: 1, retries: 0 });
+
+    assert.equal(evidence.length, 2);
+    assert.ok(evidence.every((viewport) => viewport.passed), JSON.stringify(evidence, null, 2));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('browser QA records same-origin HTTP error responses as failed requests', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-render-http-status-'));
   const templateDir = join(root, 'niche', 'slug');

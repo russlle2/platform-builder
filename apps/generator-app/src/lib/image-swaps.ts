@@ -36,6 +36,7 @@ const READ_PB_IMAGE_ID_RE = /\bdata-pb-image-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^
 const EXISTING_DC_IMAGE_ID_RE = /\sdata-dc-image-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
 const EXISTING_PB_IMAGE_ID_RE = /\sdata-pb-image-id\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/gi
 const COMPILER_V3_IMAGE_ID_RE = /\bdata-dc-image-id\s*=\s*(?:"(?:img|css)_[a-f0-9]{18}"|'(?:img|css)_[a-f0-9]{18}'|(?:img|css)_[a-f0-9]{18}(?=\s|>))/i
+const COMPILER_V3_DOCUMENT_RE = /<html\b[^>]*\bdata-dc-catalog-version\s*=\s*(?:"3"|'3'|3(?=\s|>))/i
 
 function safeImageUrl(value: unknown): value is string {
   // Persisted swaps are eventually interpolated into both quoted HTML
@@ -153,8 +154,11 @@ function annotateImageSegment(
  */
 export function annotateImageSlots(html: string, page = 'index.html'): string {
   // Compiler-v3 owns its complete, audited image-slot manifest. Do not mint
-  // client-only slots or silently repair duplicate compiler identities.
-  if (COMPILER_V3_IMAGE_ID_RE.test(html)) return html
+  // client-only slots or silently repair duplicate compiler identities. The
+  // document marker is authoritative even when a design intentionally has no
+  // meaningful image slots; looking only for an image ID would turn a
+  // decorative legacy image into a false customer control.
+  if (COMPILER_V3_DOCUMENT_RE.test(html) || COMPILER_V3_IMAGE_ID_RE.test(html)) return html
 
   const prefix = `dc-image-${safePagePart(page)}`
   let ordinal = 0

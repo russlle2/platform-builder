@@ -97,6 +97,8 @@ const TEXT_TAGS = new Set([
   'h5', 'h6', 'label', 'legend', 'li', 'option', 'p', 'pre', 'summary', 'td', 'th', 'title',
 ]);
 const FALLBACK_TEXT_TAGS = new Set(['address', 'article', 'aside', 'b', 'div', 'em', 'footer', 'header', 'i', 'main', 'nav', 'section', 'small', 'span', 'strong', 'time', 'u']);
+const STRUCTURAL_TEXT_CONTAINERS = new Set(['article', 'aside', 'footer', 'header', 'main', 'nav', 'section']);
+const INTERACTIVE_ARIA_LABEL_TAGS = new Set(['a', 'button', 'input', 'option', 'select', 'summary', 'textarea']);
 const NON_CONTENT_TEXT_ANCESTORS = new Set(['script', 'style', 'svg', 'template']);
 const NON_EDITABLE_ELEMENTS = new Set(['script', 'style', 'svg', 'template']);
 const SVG_SEMANTIC_ATTRIBUTE_NAMES = new Set([
@@ -911,6 +913,87 @@ function relocateOrphanDecorativeOverlays(document: HtmlNode): number {
     container.childNodes.push(overlay);
     count += 1;
   }
+  return count;
+}
+
+const DECORATIVE_HIT_LAYER_SIGNAL = /(?:^|[-_\s])(?:aura|backdrop|blob|decor(?:ation|ative)?|glow|gradient|grain|noise|orb|ornament|overlay|pattern|texture)(?:$|[-_\s])/i;
+const BACKGROUND_HIT_LAYER_SIGNAL = /(?:^|[-_\s])(?:background|bg)(?:$|[-_\s])/i;
+const INTERACTIVE_DESCENDANT_TAGS = new Set(['a', 'button', 'details', 'input', 'option', 'select', 'summary', 'textarea']);
+
+/**
+ * Make purely decorative positioned layers transparent to pointer hit testing.
+ * Legacy hero backgrounds commonly cover the visible copy with an absolute
+ * DIV even though the layer has no customer content. The visual rendering is
+ * unchanged; clicks pass through to the meaningful text/image controls below.
+ */
+function markDecorativeHitLayers(document: HtmlNode): number {
+  let count = 0;
+  walk(document, (node) => {
+    if (!node.tagName || !['aside', 'div', 'section', 'span'].includes(node.tagName)) return;
+    const identity = `${getAttr(node, 'id') ?? ''} ${getAttr(node, 'class') ?? ''}`;
+    const stronglyDecorative = DECORATIVE_HIT_LAYER_SIGNAL.test(identity);
+    const backgroundNamed = BACKGROUND_HIT_LAYER_SIGNAL.test(identity);
+    if ((!stronglyDecorative && !backgroundNamed) || textContent(node).trim()) return;
+
+    let ownsMeaningfulContent = false;
+    let hasExplicitDecorativeDescendant = false;
+    const inspect = (candidate: HtmlNode): void => {
+      if (ownsMeaningfulContent) return;
+      if (candidate !== node && candidate.tagName) {
+        const role = (getAttr(candidate, 'role') ?? '').trim().toLowerCase();
+        const tabIndex = getAttr(candidate, 'tabindex')?.trim();
+        const candidateIdentity = `${getAttr(candidate, 'id') ?? ''} ${getAttr(candidate, 'class') ?? ''} ${getAttr(candidate, 'src') ?? ''}`;
+        if (
+          getAttr(candidate, 'aria-hidden')?.trim().toLowerCase() === 'true'
+          || role === 'none'
+          || role === 'presentation'
+          || DECORATIVE_HIT_LAYER_SIGNAL.test(candidateIdentity)
+        ) hasExplicitDecorativeDescendant = true;
+        if (
+          INTERACTIVE_DESCENDANT_TAGS.has(candidate.tagName)
+          || getAttr(candidate, 'href') !== undefined
+          || getAttr(candidate, 'contenteditable')?.trim().toLowerCase() === 'true'
+          || role === 'button'
+          || role === 'link'
+          || (tabIndex !== undefined && tabIndex !== '-1')
+        ) {
+          ownsMeaningfulContent = true;
+          return;
+        }
+        if (candidate.tagName === 'img') {
+          const hidden = getAttr(candidate, 'aria-hidden')?.trim().toLowerCase() === 'true';
+          const presentation = role === 'none' || role === 'presentation';
+          if (!hidden && !presentation && Boolean(getAttr(candidate, 'alt')?.trim())) {
+            ownsMeaningfulContent = true;
+            return;
+          }
+        }
+        if (['audio', 'canvas', 'video'].includes(candidate.tagName)) {
+          ownsMeaningfulContent = true;
+          return;
+        }
+        if (
+          candidate.tagName === 'svg'
+          && getAttr(candidate, 'aria-hidden')?.trim().toLowerCase() !== 'true'
+          && (role === 'img' || Boolean(getAttr(candidate, 'aria-label')?.trim()))
+        ) {
+          ownsMeaningfulContent = true;
+          return;
+        }
+      }
+      for (const child of candidate.childNodes ?? []) inspect(child);
+    };
+    inspect(node);
+    // A generic empty `background` container may own a meaningful CSS image.
+    // Treat that weaker name as decoration only when its descendants make the
+    // decorative intent explicit; strong overlay/gradient names are enough on
+    // their own.
+    if (ownsMeaningfulContent || (!stronglyDecorative && !hasExplicitDecorativeDescendant)) return;
+
+    if (getAttr(node, 'data-dc-decoration') !== 'pointer-layer') count += 1;
+    setAttr(node, 'data-dc-decoration', 'pointer-layer');
+    setAttr(node, 'aria-hidden', 'true');
+  });
   return count;
 }
 
@@ -2296,7 +2379,11 @@ function annotateEditableNodes(
     // other element structure. Preserve mixed-content markup by wrapping only
     // its meaningful direct text nodes, then annotate those leaf wrappers and
     // the existing descendants independently.
-    if (!unavailable && elementChildren.length > 0 && (TEXT_TAGS.has(node.tagName) || FALLBACK_TEXT_TAGS.has(node.tagName))) {
+    if (
+      !unavailable
+      && (elementChildren.length > 0 || STRUCTURAL_TEXT_CONTAINERS.has(node.tagName))
+      && (TEXT_TAGS.has(node.tagName) || FALLBACK_TEXT_TAGS.has(node.tagName))
+    ) {
       for (const child of [...(node.childNodes ?? [])]) {
         if (child.nodeName !== '#text' || !child.value?.trim()) continue;
         const fragment = parseFragment('<span data-dc-edit-wrapper="direct-text"></span>') as unknown as HtmlNode;
@@ -2322,6 +2409,12 @@ function annotateEditableNodes(
     // Attribute content is independent from ancestor inner HTML. Keep useful
     // alt/label/title metadata editable even when an enclosing link or figure
     // already owns the visible-text slot.
+    const ariaLabel = getAttr(node, 'aria-label')?.trim();
+    const ariaLabelCanBePhysicallyTargeted = Boolean(ariaLabel) && (
+      !hasElementChildren
+      || INTERACTIVE_ARIA_LABEL_TAGS.has(node.tagName)
+      || ['button', 'link'].includes((getAttr(node, 'role') ?? '').trim().toLowerCase())
+    );
     const attributeCandidate = !textCandidate
       ? node.tagName === 'meta'
           && (getAttr(node, 'name') ?? '').trim().toLowerCase() === 'description'
@@ -2331,7 +2424,7 @@ function annotateEditableNodes(
           ? 'alt'
           : ['input', 'textarea'].includes(node.tagName) && getAttr(node, 'placeholder')?.trim()
             ? 'placeholder'
-          : getAttr(node, 'aria-label')?.trim()
+          : ariaLabelCanBePhysicallyTargeted
             ? 'aria-label'
             : getAttr(node, 'title')?.trim()
               ? 'title'
@@ -3157,6 +3250,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const mainLandmarks = ensureMainLandmark(document);
   const headings = ensureHeading(document, options.file);
   const accessibility = normalizeAccessibility(document);
+  const decorativeHitLayers = markDecorativeHitLayers(document);
   const duplicateIds = ensureUniqueDomIds(document, options.file);
   if (scripts) transformations.push({ rule: 'replace-scripts-with-audited-runtime', file: options.file, count: scripts });
   if (unsafeAttrs) transformations.push({ rule: 'strip-event-and-unsafe-url-attributes', file: options.file, count: unsafeAttrs });
@@ -3169,6 +3263,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   if (mainLandmarks) transformations.push({ rule: 'restore-main-landmark', file: options.file, count: mainLandmarks });
   if (headings) transformations.push({ rule: 'restore-page-heading', file: options.file, count: headings });
   if (accessibility) transformations.push({ rule: 'normalize-accessibility-semantics', file: options.file, count: accessibility });
+  if (decorativeHitLayers) transformations.push({ rule: 'make-decorative-layers-pointer-transparent', file: options.file, count: decorativeHitLayers });
   if (duplicateIds) transformations.push({ rule: 'deduplicate-dom-ids', file: options.file, count: duplicateIds });
   if (standardizedForms) transformations.push({ rule: 'standardize-contact-form', file: options.file, count: standardizedForms });
   if (namedFormFields) transformations.push({ rule: 'name-form-controls', file: options.file, count: namedFormFields });
@@ -3183,6 +3278,12 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   transformations.push(...addRequiredPersonalization(document, options.file));
   const body = findElement(document, 'body') ?? document;
   appendHtml(body, `<script defer src="${COMPATIBILITY_SCRIPT_PATH}" data-dc-runtime="compatibility-v1"></script>`);
+
+  // This explicit contract marker is how the app distinguishes an audited v3
+  // page with zero image/text slots from legacy v2 markup that still needs
+  // client-side annotation.
+  const htmlElement = findElement(document, 'html');
+  if (htmlElement) setAttr(htmlElement, 'data-dc-catalog-version', '3');
 
   const annotated = annotateEditableNodes(document, options.file);
   const annotationSuppressionCount = Object.values(annotated.suppressions).reduce((sum, count) => sum + count, 0);

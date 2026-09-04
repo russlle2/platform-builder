@@ -74,6 +74,7 @@ const READ_PB_EDIT_ID_RE = /\bdata-pb-edit-id\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s
 const READ_EDIT_ATTRIBUTE_RE = /\bdata-(?:dc|pb)-edit-attribute\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/i
 const SAFE_EDIT_ID_RE = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/
 const COMPILER_V3_EDIT_ID_RE = /\bdata-dc-edit-id\s*=\s*(?:"txt_[a-f0-9]{18}"|'txt_[a-f0-9]{18}'|txt_[a-f0-9]{18}(?=\s|>))/i
+const COMPILER_V3_DOCUMENT_RE = /<html\b[^>]*\bdata-dc-catalog-version\s*=\s*(?:"3"|'3'|3(?=\s|>))/i
 const EDITABLE_ATTRIBUTE_SET = new Set<string>(EDITABLE_ATTRIBUTE_NAMES)
 
 function escapeHtmlText(value: string): string {
@@ -255,8 +256,9 @@ function annotateSegment(
 export function annotateEditableElements(html: string, page = 'index.html'): string {
   // Compiler-v3 output is exhaustively annotated by the rehabilitation
   // compiler. Synthesizing broad legacy IDs on top of it would reintroduce
-  // unsafe parent slots that can own links or form controls.
-  if (COMPILER_V3_EDIT_ID_RE.test(html)) return html
+  // unsafe parent slots that can own links or form controls. The explicit
+  // document marker also protects the valid zero-text-slot case.
+  if (COMPILER_V3_DOCUMENT_RE.test(html) || COMPILER_V3_EDIT_ID_RE.test(html)) return html
 
   const prefix = pageIdPrefix(page)
   let ordinal = 0

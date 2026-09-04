@@ -89,6 +89,15 @@ describe('image swap safety', () => {
     )
   })
 
+  it('does not invent image controls for an explicitly marked compiler-v3 document with zero image slots', () => {
+    const html = '<!doctype html><html data-dc-catalog-version="3"><body><img src="pattern.svg" alt="" aria-hidden="true"></body></html>'
+
+    expect(annotateImageSlots(html)).toBe(html)
+    expect(applyImageSwapsToHtml(html, [])).toBe(html)
+    expect(annotateImageSlots('<html><body><img src="legacy.jpg"></body></html>'))
+      .toContain('data-dc-image-id="dc-image-index-0001"')
+  })
+
   it('retains v2 URL fallback and upgrades it when that slot is edited again', () => {
     const legacy = applyImageSwapsToHtml(
       '<img src="/assets/same.jpg"><img src="/assets/same.jpg">',

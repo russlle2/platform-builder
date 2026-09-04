@@ -1153,6 +1153,38 @@ test('suppresses unreachable and decorative edit slots without changing their vi
   assert.equal(result.qualityReceipt.status, 'passed', JSON.stringify(result.qualityReceipt.checks, null, 2));
 });
 
+test('marks compiler-v3 pages and preserves decorative overlays without letting them block customer edits', () => {
+  const result = repairLegacyTemplate({
+    slug: 'decorative-hit-layer',
+    niche: 'aromatherapy',
+    files: new Map<string, string | Uint8Array>([
+      ['index.html', `<!doctype html><html lang="en"><head><title>Legacy</title><link rel="stylesheet" href="styles.css"></head><body>
+        <main><section class="hero"><div class="hero-bg"><img src="assets/img/pattern.svg" alt="Decorative pattern" aria-hidden="true"><div class="hero-gradient"></div></div>
+        <div class="hero-inner"><h1>{{BUSINESS_NAME}}</h1><p>Visible customer introduction.</p></div></section>
+        <div class="editorial-background"></div></main>
+        <footer><nav aria-label="Footer"><a href="mailto:{{EMAIL}}">Contact</a></nav><nav class="footer-nav">Privacy Terms</nav></footer>
+      </body></html>`],
+      ['styles.css', '.hero{position:relative}.hero-bg,.hero-gradient{position:absolute;inset:0}.hero-inner{position:relative}.editorial-background{width:10rem;height:10rem;background-image:url("assets/img/editorial.svg")}'],
+      ['assets/img/pattern.svg', '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>'],
+      ['assets/img/editorial.svg', '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0h1v1z"/></svg>'],
+      ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+    ]),
+  });
+
+  const html = String(result.files.get('index.html'));
+  assert.match(html, /<html[^>]*data-dc-catalog-version="3"/);
+  assert.match(html, /class="hero-bg"[^>]*data-dc-decoration="pointer-layer"[^>]*aria-hidden="true"/);
+  assert.match(html, /class="hero-gradient"[^>]*data-dc-decoration="pointer-layer"[^>]*aria-hidden="true"/);
+  assert.doesNotMatch(html, /<img[^>]*pattern\.svg[^>]*data-dc-image-id/);
+  assert.match(html, /class="editorial-background"[^>]*data-dc-image-id="css_[a-f0-9]{18}"/);
+  assert.doesNotMatch(html, /class="editorial-background"[^>]*data-dc-decoration/);
+  assert.doesNotMatch(html, /<nav[^>]*aria-label="Footer"[^>]*data-dc-edit-id/);
+  assert.match(html, /<nav class="footer-nav"><span data-dc-edit-wrapper="direct-text" data-dc-edit-id="txt_[a-f0-9]{18}">Privacy Terms<\/span><\/nav>/);
+  assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-decoration="pointer-layer"\]\{pointer-events:none!important\}/);
+  assert.ok(result.transformations.some((item) => item.rule === 'make-decorative-layers-pointer-transparent'));
+  assert.equal(result.qualityReceipt.status, 'passed', JSON.stringify(result.qualityReceipt.checks, null, 2));
+});
+
 test('applies only stylesheet-local theme variables to avoid quadratic artifact growth', () => {
   const preset = {
     id: 'theme-size-test',
@@ -1663,7 +1695,7 @@ test('keeps form design hooks, reveals legacy toggle forms, and deduplicates arb
   assert.ok(ids.some((id) => /^duplicate-dc-[a-f0-9]{10}$/.test(id)));
   assert.ok(result.transformations.some((item) => item.rule === 'deduplicate-dom-ids'));
   assert.ok(result.transformations.some((item) => item.rule === 'relocate-toggle-hidden-contact-form'));
-  assert.match(String(result.files.get('assets/css/dc-repair.css')), /svg\[aria-hidden="true"\]\{pointer-events:none!important\}/);
+  assert.match(String(result.files.get('assets/css/dc-repair.css')), /svg\[aria-hidden="true"\],\[data-dc-decoration="pointer-layer"\]\{pointer-events:none!important\}/);
   assert.equal(result.qualityReceipt.status, 'passed', result.qualityReceipt.checks.filter((check) => !check.pass).map((check) => check.detail).join('\n'));
 });
 
