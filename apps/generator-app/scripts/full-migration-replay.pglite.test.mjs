@@ -44,7 +44,7 @@ test('every committed migration replays in order on an empty application databas
       has_column_privilege('service_role','public.orders','amount_cents','UPDATE') as financial_update`)).rows[0]
     assert.deepEqual(orderPermissions, { broad_update: false, measured_update: true, financial_update: false })
     const result = await db.query('select public.launch_schema_readiness() as readiness')
-    assert.deepEqual(result.rows[0].readiness, { ready: true, schemaVersion: '20260903.3' })
+    assert.deepEqual(result.rows[0].readiness, { ready: true, schemaVersion: '20260903.4' })
     const insecure = await db.query(`
       select relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
       where n.nspname = 'public' and c.relkind = 'r' and not c.relrowsecurity

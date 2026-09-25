@@ -117,6 +117,70 @@ async function scalar(db, sql, params = []) {
   return Object.values(result.rows[0] || {})[0]
 }
 
+test('fixture cleanup reads only its filter column and the sentinel detects a lost grant', async () => {
+  const db = new PGlite()
+  try {
+    await db.waitReady
+    await db.exec(baseline)
+    await db.exec(await readFile(migrationPath, 'utf8'))
+    await db.exec(await readFile(grantMigrationPath, 'utf8'))
+    await db.exec(`
+      insert into public.site_slugs (slug) values ('e2e-cleanup-own'), ('e2e-cleanup-other');
+      insert into public.booking_inquiries (slug) values ('e2e-cleanup-own'), ('e2e-cleanup-other');
+    `)
+    await db.exec('set role service_role')
+    try {
+      await assert.rejects(
+        db.exec("delete from public.booking_inquiries where slug = 'e2e-cleanup-own'"),
+        /permission denied/i,
+      )
+    } finally {
+      await db.exec('reset role')
+    }
+
+    const cleanupGrant = await readFile(path.join(path.dirname(migrationPath), '20260925222534_booking_inquiry_cleanup_filter_privilege.sql'), 'utf8')
+    const cleanupReadiness = await readFile(path.join(path.dirname(migrationPath), '20260925222605_attest_booking_inquiry_cleanup_filter.sql'), 'utf8')
+    await db.exec(cleanupGrant)
+    assert.deepEqual(await scalar(db, 'select public.launch_schema_readiness()'), { ready: true, schemaVersion: '20260903.3' })
+    await db.exec(cleanupReadiness)
+    await db.exec(cleanupGrant)
+    await db.exec(cleanupReadiness)
+    assert.deepEqual(await scalar(db, 'select public.launch_schema_readiness()'), { ready: true, schemaVersion: '20260903.4' })
+    for (const privilege of ['SELECT', 'INSERT', 'UPDATE', 'TRUNCATE', 'REFERENCES', 'TRIGGER']) {
+      assert.equal(await scalar(db, "select has_table_privilege('service_role', 'public.booking_inquiries', $1)", [privilege]), false, privilege)
+    }
+    assert.equal(await scalar(db, "select has_column_privilege('service_role', 'public.booking_inquiries', 'slug', 'SELECT')"), true)
+    for (const column of ['id', 'created_at']) {
+      assert.equal(await scalar(db, "select has_column_privilege('service_role', 'public.booking_inquiries', $1, 'SELECT')", [column]), false, column)
+    }
+    for (const role of ['anon', 'authenticated']) {
+      assert.equal(await scalar(db, "select has_column_privilege($1, 'public.booking_inquiries', 'slug', 'SELECT')", [role]), false, role)
+    }
+    await db.exec('set role service_role')
+    try {
+      const deleted = await db.query("delete from public.booking_inquiries where slug = 'e2e-cleanup-own' returning slug")
+      assert.deepEqual(deleted.rows, [{ slug: 'e2e-cleanup-own' }])
+      await assert.rejects(db.exec('select id from public.booking_inquiries'), /permission denied/i)
+      await assert.rejects(db.exec('select * from public.booking_inquiries'), /permission denied/i)
+      await assert.rejects(db.exec("insert into public.booking_inquiries (slug) values ('e2e-cleanup-own')"), /permission denied/i)
+      await assert.rejects(db.exec("update public.booking_inquiries set slug = 'e2e-cleanup-own' where slug = 'e2e-cleanup-other'"), /permission denied/i)
+    } finally {
+      await db.exec('reset role')
+    }
+    assert.deepEqual((await db.query('select slug from public.booking_inquiries')).rows, [{ slug: 'e2e-cleanup-other' }])
+    await db.exec('revoke select (slug) on public.booking_inquiries from service_role')
+    assert.deepEqual(await scalar(db, 'select public.launch_schema_readiness()'), { ready: false, schemaVersion: '20260903.4' })
+    await db.exec(cleanupGrant)
+    await db.exec('grant select on public.booking_inquiries to service_role')
+    assert.deepEqual(await scalar(db, 'select public.launch_schema_readiness()'), { ready: false, schemaVersion: '20260903.4' })
+    await db.exec('revoke select on public.booking_inquiries from service_role')
+    await db.exec(cleanupGrant)
+    assert.deepEqual(await scalar(db, 'select public.launch_schema_readiness()'), { ready: true, schemaVersion: '20260903.4' })
+  } finally {
+    await db.close()
+  }
+})
+
 test('launch migration parses and billing/checkout RPCs converge under retries', async () => {
   const db = new PGlite()
   try {

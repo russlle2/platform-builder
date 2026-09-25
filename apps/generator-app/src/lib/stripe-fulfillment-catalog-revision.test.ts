@@ -140,6 +140,10 @@ describe('fulfillment catalogue revision persistence', () => {
       templateSlug: 'legacy-alias',
       catalogRevision,
     }))
+    expect(mocks.verifyPublishedSite).toHaveBeenCalledWith('https://customer-site.netlify.app', {
+      cacheKey: 'deploy-1', netlifySiteId: 'netlify-site',
+    })
+    expect(mocks.deploySiteFiles.mock.invocationCallOrder[0]).toBeLessThan(mocks.verifyPublishedSite.mock.invocationCallOrder[0])
     expect(mocks.rpc).toHaveBeenCalledWith(
       'upsert_portal_checkout_state',
       expect.objectContaining({

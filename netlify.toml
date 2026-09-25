@@ -10,6 +10,10 @@
   NEXT_TELEMETRY_DISABLED = "1"
   NODE_OPTIONS = "--max-old-space-size=4096"
 
+[functions."stripe-fulfillment"]
+  # Keep pnpm's optional Sharp package links with its traced native binaries.
+  included_files = ["node_modules/.pnpm/*sharp*/node_modules/@img/**"]
+
 [context.production]
   command = "pnpm install --frozen-lockfile && pnpm run generator:build"
 

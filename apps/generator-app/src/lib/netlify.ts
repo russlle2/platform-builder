@@ -85,7 +85,16 @@ function siteBoundaryIssue(
   if (suppliedDefaultDomain && suppliedDefaultDomain !== expectedDefaultDomain) {
     return 'default domain mismatch'
   }
-  if (!observedUrlHosts.has(expectedDefaultDomain)) return 'default URL mismatch'
+  // Netlify advertises the primary custom domain in both URL fields once it
+  // is attached. Its explicit default_domain still proves the deterministic
+  // Netlify identity; older responses can prove it through the URL instead.
+  if (suppliedDefaultDomain !== expectedDefaultDomain && !observedUrlHosts.has(expectedDefaultDomain)) {
+    return 'default domain identity missing'
+  }
+  const allowedUrlHosts = new Set([expectedDefaultDomain, brandedSubdomain].filter(Boolean))
+  if (!observedUrlHosts.size || [...observedUrlHosts].some((value) => !allowedUrlHosts.has(value))) {
+    return 'site URL mismatch'
+  }
   if (brandedSubdomain) {
     if (!boundDomains.has(brandedSubdomain)) return 'branded domain mismatch'
   } else {
@@ -315,6 +324,35 @@ export interface PublishedSiteVerificationOptions {
   delayMs?: number
   timeoutMs?: number
   cacheKey?: string
+  /** The already-deployed site whose branded certificate may need provisioning. */
+  netlifySiteId?: string
+}
+
+async function ensureBrandedCertificate(siteId: string, hostname: string): Promise<void> {
+  if (hostname.endsWith('.netlify.app')) return
+  if (!/^[A-Za-z0-9-]{3,100}$/.test(siteId)) throw new Error('Invalid Netlify site ID.')
+  const siteResponse = await netlifyFetch(`/sites/${encodeURIComponent(siteId)}`)
+  if (!siteResponse.ok) throw new Error(`Netlify certificate site lookup failed (${siteResponse.status}).`)
+  const site: NetlifySite = await siteResponse.json()
+  const boundDomains = [site.custom_domain, ...(site.domain_aliases || [])]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => value.toLowerCase())
+  if (site.id !== siteId || !boundDomains.includes(hostname)) {
+    throw new Error('The HTTPS hostname is not bound to the requested Netlify site.')
+  }
+
+  const certificateResponse = await netlifyFetch(`/sites/${encodeURIComponent(siteId)}/ssl`)
+  if (!certificateResponse.ok && certificateResponse.status !== 404) {
+    throw new Error(`Netlify certificate lookup failed (${certificateResponse.status}).`)
+  }
+  const certificate = certificateResponse.ok ? await certificateResponse.json() : null
+  // Netlify returns null while no certificate exists. Reposting an existing
+  // certificate is an update operation and requires private key material.
+  if (certificate !== null) return
+  const provisionResponse = await netlifyFetch(`/sites/${encodeURIComponent(siteId)}/ssl`, { method: 'POST' })
+  if (!provisionResponse.ok) {
+    throw new Error(`Netlify certificate provisioning failed (${provisionResponse.status}).`)
+  }
 }
 
 /**
@@ -330,6 +368,7 @@ export async function verifyPublishedSite(
   if (target.protocol !== 'https:' || target.username || target.password) {
     throw new Error('Published site verification requires a credential-free HTTPS URL.')
   }
+  if (options.netlifySiteId) await ensureBrandedCertificate(options.netlifySiteId, target.hostname)
 
   const attempts = Math.max(1, Math.min(60, Math.floor(options.attempts ?? 18)))
   const delayMs = Math.max(0, Math.min(30_000, Math.floor(options.delayMs ?? 5_000)))

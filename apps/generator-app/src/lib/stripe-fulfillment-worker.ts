@@ -420,7 +420,7 @@ export async function handleCheckoutCompleted(
         throw new Error('Template build produced no deployable files.')
       }
       const deploy = await deploySiteFiles(netlifySiteId, deployFiles)
-      await verifyPublishedSite(netlifySiteUrl, { cacheKey: deploy.deployId })
+      await verifyPublishedSite(netlifySiteUrl, { cacheKey: deploy.deployId, netlifySiteId })
       provisioningSucceeded = true
 
       const { data: updatedSlug, error: slugUpdateError } = await supabase

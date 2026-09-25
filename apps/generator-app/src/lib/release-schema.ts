@@ -1,4 +1,4 @@
-export const EXPECTED_LAUNCH_SCHEMA_VERSION = '20260903.3'
+export const EXPECTED_LAUNCH_SCHEMA_VERSION = '20260903.4'
 export const EXPECTED_BOOKING_KIT_SCHEMA_VERSION = '20260925.2'
 
 /** Probe both schemas before a worker that requires payment evidence is deployed. */

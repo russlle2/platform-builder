@@ -59,6 +59,60 @@ describe('published Netlify site verification', () => {
     })
   })
 
+  it.each(['existing', 'new'])('accepts a %s branded site whose URL fields advertise its custom domain', async (mode) => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    vi.stubEnv('PLATFORM_DOMAIN', 'dailyclarity.org')
+    const response = {
+      id: 'site-branded',
+      name: 'platform-calm-co',
+      url: 'http://calm-co.dailyclarity.org',
+      ssl_url: 'https://calm-co.dailyclarity.org',
+      custom_domain: 'calm-co.dailyclarity.org',
+      domain_aliases: [],
+      default_domain: 'platform-calm-co.netlify.app',
+      admin_url: 'https://app.netlify.com/projects/platform-calm-co',
+    }
+    const fetchMock = vi.fn<typeof fetch>()
+    if (mode === 'new') fetchMock.mockResolvedValueOnce(new Response('not found', { status: 404 }))
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify(response), { status: mode === 'new' ? 201 : 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(provisionSite('calm-co')).resolves.toMatchObject({
+      siteId: 'site-branded', siteUrl: 'https://calm-co.dailyclarity.org', defaultDomain: 'platform-calm-co.netlify.app',
+    })
+    expect(fetchMock).toHaveBeenCalledTimes(mode === 'new' ? 2 : 1)
+  })
+
+  it.each([
+    { label: 'wrong name', changed: { name: 'another-site' } },
+    { label: 'wrong default domain', changed: { default_domain: 'another-site.netlify.app' } },
+    { label: 'missing default identity', changed: { default_domain: undefined } },
+    { label: 'unknown advertised URL', changed: { ssl_url: 'https://other-customer.example' } },
+    { label: 'wrong branded binding', changed: { custom_domain: 'other-customer.example' } },
+    { label: 'no advertised URL', changed: { url: undefined, ssl_url: undefined } },
+  ])('rejects $label on existing and newly created branded sites', async ({ changed }) => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    vi.stubEnv('PLATFORM_DOMAIN', 'dailyclarity.org')
+    const response = {
+      id: 'site-invalid', name: 'platform-calm-co',
+      url: 'http://calm-co.dailyclarity.org', ssl_url: 'https://calm-co.dailyclarity.org',
+      custom_domain: 'calm-co.dailyclarity.org', domain_aliases: [],
+      default_domain: 'platform-calm-co.netlify.app', admin_url: 'https://app.netlify.com/projects/platform-calm-co',
+      ...changed,
+    }
+    const fetchMock = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify(response), { status: 200 }))
+      .mockResolvedValueOnce(new Response('not found', { status: 404 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify(response), { status: 201 }))
+      .mockResolvedValueOnce(new Response(null, { status: 204 }))
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(provisionSite('calm-co')).rejects.toThrow(/already bound to another domain/)
+    await expect(provisionSite('calm-co')).rejects.toThrow(/outside the requested domain boundary/)
+    expect(fetchMock).toHaveBeenCalledTimes(4)
+    expect(String(fetchMock.mock.calls[3][0])).toContain('/sites/site-invalid')
+    expect(fetchMock.mock.calls[3][1]).toMatchObject({ method: 'DELETE' })
+  })
+
   it('keeps staging test sites on Netlify-owned DNS', async () => {
     vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
     const fetchMock = vi
@@ -211,6 +265,67 @@ describe('published Netlify site verification', () => {
       attempts: 1,
       timeoutMs: 1_000,
     })).rejects.toThrow(/non-HTML/)
+  })
+
+  it.each([
+    { status: 200, certificate: null },
+    { status: 404, certificate: null },
+    { status: 200, certificate: { state: 'issued', domains: ['calm-co.dailyclarity.org'] } },
+  ])('requests only missing branded certificates before strict HTTPS verification (%j)', async ({ status, certificate }) => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    const fetchMock = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: 'site-123', custom_domain: 'calm-co.dailyclarity.org', domain_aliases: [] })))
+      .mockResolvedValueOnce(new Response(status === 404 ? 'not found' : JSON.stringify(certificate), { status }))
+    if (certificate === null) fetchMock.mockResolvedValueOnce(new Response('null', { status: 200 }))
+    fetchMock.mockResolvedValueOnce(new Response('<!doctype html><html>Customer site</html>'))
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(verifyPublishedSite('https://calm-co.dailyclarity.org', { netlifySiteId: 'site-123', attempts: 1 })).resolves.toBeUndefined()
+    const calls = fetchMock.mock.calls
+    expect(String(calls[0][0])).toBe('https://api.netlify.com/api/v1/sites/site-123')
+    expect(String(calls[1][0])).toBe('https://api.netlify.com/api/v1/sites/site-123/ssl')
+    if (certificate === null) expect(calls[2][1]).toMatchObject({ method: 'POST' })
+    expect(calls.filter(([, options]) => options?.method === 'POST')).toHaveLength(certificate === null ? 1 : 0)
+    expect(String(calls.at(-1)?.[0])).toBe('https://calm-co.dailyclarity.org/')
+  })
+
+  it('does not request a certificate for isolated Netlify-owned HTTPS sites', async () => {
+    const fetchMock = vi.fn<typeof fetch>().mockResolvedValueOnce(new Response('<!doctype html><html>Isolated site</html>'))
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(verifyPublishedSite('https://platform-e2e-calm-co.netlify.app', { netlifySiteId: 'site-123', attempts: 1 })).resolves.toBeUndefined()
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+  })
+
+  it('refuses certificate requests when the site identity or branded binding differs', async () => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    for (const site of [{ id: 'other-site', custom_domain: 'calm-co.dailyclarity.org' }, { id: 'site-123', custom_domain: 'another.example', domain_aliases: [] }]) {
+      const fetchMock = vi.fn<typeof fetch>().mockResolvedValueOnce(new Response(JSON.stringify(site)))
+      vi.stubGlobal('fetch', fetchMock)
+      await expect(verifyPublishedSite('https://calm-co.dailyclarity.org', { netlifySiteId: 'site-123', attempts: 1 })).rejects.toThrow(/not bound/)
+      expect(fetchMock).toHaveBeenCalledTimes(1)
+    }
+  })
+
+  it('propagates certificate provisioning failure without declaring the site ready', async () => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    const fetchMock = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: 'site-123', custom_domain: 'calm-co.dailyclarity.org' })))
+      .mockResolvedValueOnce(new Response('null'))
+      .mockResolvedValueOnce(new Response('certificate pending', { status: 503 }))
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(verifyPublishedSite('https://calm-co.dailyclarity.org', { netlifySiteId: 'site-123', attempts: 1 })).rejects.toThrow(/provisioning failed \(503\)/)
+    expect(fetchMock).toHaveBeenCalledTimes(3)
+  })
+
+  it('keeps certificate-pending TLS errors on the retry path', async () => {
+    vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-test-token')
+    const fetchMock = vi.fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ id: 'site-123', custom_domain: 'calm-co.dailyclarity.org' })))
+      .mockResolvedValueOnce(new Response('null'))
+      .mockResolvedValueOnce(new Response('null', { status: 200 }))
+      .mockRejectedValueOnce(new Error('TLS certificate hostname mismatch'))
+    vi.stubGlobal('fetch', fetchMock)
+    await expect(verifyPublishedSite('https://calm-co.dailyclarity.org', { netlifySiteId: 'site-123', attempts: 1 })).rejects.toThrow(/did not become reachable over HTTPS/)
+    expect(fetchMock).toHaveBeenCalledTimes(4)
   })
 })
 
