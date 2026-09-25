@@ -52,6 +52,7 @@ import {
 import {
   containsUnsafeCssReferences,
   containsUnsafeSrcset,
+  decodeCssEscapes,
   isUnsafeStaticUrl,
 } from './url-safety.js';
 
@@ -96,7 +97,8 @@ const REPAIR_STYLESHEET = [
   ':is(p,blockquote,figcaption,dd,td)>a{text-decoration-line:underline;text-underline-offset:.12em}',
   '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}',
   '[data-dc-mobile-nav-fallback="true"]{position:static!important;inset:auto!important;transform:none!important;flex:1 1 100%!important;width:100%!important}',
-  'header:has([data-dc-mobile-nav-fallback="true"]){position:static!important;inset:auto!important;height:auto!important}',
+  'header:has([data-dc-mobile-nav-fallback="true"]){height:auto!important}',
+  'header[data-dc-mobile-nav-flow-header="true"]{position:relative!important;inset:auto!important}',
   '[data-dc-mobile-nav-fallback="true"],[data-dc-mobile-nav-fallback="true"] :is(ul,ol){display:flex!important;visibility:visible!important;content-visibility:visible!important;opacity:1!important;flex-wrap:wrap!important}',
   'header:has([data-dc-mobile-nav-fallback="true"]) .brand:has(+[data-dc-mobile-nav-fallback="true"]){flex-basis:100%!important}',
   '[data-dc-mobile-footer-float="true"]{float:none!important}',
@@ -953,6 +955,7 @@ function linkedStylesheets(
   page: string,
   html: string,
   styles: Readonly<Record<string, string>>,
+  onUnresolved?: () => void,
 ): Set<string> {
   const stylesByLowerPath = new Map(Object.keys(styles).map((path) => [normalizePath(path).toLowerCase(), path]));
   const linked = new Set<string>();
@@ -960,7 +963,8 @@ function linkedStylesheets(
   const addReference = (owner: string, reference: string | undefined): void => {
     const target = reference ? localTarget(owner, reference) : undefined;
     const actual = target ? stylesByLowerPath.get(normalizePath(target).toLowerCase()) : undefined;
-    if (!actual || linked.has(actual)) return;
+    if (!actual) { onUnresolved?.(); return; }
+    if (linked.has(actual)) return;
     linked.add(actual);
     pending.push(actual);
   };
@@ -978,6 +982,7 @@ function linkedStylesheets(
       root.walkAtRules('import', (rule) => addReference(page, importedStylesheetReference(rule.params)));
     } catch {
       // A malformed inline stylesheet cannot safely establish applicability.
+      onUnresolved?.();
     }
   });
 
@@ -988,6 +993,7 @@ function linkedStylesheets(
       root.walkAtRules('import', (rule) => addReference(stylesheet, importedStylesheetReference(rule.params)));
     } catch {
       // repairStylesheet already records malformed CSS; keep this resolver closed.
+      onUnresolved?.();
     }
   }
   return linked;
@@ -998,13 +1004,25 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Record<s
   let count = 0;
   for (const [page, html] of Object.entries(pages)) {
     const document = parse(html) as unknown as HtmlNode;
+    const previousFlowHeaders = new Set<HtmlNode>();
+    walk(document, node => {
+      if (node.tagName === 'header' && getAttr(node, 'data-dc-mobile-nav-flow-header')) {
+        previousFlowHeaders.add(node);
+        removeAttr(node, 'data-dc-mobile-nav-flow-header');
+      }
+    });
     const declarations = new Map<HtmlNode, Map<string, string>>();
     const seenDeclarations = new Map<HtmlNode, Map<string, Set<string>>>();
     const positionRules = new Map<HtmlNode, { rule: postcss.Rule; declaration: postcss.Declaration }[]>();
     const styleRoots = new Map<string, postcss.Root>();
     let conditionalSheets = false;
+    let incompleteHeaderStyles = false;
     walk(document, node => { if (['link', 'style'].includes(node.tagName ?? '') && getAttr(node, 'media')?.trim()) conditionalSheets = true; });
     const add = (node: HtmlNode, property: string, value: string): void => {
+      if (node.tagName === 'header') {
+        property = decodeCssEscapes(property).trim();
+        if (!property.startsWith('--')) property = property.toLowerCase();
+      }
       const values = declarations.get(node) ?? new Map<string, string>();
       const seen = seenDeclarations.get(node) ?? new Map<string, Set<string>>();
       const choices = seen.get(property) ?? new Set<string>();
@@ -1014,7 +1032,7 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Record<s
       values.set(property, choices.size === 1 ? value : '__dc_ambiguous__');
       declarations.set(node, values);
     };
-    for (const path of linkedStylesheets(page, html, styles)) {
+    for (const path of linkedStylesheets(page, html, styles, () => { incompleteHeaderStyles = true; })) {
       let root: postcss.Root;
       try { root = postcss.parse(styles[path]!); } catch { continue; }
       styleRoots.set(path, root);
@@ -1026,6 +1044,9 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Record<s
         const targets = exactTargets ?? possibleStyledTargets(document, rule.selector);
         if (!targets) return;
         for (const node of rule.nodes ?? []) if (node.type === 'decl') for (const target of targets) {
+          if (target.tagName === 'header' && normalizePath(path) === REPAIR_STYLESHEET_PATH
+            && (rule.selector === 'header[data-dc-mobile-nav-flow-header="true"]'
+              || rule.selector === '[data-dc-mobile-fixed-flow="true"]')) continue;
           if (/^[.#][\w-]+:where\(\[data-dc-sticky-form-flow="true"\]\)$/.test(rule.selector)
             && !getAttr(target, 'data-dc-sticky-form-flow')
             && rule.nodes?.every(declaration => declaration.type === 'decl'
@@ -1049,8 +1070,38 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Record<s
       try { postcss.parse(`x{${getAttr(node, 'style') ?? ''}}`).walkDecls(declaration => add(node, declaration.prop, declaration.value.trim())); }
       catch { /* Preserve unresolved inline geometry. */ }
     });
-    if (conditionalSheets) continue;
+    if (conditionalSheets) {
+      if (previousFlowHeaders.size) { pages[page] = serialize(document as never); count += previousFlowHeaders.size; }
+      continue;
+    }
     let changed = false;
+    walk(document, node => {
+      if (node.tagName !== 'header') return;
+      const values = declarations.get(node);
+      let fallbackNavigation = false;
+      walk(node, child => { if (getAttr(child, 'data-dc-mobile-nav-fallback') === 'true') fallbackNavigation = true; });
+      const flows = fallbackNavigation && !incompleteHeaderStyles && ![...(values?.keys() ?? [])].some(property => /^(?:all|animation(?:-.+)?|transition(?:-.+)?)$/.test(property))
+        && ['sticky', 'fixed'].includes(values?.get('position') ?? '');
+      if (flows) setAttr(node, 'data-dc-mobile-nav-flow-header', 'true');
+      if (flows !== previousFlowHeaders.has(node)) { changed = true; count += 1; }
+      if (!flows) return;
+      // Fixed-content repairs have source-selector specificity. Preserve the
+      // header's containing block with an adjacent, equally specific override;
+      // retain the existing mobile flow treatment for every other owner.
+      for (const root of styleRoots.values()) root.walkAtRules('media', media => {
+        if (media.prev()?.type !== 'comment' || (media.prev() as postcss.Comment).text.trim() !== 'dc-repair-mobile-fixed-flow'
+          || media.params !== '(max-width:600px)') return;
+        for (const rule of [...media.nodes ?? []]) {
+          if (rule.type !== 'rule' || !rule.nodes?.some(declaration => declaration.type === 'decl'
+            && declaration.prop === 'position' && declaration.value === 'static' && declaration.important)) continue;
+          if (!resolveStaticSelectorTargets(document, rule.selector)?.includes(node)) continue;
+          const selector = rule.selectors.map(value => `${value}:where(header[data-dc-mobile-nav-flow-header="true"])`).join(',');
+          if (media.nodes?.some(candidate => candidate.type === 'rule' && candidate.selector === selector)) continue;
+          rule.after(postcss.rule({ selector, nodes: [postcss.decl({ prop: 'position', value: 'relative', important: true })] }));
+          changed = true; count += 1;
+        }
+      });
+    });
     walk(document, node => {
       const values = declarations.get(node);
       if (!values || values.has('all')) return;

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import test from 'node:test';
 import { parse } from 'parse5';
 import { chromium } from '@playwright/test';
@@ -404,5 +405,93 @@ test('sizes the flowed modal track without treating unrelated compiler grid guar
   assert.match(repaired,/grid-template-columns:minmax\(0,1fr\)/);
   assert.doesNotMatch(String(build('author.css').files.get('index.html')),/grid-template-columns:minmax\(0,1fr\)/);
   const browser=await chromium.launch({headless:true});try{const page=await browser.newPage({viewport:{width:390,height:844}});await page.setContent(`${repaired}<style>${[...result.files].filter(([p])=>p.endsWith('.css')).map(([,v])=>v).join('\n')}</style>`);assert.ok(await page.getByRole('button',{name:'Close'}).evaluate(e=>{const r=e.getBoundingClientRect();return r.right<=innerWidth&&e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}));await page.close();}finally{await browser.close();}
+});
+
+test('preserves in-flow navigation header containing blocks, offsets and clipped artwork', async () => {
+  const source = '<div class="host"><header id="hero"><nav><a href="index.html">Home</a><a href="contact.html">Contact</a></nav><h1>Practice</h1><p>Clear next steps</p><span class="accent" aria-hidden="true"></span></header></div><main><h2>Services</h2></main>';
+  const browser = await chromium.launch({ headless: true });
+  try {
+    for (const position of ['static', 'relative']) {
+      const css = `body{margin:0}.host{position:relative;margin-top:30px;padding-top:70px}#hero{position:${position};top:11px;left:7px;overflow:hidden;padding:28px;min-height:1064px}.accent{position:absolute;top:17px;left:19px;width:12px;height:12px;background:red}#hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,0,0,.05));transform:rotate(-12deg);pointer-events:none}nav{display:flex;gap:20px}`;
+      const result = repairLegacyTemplate({ slug: 'header-containing-block', niche: 'wellness_coach', files: new Map([['index.html', `${source}<style>${css}</style>`]]) });
+      const html = String(result.files.get('index.html'));
+      assert.doesNotMatch(html, /data-dc-mobile-nav-flow-header/);
+      const sheets = [...result.files].filter(([path]) => path.endsWith('.css')).map(([, value]) => value).join('\n');
+      for (const width of [1440, 390]) {
+        const page = await browser.newPage({ viewport: { width, height: 844 } });
+        await page.setContent(`<style>${css}</style>${source}`);
+        const before = await page.locator('.accent').boundingBox();
+        await page.setContent(`${html}<style>${sheets}</style>`);
+        assert.equal(await page.locator('#hero').evaluate(element => getComputedStyle(element).position), position);
+        assert.equal(await page.locator('#hero').evaluate(element => getComputedStyle(element).top), '11px');
+        assert.equal(await page.locator('#hero').evaluate(element => getComputedStyle(element).left), '7px');
+        assert.deepEqual(await page.locator('.accent').boundingBox(), before);
+        await page.getByText('Clear next steps', { exact: true }).dblclick();
+        if (position === 'relative') assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+        await page.close();
+      }
+    }
+  } finally { await browser.close(); }
+});
+
+test('flows only proven sticky or fixed navigation headers and retains their positioned children', async () => {
+  const body = '<header id="site"><nav><a href="index.html">Home</a><a href="contact.html">Contact</a></nav><p>Practice navigation</p><span class="badge" aria-hidden="true"></span></header><main><h1>Practice</h1><p id="copy">Editable service details</p><div style="height:1200px"></div><p>End of page</p></main>';
+  const browser = await chromium.launch({ headless: true });
+  try {
+    for (const position of ['sticky', 'fixed']) for (const inline of [false, true]) {
+      const css = `body{margin:0}#site{${inline ? '' : `position:${position};top:0;left:0;`}width:100%;background:white;padding:20px;z-index:10}.badge{position:absolute;right:12px;bottom:8px;width:6px;height:6px}nav{display:flex;gap:20px}`;
+      const html = inline ? body.replace('id="site"', `id="site" style="position:${position};top:0;left:0"`) : body;
+      const result = repairLegacyTemplate({ slug: 'flow-header', niche: 'wellness_coach', files: new Map([['index.html', `<link rel="stylesheet" href="site.css">${html}`], ['contact.html', `<link rel="stylesheet" href="site.css">${html.replace('Editable service details', 'Editable contact details')}`], ['site.css', css]]) });
+      const again = repairLegacyTemplate({ slug: 'flow-header', niche: 'wellness_coach', files: result.files });
+      for (const artifact of [result, again]) for (const path of ['index.html', 'contact.html']) assert.match(String(artifact.files.get(path)), /data-dc-mobile-nav-flow-header="true"/);
+      const sheets = [...again.files].filter(([path]) => path.endsWith('.css')).map(([, value]) => value).join('\n');
+      for (const width of [1440, 390]) {
+        const page = await browser.newPage({ viewport: { width, height: 844 } });
+        await page.setContent(`${again.files.get('index.html')}<style>${sheets}</style>`);
+        assert.equal(await page.locator('#site').evaluate(element => getComputedStyle(element).position), width === 390 ? 'relative' : position);
+        if (width === 390) {
+          const header = (await page.locator('#site').boundingBox())!;
+          const badge = (await page.locator('.badge').boundingBox())!;
+          assert.ok(badge.y >= header.y && badge.y + badge.height <= header.y + header.height);
+          await page.locator('#copy').dblclick();
+          await page.getByText('End of page', { exact: true }).scrollIntoViewIfNeeded();
+          await page.getByText('Practice navigation', { exact: true }).dblclick();
+          assert.ok(await page.locator('nav a').first().evaluate(element => { const r = element.getBoundingClientRect(); return element.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2)); }));
+        }
+        await page.close();
+      }
+    }
+  } finally { await browser.close(); }
+});
+
+test('refuses uncertain header position proofs and removes stale flow markers', () => {
+  const body = '<header id="site" class="site" data-dc-mobile-nav-flow-header="true"><nav><a href="index.html">Home</a><a href="contact.html">Contact</a></nav></header><main><h1>Practice</h1></main>';
+  for (const css of [
+    '.site{position:relative;top:11px}', '.site{position:static}',
+    '.site{position:sticky;position:relative}', '#site{position:static!important}.site{position:sticky}',
+    '.site{position:sticky}@media(max-width:800px){.site{position:static}}',
+    '.site{position:sticky;all:unset}', '.site{position:var(--header-position)}',
+    '.site{POSITION:static!important;position:sticky;top:11px}',
+    '.site{position:sticky;ALL:initial!important}',
+    '.site{p\\6fsition:static!important;position:sticky}',
+    '.site{position:sticky;animation:flow 1s infinite}@keyframes flow{from,to{position:static}}',
+    '.site{position:sticky;TRANSITION:all 1s}',
+  ]) {
+    const result = repairLegacyTemplate({ slug: 'uncertain-header', niche: 'wellness_coach', files: new Map([['index.html', `${body}<style>${css}</style>`]]) });
+    assert.doesNotMatch(String(result.files.get('index.html')), /data-dc-mobile-nav-flow-header/);
+  }
+  const inlineReset = repairLegacyTemplate({ slug: 'inline-header-reset', niche: 'wellness_coach', files: new Map([['index.html', `${body.replace('id="site"', 'id="site" style="ALL:initial!important"')}<style>.site{position:sticky}</style>`]]) });
+  assert.doesNotMatch(String(inlineReset.files.get('index.html')), /data-dc-mobile-nav-flow-header/);
+  const vendorCss = '.site{position:static!important}';
+  const vendorPath = `assets/vendor/${createHash('sha256').update(vendorCss).digest('hex')}.css`;
+  for (const reference of [`<link rel="stylesheet" href="${vendorPath}">`, `<style>@import "${vendorPath}";</style>`]) {
+    const result = repairLegacyTemplate({ slug: 'vended-header-cascade', niche: 'wellness_coach', files: new Map([['index.html', `${reference}${body}<style>.site{position:sticky}</style>`], [vendorPath, vendorCss]]) });
+    assert.doesNotMatch(String(result.files.get('index.html')), /data-dc-mobile-nav-flow-header/);
+    assert.equal(String(result.files.get(vendorPath)), vendorCss);
+  }
+  for (const link of ['<link rel="stylesheet" href="site.css" media="print">', '<style>@import "site.css" print;</style>']) {
+    const result = repairLegacyTemplate({ slug: 'conditional-header', niche: 'wellness_coach', files: new Map([['index.html', `${link}${body}`], ['site.css', '.site{position:sticky}']]) });
+    assert.doesNotMatch(String(result.files.get('index.html')), /data-dc-mobile-nav-flow-header/);
+  }
 });
 
