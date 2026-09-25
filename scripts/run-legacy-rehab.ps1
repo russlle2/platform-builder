@@ -10,7 +10,7 @@ param(
     [string]$WorkRoot = 'C:\Users\chris\Documents\DailyClarity\template-rehab',
 
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]{0,79}$')]
-    [string]$RuleVersion = 'legacy-rehab-1.0.33',
+    [string]$RuleVersion = 'legacy-rehab-1.0.34',
 
     [ValidateRange(100, 10000)]
     [int]$PilotSize = 100,
@@ -385,7 +385,15 @@ if ($Command -eq 'run') {
     $pilotGatePath = Join-Path $resolvedWorkRoot 'reports\pilot-gate.json'
     try {
         $pilotGate = Get-Item -LiteralPath $pilotGatePath -ErrorAction Stop
-        $pilotGateHash = (Get-FileHash -LiteralPath $pilotGatePath -Algorithm SHA256 -ErrorAction Stop).Hash.ToLowerInvariant()
+        $pilotGateStream = [IO.File]::OpenRead($pilotGatePath)
+        $pilotGateHasher = [Security.Cryptography.SHA256]::Create()
+        try {
+            $pilotGateHash = [BitConverter]::ToString($pilotGateHasher.ComputeHash($pilotGateStream)).Replace('-', '').ToLowerInvariant()
+        }
+        finally {
+            $pilotGateHasher.Dispose()
+            $pilotGateStream.Dispose()
+        }
         Add-Content -LiteralPath $aggregateLogPath -Value "scheduler-preflight rule=$RuleVersion pilotGate=$($pilotGate.FullName) bytes=$($pilotGate.Length) sha256=$pilotGateHash identity=$([Security.Principal.WindowsIdentity]::GetCurrent().Name)"
     }
     catch {

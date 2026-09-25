@@ -2583,13 +2583,16 @@ function annotateEditableNodes(
   type Unavailability = 'hidden' | 'pointerless' | 'excluded';
   const directlyUnavailable = (node: HtmlNode): Unavailability | undefined => {
     if (NON_EDITABLE_ELEMENTS.has(node.tagName ?? '')) return 'excluded';
-    // Skip links are application-owned accessibility controls rather than
+    // Skip links are accessibility controls rather than
     // customer copy. They are intentionally parked off-screen until keyboard
     // focus, so advertising them as canvas-editable creates a false physical
     // editor path and lets a content edit damage required accessibility text.
     if (
       node.tagName === 'a'
-      && (getAttr(node, 'class') ?? '').split(/\s+/).some((token) => token.toLowerCase() === 'skip-link')
+      && (getAttr(node, 'class') ?? '').split(/\s+/).some((token) => (
+        token.toLowerCase() === 'skip-link'
+        || (token.toLowerCase() === 'skip' && /^skip to (?:main )?content$/i.test(textContent(node).replace(/\s+/g, ' ').trim()))
+      ))
       && /^#[A-Za-z][A-Za-z0-9._:-]*$/.test((getAttr(node, 'href') ?? '').trim())
     ) return 'excluded';
     if (
@@ -2942,6 +2945,32 @@ function addMobileContentFlexFallbacks(root: postcss.Root): number {
   }
   root.append(postcss.comment({ text: MOBILE_FLEX_REPAIR_MARKER }), media);
   return selectors.size;
+}
+
+/** Restore an unconditional whole-document early hide after source script removal. */
+function restoreStaticRootVisibility(root: postcss.Root): number {
+  let count = 0;
+  // A static document cannot recover from an unconditional early-hide rule
+  // once the source initialization scripts are removed. Leave every state,
+  // descendant, mixed selector, and conditional rule under author control.
+  for (const rule of root.nodes) {
+    if (rule.type !== 'rule') continue;
+    const selectors = splitSelectorList(rule.selector);
+    if (!selectors?.length || !selectors.every((selector) => /^(?:html|:root)$/i.test(selector.trim()))) continue;
+    let changed = false;
+    for (const declaration of rule.nodes ?? []) {
+      if (declaration.type !== 'decl') continue;
+      if (
+        decodeCssEscapes(declaration.prop).toLowerCase() === 'visibility'
+        && /^(?:hidden|collapse)$/i.test(declaration.value.trim())
+      ) {
+        declaration.value = 'visible';
+        changed = true;
+      }
+    }
+    if (changed) count += 1;
+  }
+  return count;
 }
 
 /**
@@ -3297,6 +3326,8 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
   if (decorativePseudoLayers) {
     transformations.push({ rule: 'make-decorative-pseudo-layers-pointer-transparent', file, count: decorativePseudoLayers });
   }
+  const staticRootVisibility = restoreStaticRootVisibility(root);
+  if (staticRootVisibility) transformations.push({ rule: 'restore-static-root-visibility', file, count: staticRootVisibility });
   const staticContent = restoreScriptDependentContent(root);
   if (staticContent) {
     transformations.push({ rule: 'restore-script-dependent-content', file, count: staticContent });
