@@ -34,6 +34,8 @@ export default function PricingClient() {
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
   const [checkoutReady, setCheckoutReady] = useState(false)
   const searchParams = useSearchParams()
+  const bookingKitFunnel = searchParams.get('from') === 'booking-kit'
+  const visiblePricingTiers = bookingKitFunnel ? pricingTiers.filter((tier) => tier.key === 'basic') : pricingTiers
   const slug = useMemo(() => searchParams.get('slug'), [searchParams])
   const template = useMemo(() => searchParams.get('template'), [searchParams])
   const niche = useMemo(() => searchParams.get('niche'), [searchParams])
@@ -108,7 +110,7 @@ export default function PricingClient() {
           hasTemplate: Boolean(ctx.template),
           hasNiche: Boolean(ctx.niche),
         })
-        window.location.assign(`/preview-your-business?plan=${encodeURIComponent(planKey)}`)
+        window.location.assign(`/preview-your-business?plan=${encodeURIComponent(planKey)}${bookingKitFunnel ? '&from=booking-kit' : ''}`)
         return
       }
 
@@ -148,7 +150,7 @@ export default function PricingClient() {
             try { sessionStorage.removeItem(CHECKOUT_CATALOG_REVISION_KEY) } catch { /* ignore */ }
           }
           const base = failure.recoveryUrl || '/preview-your-business'
-          setCheckoutRecoveryUrl(`${base}?plan=${encodeURIComponent(planKey)}`)
+          setCheckoutRecoveryUrl(`${base}?plan=${encodeURIComponent(planKey)}${bookingKitFunnel ? '&from=booking-kit' : ''}`)
         }
         throw new Error(
           failure.error || 'Checkout failed. Please try again.'
@@ -166,7 +168,7 @@ export default function PricingClient() {
     } finally {
       setIsSubmitting(null)
     }
-  }, [readCheckoutContext])
+  }, [readCheckoutContext, bookingKitFunnel])
 
   useEffect(() => {
     track('pricing_view', {})
@@ -234,7 +236,7 @@ export default function PricingClient() {
               </p>
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
                 <span>Preview before payment</span>
-                <span>Plan scope shown side by side</span>
+                <span>{bookingKitFunnel ? 'Website scope shown before checkout' : 'Plan scope shown side by side'}</span>
                 <span>Secure Stripe checkout</span>
               </div>
             </div>
@@ -243,7 +245,7 @@ export default function PricingClient() {
               <ul className="space-y-3 text-slate-200">
                 <li>Interactive platform walkthrough</li>
                 <li>A template preview populated with your business details</li>
-                <li>Included features and managed services compared side by side</li>
+                <li>{bookingKitFunnel ? 'Included website features and the separate custom-build option' : 'Included features and managed services compared side by side'}</li>
                 <li>Current price and trial terms before Stripe opens</li>
               </ul>
               <div className="flex items-center justify-between text-sm text-slate-300">
@@ -277,7 +279,7 @@ export default function PricingClient() {
         {/* Pricing Cards */}
         <section className="container-hvac pb-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {pricingTiers.map((tier) => (
+            {visiblePricingTiers.map((tier) => (
               <PricingCard
                 key={tier.name}
                 tier={tier}
@@ -350,7 +352,7 @@ export default function PricingClient() {
           </div>
         </section>
 
-        <section className="container-hvac pb-20">
+        {!bookingKitFunnel && <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-10">
             <h2 className="text-3xl font-bold text-white mb-2">Compare plans</h2>
             <p className="text-slate-300 mb-8 max-w-2xl">
@@ -375,7 +377,7 @@ export default function PricingClient() {
               ))}
             </div>
           </div>
-        </section>
+        </section>}
 
         <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-10">
@@ -427,10 +429,10 @@ export default function PricingClient() {
                 question="What's included in Basic ($20)?"
                 answer="Basic is the automated platform: we launch your selected template on a hosted subdomain with SSL and configure contact-form email notifications, secure storage, and a Stripe-secured DailyClarity billing portal. From there you can edit supported text and images in the current template and republish through your portal. Any free-trial terms are shown before checkout."
               />
-              <FAQItem
+              {!bookingKitFunnel && <FAQItem
                 question="What does Security + Ads ($80) add?"
                 answer="Security + Ads includes the self-serve Basic platform plus manually delivered campaign and security/operations work. We confirm goals, scope, and cadence by email before managed work begins."
-              />
+              />}
               <FAQItem
                 question="How does the $500 custom website build work?"
                 answer="Choose Custom Website Build, submit a detailed description of the appearance and functionality you want, and complete one immediate $500 Stripe payment. Your full brief is saved before checkout and delivered to our manual build queue after Stripe confirms payment. We then review the scope and contact you by email with next steps."
@@ -443,7 +445,7 @@ export default function PricingClient() {
                 question="Is there a free trial?"
                 answer={
                   trialDays > 0
-                    ? `Yes — both monthly plans include a ${trialDays}-day trial. We collect your card at checkout, but you are not charged until the trial ends. The one-time custom build does not include a trial.`
+                    ? `Yes — ${bookingKitFunnel ? 'the Basic monthly plan includes' : 'both monthly plans include'} a ${trialDays}-day trial. We collect your card at checkout, but you are not charged until the trial ends. The one-time custom build does not include a trial.`
                     : 'Subscriptions start billing when you complete checkout.'
                 }
               />
@@ -485,7 +487,7 @@ export default function PricingClient() {
               Build an editable preview, explore compatible templates, and return here when the
               product and plan scope feel right.
             </p>
-            <Link href="/preview-your-business" className="cta-button">
+            <Link href={bookingKitFunnel ? '/preview-your-business?from=booking-kit' : '/preview-your-business'} className="cta-button">
               Preview Your Business
             </Link>
           </div>

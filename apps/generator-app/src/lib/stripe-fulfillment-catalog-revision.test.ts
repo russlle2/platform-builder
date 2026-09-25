@@ -121,6 +121,7 @@ describe('fulfillment catalogue revision persistence', () => {
 
     await handleCheckoutCompleted({ from, rpc: mocks.rpc } as never, {
       id: 'cs_test',
+      created: 1_788_465_600,
       metadata: { slug: 'customer-site', checkoutIntentId: 'intent-1', planKey: 'basic' },
       customer: null,
       subscription: 'sub_test',
@@ -129,6 +130,11 @@ describe('fulfillment catalogue revision persistence', () => {
       amount_total: 2_000,
       currency: 'usd',
     } as never)
+
+    expect(mocks.rpc).toHaveBeenCalledWith('record_order_payment', expect.objectContaining({
+      p_subscription_id: 'sub_test', p_session_id: 'cs_test', p_amount_cents: 2_000,
+      p_paid_at: new Date(1_788_465_600 * 1000).toISOString(),
+    }))
 
     expect(mocks.buildDeployFiles).toHaveBeenCalledWith(expect.objectContaining({
       templateSlug: 'legacy-alias',
@@ -147,6 +153,7 @@ describe('fulfillment catalogue revision persistence', () => {
     mocks.buildDeployFiles.mockClear()
     await handleCheckoutCompleted({ from, rpc: mocks.rpc } as never, {
       id: 'cs_test',
+      created: 1_788_465_600,
       metadata: {
         slug: 'customer-site',
         checkoutIntentId: 'intent-1',

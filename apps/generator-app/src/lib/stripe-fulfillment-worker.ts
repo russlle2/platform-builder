@@ -30,8 +30,10 @@ import {
 } from '@/lib/catalog-revision'
 import { isManagedPlan, normalizePlanKey, shouldCreateManagedServiceTask } from '@/lib/plans'
 import { createStripeClient } from '@/lib/stripe-client'
+import { fulfillBookingKit, failBookingKitCheckout, handleBookingKitRefund } from '@/lib/booking-kit-fulfillment'
 import {
   CUSTOM_BUILD_CHECKOUT_TYPE,
+  BOOKING_KIT_CHECKOUT_TYPE,
   TEMPLATE_CHECKOUT_TYPE,
   getInvoiceSubscriptionId,
   getSupportedCheckoutType,
@@ -209,6 +211,7 @@ async function handleCustomBuildCompleted(
 export async function handleCheckoutCompleted(
   supabase: SupabaseClient,
   session: Stripe.Checkout.Session,
+  paymentEventCreated?: number,
 ) {
   const meta = session.metadata || {}
   const slug = meta.slug
@@ -507,6 +510,15 @@ export async function handleCheckoutCompleted(
       : 'fulfillment_failed',
   })
   if (orderError) throw new Error(`order_upsert:${orderError.message}`)
+  if (session.payment_status === 'paid' && typeof session.amount_total === 'number' && session.amount_total > 0) {
+    const { error: paymentError } = await supabase.rpc('record_order_payment', {
+      p_subscription_id: stripeSubscriptionId,
+      p_session_id: session.id,
+      p_amount_cents: session.amount_total,
+      p_paid_at: new Date((paymentEventCreated ?? session.created) * 1000).toISOString(),
+    })
+    if (paymentError) throw new Error(`order_payment_evidence:${paymentError.message}`)
+  }
 
   if (checkoutIntentId) {
     const { error: intentUpdateError } = await supabase.from('checkout_intents').update({
@@ -882,6 +894,15 @@ async function handleInvoiceEvent(
     latest_invoice_id: invoice.id,
     latest_invoice_paid: paid,
   }, eventCreated, eventId, checkoutType !== TEMPLATE_CHECKOUT_TYPE)
+  if (paid && invoice.amount_paid > 0 && checkoutType === TEMPLATE_CHECKOUT_TYPE) {
+    const { error: paymentError } = await supabase.rpc('record_order_payment', {
+      p_subscription_id: subscriptionId,
+      p_session_id: null,
+      p_amount_cents: invoice.amount_paid,
+      p_paid_at: new Date((invoice.status_transitions?.paid_at ?? eventCreated) * 1000).toISOString(),
+    })
+    if (paymentError) throw new Error(`invoice_payment_evidence:${paymentError.message}`)
+  }
 }
 
 async function handleCheckoutExpired(
@@ -890,6 +911,10 @@ async function handleCheckoutExpired(
   failureReason: 'checkout_expired' | 'async_payment_failed',
 ) {
   const checkoutType = getSupportedCheckoutType(session)
+  if (checkoutType === BOOKING_KIT_CHECKOUT_TYPE) {
+    await failBookingKitCheckout(supabase, session)
+    return
+  }
   if (checkoutType === CUSTOM_BUILD_CHECKOUT_TYPE) {
     const requestId = session.metadata?.customBuildRequestId
     if (!requestId) return
@@ -937,13 +962,15 @@ export async function processStripeEvent(
     case 'checkout.session.async_payment_succeeded': {
       const session = event.data.object as Stripe.Checkout.Session
       const checkoutType = getSupportedCheckoutType(session)
-      if (checkoutType === CUSTOM_BUILD_CHECKOUT_TYPE) {
+      if (checkoutType === BOOKING_KIT_CHECKOUT_TYPE) {
+        await fulfillBookingKit(supabase, stripe, session, { created: event.created, type: event.type })
+      } else if (checkoutType === CUSTOM_BUILD_CHECKOUT_TYPE) {
         await handleCustomBuildCompleted(supabase, session)
       } else if (
         checkoutType === TEMPLATE_CHECKOUT_TYPE &&
         isCheckoutPaymentReady(session)
       ) {
-        await handleCheckoutCompleted(supabase, session)
+        await handleCheckoutCompleted(supabase, session, event.created)
       }
       break
     }
@@ -964,6 +991,11 @@ export async function processStripeEvent(
       await handleSubscriptionEvent(supabase, stripe, subscription, event.created, event.id)
       break
     }
+    case 'charge.refunded':
+    case 'refund.created':
+    case 'refund.updated':
+      await handleBookingKitRefund(supabase, stripe, event)
+      break
     case 'invoice.paid':
       await handleInvoiceEvent(supabase, stripe, event.data.object as Stripe.Invoice, true, event.created, event.id)
       break

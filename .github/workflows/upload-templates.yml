@@ -3,6 +3,11 @@ name: Validate or publish curated templates
 on:
   workflow_dispatch:
     inputs:
+      verification_only:
+        description: 'Read-only staging connection check; skips all exports and uploads'
+        required: false
+        default: false
+        type: boolean
       target_environment:
         description: 'Protected environment whose isolated Blob store receives the catalog'
         required: true
@@ -34,8 +39,28 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  verify-staging-connection:
+    if: ${{ inputs.verification_only && inputs.target_environment == 'staging' && !inputs.publish }}
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Verify the staging site and database binding without writes
+        run: node apps/generator-app/scripts/verify-netlify-target.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
   curated-catalog:
-    if: ${{ inputs.target_environment != 'production' || github.ref == 'refs/heads/main' }}
+    if: ${{ !inputs.verification_only && (inputs.target_environment != 'production' || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.target_environment }}
     steps:
@@ -52,6 +77,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
 
       - name: Test the factory and publication contract
         run: |

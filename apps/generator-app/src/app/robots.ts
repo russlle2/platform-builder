@@ -18,7 +18,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/'],
+        disallow: ['/api/', '/booking-kit/result'],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

@@ -25,6 +25,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright browsers
+        run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
+
       - name: Lint
         run: pnpm lint
 
@@ -33,9 +36,6 @@ jobs:
 
       - name: Unit tests
         run: pnpm test
-
-      - name: Install Playwright browsers
-        run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
 
       - name: Start dev server for e2e
         run: |
@@ -56,8 +56,8 @@ jobs:
             exit 1
           }
 
-      - name: Run e2e tests (public routes only)
-        run: pnpm --filter @platform-builder/generator-app exec playwright test e2e/public-routes.spec.ts
+      - name: Run e2e tests (public routes and private-kit UI fixtures)
+        run: pnpm --filter @platform-builder/generator-app exec playwright test e2e/public-routes.spec.ts e2e/booking-kit.spec.ts
         env:
           BASE_URL: http://localhost:3000
 

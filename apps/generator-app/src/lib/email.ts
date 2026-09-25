@@ -22,6 +22,8 @@ interface SendEmailOptions {
   replyTo?: string
   /** Postmark message stream (default: "outbound") */
   messageStream?: string
+  /** Disable provider tracking for private credential delivery. */
+  disableTracking?: boolean
 }
 
 interface PostmarkResponse {
@@ -56,6 +58,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
     TextBody: options.textBody || stripHtml(options.htmlBody),
     ReplyTo: options.replyTo || undefined,
     MessageStream: options.messageStream || 'outbound',
+    ...(options.disableTracking ? { TrackOpens: false, TrackLinks: 'None' } : {}),
   }
 
   const response = await fetch(POSTMARK_API, {

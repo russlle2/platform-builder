@@ -47,6 +47,27 @@ function stripeWithCurrentSubscription(status: Stripe.Subscription.Status) {
 }
 
 describe('Stripe billing-state convergence', () => {
+  it.each([0, 2000])('records durable evidence only for positive paid invoices (%s cents), separate from canceled entitlement', async (amount) => {
+    const { supabase, rpc } = createSupabase(true)
+    const { stripe } = stripeWithCurrentSubscription('canceled')
+    const event = {
+      id: 'evt_positive_invoice', type: 'invoice.paid', created: 1_788_465_600,
+      data: { object: {
+        id: 'in_positive', amount_paid: amount,
+        status_transitions: { paid_at: 1_788_465_000 },
+        parent: { subscription_details: { subscription: 'sub_template' } },
+      } },
+    } as unknown as Stripe.Event
+    await processStripeEvent(supabase, stripe, event)
+    const calls = rpc.mock.calls.filter(([name]) => name === 'record_order_payment')
+    expect(calls).toHaveLength(amount > 0 ? 1 : 0)
+    if (amount > 0) expect(rpc).toHaveBeenCalledWith('record_order_payment', {
+      p_subscription_id: 'sub_template', p_session_id: null, p_amount_cents: amount,
+      p_paid_at: new Date(1_788_465_000 * 1000).toISOString(),
+    })
+    expect(rpc).toHaveBeenCalledWith('merge_order_billing_state', expect.objectContaining({ p_status: 'canceled' }))
+  })
+
   it('uses current subscription entitlement instead of reactivating from a late paid invoice', async () => {
     const { supabase, rpc } = createSupabase(false)
     const { stripe, retrieve } = stripeWithCurrentSubscription('canceled')

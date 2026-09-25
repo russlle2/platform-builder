@@ -57,6 +57,10 @@ export function stripeEventBusinessKey(event: {
   data?: { object?: unknown }
 }): string {
   const object = (event.data?.object || {}) as Record<string, unknown>
+  const metadata = object.metadata as Record<string, unknown> | undefined
+  if (metadata?.checkoutType === 'booking_kit' && typeof metadata.bookingKitOrderId === 'string') {
+    return `booking-kit:${metadata.bookingKitOrderId}`
+  }
   if (event.type.startsWith('checkout.session.')) {
     const subscriptionId = objectId(object.subscription)
     if (subscriptionId) return `subscription:${subscriptionId}`

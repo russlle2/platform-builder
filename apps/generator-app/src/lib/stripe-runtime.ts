@@ -1,5 +1,6 @@
 export const TEMPLATE_CHECKOUT_TYPE = 'template_subscription' as const
 export const CUSTOM_BUILD_CHECKOUT_TYPE = 'custom_build' as const
+export const BOOKING_KIT_CHECKOUT_TYPE = 'booking_kit' as const
 
 export const TEMPLATE_FULFILLMENT_ENV_KEYS = [
   'STRIPE_SECRET_KEY',
@@ -106,12 +107,13 @@ export function isCheckoutPaymentReady(session: {
 export type SupportedCheckoutType =
   | typeof TEMPLATE_CHECKOUT_TYPE
   | typeof CUSTOM_BUILD_CHECKOUT_TYPE
+  | typeof BOOKING_KIT_CHECKOUT_TYPE
 
 export function getSupportedCheckoutType(session: {
   metadata?: { checkoutType?: unknown } | null
 }): SupportedCheckoutType | null {
   const checkoutType = session.metadata?.checkoutType
-  return checkoutType === TEMPLATE_CHECKOUT_TYPE || checkoutType === CUSTOM_BUILD_CHECKOUT_TYPE
+  return checkoutType === TEMPLATE_CHECKOUT_TYPE || checkoutType === CUSTOM_BUILD_CHECKOUT_TYPE || checkoutType === BOOKING_KIT_CHECKOUT_TYPE
     ? checkoutType
     : null
 }

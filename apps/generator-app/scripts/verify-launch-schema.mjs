@@ -10,7 +10,10 @@ if (!url || !serviceKey || !expectedRef) {
 
 let actualRef
 try {
-  actualRef = new URL(url).hostname.toLowerCase().match(/^([a-z0-9-]+)\.supabase\.co$/)?.[1]
+  const parsed = new URL(url)
+  actualRef = parsed.protocol === 'https:' && !parsed.username && !parsed.password && !parsed.port && parsed.pathname === '/' && !parsed.search && !parsed.hash
+    ? parsed.hostname.toLowerCase().match(/^([a-z0-9-]+)\.supabase\.co$/)?.[1]
+    : null
 } catch {
   actualRef = null
 }
@@ -35,4 +38,12 @@ const readiness = await response.json()
 if (readiness?.schemaVersion !== '20260903.3' || readiness?.ready !== true) {
   throw new Error('Launch schema sentinel reported an incompatible or incomplete database.')
 }
-console.log(`[schema-gate] Supabase ${actualRef} is ready at schema ${readiness.schemaVersion}.`)
+const kitResponse = await fetch(`${url}/rest/v1/rpc/booking_kit_schema_version`, {
+  method: 'POST',
+  headers: { apikey: serviceKey, authorization: `Bearer ${serviceKey}`, 'content-type': 'application/json' },
+  body: '{}', signal: AbortSignal.timeout(15_000),
+})
+if (!kitResponse.ok || await kitResponse.json() !== '20260925.2') {
+  throw new Error('Booking Kit and durable payment-evidence migration must be applied before deploying this worker.')
+}
+console.log(`[schema-gate] Supabase ${actualRef} is ready at schemas ${readiness.schemaVersion} and 20260925.2.`)

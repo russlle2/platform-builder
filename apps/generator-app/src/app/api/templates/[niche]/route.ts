@@ -3,15 +3,21 @@ import { getNiches, getTemplatesForNiche } from '@/lib/templates/niche-registry'
 
 export const dynamic = 'force-dynamic'
 
+function safeInteger(value: string | null, fallback: number): number {
+  if (value === null || !/^[+-]?\d+$/.test(value.trim())) return fallback
+  const parsed = Number(value)
+  return Number.isSafeInteger(parsed) ? parsed : fallback
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ niche: string }> }
 ) {
   const { niche } = await params
   const { searchParams } = new URL(req.url)
-  const page = Math.max(1, parseInt(searchParams.get('page') || '1'))
-  const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '12')))
-  const seed = parseInt(searchParams.get('seed') || '0')
+  const page = Math.max(1, safeInteger(searchParams.get('page'), 1))
+  const limit = Math.min(50, Math.max(1, safeInteger(searchParams.get('limit'), 12)))
+  const seed = safeInteger(searchParams.get('seed'), 0)
   const all = searchParams.get('all') === 'true'
   const featuredOnly = searchParams.get('featured') === 'true'
 

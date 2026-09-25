@@ -56,6 +56,7 @@ interface PreviewState {
   /* Actions */
   setStep: (step: PreviewStep) => void
   setBusinessInfo: (info: Partial<BusinessInfo>) => void
+  replaceBusinessInfo: (info: BusinessInfo) => void
   setStylePreferences: (prefs: Partial<StylePreferences>) => void
   setMatchedTemplate: (match: MatchedTemplate) => void
   markInfoSaved: () => void
@@ -128,6 +129,14 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
     const next = { ...get().businessInfo, ...info }
     saveToStorage('pb_biz_info', next)
     set({ businessInfo: next })
+  },
+
+  replaceBusinessInfo: (info) => {
+    saveToStorage('pb_biz_info', info)
+    saveToStorage('pb_matched', null)
+    saveToStorage('pb_info_saved', false)
+    saveToStorage('pb_style_prefs', defaultStylePreferences)
+    set({ businessInfo: info, stylePreferences: defaultStylePreferences, matchedTemplate: null, infoSaved: false, step: 'info' })
   },
 
   setStylePreferences: (prefs) => {

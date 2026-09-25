@@ -873,6 +873,11 @@ export default function PreviewYourBusinessClient() {
       </div>
 
       <div className="relative z-10">
+        {searchParams.get('from') === 'booking-kit' && searchParams.get('transferred') === '1' && (
+          <div className="container-hvac mb-6" role="status">
+            <p className="rounded-xl border border-cyan-300/40 bg-cyan-950/40 p-4 text-cyan-100">Your selected Booking Clarity Kit fields are in this draft. Review your details below, then continue to your free website preview.</p>
+          </div>
+        )}
         {/* Progress bar */}
         <div className="container-hvac mb-8">
           <div className="flex items-center gap-2 overflow-x-auto pb-2">
@@ -979,7 +984,7 @@ export default function PreviewYourBusinessClient() {
             setCustomFonts={setCustomFonts}
             customThemeActive={customThemeActive}
             setCustomThemeActive={setCustomThemeActive}
-            checkoutHref={`/pricing?template=${encodeURIComponent(matchedTemplate.templateSlug)}&niche=${encodeURIComponent(matchedTemplate.nicheSlug)}&color=${encodeURIComponent(resolveQuizColorScheme(stylePreferences.colorMood))}&font=${encodeURIComponent(resolveQuizFontVariation(stylePreferences.fontPreference))}&structure=${encodeURIComponent(resolveQuizStructureVariation(stylePreferences.layoutDensity))}`}
+            checkoutHref={`/pricing?template=${encodeURIComponent(matchedTemplate.templateSlug)}&niche=${encodeURIComponent(matchedTemplate.nicheSlug)}&color=${encodeURIComponent(resolveQuizColorScheme(stylePreferences.colorMood))}&font=${encodeURIComponent(resolveQuizFontVariation(stylePreferences.fontPreference))}&structure=${encodeURIComponent(resolveQuizStructureVariation(stylePreferences.layoutDensity))}${searchParams.get('from') === 'booking-kit' ? '&from=booking-kit' : ''}`}
           />
         )}
 
