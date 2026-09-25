@@ -15,6 +15,7 @@ import {
   hasCompletePassingRenderMatrix,
   isDeterministicPrimaryRenderIssue,
   materializeArtifact,
+  reconcilePilotCatalogForResume,
   rehabCustomizationVerifierArgs,
   rehabStagingUploaderArgs,
   repairOne,
@@ -76,6 +77,78 @@ test('full completion and promotion reject every unwaived neutral fallback', () 
 test('catalogue mappings require exact canonical and alias dispositions', () => {
   assert.equal(catalogTerminalDisposition('canonical'), 'passing_design');
   assert.equal(catalogTerminalDisposition('alias'), 'passing_alias');
+});
+
+function resumedCatalogFixture(): {
+  pilot: Parameters<typeof reconcilePilotCatalogForResume>[0];
+  full: NonNullable<Parameters<typeof reconcilePilotCatalogForResume>[1]>;
+} {
+  const mapping = {
+    legacySlug: 'legacy-b', niche: 'wellness_coach', designId: 'design-shared',
+    contentPresetId: 'content-b', themePresetId: 'theme-b', qualityReceipt: 'receipt-b',
+    canonicalLegacySlug: 'legacy-b', disposition: 'canonical' as const,
+  };
+  const pilot = {
+    contractVersion: 3 as const, ruleVersion: 'test-rule', generatedAt: '2026-09-25T08:00:00.000Z',
+    sourceTemplates: 1, canonicalDesigns: 1, templates: [mapping], gallery: { wellness_coach: ['legacy-b'] },
+  };
+  const full = {
+    ...pilot, sourceTemplates: 2, generatedAt: '2026-09-25T19:00:00.000Z',
+    templates: [
+      { ...mapping, legacySlug: 'legacy-a', canonicalLegacySlug: 'legacy-a', contentPresetId: 'content-a', qualityReceipt: 'receipt-a' },
+      { ...mapping, disposition: 'alias' as const, canonicalLegacySlug: 'legacy-a' },
+    ],
+    gallery: { wellness_coach: ['legacy-a'] },
+  };
+  return { pilot, full };
+}
+
+test('resume accepts a full-catalogue canonical change without changing pilot authorization or evidence identity', () => {
+  const { pilot, full } = resumedCatalogFixture();
+  const original = structuredClone(pilot);
+  const resumed = reconcilePilotCatalogForResume(pilot, full, ['legacy-a', 'legacy-b'], new Map([['legacy-b', 'passing_alias']]));
+  assert.equal(resumed.templates[0]!.disposition, 'alias');
+  assert.equal(resumed.templates[0]!.canonicalLegacySlug, 'legacy-a');
+  assert.equal(catalogTerminalDisposition(resumed.templates[0]!.disposition), 'passing_alias');
+  assert.equal(resumed.templates[0]!.qualityReceipt, 'receipt-b');
+  assert.equal(resumed.sourceTemplates, 1);
+  assert.deepEqual(pilot, original);
+  // A rerun pilot is still canonical; the previous full catalogue must not
+  // move it back to alias or invalidate otherwise-current pilot evidence.
+  assert.equal(reconcilePilotCatalogForResume(pilot, full, ['legacy-a', 'legacy-b'], new Map([['legacy-b', 'passing_design']])), pilot);
+});
+
+test('resume cannot use stale or incomplete full-catalogue scope to authorize a pilot reclassification', () => {
+  const { pilot, full } = resumedCatalogFixture();
+  const dispositions = new Map([['legacy-b', 'passing_alias']]);
+  assert.equal(reconcilePilotCatalogForResume(pilot, null, ['legacy-a', 'legacy-b'], dispositions), pilot);
+  assert.equal(reconcilePilotCatalogForResume(pilot, { ...full, ruleVersion: 'old-rule' }, ['legacy-a', 'legacy-b'], dispositions), pilot);
+  for (const candidate of [
+    { ...full, sourceTemplates: 1 },
+    { ...full, templates: [full.templates[1]!] },
+    { ...full, templates: [full.templates[1]!, full.templates[1]!] },
+  ]) {
+    assert.throws(() => reconcilePilotCatalogForResume(pilot, candidate, ['legacy-a', 'legacy-b'], dispositions), /exactly cover/);
+  }
+});
+
+test('resume rejects changed pilot receipts, presets, designs, invalid canonicals, and nonpassing ledger states', () => {
+  const { pilot, full } = resumedCatalogFixture();
+  const dispositions = new Map([['legacy-b', 'passing_alias']]);
+  for (const field of ['qualityReceipt', 'contentPresetId', 'themePresetId', 'designId', 'niche', 'canonicalLegacySlug'] as const) {
+    const changed = structuredClone(full);
+    changed.templates[1]![field] = 'changed';
+    assert.throws(() => reconcilePilotCatalogForResume(pilot, changed, ['legacy-a', 'legacy-b'], dispositions), /changed pilot evidence/);
+  }
+  for (const field of ['designId', 'niche', 'canonicalLegacySlug'] as const) {
+    const changed = structuredClone(full);
+    changed.templates[0]![field] = 'changed';
+    assert.throws(() => reconcilePilotCatalogForResume(pilot, changed, ['legacy-a', 'legacy-b'], dispositions), /changed pilot evidence/);
+  }
+  const noncanonical = structuredClone(full);
+  noncanonical.templates[0]!.disposition = 'alias';
+  assert.throws(() => reconcilePilotCatalogForResume(pilot, noncanonical, ['legacy-a', 'legacy-b'], dispositions), /changed pilot evidence/);
+  assert.throws(() => reconcilePilotCatalogForResume(pilot, full, ['legacy-a', 'legacy-b'], new Map([['legacy-b', 'quarantined']])), /changed pilot evidence/);
 });
 
 test('render completion requires one passing result per page and viewport', () => {

@@ -3765,6 +3765,64 @@ export function catalogTerminalDisposition(
   return disposition === 'canonical' ? 'passing_design' : 'passing_alias';
 }
 
+/**
+ * Full composition can move a pilot canonical to an earlier member of the
+ * same design cluster. On resume the immutable pilot still describes its
+ * original sample, while the ledger correctly describes the full catalogue.
+ * Reconcile only that classification; the subsequent pilot audit still checks
+ * each selected template's source, artifact, pages, renders, receipt, and alias
+ * record. An external canonical is only structurally checked here: full
+ * recomposition and the full evidence audit remain mandatory before success.
+ */
+export function reconcilePilotCatalogForResume(
+  pilot: CatalogV3Document,
+  full: CatalogV3Document | null,
+  inventorySlugs: readonly string[],
+  currentDispositions: ReadonlyMap<string, string | null>,
+): CatalogV3Document {
+  const reclassified = pilot.templates.filter((mapping) => (
+    currentDispositions.get(mapping.legacySlug) !== catalogTerminalDisposition(mapping.disposition)
+  ));
+  if (reclassified.length === 0 || !full || full.ruleVersion !== pilot.ruleVersion) return pilot;
+  const fullBySlug = new Map(full.templates.map((mapping) => [mapping.legacySlug, mapping]));
+  if (
+    full.contractVersion !== 3
+    || full.sourceTemplates !== inventorySlugs.length
+    || full.templates.length !== inventorySlugs.length
+    || fullBySlug.size !== inventorySlugs.length
+    || !sameStringSet([...fullBySlug.keys()], inventorySlugs)
+  ) throw new Error('Full catalogue resume mapping does not exactly cover the current source inventory');
+
+  const replacements = new Map<string, CatalogV3Alias>();
+  for (const mapping of reclassified) {
+    const current = fullBySlug.get(mapping.legacySlug);
+    const canonical = current && fullBySlug.get(current.canonicalLegacySlug);
+    if (
+      !current || !canonical
+      || mapping.disposition !== 'canonical'
+      || current.disposition !== 'alias'
+      || current.canonicalLegacySlug === current.legacySlug
+      || currentDispositions.get(mapping.legacySlug) !== 'passing_alias'
+      || canonical.disposition !== 'canonical'
+      || canonical.canonicalLegacySlug !== canonical.legacySlug
+      || canonical.niche !== current.niche
+      || canonical.designId !== current.designId
+      || current.niche !== mapping.niche
+      || current.designId !== mapping.designId
+      || current.contentPresetId !== mapping.contentPresetId
+      || current.themePresetId !== mapping.themePresetId
+      || current.qualityReceipt !== mapping.qualityReceipt
+    ) throw new Error(`Full catalogue resume mapping changed pilot evidence for ${mapping.legacySlug}`);
+    replacements.set(mapping.legacySlug, current);
+  }
+  // This is an in-memory projection for the pilot audit, never a rewritten
+  // authorization file or a claim that the full catalogue has been certified.
+  return {
+    ...pilot,
+    templates: pilot.templates.map((mapping) => replacements.get(mapping.legacySlug) ?? mapping),
+  };
+}
+
 function catalogTemplatePlaceholder(template: LegacyTemplateRecord): CatalogTemplate {
   return {
     legacySlug: template.legacySlug,
@@ -4484,7 +4542,26 @@ async function runCommand(context: LegacyCommandContext): Promise<LegacyCommandO
   const pilotCatalog = JSON.parse(await readFile(pilotCatalogPath, 'utf8').catch(() => {
     throw new Error(`The passing pilot catalogue is missing: ${pilotCatalogPath}`);
   })) as CatalogV3Document;
-  const currentPilotEvidence = await auditPilotEvidence(context, selectedInventory, pilotCatalog);
+  const currentDispositions = new Map(selectedInventory.map((template) => [
+    template.slug,
+    context.ledger.getTemplateBySlug(template.slug)?.terminalDisposition ?? null,
+  ]));
+  const hasReclassifiedPilot = pilotCatalog.templates.some((mapping) => (
+    currentDispositions.get(mapping.legacySlug) !== catalogTerminalDisposition(mapping.disposition)
+  ));
+  const fullCatalogJson = hasReclassifiedPilot
+    ? await readFile(join(context.config.reportRoot, 'catalog-v3.json'), 'utf8')
+    .catch((error: NodeJS.ErrnoException) => {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    }) : null;
+  const currentPilotCatalog = reconcilePilotCatalogForResume(
+    pilotCatalog,
+    fullCatalogJson === null ? null : JSON.parse(fullCatalogJson) as CatalogV3Document,
+    inventory.templates.map((template) => template.slug),
+    currentDispositions,
+  );
+  const currentPilotEvidence = await auditPilotEvidence(context, selectedInventory, currentPilotCatalog);
   if (
     selectedInventory.length !== authorization.selectedSlugs.length
     || currentPilotEvidence.issues.length > 0

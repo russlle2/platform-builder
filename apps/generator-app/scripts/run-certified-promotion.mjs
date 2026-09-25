@@ -27,7 +27,7 @@ if (env.OPERATION === 'rollback') {
     if (before.previousProfile === 'launch') await main(['bootstrap', ...common, ...recordArgs, ...evidence])
     await writeFile('apps/generator-app/public/__dailyclarity_release.json', deploymentProofBytes(reviewedHead(), env.RECEIPT_HASH))
     try {
-      execFileSync('pnpm', ['dlx', 'netlify-cli@27.4.2', 'deploy', '--build', '--prod', '--context', 'production', '--site', env.NETLIFY_SITE_ID, '--message', `Certified ${env.GITHUB_SHA} receipt ${env.RECEIPT_HASH}`], { stdio: 'inherit', env })
+      execFileSync('pnpm', ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--build', '--prod', '--context', 'production', '--site', env.NETLIFY_SITE_ID, '--message', `Certified ${env.GITHUB_SHA} receipt ${env.RECEIPT_HASH}`], { stdio: 'inherit', env })
     } finally {
       // If publication succeeded but its CLI/health check failed, save the new
       // deployment ID using only Netlify API identity so rollback still works.
