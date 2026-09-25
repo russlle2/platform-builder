@@ -777,7 +777,13 @@ function normalizeCaseStudyRegions(document: HtmlNode): { nodes: Set<HtmlNode>; 
       };
       collect(node);
       if (!text.trim()) return;
-      const replacement = /^(?:h[1-6]|legend)$/.test(node.tagName) ? 'Service information'
+      const inlineStyle = getAttr(node, 'style') ?? '';
+      const badgeWidth = inlineStyle.match(/(?:^|;)\s*width\s*:\s*(\d+(?:\.\d+)?)px\s*(?:;|$)/i)?.[1];
+      const badgeHeight = inlineStyle.match(/(?:^|;)\s*height\s*:\s*(\d+(?:\.\d+)?)px\s*(?:;|$)/i)?.[1];
+      const compactBadge = node.tagName === 'div' && badgeWidth === badgeHeight && Number(badgeWidth) > 0 && Number(badgeWidth) <= 64
+        && !(node.childNodes ?? []).some(child => child.tagName)
+        && (text.trim().length <= 3 || text.trim() === 'Ask about current services, your priorities, and what to expect.');
+      const replacement = compactBadge ? 'i' : /^(?:h[1-6]|legend)$/.test(node.tagName) ? 'Service information'
         : ['strong', 'b', 'em', 'cite', 'figcaption'].includes(node.tagName) ? 'Service focus'
           : ['a', 'button', 'label'].includes(node.tagName) ? 'Ask about services'
             : 'Ask about current services, your priorities, and what to expect.';
@@ -1204,7 +1210,9 @@ function markMobileNavigationFallbacks(document: HtmlNode): number {
 
   let count = 0;
   walk(document, (node) => {
-    if (node.tagName !== 'nav') return;
+    const linkContainer = ['ul', 'ol'].includes(node.tagName ?? '') || (node.tagName === 'div'
+      && /(?:^|\s)(?:nav-?links|links|nav-list)(?:\s|$)/i.test(getAttr(node, 'class') ?? ''));
+    if (node.tagName !== 'nav' && !linkContainer) return;
     let header: HtmlNode | undefined = node.parentNode;
     while (header && header.tagName !== 'header') header = header.parentNode;
     if (!header) return;
@@ -1216,6 +1224,20 @@ function markMobileNavigationFallbacks(document: HtmlNode): number {
       if (href && !/^(?:[A-Za-z][A-Za-z0-9+.-]*:|\/\/|#)/.test(href)) hasInternalLink = true;
     });
     if (!hasInternalLink) return;
+    if (linkContainer) {
+      let otherContent = false;
+      let linkCount = 0;
+      walk(node, candidate => {
+        if (candidate.tagName === 'a') linkCount += 1;
+        if (['button', 'input', 'form', 'details', 'summary', 'select', 'textarea'].includes(candidate.tagName ?? '')) otherContent = true;
+        if (candidate.nodeName === '#text' && candidate.value?.trim()) {
+          let owner = candidate.parentNode;
+          while (owner && owner !== node && owner.tagName !== 'a') owner = owner.parentNode;
+          if (owner?.tagName !== 'a') otherContent = true;
+        }
+      });
+      if (otherContent || linkCount < 2) return;
+    }
 
     let detailsAncestor: HtmlNode | undefined = node.parentNode;
     while (detailsAncestor && detailsAncestor !== header && detailsAncestor.tagName !== 'details') {
@@ -1229,12 +1251,30 @@ function markMobileNavigationFallbacks(document: HtmlNode): number {
         .split(/\s+/)
         .map((id) => nodesById.get(id))
         .filter((target): target is HtmlNode => Boolean(target));
-      return controlled.some((target) => target === node || isDescendantOf(target, node));
+      return controlled.some((target) => target === node || isDescendantOf(target, node) || isDescendantOf(node, target));
     });
     if (hasController) return;
 
     if (getAttr(node, 'data-dc-mobile-nav-fallback') !== 'true') count += 1;
     setAttr(node, 'data-dc-mobile-nav-fallback', 'true');
+  });
+  return count;
+}
+
+/** Recompact an already compiled proof badge, retaining its adjacent full copy. */
+function restoreCompiledGuidanceBadges(document: HtmlNode): number {
+  const guidance = 'Ask about current services, your priorities, and what to expect.';
+  let count = 0;
+  walk(document, node => {
+    if (node.tagName !== 'div' || !getAttr(node, 'data-dc-edit-id') || textContent(node).trim() !== guidance
+      || (node.childNodes ?? []).some(child => child.tagName)) return;
+    const style = getAttr(node, 'style') ?? '';
+    const width = style.match(/(?:^|;)\s*width\s*:\s*(\d+(?:\.\d+)?)px\s*(?:;|$)/i)?.[1];
+    const height = style.match(/(?:^|;)\s*height\s*:\s*(\d+(?:\.\d+)?)px\s*(?:;|$)/i)?.[1];
+    if (width !== height || !(Number(width) > 0 && Number(width) <= 64)) return;
+    if (!(node.parentNode?.childNodes ?? []).some(sibling => sibling !== node && sibling.tagName && textContent(sibling).includes(guidance))) return;
+    const text = node.childNodes?.find(child => child.nodeName === '#text');
+    if (text) { text.value = 'i'; count += 1; }
   });
   return count;
 }
@@ -4165,6 +4205,8 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const accessibility = normalizeAccessibility(document, options.cssGeneratedContentSelectors);
   const decorativeHitLayers = markDecorativeHitLayers(document);
   const mobileNavigationFallbacks = markMobileNavigationFallbacks(document);
+  const compactGuidanceBadges = restoreCompiledGuidanceBadges(document);
+  if (compactGuidanceBadges) transformations.push({ rule: 'restore-compact-guidance-badges', file: options.file, count: compactGuidanceBadges });
   const mobileStackContainers = markMobileStackContainers(document);
   const mobileGridStackContainers = markMobileGridStackContainers(document);
   const mobileFixedFlowContainers = markMobileFixedFlowContainers(document);

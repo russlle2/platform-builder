@@ -250,7 +250,7 @@ test('stacked sidebar forms and content-bearing motif shells grow without obscur
   assert.match(attr(nodes.find(node => attr(node, 'class') === 'center')!, 'style')!, /position:relative;z-index:1/);
 });
 
-test('bound form flow restores physical access but refuses conflicting, conditional and legitimate sticky geometry', async () => {
+test('bound form flow restores physical access without inline overrides of conflicting or conditional geometry', async () => {
   const css = '.box{position:sticky;top:28px}form{height:620px;background:white}#following{height:250px}aside{width:300px;margin-top:200px}.spacer{height:1000px}';
   const body = '<main><h1>{{BUSINESS_NAME}}</h1><aside><div class="box"><form><label>Name<input name="name"></label></form></div><div id="following"><h2 id="target">Location details</h2></div></aside><div class="spacer"></div></main>';
   const build = (sheet: string, head = '') => repairLegacyTemplate({ slug:'sticky-geometry', niche:'wellness_coach', files:new Map([['index.html', `${head}${body}<style>${sheet}</style>`], ['print.css','.box{position:sticky}']]) });
@@ -317,5 +317,92 @@ test('preserves existing motif minimum height and flows only colliding sidebar c
   assert.match(motif,/height:auto/);
   assert.doesNotMatch(motif,/min-height:90px/);
   assert.match(attr(nodes.find(node=>attr(node,'class')==='crisis')!,'style')!,/position:static!important/);
+});
+
+test('exposes link-only navigation wrappers while preserving controlled and native disclosures', async () => {
+  const body = '<header><div class="brand"><h1>Practice</h1><p>Clear next steps</p></div><nav><ul class="nav-list"><li><a href="index.html">Home</a></li><li><a href="contact.html">Contact</a></li></ul></nav></header><header><div class="links"><a href="index.html">Home</a><a href="contact.html">Contact</a></div></header><header><button aria-controls="controlled">Menu</button><div id="controlled"><div class="navlinks"><a href="index.html">Home</a><a href="contact.html">Contact</a></div></div></header><header><details><summary>Links</summary><div class="links"><a href="index.html">Home</a><a href="contact.html">Contact</a></div></details></header><header><div class="links">Extra copy <a href="index.html">Home</a><a href="contact.html">Contact</a></div></header><main><h2>Services</h2></main>';
+  const css = 'header{display:flex}.brand{flex:1}.nav-list{display:flex}@media(max-width:600px){.nav-list,.links,.navlinks{display:none;position:absolute;top:0;right:0}}';
+  const result = repairLegacyTemplate({slug:'nested-navigation',niche:'wellness_coach',files:new Map([['index.html',`${body}<style>${css}</style>`]])});
+  const html = String(result.files.get('index.html'));
+  const nodes = elements(html);
+  assert.ok(nodes.some(node=>attr(node,'class')==='nav-list'&&attr(node,'data-dc-mobile-nav-fallback')==='true'));
+  assert.equal(nodes.filter(node=>attr(node,'class')==='links'&&attr(node,'data-dc-mobile-nav-fallback')==='true').length,1);
+  assert.equal(attr(nodes.find(node=>attr(node,'class')==='navlinks')!,'data-dc-mobile-nav-fallback'),undefined);
+  const browser=await chromium.launch({headless:true});
+  try {
+    const page=await browser.newPage({viewport:{width:390,height:844}});
+    await page.setContent(`${html}<style>${[...result.files].filter(([path])=>path.endsWith('.css')).map(([,value])=>value).join('\n')}</style>`);
+    const geometry=await page.evaluate(()=>{
+      const nav=document.querySelector('nav')!, brand=document.querySelector('.brand')!, list=document.querySelector('.nav-list')!;
+      const br=brand.getBoundingClientRect(),lr=list.getBoundingClientRect();
+      return {brandWidth:br.width,afterBrand:lr.top>=br.bottom,position:getComputedStyle(list).position,links:[...nav.querySelectorAll('a')].every(a=>{const r=a.getBoundingClientRect();return r.width>0&&a.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));})};
+    });
+    assert.ok(geometry.brandWidth>200);assert.equal(geometry.afterBrand,true);assert.equal(geometry.position,'static');assert.equal(geometry.links,true);
+    await page.close();
+  } finally {await browser.close();}
+});
+
+test('preserves mobile sticky overrides while restoring desktop expanded form flow', async()=>{
+  const source='<main><h1>Practice</h1><aside><div class="box"><form><label>Name<input name="name"></label></form></div><p id="following">Studio details</p></aside></main>';
+  const css='.box{position:sticky;top:28px}@media(max-width:880px){.box{position:static}}';
+  const result=repairLegacyTemplate({slug:'conditional-sticky',niche:'wellness_coach',files:new Map([['index.html',`${source}<style>${css}</style>`]])});
+  const html=String(result.files.get('index.html'));const sheets=[...result.files].filter(([p])=>p.endsWith('.css')).map(([,v])=>String(v)).join('\n');
+  assert.match(html,/data-dc-sticky-form-flow="true"/);
+  const shared=repairLegacyTemplate({slug:'shared-sticky',niche:'wellness_coach',files:new Map([['index.html',`<link rel="stylesheet" href="style.css">${source}`],['second.html',`<link rel="stylesheet" href="style.css">${source.replace('Studio details','Second location details')}`],['style.css',css]])});
+  for(const path of ['index.html','second.html']) assert.match(String(shared.files.get(path)),/data-dc-sticky-form-flow="true"/);
+  const again=repairLegacyTemplate({slug:'shared-sticky',niche:'wellness_coach',files:shared.files});
+  for(const path of ['index.html','second.html']) assert.match(String(again.files.get(path)),/data-dc-sticky-form-flow="true"/);
+  for(const declaration of ['absolute','fixed','relative','static!important']) {
+    const conflict=repairLegacyTemplate({slug:'conflicting-sticky',niche:'wellness_coach',files:new Map([['index.html',`${source}<style>.box{position:sticky;position:${declaration};top:28px}@media(max-width:880px){.box{position:static}}</style>`]])});
+    assert.doesNotMatch(String(conflict.files.get('index.html')),/data-dc-sticky-form-flow/);
+  }
+  const browser=await chromium.launch({headless:true});
+  try {for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:844}});await page.setContent(`${html}<style>${sheets}</style>`);assert.equal(await page.locator('.box').evaluate(e=>getComputedStyle(e).position),width===1440?'relative':'static');await page.close();}}finally{await browser.close();}
+});
+
+test('keeps compact proof badges compact and preserves the full adjacent service guidance',()=>{
+  const html='<main><h1>Practice</h1><section class="case-studies"><div class="case-item"><div style="width:46px;height:46px;display:flex">A</div><div>Unsupported result claim</div></div></section></main>';
+  const repaired=repairPage(html,options);const nodes=elements(repaired.html);
+  const badge=nodes.find(n=>attr(n,'style')?.includes('width:46px'))!;
+  assert.equal(badge.childNodes?.find(n=>n.nodeName==='#text')?.value,'i');
+  assert.match(repaired.html,/Ask about current services, your priorities, and what to expect\./);
+  const compiled=repairPage('<main><h1>Practice</h1><div class="case-item"><div data-dc-edit-id="old" style="width:46px;height:46px;display:flex">Ask about current services, your priorities, and what to expect.</div><div>Ask about current services, your priorities, and what to expect.</div></div></main>',options);
+  assert.equal(elements(compiled.html).find(n=>attr(n,'style')?.includes('width:46px'))?.childNodes?.find(n=>n.nodeName==='#text')?.value,'i');
+});
+
+test('keeps a native details submenu positioned inside a repaired outer nav',async()=>{
+  const result=repairLegacyTemplate({slug:'native-submenu',niche:'wellness_coach',files:new Map([['index.html','<header><nav><a href="index.html">Home</a><details open><summary>More</summary><ul><li><a href="contact.html">Contact</a></li><li><a href="about.html">About</a></li></ul></details></nav></header><main><h1>Practice</h1></main><style>details{position:relative}details ul{position:absolute;top:30px;left:0}</style>']])});
+  const browser=await chromium.launch({headless:true});try{const page=await browser.newPage({viewport:{width:390,height:844}});await page.setContent(`${result.files.get('index.html')}<style>${[...result.files].filter(([p])=>p.endsWith('.css')).map(([,v])=>v).join('\n')}</style>`);assert.equal(await page.locator('details ul').evaluate(e=>getComputedStyle(e).position),'absolute');await page.close();}finally{await browser.close();}
+});
+
+test('bounds an unanchored full-width hero caption to its own two-child artwork card',async()=>{
+  const body='<main><h1>Practice</h1><div class="hero-art"><img src="art.svg" alt="Decoration"><div style="position:absolute;margin-top:10px;width:100%">Small cohorts and individual care</div></div></main>';
+  const css='.hero-art{display:flex;width:300px;margin-left:200px}img{width:200px;height:120px}';
+  const result=repairLegacyTemplate({slug:'art-caption',niche:'wellness_coach',files:new Map([['index.html',`${body}<style>${css}</style>`],['art.svg','<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"></svg>']])});
+  assert.match(String(result.files.get('index.html')),/class="hero-art" style=";position:relative"/);
+  for(const imageCss of ['position:absolute;left:0;top:0','position:fixed','position:relative;left:20px','transform:translateX(10px)']) {
+    const unchanged=repairLegacyTemplate({slug:'art-caption',niche:'wellness_coach',files:new Map([['index.html',`${body}<style>${css}.hero-art>img{${imageCss}}</style>`],['art.svg','<svg xmlns="http://www.w3.org/2000/svg" width="200" height="120"></svg>']])});
+    assert.doesNotMatch(String(unchanged.files.get('index.html')),/class="hero-art" style=";position:relative"/);
+  }
+  const browser=await chromium.launch({headless:true});try{const page=await browser.newPage({viewport:{width:1440,height:900}});await page.setContent(`${result.files.get('index.html')}<style>${[...result.files].filter(([p])=>p.endsWith('.css')).map(([,v])=>v).join('\n')}</style>`);assert.equal(await page.locator('.hero-art>div').evaluate(e=>e.getBoundingClientRect().width),300);await page.close();}finally{await browser.close();}
+});
+
+test('flows a footer float only on mobile and removes square logo geometry only from descriptive copy',async()=>{
+  const html='<header><div class="logo"><div>P</div><div><div>Practice name</div><div>Book a spot or consult</div></div></div><nav><a href="index.html">Home</a><a href="contact.html">Contact</a></nav></header><main><h1>Practice</h1></main><footer><div class="foot-left">Long practice name and contact information</div><div><nav><a href="index.html">Home</a><a href="contact.html">Contact</a></nav></div></footer>';
+  const css='.logo{display:flex;gap:12px}.logo div{width:40px;height:40px;display:grid;place-items:center}.foot-left{float:left}footer nav{display:flex}';
+  const result=repairLegacyTemplate({slug:'footer-logo',niche:'wellness_coach',files:new Map([['index.html',`${html}<style>${css}</style>`]])});
+  const repaired=String(result.files.get('index.html'));const sheets=[...result.files].filter(([p])=>p.endsWith('.css')).map(([,v])=>String(v)).join('\n');
+  const browser=await chromium.launch({headless:true});
+  try {for(const width of [1440,390]){const page=await browser.newPage({viewport:{width,height:844}});await page.setContent(`${repaired}<style>${sheets}</style>`);assert.equal(await page.locator('.foot-left').evaluate(e=>getComputedStyle(e).float),width===390?'none':'left');assert.equal(await page.locator('.logo>div').first().evaluate(e=>getComputedStyle(e).height),'40px');assert.ok(await page.getByText('Book a spot or consult',{exact:true}).evaluate(e=>e.getBoundingClientRect().width>40));await page.close();}}finally{await browser.close();}
+});
+
+test('sizes the flowed modal track without treating unrelated compiler grid guards as authored columns',async()=>{
+  const html='<main><h1>Practice</h1></main><div id="quickModal" style="position:relative;inset:auto;display:grid;place-items:center"><div style="width:520px"><div style="display:flex;justify-content:space-between"><span>Guided practice</span><button>Close</button></div></div></div>';
+  const repairCss='@media(max-width:600px){body *{min-width:0!important;max-width:100%!important}body :is(.grid,[class*="-grid"],[class*="grid-"]){grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))!important}}';
+  const build=(path:string)=>repairLegacyTemplate({slug:'modal-track',niche:'wellness_coach',files:new Map([['index.html',`<link rel="stylesheet" href="${path}">${html}`],[path,repairCss]])});
+  const result=build('assets/css/dc-repair.css');const repaired=String(result.files.get('index.html'));
+  assert.match(repaired,/grid-template-columns:minmax\(0,1fr\)/);
+  assert.doesNotMatch(String(build('author.css').files.get('index.html')),/grid-template-columns:minmax\(0,1fr\)/);
+  const browser=await chromium.launch({headless:true});try{const page=await browser.newPage({viewport:{width:390,height:844}});await page.setContent(`${repaired}<style>${[...result.files].filter(([p])=>p.endsWith('.css')).map(([,v])=>v).join('\n')}</style>`);assert.ok(await page.getByRole('button',{name:'Close'}).evaluate(e=>{const r=e.getBoundingClientRect();return r.right<=innerWidth&&e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));}));await page.close();}finally{await browser.close();}
 });
 

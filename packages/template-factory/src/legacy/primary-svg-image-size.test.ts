@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { chromium } from '@playwright/test';
 import { restoreDimensionlessSvgImageSizes } from './primary-svg-image-size.js';
+import { repairLegacyTemplate } from './compose.js';
 
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400"><rect width="600" height="400" fill="navy"/></svg>';
 const fixture = (image = '<img src="assets/hero.svg" alt="Original artwork">', extra = '') => ({
@@ -128,6 +129,27 @@ test('compiler-owned mobile flex sizing does not veto a missing desktop intrinsi
   assert.equal(restoreDimensionlessSvgImageSizes(authored.pages, authored.assets, authored.styles), 0);
   const different = fixture(undefined, `/* dc-repair-mobile-content-flex-v7 */${media.replace('1 1 min(100%,18rem)', '1 1 50%')}`);
   assert.equal(restoreDimensionlessSvgImageSizes(different.pages, different.assets, different.styles), 0);
+});
+
+test('compiler mobile bounds retain intrinsic sizing during full template reattestation', () => {
+  const css = '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}}';
+  const input = fixture();
+  input.pages['index.html'] = input.pages['index.html'].replace('</head>', '<link rel="stylesheet" href="assets/css/dc-repair.css"></head>');
+  const styles = { ...input.styles, 'assets/css/dc-repair.css': css };
+  assert.equal(restoreDimensionlessSvgImageSizes(input.pages, input.assets, styles), 1);
+  const authored = fixture();
+  authored.styles['style.css'] += css;
+  assert.equal(restoreDimensionlessSvgImageSizes(authored.pages, authored.assets, authored.styles), 0, 'equivalent author sizing remains under author control');
+  const original = fixture();
+  original.pages['index.html'] = original.pages['index.html'].replace('<section', '<main><section').replace('</section>', '</section></main>');
+  const files = new Map([...Object.entries(original.pages), ...Object.entries(original.styles), ...Object.entries(original.assets)]);
+  for (let pass = 0; pass < 2; pass += 1) {
+    const repaired = repairLegacyTemplate({ slug: 'svg-reattest', niche: 'wellness_coach', files });
+    const page = String(repaired.files.get('index.html'));
+    assert.match(page, /src="assets\/hero.svg"[^>]*width="300" height="200"/, `pass ${pass}`);
+    files.clear();
+    for (const [path, value] of repaired.files) files.set(path, String(value));
+  }
 });
 
 test('restored image remains visible, proportional, capped and physically editable at desktop and mobile sizes', async () => {

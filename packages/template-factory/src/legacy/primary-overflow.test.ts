@@ -119,6 +119,79 @@ test('rewrites actual child combinators without treating quoted punctuation as t
   assert.equal(clipDecorativeOverflowLayers(input.pages, input.styles), 0);
 });
 
+test('a generated wrapper selector in shared CSS does not veto unwrapped artwork on subsequent pages', () => {
+  const input = fixture(artwork, css + '@media(max-width:600px){body>svg[aria-hidden]{right:1px}}');
+  Object.assign(input.pages, { 'services.html': input.pages['index.html'], 'pricing.html': input.pages['index.html'] });
+  assert.equal(clipDecorativeOverflowLayers(input.pages, input.styles), 3);
+  for (const html of Object.values(input.pages)) assert.match(html, /<dc-decoration-clip/);
+  const selectors = input.styles['style.css'];
+  assert.equal(clipDecorativeOverflowLayers(input.pages, input.styles), 0);
+  assert.equal(input.styles['style.css'], selectors);
+});
+
+test('unnamed background ornaments require static, noninteractive, translucent decorative evidence', () => {
+  const ornament = '<svg class="bg-orn" data-dc-static-svg="true" width="220" height="220"><circle cx="110" cy="110" r="90"></circle></svg>';
+  const source = '.bg-orn{position:absolute;right:-80px;top:40px;opacity:.12;pointer-events:none}';
+  const input = fixture(ornament, source);
+  assert.equal(clipDecorativeOverflowLayers(input.pages, input.styles), 1);
+  assert.match(input.pages['index.html'], /<circle cx="110" cy="110" r="90"/);
+  for (const [html, css] of [
+    [ornament.replace('bg-orn', 'chart'), source.replace(/bg-orn/g, 'chart')],
+    [ornament.replace('<circle', '<title>Chart</title><circle'), source],
+    [ornament.replace('<circle', '<text>Label</text><circle'), source],
+    [ornament.replace('width="220"', 'role="img" width="220"'), source],
+    [ornament.replace('width="220"', 'onclick="open()" width="220"'), source],
+    [ornament, source.replace('.12', '.8')],
+    [ornament, source.replace('pointer-events:none', 'pointer-events:auto')],
+  ]) {
+    const excluded = fixture(html!, css!);
+    assert.equal(clipDecorativeOverflowLayers(excluded.pages, excluded.styles), 0);
+  }
+});
+
+test('empty decorative DIV paint can use the same clip while interactive or semantic layers are preserved', () => {
+  const source = '.diagonal{position:absolute;left:-6%;top:0;width:120%;height:100%;transform:skewY(-4deg);background:linear-gradient(red,blue)}';
+  const input = fixture('<div class="diagonal" aria-hidden="true"></div><main>Content</main>', source);
+  assert.equal(clipDecorativeOverflowLayers(input.pages, input.styles), 1);
+  assert.match(input.pages['index.html'], /<dc-decoration-clip[^>]*><div class="diagonal"/);
+  assert.equal(input.styles['style.css'], source);
+  for (const attr of ['onclick="open()"', 'role="button"', 'data-dc-edit-id="txt_test"']) {
+    const excluded = fixture(`<div class="diagonal" aria-hidden="true" ${attr}></div>`, source);
+    assert.equal(clipDecorativeOverflowLayers(excluded.pages, excluded.styles), 0);
+  }
+});
+
+test('root diagonal and unnamed ornament preserve physical paint geometry while overflow is clipped', async () => {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    for (const [markup, selector, source] of [
+      ['<div class="diagonal" aria-hidden="true"></div>', '.diagonal', '.diagonal{position:absolute;left:-6%;top:0;width:120%;height:100%;transform:skewY(-4deg);background:linear-gradient(red,blue)}'],
+      ['<svg class="bg-orn" data-dc-static-svg="true" width="220" height="220"><circle cx="110" cy="110" r="90" fill="blue"></circle></svg>', '.bg-orn', '.bg-orn{position:absolute;right:-80px;top:40px;opacity:.12;pointer-events:none}'],
+    ]) {
+      const input = fixture(`<main><h1>Customer content</h1><a href="#next">Contact</a></main>${markup}`, `html,body{margin:0;min-height:100%}main{padding:40px}${source}`);
+      const page = await browser.newPage();
+      const load = () => page.setContent(input.pages['index.html'].replace('<link rel="stylesheet" href="style.css">', `<style>${input.styles['style.css']}</style>`));
+      const read = () => page.locator(selector!).evaluate(node => {
+        const rect = node.getBoundingClientRect(); const style = getComputedStyle(node);
+        return { x: rect.x, y: rect.y, width: rect.width, height: rect.height, transform: style.transform, background: style.backgroundImage, opacity: style.opacity, contents: node.innerHTML };
+      });
+      const before = new Map();
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 }); await load(); before.set(width, await read());
+        assert.ok(await page.evaluate(() => document.documentElement.scrollWidth > innerWidth));
+      }
+      assert.equal(clipDecorativeOverflowLayers(input.pages, input.styles), 1);
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 }); await load();
+        assert.deepEqual(await read(), before.get(width));
+        assert.equal(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), 0);
+        await page.getByRole('link', { name: 'Contact' }).click();
+      }
+      await page.close();
+    }
+  } finally { await browser.close(); }
+});
+
 test('wrapper cannot acquire generic author paint, transforms or opacity', async () => {
   const input = fixture('<main><h1>Customer content</h1></main>' + artwork,
     css + 'body>*{opacity:.5!important;background:white!important;filter:blur(2px)!important;transform:translateY(3px)!important;width:400px!important}');

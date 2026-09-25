@@ -62,15 +62,18 @@ export function makeDecorativePseudoLayersPointerTransparent(root: postcss.Root)
     const fullInset = zero(declarations.get('inset')?.value)
       || ['top', 'right', 'bottom', 'left'].every((property) => zero(declarations.get(property)?.value));
     // Some authored corner/diagonal decorations have explicit dimensions and
-    // offsets rather than covering all four edges. Require concrete geometry
-    // on both axes; auto/variable-only positioning is not sufficient evidence.
+    // offsets rather than covering all four edges. Opposing zero vertical
+    // insets also establish a definite height when no height is authored.
+    // Auto/variable-only positioning is not sufficient evidence.
     const concreteLength = (value: string | undefined) => /^-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|em|rem|vw|vh|vmin|vmax|%)$/i.test(value?.trim() ?? '')
       || /^0$/.test(value?.trim() ?? '');
     const positiveSize = (property: string) => {
       const value = declarations.get(property)?.value.trim();
       return concreteLength(value) && Number.parseFloat(value ?? '') > 0;
     };
-    const positionedSize = positiveSize('width') && positiveSize('height')
+    const stretchedHeight = !declarations.has('height')
+      && ['top', 'bottom'].every(property => /^0(?:px|em|rem|%)?$/i.test(declarations.get(property)?.value.trim() ?? ''));
+    const positionedSize = positiveSize('width') && (positiveSize('height') || stretchedHeight)
       && ['left', 'right'].some((property) => concreteLength(declarations.get(property)?.value))
       && ['top', 'bottom'].some((property) => concreteLength(declarations.get(property)?.value));
     if (!fullInset && !positionedSize) continue;
@@ -95,10 +98,10 @@ export function makeDecorativePseudoLayersPointerTransparent(root: postcss.Root)
     const rotationDegrees = rotation ? Math.abs(Number(rotation[1])) : 0;
     const strippedRotatedPattern = positionedSize && /^(?:cover|contain)$/i.test(patternSize ?? '')
       && rotationDegrees > 0 && rotationDegrees <= 45;
-    // Removed image URLs can also leave a full-inset blended pattern without
+    // Removed image URLs can also leave a bounded blended pattern without
     // background-size. Require both remaining compositing signals, never
     // opacity alone, so an unspecified empty surface keeps its hit behavior.
-    const strippedBlendedOverlay = fullInset && translucent && blended;
+    const strippedBlendedOverlay = (fullInset || positionedSize) && translucent && blended;
     const selectors = rule.selectors.filter((selector) => {
       if (!isNonInteractivePseudoSelector(selector) || authoredContent.has(normalizedPseudoSelector(selector))) return false;
       // A sanitized root corner pattern can lose all paint metadata. Limit

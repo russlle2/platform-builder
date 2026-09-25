@@ -56,10 +56,23 @@ function pureDecoration(node: HtmlNode): boolean {
   walk(node, child => {
     if (['a', 'button', 'input', 'select', 'textarea', 'details', 'summary', 'iframe', 'video', 'audio', 'canvas'].includes(child.tagName ?? '')
       || attr(child, 'tabindex') !== undefined || attr(child, 'contenteditable') !== undefined
-      || attr(child, 'data-dc-edit-id') !== undefined || attr(child, 'data-dc-image-id') !== undefined) meaningful = true;
+      || attr(child, 'data-dc-edit-id') !== undefined || attr(child, 'data-dc-image-id') !== undefined
+      || child.attrs?.some(item => /^on/i.test(item.name) || (item.name === 'role' && !/^(?:none|presentation)$/.test(item.value)))) meaningful = true;
     if (child.tagName === 'img' && attr(child, 'aria-hidden') !== 'true' && (attr(child, 'alt') ?? '').trim()) meaningful = true;
     // SVG title/desc/text are retained inside explicitly aria-hidden artwork.
     if (node.tagName !== 'svg' && child.nodeName === '#text' && child.value?.trim()) meaningful = true;
+  });
+  return !meaningful;
+}
+
+function unnamedBackgroundOrnament(node: HtmlNode): boolean {
+  if (node.tagName !== 'svg' || attr(node, 'data-dc-static-svg') !== 'true'
+    || !`${attr(node, 'class') ?? ''} ${attr(node, 'id') ?? ''}`.split(/\s+/).some(token => /^(?:bg|background)[-_]orn(?:ament)?$/i.test(token))) return false;
+  let meaningful = false;
+  walk(node, child => {
+    if (['title', 'desc', 'text', 'foreignObject', 'a', 'image'].includes(child.tagName ?? '')
+      || child.attrs?.some(item => ['role', 'aria-label', 'aria-labelledby', 'aria-describedby', 'tabindex', 'contenteditable', 'data-dc-edit-id', 'data-dc-image-id'].includes(item.name) || /^on/i.test(item.name))
+      || (child.nodeName === '#text' && child.value?.trim())) meaningful = true;
   });
   return !meaningful;
 }
@@ -97,9 +110,30 @@ function hasHorizontalOvershoot(values: Map<string, Set<string>>): boolean {
     || [...values.get('width') ?? []].some(value => /^(?:1\d\d|[2-9]\d{2,})%$/.test(value) && Number.parseFloat(value) > 100);
 }
 
+function exactTargets(document: HtmlNode, selector: string): HtmlNode[] | undefined {
+  const exact = resolveStaticSelectorTargets(document, selector);
+  if (exact !== undefined) return exact;
+  try {
+    const parsed = selectorParser().astSync(selector);
+    let changed = false;
+    parsed.walkPseudos(pseudo => {
+      const item = pseudo.nodes?.[0]?.nodes?.[0];
+      // Previously repaired pages share this stylesheet with later pages.
+      // The compiler's zero-specificity wrapper guard is exactly an attribute
+      // match, not an unresolved condition that can match an unwrapped SVG.
+      if (pseudo.value === ':where' && pseudo.nodes?.length === 1 && pseudo.nodes[0]?.nodes.length === 1
+        && item?.type === 'attribute' && item.attribute === CLIP_ATTRIBUTE && item.operator === '=' && item.value === 'true') {
+        pseudo.replaceWith(item.clone());
+        changed = true;
+      }
+    });
+    return changed ? resolveStaticSelectorTargets(document, parsed.toString()) : undefined;
+  } catch { return undefined; }
+}
+
 /** Broaden conditional selectors only to decide whether topology is unsafe. */
 function possibleTargets(document: HtmlNode, selector: string): HtmlNode[] | undefined {
-  const exact = resolveStaticSelectorTargets(document, selector);
+  const exact = exactTargets(document, selector);
   if (exact !== undefined) return exact;
   try {
     const parsed = selectorParser().astSync(selector);
@@ -160,7 +194,7 @@ function hasUnsafeTopology(document: HtmlNode, node: HtmlNode, selector: string)
             const prefix = nodes.slice(0, end).map(part => part.toString()).join('');
             // Only exact top-level child edges have a proven equivalent
             // wrapper selector. Relative :has branches must remain intact.
-            if (relative || resolveStaticSelectorTargets(document, prefix) === undefined) return true;
+            if (relative || exactTargets(document, prefix) === undefined) return true;
           }
         } else {
           const left = index ? potentialPrefixTargets(document, nodes, index) : undefined;
@@ -206,7 +240,7 @@ function directChildAlternative(document: HtmlNode, node: HtmlNode, selector: st
       if (edge.type !== 'combinator' || edge.value.trim() !== '>') continue;
       const end = compoundEnd(branch.nodes, index + 1);
       const prefix = branch.nodes.slice(0, end).map(item => item.toString()).join('');
-      if (!resolveStaticSelectorTargets(document, prefix)?.includes(node)) continue;
+      if (!exactTargets(document, prefix)?.includes(node)) continue;
       const wrapper = selectorParser().astSync(`:where([${CLIP_ATTRIBUTE}="true"])`).first!.first!.clone();
       branch.insertAfter(edge, wrapper);
       branch.insertAfter(wrapper, selectorParser.combinator({ value: '>' }));
@@ -345,7 +379,7 @@ export function clipDecorativeOverflowLayers(pages: Record<string, string>, styl
       for (const selector of rule.selectors) rules.push({ rule, selector, targets: resolveStaticSelectorTargets(document, selector) });
     });
     const nodes: HtmlNode[] = [];
-    walk(document, node => { if (node.tagName && pureDecoration(node)) nodes.push(node); });
+    walk(document, node => { if (node.tagName && (pureDecoration(node) || unnamedBackgroundOrnament(node))) nodes.push(node); });
     const pseudoRepairs = repairPseudoOverflow(document, rules, dirtySheets);
     count += pseudoRepairs;
     let changed = pseudoRepairs > 0;
@@ -354,20 +388,28 @@ export function clipDecorativeOverflowLayers(pages: Record<string, string>, styl
       const values = nodeDeclarations(node, rules);
       const positions = values.get('position');
       if (!positions?.size || [...positions].some(value => value !== 'absolute')) continue;
+      if (!pureDecoration(node)) {
+        // A named, unnamed background ornament also needs concrete remaining
+        // paint evidence. Static SVG alone does not establish decorative intent.
+        const opacity = [...values.get('opacity') ?? []];
+        if (!opacity.length || opacity.some(value => !(Number(value) > 0 && Number(value) <= 0.25))
+          || !values.get('pointer-events')?.has('none') || [...values.get('pointer-events') ?? []].some(value => value !== 'none')) continue;
+      }
       if (node.tagName !== 'svg') {
         // A full-inset, wholly decorative wrapper can safely clip its own
         // oversized transformed child without adding any DOM hierarchy.
         const fullInset = [...values.get('inset') ?? []].some(value => /^0(?:px)?(?:\s+0(?:px)?){0,3}$/.test(value));
         const oversizedChild = (node.childNodes ?? []).some(child => child.tagName && hasHorizontalOvershoot(nodeDeclarations(child, rules)));
-        if (!fullInset || !oversizedChild) continue;
-        node.attrs ??= [];
-        node.attrs.push({ name: CLIP_ATTRIBUTE, value: 'true' });
-        const existing = node.attrs.find(item => item.name === 'style');
-        const style = `${existing?.value ?? ''};overflow-x:clip!important;overflow-y:visible!important;pointer-events:none!important`;
-        if (existing) existing.value = style; else node.attrs.push({ name: 'style', value: style });
-        count += 1;
-        changed = true;
-        continue;
+        if (fullInset && oversizedChild) {
+          node.attrs ??= [];
+          node.attrs.push({ name: CLIP_ATTRIBUTE, value: 'true' });
+          const existing = node.attrs.find(item => item.name === 'style');
+          const style = `${existing?.value ?? ''};overflow-x:clip!important;overflow-y:visible!important;pointer-events:none!important`;
+          if (existing) existing.value = style; else node.attrs.push({ name: 'style', value: style });
+          count += 1;
+          changed = true;
+          continue;
+        }
       }
       if (!hasHorizontalOvershoot(values) || !node.parentNode?.childNodes) continue;
       // Refuse only topology whose matching can depend on this SVG. Unrelated

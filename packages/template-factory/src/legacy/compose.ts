@@ -98,6 +98,8 @@ const REPAIR_STYLESHEET = [
   '[data-dc-mobile-nav-fallback="true"]{position:static!important;inset:auto!important;transform:none!important;flex:1 1 100%!important;width:100%!important}',
   'header:has([data-dc-mobile-nav-fallback="true"]){position:static!important;inset:auto!important;height:auto!important}',
   '[data-dc-mobile-nav-fallback="true"],[data-dc-mobile-nav-fallback="true"] :is(ul,ol){display:flex!important;visibility:visible!important;content-visibility:visible!important;opacity:1!important;flex-wrap:wrap!important}',
+  'header:has([data-dc-mobile-nav-fallback="true"]) .brand:has(+[data-dc-mobile-nav-fallback="true"]){flex-basis:100%!important}',
+  '[data-dc-mobile-footer-float="true"]{float:none!important}',
   '[data-dc-mobile-nav-fallback="true"] :is(li,a){display:inline-flex!important;visibility:visible!important;opacity:1!important}',
   '[data-dc-mobile-stack="true"]{flex-wrap:wrap!important}[data-dc-mobile-stack="true"]>*{flex:1 1 min(100%,18rem)!important;min-width:min(100%,18rem)!important}',
   '[data-dc-mobile-grid-stack="true"]{grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important}',
@@ -992,12 +994,14 @@ function linkedStylesheets(
 }
 
 /** Flow stacked sidebar content after its script-expanded form becomes taller. */
-function restoreBoundContentFlow(pages: Record<string, string>, styles: Readonly<Record<string, string>>): number {
+function restoreBoundContentFlow(pages: Record<string, string>, styles: Record<string, string>): number {
   let count = 0;
   for (const [page, html] of Object.entries(pages)) {
     const document = parse(html) as unknown as HtmlNode;
     const declarations = new Map<HtmlNode, Map<string, string>>();
     const seenDeclarations = new Map<HtmlNode, Map<string, Set<string>>>();
+    const positionRules = new Map<HtmlNode, { rule: postcss.Rule; declaration: postcss.Declaration }[]>();
+    const styleRoots = new Map<string, postcss.Root>();
     let conditionalSheets = false;
     walk(document, node => { if (['link', 'style'].includes(node.tagName ?? '') && getAttr(node, 'media')?.trim()) conditionalSheets = true; });
     const add = (node: HtmlNode, property: string, value: string): void => {
@@ -1013,6 +1017,7 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Readonly
     for (const path of linkedStylesheets(page, html, styles)) {
       let root: postcss.Root;
       try { root = postcss.parse(styles[path]!); } catch { continue; }
+      styleRoots.set(path, root);
       root.walkAtRules('import', rule => { if (!/^(?:url\([^)]*\)|"[^"]*"|'[^']*')\s*$/.test(rule.params.trim())) conditionalSheets = true; });
       root.walkRules(rule => {
         if (rule.parent?.type === 'atrule' && rule.parent.prev()?.type === 'comment'
@@ -1021,7 +1026,22 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Readonly
         const targets = exactTargets ?? possibleStyledTargets(document, rule.selector);
         if (!targets) return;
         for (const node of rule.nodes ?? []) if (node.type === 'decl') for (const target of targets) {
+          if (/^[.#][\w-]+:where\(\[data-dc-sticky-form-flow="true"\]\)$/.test(rule.selector)
+            && !getAttr(target, 'data-dc-sticky-form-flow')
+            && rule.nodes?.every(declaration => declaration.type === 'decl'
+              && ((declaration.prop === 'position' && declaration.value === 'relative') || (declaration.prop === 'inset' && declaration.value === 'auto')))) continue;
+          // This compiler rule cannot match a modal without a grid class. The
+          // conservative selector resolver otherwise treats its :is() as a
+          // possible match and falsely reports an authored grid track.
+          if (normalizePath(path) === 'assets/css/dc-repair.css'
+            && rule.selector === 'body :is(.grid,[class*="-grid"],[class*="grid-"])'
+            && !/(?:^|\s)grid(?:\s|$)|-grid|grid-/.test(getAttr(target, 'class') ?? '')) continue;
           add(target, node.prop, rule.parent?.type === 'root' && exactTargets ? node.value.trim() : '__dc_ambiguous__');
+          if (node.prop === 'position') {
+            const rules = positionRules.get(target) ?? [];
+            rules.push({ rule, declaration: node });
+            positionRules.set(target, rules);
+          }
         }
       });
     }
@@ -1045,6 +1065,65 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Readonly
       if (/modal$/i.test(getAttr(node, 'id') ?? '') && values.get('position') === 'relative'
         && values.get('display') === 'grid' && values.get('inset') === 'auto' && !values.has('grid-template-columns')
         && (node.childNodes ?? []).filter(child => child.tagName).length === 1) append('grid-template-columns:minmax(0,1fr)');
+      if (values.get('position') === '__dc_ambiguous__' && !getAttr(node, 'data-dc-sticky-form-flow')) {
+        const rules = positionRules.get(node) ?? [];
+        const base = rules.filter(({ rule, declaration }) => rule.parent?.type === 'root' && declaration.value === 'sticky' && /^[.#][\w-]+$/.test(rule.selector));
+        const allowed = rules.every(({ rule, declaration }) => base.some(entry => entry.declaration === declaration)
+          || (rule.parent?.type === 'atrule' && (rule.parent as postcss.AtRule).name === 'media'
+            && /^\(max-width:\s*\d+(?:\.\d+)?px\)$/.test((rule.parent as postcss.AtRule).params)
+            && declaration.value === 'static'));
+        let aside = node.parentNode;
+        while (aside && aside.tagName !== 'aside') aside = aside.parentNode;
+        const siblings = node.parentNode?.childNodes ?? [];
+        const following = siblings.slice(siblings.indexOf(node) + 1).some(sibling => sibling.tagName && /[\p{L}\p{N}]/u.test(textContent(sibling)));
+        let hasForm = false;
+        walk(node, child => { if (child.tagName === 'form') hasForm = true; });
+        if (aside && hasForm && following && allowed && base.length === 1 && !/(?:^|;)\s*(?:position|all)\s*:/.test(getAttr(node, 'style') ?? '')) {
+          // Keep the source cascade: the mobile static rule still wins. Only
+          // this expanded form card receives the desktop flow correction.
+          const { rule, declaration } = base[0]!;
+          setAttr(node, 'data-dc-sticky-form-flow', 'true');
+          const selector = `${rule.selector}:where([data-dc-sticky-form-flow="true"])`;
+          if (!(rule.parent?.nodes ?? []).some(candidate => candidate.type === 'rule' && candidate.selector === selector)) {
+            rule.after(postcss.rule({ selector, nodes: [postcss.decl({ prop: 'position', value: 'relative', important: declaration.important }), postcss.decl({ prop: 'inset', value: 'auto', important: declaration.important })] }));
+          }
+          changed = true; count += 1;
+        }
+      }
+      let logo = node.parentNode;
+      while (logo && !(getAttr(logo, 'class') ?? '').split(/\s+/).includes('logo')) logo = logo.parentNode;
+      if (logo && node.tagName === 'div' && values.get('width') === values.get('height')
+        && /^(?:[1-5]?\d|6[0-4])px$/.test(values.get('width') ?? '') && values.get('display') === 'grid'
+        && (/\{\{(?:BUSINESS_NAME|TAGLINE)\}\}/.test(textContent(node)) || textContent(node).trim().split(/\s+/).length >= 4)) {
+        append('width:auto;height:auto;display:block');
+      }
+      const art = node.parentNode;
+      const artChildren = (art?.childNodes ?? []).filter(child => child.tagName);
+      const artImage = artChildren.find(child => child.tagName === 'img');
+      const imageValues = artImage ? declarations.get(artImage) : undefined;
+      if (art && (getAttr(art, 'class') ?? '').split(/\s+/).includes('hero-art')
+        && artChildren.length === 2 && artImage
+        && (!imageValues?.has('position') || ['static', 'relative'].includes(imageValues.get('position')!))
+        && ![...(imageValues?.keys() ?? [])].some(property => /^(?:all|inset(?:-.+)?|top|right|bottom|left|transform|translate|rotate|scale)$/.test(property))
+        && node.tagName === 'div' && !(node.childNodes ?? []).some(child => child.tagName)
+        && /[\p{L}\p{N}]/u.test(textContent(node)) && values.get('position') === 'absolute' && values.get('width') === '100%'
+        && !['inset', 'top', 'right', 'bottom', 'left', 'transform'].some(property => values.has(property))
+        && declarations.get(art)?.get('display') === 'flex' && !declarations.get(art)?.has('position') && !declarations.get(art)?.has('all')) {
+        setAttr(art, 'style', `${getAttr(art, 'style') ?? ''};position:relative`);
+        changed = true; count += 1;
+      }
+      if (values.get('float') === 'left' || values.get('float') === 'right') {
+        let footer = node.parentNode;
+        while (footer && footer.tagName !== 'footer') footer = footer.parentNode;
+        const siblings = node.parentNode?.childNodes ?? [];
+        const hasSiblingNavigation = siblings.some(sibling => {
+          if (sibling === node) return false;
+          let navigation = false;
+          walk(sibling, child => { if (child.tagName === 'nav') navigation = true; });
+          return navigation;
+        });
+        if (footer && hasSiblingNavigation && /[\p{L}\p{N}]/u.test(textContent(node))) { setAttr(node, 'data-dc-mobile-footer-float', 'true'); changed = true; count += 1; }
+      }
       if (values.get('position') === 'sticky' && node.tagName !== 'header') {
         let aside = node.parentNode;
         while (aside && aside.tagName !== 'aside') aside = aside.parentNode;
@@ -1089,7 +1168,10 @@ function restoreBoundContentFlow(pages: Record<string, string>, styles: Readonly
         append('align-self:start;margin-top:15%');
       }
     });
-    if (changed) pages[page] = serialize(document as never);
+    if (changed) {
+      pages[page] = serialize(document as never);
+      for (const [path, root] of styleRoots) styles[path] = root.toString();
+    }
   }
   return count;
 }

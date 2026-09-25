@@ -19,14 +19,14 @@ function localPath(owner: string, reference: string): string | undefined {
   return resolved === '..' || resolved.startsWith('../') ? undefined : resolved;
 }
 
-type Sheet = { root: postcss.Root; conditional: boolean };
+type Sheet = { root: postcss.Root; conditional: boolean; owner: string };
 function pageStyles(page: string, document: HtmlNode, styles: Readonly<Record<string, string>>): Sheet[] {
   const roots: Sheet[] = [];
   const visited = new Set<string>();
   const addCss = (owner: string, css: string, conditional: boolean): void => {
     let root: postcss.Root;
     try { root = postcss.parse(css); } catch { return; }
-    roots.push({ root, conditional });
+    roots.push({ root, conditional, owner });
     root.walkAtRules('import', rule => {
       const reference = rule.params.match(/^(?:url\(\s*)?['"]([^'"]+)['"]/i)?.[1]
         ?? rule.params.match(/^url\(\s*([^\s)]+)\s*\)/i)?.[1];
@@ -52,13 +52,15 @@ function pageStyles(page: string, document: HtmlNode, styles: Readonly<Record<st
   return roots;
 }
 
-type Declaration = { prop: string; value: string; conditional: boolean; compilerMobileFlex?: boolean };
+type Declaration = { prop: string; value: string; conditional: boolean; compilerMobileFlex?: boolean; compilerMobileBound?: boolean };
 function declarationsFor(document: HtmlNode, node: HtmlNode, roots: Sheet[]): Declaration[] {
   const declarations: Declaration[] = [];
   for (const sheet of roots) sheet.root.walkRules(rule => {
     if (!resolveStaticSelectorTargets(document, rule.selector)?.includes(node)) return;
     let conditional = sheet.conditional;
     let compilerMobileFlex = false;
+    const compilerMobileBound = sheet.owner === 'assets/css/dc-repair.css' && rule.selector.trim() === 'body *'
+      && rule.parent?.type === 'atrule' && rule.parent.name === 'media' && rule.parent.params === '(max-width:600px)';
     for (let parent: postcss.Node | undefined = rule.parent; parent; parent = parent.parent) {
       if (parent.type === 'atrule' || parent.type === 'rule') conditional = true;
       const previous = parent.prev();
@@ -73,6 +75,7 @@ function declarationsFor(document: HtmlNode, node: HtmlNode, roots: Sheet[]): De
           (item.prop === 'flex' && item.value === '1 1 min(100%,18rem)')
           || (item.prop === 'min-width' && item.value === 'min(100%,18rem)')
         ),
+        compilerMobileBound: compilerMobileBound && item.important && item.prop === 'max-width' && item.value === '100%',
       });
     });
   });
@@ -134,7 +137,7 @@ export function restoreDimensionlessSvgImageSizes(
       const wrapperRules = declarationsFor(document, wrapper, roots);
       if (wrapperRules.some(item => item.prop === 'all')) return;
       if (wrapperRules.some(item => item.prop === 'align-self' && !/^(?:auto|flex-start|flex-end|start|end|center)$/.test(item.value))) return;
-      const wrapperDimensions = wrapperRules.some(item => !item.compilerMobileFlex && /^(?:(?:min-|max-)?(?:width|height|inline-size|block-size)|flex(?:-basis)?)$/.test(item.prop)
+      const wrapperDimensions = wrapperRules.some(item => !item.compilerMobileFlex && !item.compilerMobileBound && /^(?:(?:min-|max-)?(?:width|height|inline-size|block-size)|flex(?:-basis)?)$/.test(item.prop)
         && item.value !== 'auto' && !(/^min-(?:width|height|inline-size|block-size)$/.test(item.prop) && /^0(?:px)?$/.test(item.value)));
       const imageDimensions = declarationsFor(document, node, roots).some(item => /^(?:width|height|inline-size|block-size)$/.test(item.prop) && item.value !== 'auto');
       if (wrapperDimensions || imageDimensions || attr(wrapper, 'width') !== undefined || attr(wrapper, 'height') !== undefined) return;

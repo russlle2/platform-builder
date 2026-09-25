@@ -76,6 +76,8 @@ const additionalDecorativeLayers = [
   '.hero::after{content:"";position:absolute;right:-60px;bottom:-40px;width:260px;height:260px;background:linear-gradient(120deg,transparent,#daf1ee);transform:rotate(20deg);border-radius:20px}',
   '.hero::before{content:"";position:absolute;left:-20%;top:-30%;width:180%;height:140%;background:radial-gradient(circle at 20% 30%,#daf1ee,transparent 10%),linear-gradient(90deg,#f6e6fb,transparent);transform:rotate(-14deg)}',
   '.hero::before{content:"";position:absolute;right:-120px;top:-60px;width:360px;height:360px;background-size:cover;transform:rotate(18deg)}',
+  '.hero:before{content:"";position:absolute;left:-30%;top:-30%;width:160%;height:160%;transform:rotate(-12deg);opacity:0.18;mix-blend-mode:screen}',
+  '.hero::after{content:"";position:absolute;right:-10%;top:0;bottom:0;width:60%;background:url("assets/img/pattern.svg");opacity:0.12;transform:skewX(-12deg)}',
 ];
 
 test('concrete corner/diagonal paint and full-inset blended patterns preserve their authored rendering', () => {
@@ -129,6 +131,48 @@ test('stripped rotated corner artwork needs concrete geometry, image fitting, an
     source.replace('.hero', '.stretched-link'),
     source.replace('content:""', 'content:"Pricing"'),
     source.replace('transform:rotate(18deg)', 'transform:rotate(18deg);pointer-events:auto'),
+  ]) {
+    const root = postcss.parse(css);
+    assert.equal(makeDecorativePseudoLayersPointerTransparent(root), 0, css);
+    assert.equal(root.toString(), css);
+  }
+});
+
+test('sized stripped blended layers need both compositing signals and retain all interaction protections', () => {
+  const source = additionalDecorativeLayers[6]!;
+  for (const css of [
+    source.replace('opacity:0.18;', ''),
+    source.replace('mix-blend-mode:screen', 'mix-blend-mode:normal'),
+    source.replace('opacity:0.18', 'opacity:1'),
+    source.replace('opacity:0.18', 'opacity:var(--opacity)'),
+    source.replace('width:160%', 'width:auto'),
+    source.replace('top:-30%;', ''),
+    source.replace('.hero', 'a.card'),
+    source.replace('.hero', '[role="button"]'),
+    source.replace('content:""', 'content:"Navigation label"'),
+    source.replace('mix-blend-mode:screen', 'mix-blend-mode:screen;pointer-events:auto'),
+  ]) {
+    const root = postcss.parse(css);
+    assert.equal(makeDecorativePseudoLayersPointerTransparent(root), 0, css);
+    assert.equal(root.toString(), css);
+  }
+});
+
+test('opposing zero vertical insets establish height only for a concrete-width decorative surface', () => {
+  const source = additionalDecorativeLayers[7]!;
+  for (const css of [
+    source.replace('top:0;', ''),
+    source.replace('bottom:0;', ''),
+    source.replace('top:0', 'top:auto'),
+    source.replace('top:0', 'top:0 0'),
+    source.replace('bottom:0', 'bottom:var(--bottom)'),
+    source.replace('width:60%', 'width:auto'),
+    source.replace('width:60%', 'width:var(--width)'),
+    source.replace('width:60%', 'width:60%;height:0'),
+    source.replace('width:60%', 'width:60%;height:auto'),
+    source.replace('.hero', 'button'),
+    source.replace('content:""', 'content:attr(data-label)'),
+    source.replace('opacity:0.12', 'opacity:0.12;pointer-events:auto'),
   ]) {
     const root = postcss.parse(css);
     assert.equal(makeDecorativePseudoLayersPointerTransparent(root), 0, css);
@@ -231,6 +275,7 @@ test('corner, diagonal, and stripped blended overlays restore physical access wi
     for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
       const page = await browser.newPage({ viewport });
       try {
+        await page.route('**/assets/img/pattern.svg', route => route.fulfill({ contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><circle cx="12" cy="12" r="4" fill="#cde"/></svg>' }));
         for (const source of additionalDecorativeLayers) {
           const root = postcss.parse(source);
           root.walkRules((rule) => { rule.append(postcss.decl({ prop: 'z-index', value: '10' })); });
@@ -238,7 +283,7 @@ test('corner, diagonal, and stripped blended overlays restore physical access wi
           makeDecorativePseudoLayersPointerTransparent(root);
           await page.mouse.move(0, 0);
           const verticalPosition = source.includes('background-size:cover') ? 'top:40px' : 'bottom:40px';
-          await page.setContent(`<!doctype html><html><head><style>body{margin:0;background:#fafafa;font-family:Arial}.hero{position:relative;height:100vh}button{position:absolute;right:40px;${verticalPosition};font:inherit;padding:20px}${original}</style></head><body><main class="hero"><button id="booking">Booking details</button></main></body></html>`);
+          await page.setContent(`<!doctype html><html><head><base href="https://fixture.invalid/"><style>body{margin:0;background:#fafafa;font-family:Arial}.hero{position:relative;height:100vh}button{position:absolute;right:40px;${verticalPosition};font:inherit;padding:20px}${original}</style></head><body><main class="hero"><button id="booking">Booking details</button></main></body></html>`);
           const hitsButton = () => page.locator('#booking').evaluate((element) => {
             const box = element.getBoundingClientRect();
             return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2) === element;
