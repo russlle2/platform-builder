@@ -1259,9 +1259,14 @@ async function exerciseCustomerEditorRuntime(page: Page, currentPage: string): P
       else standalonePasses += 1;
     } else {
       failedImageIds.push(...group.slotIds);
-      details.push(`${group.kind} image slots ${group.slotIds.join(', ')} failed physical hit/request/response`);
+      const reason = !point ? 'no reachable hit point'
+        : !request ? 'click produced no image request'
+          : !requestMatches ? `request selected ${String(request.slotId)} with slots ${requestedSlots.join(', ')}`
+            : 'matching response did not mutate every slot';
+      details.push(`${group.kind} image slots ${group.slotIds.join(', ')} failed physical hit/request/response: ${reason}`);
     }
-    await page.evaluate((snapshots) => {
+    await page.evaluate(async (snapshots) => {
+      const restoredImages: HTMLImageElement[] = [];
       for (const snapshot of snapshots) {
         if (!snapshot) continue;
         const element = [...document.querySelectorAll<HTMLElement>('[data-dc-image-id],[data-pb-image-id]')]
@@ -1271,7 +1276,14 @@ async function exerciseCustomerEditorRuntime(page: Page, currentPage: string): P
           if (value === null) element.removeAttribute(name);
           else element.setAttribute(name, value);
         }
+        if (element instanceof HTMLImageElement) restoredImages.push(element);
       }
+      // Restoring an intrinsic-size image is asynchronous. Until its bytes
+      // decode, the next slot's hit coordinate can still reflect the 1x1
+      // sentinel layout and the real mouse click lands on adjacent copy.
+      // Wait for that prior mutation to settle; never bypass physical hits.
+      await Promise.all(restoredImages.map((image) => image.decode().catch(() => undefined)));
+      await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()));
     }, snapshot);
   }
   const standaloneImage: CheckStatus = standaloneChecks === 0 ? 'missing' : standalonePasses === standaloneChecks ? 'passed' : 'failed';

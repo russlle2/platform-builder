@@ -1267,6 +1267,17 @@ test('sizes horizontal content flex rows without expanding vertical card childre
   );
 });
 
+test('mobile content fallback covers planners, roadmaps, lead magnets, and footer columns while keeping compact actions', () => {
+  const first = repairStylesheet('.planner,.roadmap,.lead-magnet,.footer-grid,.rotor{display:flex;gap:12px}.footer-social,.footer-nav,.planner-actions,.rotor-controls{display:flex;gap:8px}', 'styles.css');
+  for (const selector of ['planner', 'roadmap', 'lead-magnet', 'footer-grid', 'rotor']) {
+    assert.ok(first.css.includes(`.${selector}>*{flex:1 1 min(100%,18rem)`));
+  }
+  for (const selector of ['footer-social', 'footer-nav', 'planner-actions', 'rotor-controls']) {
+    assert.ok(!first.css.includes(`.${selector}>*{flex:`));
+  }
+  assert.equal(repairStylesheet(first.css, 'styles.css').css, first.css);
+});
+
 test('replaces the unsafe 1.0.30 content-flex block when re-attesting an artifact', () => {
   const source = [
     '.feature-card{display:flex;flex-direction:column;gap:1rem}',

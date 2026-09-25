@@ -152,8 +152,10 @@ import {
  */
 export const SENSITIVE_FORM_TEXT_RE = /\b(?:allerg(?:y|ies|ic)|pregnan(?:t|cy)|medications?|diagnos(?:is|ed|tic)|medical history|mental[- ]health history|symptoms?|health conditions?|suicid(?:e|al)|trauma history)\b/i;
 export const UNSAFE_INQUIRY_FORM_TEXT_RE = /\b(?:passwords?|passcodes?|date of birth|birth dates?|dob|social security|ssn|tax id|insurance|member id|policy number|payment|credit cards?|debit cards?|bank accounts?|routing numbers?|emergency contacts?|uploads?|medical records?|treatment history|therapy history)\b/i;
-export const UNSUPPORTED_PROOF_TEXT_RE = /\b(?:proof\s*(?:(?:&|and)\s*(?:credibility|notes?|perspective)|gallery)|proof of progress|social[- ]proof|credibility\s*(?:badges?|bar|gallery|indicators?)|testimonials?|(?:client|patient) (?:success )?stor(?:y|ies)|(?:client|patient) reviews?|(?:(?:real )?client|anonymized) (?:case )?note|case note\s*\(\s*anonymized|(?:selected|short|illustrative) (?:case )?(?:vignettes?|examples?)\s*\(\s*(?:anonymized|de-identified)|what (?:our )?(?:clients?|patients?) (?:say|share)|(?:direct|rotating) voices?|voices? from (?:the )?(?:cohort|community|clients?)|trusted by|featured in|real results|success stories)\b/i;
-export const UNSUPPORTED_PROOF_ATTRIBUTE_RE = /(?:^|[-_\s])(?:testimonials?|reviews?|quotes?|proof(?:[-_]?gallery)?|credibility|social[-_]?proof|success[-_]?stor(?:y|ies))(?:$|[-_\s])/i;
+export const UNSUPPORTED_CASE_STUDY_TEXT_RE = /\b(?:(?:anonymized|de-identified)\s+(?:case\s+)?(?:examples?|vignettes?|stories)|(?:examples?|vignettes?|case\s+stories)\s*\(?\s*(?:anonymized|de-identified))\b/i;
+export const UNSUPPORTED_CASE_STUDY_ATTRIBUTE_RE = /(?:^|[-_\s])case[-_\s]stud(?:y|ies)(?:$|[-_\s])/i;
+export const UNSUPPORTED_PROOF_TEXT_RE = new RegExp(String.raw`\b(?:proof\s*(?:(?:&|and)\s*(?:credibility|notes?|perspective)|gallery)|proof of progress|social[- ]proof|credibility\s*(?:badges?|bar|gallery|indicators?)|testimonials?|(?:client|patient) (?:success )?stor(?:y|ies)|(?:client|patient) reviews?|(?:(?:real )?client|anonymized) (?:case )?note|case note\s*\(\s*anonymized|(?:selected|short|illustrative) (?:case )?(?:vignettes?|examples?)\s*\(\s*(?:anonymized|de-identified)|what (?:our )?(?:clients?|patients?) (?:say|share)|(?:direct|rotating) voices?|voices? from (?:the )?(?:cohort|community|clients?)|trusted by|featured in|real results|success stories)\b|${UNSUPPORTED_CASE_STUDY_TEXT_RE.source}`, 'i');
+export const UNSUPPORTED_PROOF_ATTRIBUTE_RE = /(?:^|[-_\s])(?:testimonials?|reviews?|quotes?|proof(?:[-_]?gallery)?|credibility|social[-_]?proof|success[-_]?stor(?:y|ies)|case[-_\s]stud(?:y|ies))(?:$|[-_\s])/i;
 export const UNSUPPORTED_CREDENTIAL_PROOF_RE = /\b(?:accredit(?:ed|ation)|award(?:ed|s)?|case stud(?:y|ies)|certification|featured (?:by|in)|independently verified|member rated|partner(?:ed|ship)|(?:client|community|member|patient|peer)[- ]reviewed|reviewed by peers?|published|recognition|top[- ]rated|five[- ]star|verified|vetted)\b/i;
 const REPORTED_CLIENT_OUTCOME = String.raw`\b(?:many\s+|some\s+|our\s+)?(?:clients?|patients?|participants?|attendees?)\s+(?:found|notice(?:d|s)?|report(?:ed|s|ing)?|experience(?:d|s)?)\b[^.!?\r\n]{0,120}\b(?:better|benefits?|calm(?:er)?|changes?|clarity|confidence|energy|enhanc\w*|focus|help\w*|improv\w*|noticeable|outcomes?|progress|recall|recovery|reduc\w*|relief|rest(?:ed)?|results?|routines?\s+that\s+stick|shifts?|sleep|wins?)\b`;
 const ATTRIBUTED_INITIAL_QUOTE = String.raw`["“][^"”\r\n]{12,}["”]\s*[—-]\s*(?:[A-Z]\.){1,4}`;
@@ -163,6 +165,8 @@ export const UNSUPPORTED_FABRICATED_METRIC_RE = new RegExp(
   [
     REPORTED_CLIENT_OUTCOME,
     ATTRIBUTED_INITIAL_QUOTE,
+    String.raw`\b(?:regain(?:ed|s|ing)?|gain(?:ed|s|ing)?|sav(?:e[ds]?|ing))\s+\d+(?:\.\d+)?\s+(?:minutes?|hours?)\b[^.!?\r\n]{0,60}\b(?:focus|productiv\w*|(?:daily|productive)\s+time)\b`,
+    String.raw`\b\d+(?:\.\d+)?\s*(?:x|×|[- ]fold)\s+(?:increase|improvement|reduction|decrease)\b[^.!?\r\n]{0,60}\b(?:adherence|energy|focus|productivity|retention|sleep|recovery)\b`,
     String.raw`\b(?:client|customer|patient)\s+nps\s*:?\s*\d`,
     String.raw`\b(?:average\s+)?(?:habit|client|customer|member|patient)\s+retention\s*:?\s*\d+(?:\.\d+)?%`,
     String.raw`\brepeat\s+(?:clients?|customers?|members?|patients?)\s*:?\s*\d+(?:\.\d+)?%`,
@@ -229,8 +233,10 @@ export const HIGH_CONFIDENCE_HEALTH_OUTCOME_CLAIM_RE = new RegExp(
   'i',
 );
 
+const TIMED_PROGRESS_CLAIM_RE = /\b(?:expect|achieve|see|notice|experience)\b[^.!?\r\n]{0,50}\b(?:measurable|noticeable|lasting|durable)\s+(?:shifts?|changes?|improvements?|progress|results?|wins?)\b[^.!?\r\n]{0,120}\b(?:within|after|in)\s+\d+(?:\s*[–—-]\s*\d+)?\s+(?:days?|weeks?|months?|sessions?)\b|\b(?:durable|lasting)\s+(?:habit\s+formation|changes?|results?)\b[^.!?\r\n]{0,40}\b(?:takes?|within|after|in)\s+\d+(?:\s*[–—-]\s*\d+)?\s+(?:days?|weeks?|months?|sessions?)\b/i;
+
 export const UNSUPPORTED_OUTCOME_CLAIM_RE = new RegExp(
-  `${LEGACY_UNSUPPORTED_OUTCOME_CLAIM_RE.source}|${HIGH_CONFIDENCE_HEALTH_OUTCOME_CLAIM_RE.source}`,
+  `${LEGACY_UNSUPPORTED_OUTCOME_CLAIM_RE.source}|${HIGH_CONFIDENCE_HEALTH_OUTCOME_CLAIM_RE.source}|${TIMED_PROGRESS_CLAIM_RE.source}`,
   'i',
 );
 export const UNSUPPORTED_PERCENT_RESULT_RE = /\b\d{1,3}(?:\.\d+)?%\s+(?:improvement|better|reduction|relief|success|results?)\b/i;
@@ -1016,7 +1022,7 @@ export function isUnsupportedProofHeading(text: string): boolean {
     .replace(/\{\{\s*[A-Za-z0-9_]+\s*\}\}/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
-  return /^(?:credibility|quick stats?|social[- ]proof|proof\s+of\s+progress|proof\s*(?:(?:&|and)\s*(?:notes?|perspective)|[—-]\s*)?|rotating voices?\s*(?:&|and)\s*credibility)$/i.test(normalized);
+  return /^(?:credibility|quick stats?|measured (?:outcomes|results)|social[- ]proof|proof\s+of\s+progress|proof\s*(?:(?:&|and)\s*(?:notes?|perspective)|[—-]\s*)?|rotating voices?\s*(?:&|and)\s*credibility)$/i.test(normalized);
 }
 
 function containsUnsupportedProofHeadingMarkup(document: ContractHtmlNode): boolean {

@@ -1,5 +1,6 @@
 import { parse, parseFragment, serialize, serializeOuter } from 'parse5';
 import postcss from 'postcss';
+import { makeDecorativePseudoLayersPointerTransparent } from './pseudo-layer.js';
 import {
   COMPATIBILITY_SCRIPT_PATH,
   TOKEN_ALIASES,
@@ -16,6 +17,8 @@ import {
   SENSITIVE_FORM_TEXT_RE,
   UNSAFE_INQUIRY_FORM_TEXT_RE,
   UNSUPPORTED_ABSOLUTE_EFFICACY_RE,
+  UNSUPPORTED_CASE_STUDY_ATTRIBUTE_RE,
+  UNSUPPORTED_CASE_STUDY_TEXT_RE,
   UNSUPPORTED_CREDENTIAL_CLAIM_RE,
   UNSUPPORTED_CREDENTIAL_PROOF_RE,
   UNSUPPORTED_FABRICATED_METRIC_RE,
@@ -126,7 +129,7 @@ const NEUTRAL_CLAIM = 'Services and experiences vary. Ask the practice what is c
 const NEUTRAL_PRICE = 'Contact for current pricing';
 const ADDRESS_PLACEHOLDER = /^(?:(?:street )?address\s*:\s*)?(?:enter\s+)?(?:your (?:street )?address|123 Main (?:St(?:reet)?|Road|Rd\.?))\s*\.?$/i;
 const STANDARD_FORM = '<form class="dc-contact-form" name="contact" method="post" data-netlify="true" data-dc-standard-form="contact"><p><label>Your name <input name="name" autocomplete="name" required></label></p><p><label>Email <input type="email" name="email" autocomplete="email" required></label></p><p><label>Phone (optional) <input type="tel" name="phone" autocomplete="tel"></label></p><p><label>Message <textarea name="message" rows="5" required></textarea></label></p><button type="submit">Send inquiry</button><p class="dc-form-status" aria-live="polite"></p></form>';
-const STRUCTURAL_PROOF_TOKEN_SOURCE = String.raw`(^|[-_\s])(testimonials?|reviews?|quotes?|social[-_]?proof|success[-_]?stor(?:y|ies)|proof(?:[-_]?gallery)?|credibility)(?=$|[-_\s])`;
+const STRUCTURAL_PROOF_TOKEN_SOURCE = String.raw`(^|[-_\s])(testimonials?|reviews?|quotes?|social[-_]?proof|success[-_]?stor(?:y|ies)|proof(?:[-_]?gallery)?|credibility|case[-_\s]stud(?:y|ies))(?=$|[-_\s])`;
 
 function replaceStructuralProofTokens(value: string, replacement: string): string {
   return value.replace(new RegExp(STRUCTURAL_PROOF_TOKEN_SOURCE, 'gi'), `$1${replacement}`);
@@ -466,14 +469,25 @@ function restoreSplitPersonalizationRuns(root: HtmlNode, fields: readonly Canoni
   for (const replacement of replacements) {
     while (true) {
       const { text, runs } = priceTextRuns(root);
+      // A literal default such as "State" also matches the name inside
+      // {{STATE}}. SVG semantic text permits single-run replacement, so
+      // replacing that match would grow braces forever on re-attestation.
+      // Treat existing bindings atomically, including bindings split by
+      // inline markup, rather than personalizing their internal token names.
+      const bindings = [...text.matchAll(/\{\{[^{}]*\}\}/g)].map((match) => ({
+        start: match.index,
+        end: match.index + match[0].length,
+      }));
       let changed = false;
       for (const match of [...text.matchAll(new RegExp(replacement.source, replacement.flags))].reverse()) {
         if (match[0] === replacement.replacement) continue;
         const start = match.index ?? 0;
+        const end = start + match[0].length;
+        if (bindings.some((binding) => start < binding.end && end > binding.start)) continue;
         if (!replaceTextRunRange(
           runs,
           start,
-          start + match[0].length,
+          end,
           replacement.replacement,
           isWithinSvgSemanticText(root) ? 1 : 2,
         )) continue;
@@ -696,6 +710,84 @@ function nearestProofContainer(node: HtmlNode): HtmlNode {
     if (parent?.tagName === 'div' && hasClassOrId(parent, PROOF_ATTR)) return parent;
   }
   return node;
+}
+
+/**
+ * Case-study galleries contain unsupported example outcomes, but their media
+ * and card layout are part of the source design. Replace the scoped narrative
+ * in place before the generic proof-block handler can remove the gallery.
+ * The returned node set is computed from this repair, never trusted from HTML.
+ */
+function normalizeCaseStudyRegions(document: HtmlNode): { nodes: Set<HtmlNode>; count: number } {
+  const regions: HtmlNode[] = [];
+  walk(document, (node) => {
+    if (!['section', 'article', 'aside', 'figure', 'div'].includes(node.tagName ?? '')) return;
+    const structural = (node.attrs ?? []).some((attribute) => (
+      ['class', 'id', 'data-block', 'data-component', 'data-kind', 'data-role', 'data-section', 'data-type'].includes(attribute.name)
+      && UNSUPPORTED_CASE_STUDY_ATTRIBUTE_RE.test(attribute.value)
+    ));
+    const directSignal = (node.childNodes ?? []).some((child) => (
+      /^(?:h[1-6]|legend)$/.test(child.tagName ?? '') && /^measured\s+(?:outcomes|results)$/i.test(textContent(child).trim())
+    ) || (
+      /^(?:h[1-6]|p|figcaption)$/.test(child.tagName ?? '') && UNSUPPORTED_CASE_STUDY_TEXT_RE.test(textContent(child))
+    ));
+    if (structural || directSignal) regions.push(node);
+  });
+  const nodes = new Set<HtmlNode>();
+  const renamedIds = new Map<string, string>();
+  const boundaries = new Set([...PRICE_TEXT_BOUNDARIES, 'strong', 'b', 'em', 'cite', 'a', 'button', 'label']);
+  let count = 0;
+  for (const region of regions) {
+    if (nodes.has(region)) continue;
+    count += 1;
+    walk(region, (node) => {
+      nodes.add(node);
+      for (const attribute of node.attrs ?? []) {
+        if (['class', 'id', 'data-block', 'data-component', 'data-kind', 'data-role', 'data-section', 'data-type'].includes(attribute.name)) {
+          const before = attribute.value;
+          attribute.value = attribute.name === 'id' ? sanitizedProofId(before)
+            : attribute.name === 'class' ? sanitizedProofClass(before) : sanitizedProofStructuralValue(before);
+          if (attribute.name === 'id' && before !== attribute.value) renamedIds.set(before, attribute.value);
+        } else if (['alt', 'title', 'aria-label', 'data-tip', 'data-tooltip', 'data-title'].includes(attribute.name) && attribute.value.trim()) {
+          attribute.value = attribute.name === 'alt' ? 'Service illustration' : 'Service information';
+        }
+      }
+      if (!node.tagName || !boundaries.has(node.tagName) || hasNonContentTextAncestor(node)) return;
+      const runs: TextRun[] = [];
+      let text = '';
+      const collect = (child: HtmlNode): void => {
+        if (child !== node && child.tagName && boundaries.has(child.tagName)) return;
+        if (child.tagName && NON_CONTENT_TEXT_ANCESTORS.has(child.tagName)) return;
+        if (child.nodeName === '#text') {
+          const value = child.value ?? '';
+          runs.push({ node: child, start: text.length, end: text.length + value.length });
+          text += value;
+        }
+        for (const nested of child.childNodes ?? []) collect(nested);
+      };
+      collect(node);
+      if (!text.trim()) return;
+      const replacement = /^(?:h[1-6]|legend)$/.test(node.tagName) ? 'Service information'
+        : ['strong', 'b', 'em', 'cite', 'figcaption'].includes(node.tagName) ? 'Service focus'
+          : ['a', 'button', 'label'].includes(node.tagName) ? 'Ask about services'
+            : 'Ask about current services, your priorities, and what to expect.';
+      replaceTextRunRange(runs, 0, text.length, replacement, 1);
+    });
+  }
+  if (renamedIds.size) {
+    const references = new Set(['aria-labelledby', 'aria-describedby', 'aria-controls', 'form', 'headers', 'for', 'list']);
+    walk(document, (node) => {
+      for (const attribute of node.attrs ?? []) {
+        if (['href', 'data-bs-target', 'data-target'].includes(attribute.name) && attribute.value.startsWith('#')) {
+          const renamed = renamedIds.get(attribute.value.slice(1));
+          if (renamed) attribute.value = `#${renamed}`;
+        } else if (references.has(attribute.name)) {
+          attribute.value = attribute.value.split(/\s+/).map((value) => renamedIds.get(value) ?? value).join(' ');
+        }
+      }
+    });
+  }
+  return { nodes, count };
 }
 
 function hasDirectProofSignal(node: HtmlNode): boolean {
@@ -2683,10 +2775,10 @@ export function detectFoundation(html: string): string | undefined {
 
 const MOBILE_GRID_REPAIR_MARKER = 'dc-repair-mobile-grid';
 const LEGACY_MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex';
-const MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex-v2';
+const MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex-v4';
 const MOBILE_FIXED_FLOW_REPAIR_MARKER = 'dc-repair-mobile-fixed-flow';
-const MOBILE_CONTENT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:cards?|columns?|content|features?|grid|hero(?:-inner|-grid)?|layout|plans?|pricing|services?|split|tiles?|top)(?:$|[-_.:#\[\s>+~])/i;
-const MOBILE_COMPACT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:actions?|brand|breadcrumbs?|buttons?|controls?|footer|header|logo|menu|nav|pagination|social|tabs?|toolbar)(?:$|[-_.:#\[\s>+~])/i;
+const MOBILE_CONTENT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:cards?|columns?|content|features?|grid|hero(?:-inner|-grid)?|layout|lead-magnet|planners?|plans?|pricing|roadmaps?|rotor|services?|split|tiles?|top)(?:$|[-_.:#\[\s>+~])/i;
+const MOBILE_COMPACT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:actions?|brand|breadcrumbs?|buttons?|controls?|header|logo|menu|nav|pagination|social|tabs?|toolbar)(?:$|[-_.:#\[\s>+~])/i;
 const FIXED_TRANSIENT_UI_SIGNAL = /(?:^|[-_.#\s>+~])(?:dialog|drawer|lightbox|modal|popover|popup)(?:$|[-_.:#\[\s>+~])/i;
 
 function topLevelGridTracks(value: string): string[] {
@@ -2786,7 +2878,7 @@ function addMobileContentFlexFallbacks(root: postcss.Root): number {
   // can be re-attested safely; immutable catalogue sources normally never hit
   // this migration path.
   root.walkComments((comment) => {
-    if (comment.text.trim() !== LEGACY_MOBILE_FLEX_REPAIR_MARKER) return;
+    if (![LEGACY_MOBILE_FLEX_REPAIR_MARKER, 'dc-repair-mobile-content-flex-v2', 'dc-repair-mobile-content-flex-v3'].includes(comment.text.trim())) return;
     const generatedMedia = comment.next();
     if (generatedMedia?.type === 'atrule' && generatedMedia.name.toLowerCase() === 'media') {
       generatedMedia.remove();
@@ -2850,6 +2942,47 @@ function addMobileContentFlexFallbacks(root: postcss.Root): number {
   }
   root.append(postcss.comment({ text: MOBILE_FLEX_REPAIR_MARKER }), media);
   return selectors.size;
+}
+
+/**
+ * Source scripts are removed, so scroll-reveal copy and legacy accordion
+ * panels cannot wait for their authored activation handlers. Expand only
+ * these content classes; modal, hidden, and state-qualified rules keep their
+ * own visibility semantics. Native details disclosures remain interactive.
+ */
+function restoreScriptDependentContent(root: postcss.Root): number {
+  let count = 0;
+  root.walkRules((rule) => {
+    // Nested selectors inherit their ancestor's activation state. Repair only
+    // flat base content rules, never an authored state or disclosure variant.
+    for (let ancestor: postcss.Node['parent'] = rule.parent; ancestor; ancestor = ancestor.parent) {
+      if (ancestor.type === 'rule') return;
+    }
+    const selectors = splitSelectorList(rule.selector);
+    if (!selectors?.length || !selectors.every((selector) => (
+      /^\.(?:reveal|acc-body|accordion-body)$/.test(selector.trim())
+      || /^\[data-reveal(?:=[^\]]+)?\]$/.test(selector.trim())
+    ))) return;
+    let changed = false;
+    for (const declaration of rule.nodes ?? []) {
+      if (declaration.type !== 'decl') continue;
+      const property = decodeCssEscapes(declaration.prop).toLowerCase();
+      const value = declaration.value.trim().toLowerCase();
+      const replacement = property === 'opacity' && /^0(?:\.0*)?$/.test(value) ? '1'
+        : property === 'visibility' && /^(?:hidden|collapse)$/.test(value) ? 'visible'
+          : property === 'display' && value === 'none' ? 'block'
+            : property === 'max-height' && /^0(?:px|rem|em|%)?$/.test(value) ? 'none'
+              : property === 'height' && /^0(?:px|rem|em|%)?$/.test(value) ? 'auto'
+                : property === 'overflow' && value === 'hidden' ? 'visible'
+                  : property === 'transform' && value !== 'none' ? 'none'
+                    : undefined;
+      if (replacement === undefined) continue;
+      declaration.value = replacement;
+      changed = true;
+    }
+    if (changed) count += 1;
+  });
+  return count;
 }
 
 /**
@@ -3160,6 +3293,14 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
     transformations.push({ rule: 'remove-unsafe-css-generated-content', file, count: unsafeGeneratedContent });
   }
   if (unsafe) transformations.push({ rule: 'strip-unsafe-css', file, count: unsafe });
+  const decorativePseudoLayers = makeDecorativePseudoLayersPointerTransparent(root);
+  if (decorativePseudoLayers) {
+    transformations.push({ rule: 'make-decorative-pseudo-layers-pointer-transparent', file, count: decorativePseudoLayers });
+  }
+  const staticContent = restoreScriptDependentContent(root);
+  if (staticContent) {
+    transformations.push({ rule: 'restore-script-dependent-content', file, count: staticContent });
+  }
   const mobileGridFallbacks = addMobileGridFallbacks(root);
   if (mobileGridFallbacks) {
     transformations.push({ rule: 'stack-fixed-grid-on-mobile', file, count: mobileGridFallbacks });
@@ -3371,6 +3512,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
     for (const name of cssGeneratedContentAttributeNames(textContent(node))) cssContentAttributes.add(name);
   });
   transformations.push(...restoreKnownLiterals(document, options.fields, options.file, options.siteLiteralTokens));
+  const caseStudyRepair = normalizeCaseStudyRegions(document);
 
   const removals = new Set<HtmlNode>();
   const proofReplacements = new Set<HtmlNode>();
@@ -3429,7 +3571,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
 
     }
 
-    if (isProofContainer(node)) {
+    if (!caseStudyRepair.nodes.has(node) && isProofContainer(node)) {
       proofReplacements.add(nearestProofContainer(node));
       riskyProof += 1;
       return;
@@ -3639,7 +3781,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   // pages nest proof blocks in malformed markup that parse5 reparents while we
   // walk it; this post-pass makes removal deterministic on the repaired tree.
   walk(document, (node) => {
-    if (isProofContainer(node)) {
+    if (!caseStudyRepair.nodes.has(node) && isProofContainer(node)) {
       proofReplacements.add(nearestProofContainer(node));
     }
   });
@@ -3695,6 +3837,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   if (unsafeAttrs) transformations.push({ rule: 'strip-event-and-unsafe-url-attributes', file: options.file, count: unsafeAttrs });
   if (unsafeElements) transformations.push({ rule: 'strip-active-embedded-content', file: options.file, count: unsafeElements });
   if (riskyProof) transformations.push({ rule: 'replace-unsupported-proof', file: options.file, count: riskyProof });
+  if (caseStudyRepair.count) transformations.push({ rule: 'neutralize-case-study-copy-in-place', file: options.file, count: caseStudyRepair.count });
   if (proofVocabulary) transformations.push({ rule: 'remove-proof-vocabulary', file: options.file, count: proofVocabulary });
   if (splitPersonalization) transformations.push({ rule: 'restore-split-personalization-tokens', file: options.file, count: splitPersonalization });
   if (inlineSplitRisks) transformations.push({ rule: 'neutralize-inline-split-risk', file: options.file, count: inlineSplitRisks });

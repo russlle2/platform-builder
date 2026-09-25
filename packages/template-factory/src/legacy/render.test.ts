@@ -473,6 +473,43 @@ test('mobile repair keeps flex, inline-grid, and fixed-panel customer edits phys
   }
 });
 
+test('planner, roadmap, and rotor content rows preserve every customer edit on mobile', async () => {
+  // Fixed regression for the two failing page topologies in
+  // holistic_medicine-MORE-2026-02-17T20-56-36-504Z-036. Keep the authored
+  // desktop flex layout, fixed planner rail, and nested roadmap list slots.
+  const root = await mkdtemp(join(tmpdir(), 'dc-render-planner-roadmap-'));
+  const templateDir = join(root, 'niche', 'planner-roadmap');
+  try {
+    const repaired = repairLegacyTemplate({
+      slug: 'planner-roadmap',
+      niche: 'holistic_medicine',
+      files: new Map<string, string | Uint8Array>([
+        ['index.html', `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Planning overview</title><link rel="stylesheet" href="styles.css"></head><body>
+          <header><strong>{{BUSINESS_NAME}}</strong><nav aria-label="Primary"><a href="index.html">Overview</a><a href="mailto:{{EMAIL}}">Contact</a></nav></header>
+          <main><h1>A practical planning overview</h1><p>Explore each phase and discuss which next steps fit your priorities and schedule.</p>
+          <section class="planner"><div class="phases"><div>Phase one: Foundation</div><div>Phase two: Integration</div><div>Phase three: Maintenance</div></div><div class="detail"><h2>Phase one: Foundation</h2><p>Learn simple, repeatable practices and discuss what to expect before reserving a place.</p><h3>Available sessions</h3><p>Ask the studio about current dates and educational session formats.</p><a href="mailto:{{EMAIL}}">Email about availability</a></div></section>
+          <section class="roadmap">${['Foundation', 'Integration', 'Maintenance'].map((title) => `<article class="phase"><h2>${title}</h2><p>Build a practical plan with clear expectations and time to review what fits your needs.</p><ul style="margin:10px 0 0 18px"><li>Establish a repeatable routine</li><li>Discuss a useful next step</li></ul></article>`).join('')}</section>
+          <section class="rotor"><div class="carousel"><h2>Explore the service</h2><p>Ask how the current service format can fit your needs.</p><div class="rotor-controls"><button type="button">Previous</button><button type="button">Next</button></div></div><aside class="testimonials"><h2>Client stories</h2><blockquote>An unsupported example outcome.</blockquote></aside></section></main>
+          <footer><p>Contact <a href="mailto:{{EMAIL}}">{{EMAIL}}</a> for current information.</p></footer></body></html>`],
+        ['styles.css', ':root{--surface:#fff;--ink:#111;--accent:#17472f}*{box-sizing:border-box}body{margin:0;background:var(--surface);color:var(--ink);font:16px Arial,sans-serif}h1{color:#17472f}a{color:var(--accent)}header,main,footer{width:min(64rem,92vw);margin:1rem auto}section{margin-block:2rem}.planner{display:flex;gap:12px;align-items:flex-start}.phases{display:flex;flex-direction:column;gap:10px;width:240px}.detail{flex:1}.roadmap{display:flex;gap:14px;align-items:flex-start}.phase{flex:1;padding:14px;border:1px solid #555;border-radius:12px}.rotor{display:flex;gap:18px}.carousel{flex:2;padding:18px}.rotor-controls{display:flex;gap:8px}.testimonials{flex:1}@media(max-width:900px){.phases{flex-direction:row;width:auto;overflow:auto}}'],
+        ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+      ]),
+    });
+    for (const [relativePath, contents] of repaired.files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+    const evidence = await renderTemplateTasks(root, [{
+      key: 'planner-roadmap', niche: 'holistic_medicine', slug: 'planner-roadmap', page: 'index.html', templateDir,
+    }], { evidenceRoot: join(root, 'evidence'), workers: 1, retries: 0 });
+    assert.equal(evidence.length, 2);
+    assert.ok(evidence.every((viewport) => viewport.passed), JSON.stringify(evidence, null, 2));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test('browser QA records same-origin HTTP error responses as failed requests', async () => {
   const root = await mkdtemp(join(tmpdir(), 'dc-render-http-status-'));
   const templateDir = join(root, 'niche', 'slug');
@@ -508,6 +545,36 @@ test('browser QA records same-origin HTTP error responses as failed requests', a
       assert.equal(failures.length, 1, JSON.stringify(viewport.issues, null, 2));
       assert.match(failures[0]!.detail, /missing-local-stylesheet\.css \(HTTP 404\)/);
     }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test('successive image edits settle restored intrinsic SVG geometry before the next physical click', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'dc-intrinsic-image-edits-'));
+  const templateDir = join(root, 'niche', 'intrinsic-image-edits');
+  try {
+    const repaired = repairLegacyTemplate({
+      slug: 'intrinsic-image-edits', niche: 'wellness_coach',
+      files: new Map<string, string | Uint8Array>([
+        ['index.html', '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Session overview</title><link rel="stylesheet" href="styles.css"></head><body><header><nav><a href="index.html">Home</a><a href="mailto:{{EMAIL}}">Contact</a></nav></header><main><h1>{{BUSINESS_NAME}}</h1><p>Review the session format and contact the studio about current availability.</p><img class="hero-image" src="assets/landscape.svg" alt="A green landscape"><section class="story"><div><img src="assets/portrait.svg" alt="A geometric portrait"></div><div><h2>A personal introduction</h2><p>Learn about the approach and discuss which practical next steps fit your needs.</p></div></section></main></body></html>'],
+        ['styles.css', ':root{--surface:#fff;--ink:#111;--accent:#17472f}body{margin:0;background:var(--surface);color:var(--ink);font:16px Arial,sans-serif}h1{color:#17472f}a{color:var(--accent)}header,main{width:min(64rem,92vw);margin:1rem auto}.hero-image{width:100%;height:auto}.story{display:flex;gap:24px;align-items:center;margin-block:30px}.story img{width:90px;height:auto}'],
+        ['assets/landscape.svg', '<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000"><rect width="1600" height="1000" fill="#d9e8dd"/></svg>'],
+        ['assets/portrait.svg', '<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180" viewBox="0 0 180 180"><circle cx="90" cy="90" r="80" fill="#315f46"/></svg>'],
+        ['fields.json', JSON.stringify({ BUSINESS_NAME: 'Legacy Studio', EMAIL: 'hello@example.com' })],
+      ]),
+    });
+    for (const [relativePath, contents] of repaired.files) {
+      const target = join(templateDir, ...relativePath.split('/'));
+      await mkdir(dirname(target), { recursive: true });
+      await writeFile(target, contents);
+    }
+    const evidence = await renderTemplateTasks(root, [{ key: 'intrinsic-image-edits', niche: 'wellness_coach', slug: 'intrinsic-image-edits', page: 'index.html', templateDir }], {
+      evidenceRoot: join(root, 'evidence'), workers: 1, retries: 0,
+    });
+    assert.equal(evidence.length, 2);
+    assert.ok(evidence.every((item) => item.passed), JSON.stringify(evidence, null, 2));
+    assert.ok(evidence.every((item) => item.imageSlotCount === 2));
   } finally {
     await rm(root, { recursive: true, force: true });
   }
