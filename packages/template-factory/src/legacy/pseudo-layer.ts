@@ -15,6 +15,15 @@ function normalizedPseudoSelector(selector: string): string {
   return selector.trim().replace(/::?(before|after)\s*$/i, (_, name: string) => `::${name.toLowerCase()}`);
 }
 
+const interactiveOwners = 'a,button,input,select,textarea,label,summary,option,area,[href],[role],[tabindex],[onclick],[contenteditable]';
+// Class-only selectors can match a control or a child of one. Resolve that
+// ambiguity against the actual DOM, without increasing source specificity.
+const nonInteractiveOwnerGuard = `:where(:not(:is(${interactiveOwners}),:is(${interactiveOwners}) *))`;
+
+function guardedPseudoSelector(selector: string): string {
+  return selector.trim().replace(/(::?(?:before|after))\s*$/i, `${nonInteractiveOwnerGuard}$1`);
+}
+
 function isNonInteractivePseudoSelector(selector: string): boolean {
   if (!/::?(?:before|after)\s*$/i.test(selector)) return false;
   const owner = selector.replace(/::?(?:before|after)\s*$/i, '');
@@ -27,7 +36,7 @@ function isNonInteractivePseudoSelector(selector: string): boolean {
 }
 
 /**
- * Restore pointer access under empty, painted, full-inset pseudo overlays.
+ * Restore pointer access under empty, painted, positioned pseudo overlays.
  * Does not remove/reposition paint, modify generated text, or blanket-disable
  * pseudo elements. Keeping the repair beside its source rule preserves media
  * and supports conditions and avoids a global override of author behavior.
@@ -52,7 +61,19 @@ export function makeDecorativePseudoLayersPointerTransparent(root: postcss.Root)
     const zero = (value: string | undefined) => /^(?:0(?:px|em|rem|%)?)(?:\s+0(?:px|em|rem|%)?){0,3}$/i.test(value?.trim() ?? '');
     const fullInset = zero(declarations.get('inset')?.value)
       || ['top', 'right', 'bottom', 'left'].every((property) => zero(declarations.get(property)?.value));
-    if (!fullInset) continue;
+    // Some authored corner/diagonal decorations have explicit dimensions and
+    // offsets rather than covering all four edges. Require concrete geometry
+    // on both axes; auto/variable-only positioning is not sufficient evidence.
+    const concreteLength = (value: string | undefined) => /^-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|em|rem|vw|vh|vmin|vmax|%)$/i.test(value?.trim() ?? '')
+      || /^0$/.test(value?.trim() ?? '');
+    const positiveSize = (property: string) => {
+      const value = declarations.get(property)?.value.trim();
+      return concreteLength(value) && Number.parseFloat(value ?? '') > 0;
+    };
+    const positionedSize = positiveSize('width') && positiveSize('height')
+      && ['left', 'right'].some((property) => concreteLength(declarations.get(property)?.value))
+      && ['top', 'bottom'].some((property) => concreteLength(declarations.get(property)?.value));
+    if (!fullInset && !positionedSize) continue;
     const painted = ['background', 'background-image', 'background-color', 'box-shadow', 'border', 'border-image'].some((property) => {
       const value = declarations.get(property)?.value.trim();
       return value && !/^(?:none|transparent|initial|inherit|unset)$/i.test(value);
@@ -63,21 +84,36 @@ export function makeDecorativePseudoLayersPointerTransparent(root: postcss.Root)
     const patternSize = declarations.get('background-size')?.value.trim();
     const opacity = Number(declarations.get('opacity')?.value);
     const blend = declarations.get('mix-blend-mode')?.value.trim();
+    const translucent = Number.isFinite(opacity) && opacity >= 0 && opacity < 1;
+    const blended = !!blend && !/^(?:normal|initial|inherit|unset)$/i.test(blend);
     const strippedPattern = !!patternSize && !/^(?:auto|initial|inherit|unset)$/i.test(patternSize)
-      && ((Number.isFinite(opacity) && opacity >= 0 && opacity < 1) || (!!blend && !/^(?:normal|initial|inherit|unset)$/i.test(blend)));
-    if (!painted && !strippedPattern) continue;
-    const selectors = rule.selectors.filter((selector) => isNonInteractivePseudoSelector(selector) && !authoredContent.has(normalizedPseudoSelector(selector)));
+      && (translucent || blended);
+    // Sanitized corner artwork can retain its explicit size, image fitting,
+    // and modest rotation without opacity/blending. Require all three signals
+    // rather than treating an arbitrary empty positioned surface as decoration.
+    const rotation = declarations.get('transform')?.value.trim().match(/^rotate\(\s*(-?(?:\d+(?:\.\d+)?|\.\d+))deg\s*\)$/i);
+    const rotationDegrees = rotation ? Math.abs(Number(rotation[1])) : 0;
+    const strippedRotatedPattern = positionedSize && /^(?:cover|contain)$/i.test(patternSize ?? '')
+      && rotationDegrees > 0 && rotationDegrees <= 45;
+    // Removed image URLs can also leave a full-inset blended pattern without
+    // background-size. Require both remaining compositing signals, never
+    // opacity alone, so an unspecified empty surface keeps its hit behavior.
+    const strippedBlendedOverlay = fullInset && translucent && blended;
+    const selectors = rule.selectors.filter((selector) => {
+      if (!isNonInteractivePseudoSelector(selector) || authoredContent.has(normalizedPseudoSelector(selector))) return false;
+      // A sanitized root corner pattern can lose all paint metadata. Limit
+      // this last case to literal document roots with bounded geometry and
+      // remaining translucency; ordinary class-only surfaces do not qualify.
+      const rootCornerPattern = positionedSize && translucent && /^(?:html|body)::?(?:before|after)$/i.test(selector.trim());
+      return painted || strippedPattern || strippedRotatedPattern || strippedBlendedOverlay || rootCornerPattern;
+    });
     if (!selectors.length) continue;
-    const selector = selectors.join(', ');
+    const selector = selectors.map(guardedPseudoSelector).join(', ');
     const following = rule.next();
     if (following?.type === 'rule' && following.selector === selector && effectiveDeclarations(following).get('pointer-events')?.value === 'none') continue;
-    if (selectors.length === rule.selectors.length) {
-      rule.append(postcss.decl({ prop: 'pointer-events', value: 'none' }));
-    } else {
-      const override = postcss.rule({ selector });
-      override.append(postcss.decl({ prop: 'pointer-events', value: 'none' }));
-      rule.after(override);
-    }
+    const override = postcss.rule({ selector });
+    override.append(postcss.decl({ prop: 'pointer-events', value: 'none' }));
+    rule.after(override);
     repaired += selectors.length;
   }
   return repaired;

@@ -867,7 +867,7 @@ test('repairs unnamed commands, hidden focus, fragment images, and mobile decora
   const html = String(result.files.get('index.html'));
   assert.match(html, /class="brand"[^>]*aria-label="\{\{BUSINESS_NAME\}\} home"/);
   assert.match(html, /id="compSwitchServices"[^>]*aria-label="Switch Services"/);
-  assert.match(html, /id="billingToggle"[^>]*aria-label="Billing Toggle"/);
+  assert.match(html, /<div id="billingToggle"><\/div>/);
   assert.match(html, /<section class="signup"><a href="contact\.html"/);
   assert.doesNotMatch(html, /class="signup"[^>]*aria-hidden/);
   assert.equal((html.match(/src="assets\/img\/dc-placeholder\.svg"/g) ?? []).length, 2);
@@ -962,7 +962,7 @@ test('moves an orphaned decorative overlay back into its matching container', ()
     ]),
   });
   const html = String(result.files.get('index.html'));
-  assert.match(html, /<(?:section|main) class="hero ripple">[\s\S]*<svg class="ripple-svg"[^>]*><\/svg><\/(?:section|main)>/);
+  assert.match(html, /<(?:section|main) class="hero ripple">[\s\S]*<svg class="ripple-svg"[^>]*><\/svg>(?:<\/dc-decoration-clip>)?<\/(?:section|main)>/);
   assert.doesNotMatch(html, /<\/footer><svg class="ripple-svg"/);
   assert.ok(result.transformations.some((item) => item.rule === 'relocate-orphan-decorative-overlay'));
 });
@@ -1206,7 +1206,7 @@ test('marks compiler-v3 pages and preserves decorative overlays without letting 
   assert.match(String(result.files.get('assets/css/dc-repair.css')), /\[data-dc-mobile-fixed-flow="true"\]\{position:static!important/);
   const repairedCss = String(result.files.get('styles.css'));
   assert.match(repairedCss, /dc-repair-mobile-grid/);
-  assert.match(repairedCss, /@media \(max-width:600px\)[^{]*\{\.booking-layout\{grid-template-columns:minmax\(0,1fr\)\s*!important;grid-auto-flow:row\s*!important\}\}/);
+  assert.match(repairedCss, /@media \(max-width:600px\)[^{]*\{\.booking-layout\{grid-template-columns:minmax\(0,1fr\)\s*!important;grid-auto-flow:row\s*!important\}\.booking-layout>\*\{grid-column:auto\s*!important;grid-row:auto\s*!important\}\}/);
   assert.match(repairedCss, /dc-repair-mobile-content-flex/);
   assert.match(repairedCss, /\.top>\*\{flex:1 1 min\(100%,18rem\)\s*!important;min-width:min\(100%,18rem\)\s*!important\}/);
   assert.match(repairedCss, /dc-repair-mobile-fixed-flow/);

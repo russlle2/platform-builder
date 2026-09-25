@@ -1,5 +1,9 @@
 import { parse, parseFragment, serialize, serializeOuter } from 'parse5';
 import postcss from 'postcss';
+import { clipDecorativeOverflowLayers } from './primary-overflow.js';
+import { preserveOriginalMainStyles } from './primary-main-styles.js';
+import { restoreDimensionlessSvgImageSizes } from './primary-svg-image-size.js';
+import { capContentPolygonClips } from './primary-content-clip.js';
 import { posix } from 'node:path';
 import {
   COMPATIBILITY_SCRIPT_PATH,
@@ -30,6 +34,8 @@ import {
   LEGACY_COMPATIBILITY_SCRIPT,
   cssBackgroundSlotId,
   detectFoundation,
+  generatedContentSelectors,
+  possibleStyledTargets,
   inlineStylesheetPath,
   repairPage,
   repairSvgAsset,
@@ -86,12 +92,16 @@ const REPAIR_STYLESHEET = [
   '.dc-contact-form label{display:grid;gap:.35rem}',
   '.dc-contact-form input,.dc-contact-form textarea{width:100%;padding:.75rem;border:1px solid currentColor;border-radius:.4rem;font:inherit}',
   'svg[aria-hidden="true"],[data-dc-decoration="pointer-layer"]{pointer-events:none!important}',
+  'svg[data-dc-static-svg="true"],svg[data-dc-static-svg="true"] *{pointer-events:none!important}',
   ':is(p,blockquote,figcaption,dd,td)>a{text-decoration-line:underline;text-underline-offset:.12em}',
   '@media(max-width:600px){body *{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere}',
+  '[data-dc-mobile-nav-fallback="true"]{position:static!important;inset:auto!important;transform:none!important;flex:1 1 100%!important;width:100%!important}',
+  'header:has([data-dc-mobile-nav-fallback="true"]){position:static!important;inset:auto!important;height:auto!important}',
   '[data-dc-mobile-nav-fallback="true"],[data-dc-mobile-nav-fallback="true"] :is(ul,ol){display:flex!important;visibility:visible!important;content-visibility:visible!important;opacity:1!important;flex-wrap:wrap!important}',
   '[data-dc-mobile-nav-fallback="true"] :is(li,a){display:inline-flex!important;visibility:visible!important;opacity:1!important}',
   '[data-dc-mobile-stack="true"]{flex-wrap:wrap!important}[data-dc-mobile-stack="true"]>*{flex:1 1 min(100%,18rem)!important;min-width:min(100%,18rem)!important}',
   '[data-dc-mobile-grid-stack="true"]{grid-template-columns:minmax(0,1fr)!important;grid-auto-flow:row!important}',
+  '[data-dc-mobile-grid-stack="true"]>*{grid-column:auto!important;grid-row:auto!important}',
   '[data-dc-mobile-fixed-flow="true"]{position:static!important;inset:auto!important;transform:none!important;z-index:auto!important;margin-block:1rem!important}',
   'body :is(nav,header,[class*="nav"],[class*="row"],[class*="flex"]){flex-wrap:wrap!important}',
   'body :is(.grid,[class*="-grid"],[class*="grid-"]){grid-template-columns:repeat(auto-fit,minmax(min(100%,14rem),1fr))!important}',
@@ -981,6 +991,109 @@ function linkedStylesheets(
   return linked;
 }
 
+/** Flow stacked sidebar content after its script-expanded form becomes taller. */
+function restoreBoundContentFlow(pages: Record<string, string>, styles: Readonly<Record<string, string>>): number {
+  let count = 0;
+  for (const [page, html] of Object.entries(pages)) {
+    const document = parse(html) as unknown as HtmlNode;
+    const declarations = new Map<HtmlNode, Map<string, string>>();
+    const seenDeclarations = new Map<HtmlNode, Map<string, Set<string>>>();
+    let conditionalSheets = false;
+    walk(document, node => { if (['link', 'style'].includes(node.tagName ?? '') && getAttr(node, 'media')?.trim()) conditionalSheets = true; });
+    const add = (node: HtmlNode, property: string, value: string): void => {
+      const values = declarations.get(node) ?? new Map<string, string>();
+      const seen = seenDeclarations.get(node) ?? new Map<string, Set<string>>();
+      const choices = seen.get(property) ?? new Set<string>();
+      choices.add(value);
+      seen.set(property, choices);
+      seenDeclarations.set(node, seen);
+      values.set(property, choices.size === 1 ? value : '__dc_ambiguous__');
+      declarations.set(node, values);
+    };
+    for (const path of linkedStylesheets(page, html, styles)) {
+      let root: postcss.Root;
+      try { root = postcss.parse(styles[path]!); } catch { continue; }
+      root.walkAtRules('import', rule => { if (!/^(?:url\([^)]*\)|"[^"]*"|'[^']*')\s*$/.test(rule.params.trim())) conditionalSheets = true; });
+      root.walkRules(rule => {
+        if (rule.parent?.type === 'atrule' && rule.parent.prev()?.type === 'comment'
+          && (rule.parent.prev() as postcss.Comment).text.trim() === 'dc-repair-mobile-fixed-flow') return;
+        const exactTargets = resolveStaticSelectorTargets(document, rule.selector);
+        const targets = exactTargets ?? possibleStyledTargets(document, rule.selector);
+        if (!targets) return;
+        for (const node of rule.nodes ?? []) if (node.type === 'decl') for (const target of targets) {
+          add(target, node.prop, rule.parent?.type === 'root' && exactTargets ? node.value.trim() : '__dc_ambiguous__');
+        }
+      });
+    }
+    walk(document, node => {
+      try { postcss.parse(`x{${getAttr(node, 'style') ?? ''}}`).walkDecls(declaration => add(node, declaration.prop, declaration.value.trim())); }
+      catch { /* Preserve unresolved inline geometry. */ }
+    });
+    if (conditionalSheets) continue;
+    let changed = false;
+    walk(document, node => {
+      const values = declarations.get(node);
+      if (!values || values.has('all')) return;
+      const append = (css: string): void => { setAttr(node, 'style', `${getAttr(node, 'style') ?? ''};${css}`); changed = true; count += 1; };
+      if ((getAttr(node, 'class') ?? '').split(/\s+/).includes('crisis') && node.parentNode?.tagName === 'body'
+        && values.get('position') === 'fixed' && /^\d+(?:\.\d+)?px$/.test(values.get('bottom') ?? '')
+        && /[\p{L}\p{N}]/u.test(textContent(node)) && !getAttr(node, 'aria-hidden')) {
+        // A persistent safety notice needs its own flow space: the fixed
+        // source banner otherwise permanently obscures the final footer.
+        append('position:static!important;inset:auto!important;margin:12px');
+      }
+      if (/modal$/i.test(getAttr(node, 'id') ?? '') && values.get('position') === 'relative'
+        && values.get('display') === 'grid' && values.get('inset') === 'auto' && !values.has('grid-template-columns')
+        && (node.childNodes ?? []).filter(child => child.tagName).length === 1) append('grid-template-columns:minmax(0,1fr)');
+      if (values.get('position') === 'sticky' && node.tagName !== 'header') {
+        let aside = node.parentNode;
+        while (aside && aside.tagName !== 'aside') aside = aside.parentNode;
+        const siblings = node.parentNode?.childNodes ?? [];
+        const following = siblings.slice(siblings.indexOf(node) + 1).some(sibling => sibling.tagName && /[\p{L}\p{N}]/u.test(textContent(sibling)));
+        let expandingContent = false;
+        walk(node, child => { if (child.tagName === 'form' || child.tagName === 'details') expandingContent = true; });
+        const sameOffsetCards = /^\d+(?:\.\d+)?(?:px|rem|em)$/.test(values.get('top') ?? '')
+          && siblings.filter(sibling => sibling.tagName && declarations.get(sibling)?.get('position') === 'sticky'
+            && declarations.get(sibling)?.get('top') === values.get('top') && /[\p{L}\p{N}]/u.test(textContent(sibling))).length > 1;
+        if (aside && ((following && expandingContent) || sameOffsetCards)) append('position:relative!important;inset:auto!important');
+      }
+      if ((getAttr(node, 'class') ?? '').split(/\s+/).includes('svg-motif')
+        && /^(?:[1-9]\d*)(?:px|rem|em)$/.test(values.get('height') ?? '')
+        && values.get('background-size') === 'cover' && values.get('background-repeat') === 'no-repeat'
+        && (node.childNodes ?? []).filter(child => child.tagName).length > 1 && /[\p{L}\p{N}]/u.test(textContent(node))) {
+        append(`${values.has('min-height') ? '' : `min-height:${values.get('height')};`}height:auto`);
+      }
+      const parentClasses = (node.parentNode ? getAttr(node.parentNode, 'class') ?? '' : '').split(/\s+/);
+      if ((getAttr(node, 'class') ?? '').split(/\s+/).includes('center') && parentClasses.includes('wheel')
+        && !values.has('position') && /[\p{L}\p{N}]/u.test(textContent(node))
+        && (node.parentNode?.childNodes ?? []).some(sibling => (getAttr(sibling, 'class') ?? '').split(/\s+/).includes('slice') && declarations.get(sibling)?.get('position') === 'absolute')) {
+        append('position:relative;z-index:1');
+      }
+      if (parentClasses.includes('wheel-big') && (getAttr(node, 'class') ?? '').split(/\s+/).includes('label')
+        && values.get('position') === 'absolute' && /^(?:8\d|9\d)%$/.test(values.get('left') ?? '')
+        && values.get('transform') === 'translateY(-50%)') {
+        // The right-hand label was anchored by its left edge outside the
+        // narrow wheel. Keep the authored anchor, placing its text inward.
+        append('transform:translate(-100%,-50%)');
+      }
+      const wheel = node.parentNode?.parentNode;
+      if (parentClasses.includes('ring') && parentClasses.includes('mid') && wheel
+        && (getAttr(wheel, 'class') ?? '').split(/\s+/).includes('wheel')
+        && !values.has('align-self') && !(node.childNodes ?? []).some(child => child.tagName)
+        && /[\p{L}\p{N}]/u.test(textContent(node))
+        && (wheel.childNodes ?? []).some(sibling => getAttr(sibling, 'data-type') === 'base'
+          && /left\s*:\s*50%/.test(getAttr(sibling, 'style') ?? '') && /top\s*:\s*48%/.test(getAttr(sibling, 'style') ?? ''))) {
+        // Both the instruction and authored base note occupied the center.
+        // Keep the rings and note coordinates; place the instruction in the
+        // open upper part of its existing middle ring.
+        append('align-self:start;margin-top:15%');
+      }
+    });
+    if (changed) pages[page] = serialize(document as never);
+  }
+  return count;
+}
+
 interface CssBackgroundBindingResult {
   boundSlotIds: Set<string>;
   pagesBySlot: Map<string, readonly string[]>;
@@ -1012,6 +1125,12 @@ function collectStaticSlotPolicyRules(styles: Readonly<Record<string, string>>):
     try { root = postcss.parse(css, { from: stylesheet }); } catch { continue; }
     const rules: StaticSlotPolicyRule[] = [];
     root.walkRules((rule) => {
+      for (let ancestor: postcss.Node['parent'] = rule.parent; ancestor; ancestor = ancestor.parent) {
+        if (ancestor.type !== 'atrule') continue;
+        const atRule = ancestor as postcss.AtRule;
+        if (atRule.name.toLowerCase() === 'media'
+          && atRule.params.split(',').every(query => /^(?:only\s+)?print(?:\s|$)/i.test(query.trim()) || /^\(\s*print\s*\)$/i.test(query.trim()))) return;
+      }
       let hidden = false;
       let pointerless = false;
       for (const node of rule.nodes ?? []) {
@@ -1105,6 +1224,58 @@ interface NativeSlotSuppressionResult {
   decorativeImageIds: number;
   protectedBackgroundIds: number;
   incompletePictureIds: number;
+  accessibleOnlyEditIds: number;
+}
+
+/** Prove the standard AT-only clipping pattern without guessing at its cascade. */
+function accessibleOnlyNodes(document: HtmlNode, linked: ReadonlySet<string>, styles: Readonly<Record<string, string>>): Set<HtmlNode> {
+  let conditionalSheets = false;
+  walk(document, node => { if (['link', 'style'].includes(node.tagName ?? '') && getAttr(node, 'media')?.trim()) conditionalSheets = true; });
+  const candidates: HtmlNode[] = [];
+  walk(document, node => {
+    if ((getAttr(node, 'class') ?? '').split(/\s+/).some(value => /^(?:sr-only|visually-hidden)$/.test(value))) candidates.push(node);
+  });
+  if (!candidates.length) return new Set<HtmlNode>();
+  const declarations = new Map(candidates.map(node => [node, new Map<string, Set<string>>()]));
+  const uncertain = new Set<HtmlNode>();
+  const geometry = /^(?:all|position|width|height|overflow|clip|clip-path|animation(?:-.+)?|transition(?:-.+)?)$/;
+  for (const path of linked) {
+    let root: postcss.Root;
+    try { root = postcss.parse(styles[path]!); } catch { candidates.forEach(node => uncertain.add(node)); continue; }
+    root.walkAtRules('import', rule => { if (!/^(?:url\([^)]*\)|"[^"]*"|'[^']*')\s*$/.test(rule.params.trim())) conditionalSheets = true; });
+    root.walkRules(rule => {
+      const values = (rule.nodes ?? []).filter((node): node is postcss.Declaration => node.type === 'decl' && geometry.test(node.prop));
+      if (!values.length) return;
+      for (const selector of rule.selectors) {
+        const targets = possibleStyledTargets(document, selector);
+        if (!targets) { candidates.forEach(node => uncertain.add(node)); continue; }
+        for (const node of candidates) {
+          if (!targets.includes(node)) continue;
+          const exact = resolveStaticSelectorTargets(document, selector);
+          if (rule.parent?.type !== 'root' || !exact?.includes(node)) { uncertain.add(node); continue; }
+          for (const value of values) {
+            const seen = declarations.get(node)!.get(value.prop) ?? new Set<string>();
+            seen.add(value.value.trim().toLowerCase());
+            declarations.get(node)!.set(value.prop, seen);
+          }
+        }
+      }
+    });
+  }
+  const result = new Set<HtmlNode>();
+  if (conditionalSheets) return result;
+  for (const node of candidates) {
+    if (uncertain.has(node) || /(?:^|;)\s*(?:all|position|width|height|overflow|clip(?:-path)?|animation(?:-[\w-]+)?|transition(?:-[\w-]+)?)\s*:/i.test(getAttr(node, 'style') ?? '')) continue;
+    const values = declarations.get(node)!;
+    if ([...values.keys()].some(property => /^(?:all|animation(?:-.+)?|transition(?:-.+)?)$/.test(property))) continue;
+    const one = (property: string): string | undefined => values.get(property)?.size === 1 ? [...values.get(property)!][0] : undefined;
+    if (one('position') !== 'absolute' || !/^1px$/.test(one('width') ?? '') || !/^1px$/.test(one('height') ?? '') || one('overflow') !== 'hidden') continue;
+    const clip = (one('clip') ?? '').replace(/\s+/g, '');
+    const rectangle = clip.match(/^rect\((0(?:px)?|1px),(0(?:px)?|1px),(0(?:px)?|1px),(0(?:px)?|1px)\)$/);
+    if ((rectangle && (parseFloat(rectangle[1]!) === parseFloat(rectangle[3]!) || parseFloat(rectangle[2]!) === parseFloat(rectangle[4]!)))
+      || /^inset\(50%\)$/.test(one('clip-path') ?? '')) result.add(node);
+  }
+  return result;
 }
 
 function suppressStaticallyUnreachableNativeSlots(
@@ -1120,14 +1291,25 @@ function suppressStaticallyUnreachableNativeSlots(
     decorativeImageIds: 0,
     protectedBackgroundIds: 0,
     incompletePictureIds: 0,
+    accessibleOnlyEditIds: 0,
   };
   for (const [page, html] of Object.entries(pages)) {
     const document = parse(html) as unknown as HtmlNode;
-    const policy = resolveStaticSlotPolicyNodes(document, linkedStylesheets(page, html, styles), policyRules);
+    const linked = linkedStylesheets(page, html, styles);
+    const policy = resolveStaticSlotPolicyNodes(document, linked, policyRules);
+    const accessibleOnly = accessibleOnlyNodes(document, linked, styles);
     let changed = false;
     walk(document, (node) => {
       const editId = getAttr(node, 'data-dc-edit-id');
       const reason = staticUnavailabilityReason(node, policy);
+      let accessibleAncestor: HtmlNode | undefined = node;
+      while (accessibleAncestor && !accessibleOnly.has(accessibleAncestor)) accessibleAncestor = accessibleAncestor.parentNode;
+      if (editId && accessibleAncestor) {
+        removeAttr(node, 'data-dc-edit-id');
+        removeAttr(node, 'data-dc-edit-attribute');
+        counts.accessibleOnlyEditIds += 1;
+        changed = true;
+      }
       if (editId && reason) {
         removeAttr(node, 'data-dc-edit-id');
         removeAttr(node, 'data-dc-edit-attribute');
@@ -1553,13 +1735,13 @@ function repairLocalReferences(
       });
     });
     root.walkAtRules('import', (rule) => {
-      const match = rule.params.match(/^(?:url\()?\s*(['"]?)(.*?)\1\s*\)?(?:\s+.*)?$/i);
-      const value = match?.[2]?.trim();
+      const match = rule.params.match(/^(?:url\(\s*(?:(["'])(.*?)\1|([^\s)]+))\s*\)|(["'])(.*?)\4)([\s\S]*)$/i);
+      const value = (match?.[2] ?? match?.[3] ?? match?.[5])?.trim();
       const target = value ? localTarget(file, value) : undefined;
       if (!target) return;
       const actual = known.get(target.toLowerCase());
       if (actual) {
-        const corrected = `url("${relativeReference(file, actual)}")`;
+        const corrected = `url("${relativeReference(file, actual)}")${match?.[6] ?? ''}`;
         if (corrected !== rule.params) repaired += 1;
         rule.params = corrected;
       }
@@ -1803,6 +1985,7 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
   const repairedStyles: Record<string, string> = {};
   const backgroundSelectors: BackgroundSelector[] = [];
   const cssContentAttributes = new Set<string>();
+  const cssGeneratedSelectors = new Set<string>();
   for (const [path, value] of [...files.entries()].sort(([a], [b]) => a.localeCompare(b))) {
     // Third-party CSS has already been safety-checked, rewritten offline, and
     // content-addressed by the vendor. Keep those licensed bytes immutable;
@@ -1810,6 +1993,7 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
     if (!/\.css$/i.test(path) || isVendedStylesheet(path)) continue;
     const sourceCss = decode(value);
     for (const name of cssGeneratedContentAttributeNames(sourceCss)) cssContentAttributes.add(name);
+    if (path !== REPAIR_STYLESHEET_PATH) for (const selector of generatedContentSelectors(sourceCss)) cssGeneratedSelectors.add(selector);
     const result = repairStylesheet(sourceCss, path);
     repairedStyles[path] = result.css;
     backgroundSelectors.push(...result.backgrounds);
@@ -1837,6 +2021,7 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
       fields: normalizedFields,
       pageNames,
       cssContentAttributes: [...cssContentAttributes],
+      cssGeneratedContentSelectors: [...cssGeneratedSelectors],
       siteLiteralTokens,
       ...(foundation ? { foundation } : {}),
     });
@@ -1847,7 +2032,40 @@ export function repairLegacyTemplate(input: LegacyTemplateInput & { homepageDono
     transformations.push(...result.transformations);
   }
   externalizeInlineStyles(repairedPages, repairedStyles, transformations);
+  if (Object.values(repairedPages).some(html => /data-dc-original-main=/.test(html))) {
+    for (const [path, css] of Object.entries(repairedStyles)) {
+      const preserved = preserveOriginalMainStyles(css);
+      repairedStyles[path] = preserved.css;
+      if (preserved.count) transformations.push({ rule: 'preserve-demoted-main-styles', file: path, count: preserved.count });
+    }
+  }
+  let defaultFontPages = 0;
+  for (const [page, html] of Object.entries(repairedPages)) {
+    const hasAuthoredTypography = [...linkedStylesheets(page, html, repairedStyles)].some(path => {
+      if (path === REPAIR_STYLESHEET_PATH) return false;
+      let typography = false;
+      try { postcss.parse(repairedStyles[path]!).walkDecls(declaration => { if (/^font(?:-.+)?$/i.test(declaration.prop)) typography = true; }); }
+      catch { typography = true; }
+      return typography;
+    });
+    const document = parse(html) as unknown as HtmlNode;
+    walk(document, node => {
+      if (node.tagName !== 'html') return;
+      if (hasAuthoredTypography) removeAttr(node, 'data-dc-default-font');
+      else { setAttr(node, 'data-dc-default-font', 'true'); defaultFontPages += 1; }
+    });
+    repairedPages[page] = serialize(document as never);
+  }
+  if (defaultFontPages) repairedStyles[REPAIR_STYLESHEET_PATH] += ':where(html[data-dc-default-font]){font-family:serif}';
   repairLocalReferences(repairedPages, repairedStyles, [...files.keys()], issues, transformations);
+  const boundContentFlow = restoreBoundContentFlow(repairedPages, repairedStyles);
+  if (boundContentFlow) transformations.push({ rule: 'restore-bound-content-flow', file: '*', count: boundContentFlow });
+  const svgImageSizes = restoreDimensionlessSvgImageSizes(repairedPages, repairedSvgAssets, repairedStyles);
+  if (svgImageSizes) transformations.push({ rule: 'restore-svg-image-intrinsic-size', file: '*', count: svgImageSizes });
+  const contentClips = capContentPolygonClips(repairedPages, repairedStyles);
+  if (contentClips) transformations.push({ rule: 'cap-content-polygon-clips', file: '*', count: contentClips });
+  const clippedDecoration = clipDecorativeOverflowLayers(repairedPages, repairedStyles);
+  if (clippedDecoration) transformations.push({ rule: 'clip-decorative-overflow', file: '*', count: clippedDecoration });
   const staticSlotPolicyRules = collectStaticSlotPolicyRules(repairedStyles);
   const nativeSlotSuppressions = suppressStaticallyUnreachableNativeSlots(
     repairedPages,

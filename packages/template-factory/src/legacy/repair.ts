@@ -1,5 +1,7 @@
+import { restoreScriptDependentContent, restoreMalformedMediaRules } from './primary-static-content.js';
 import { parse, parseFragment, serialize, serializeOuter } from 'parse5';
 import postcss from 'postcss';
+import selectorParser from 'postcss-selector-parser';
 import { makeDecorativePseudoLayersPointerTransparent } from './pseudo-layer.js';
 import {
   COMPATIBILITY_SCRIPT_PATH,
@@ -92,6 +94,7 @@ export interface RepairPageOptions {
   pageNames: readonly string[];
   foundation?: string;
   cssContentAttributes?: readonly string[];
+  cssGeneratedContentSelectors?: readonly string[];
   siteLiteralTokens?: Readonly<Record<string, string>>;
 }
 
@@ -657,7 +660,7 @@ function normalizeExpressions(html: string, fields: readonly CanonicalField[], f
   const normalized = expressionSource.replace(MUSTACHE, (full, expression: string) => {
     const trimmed = expression.trim();
     // Explicitly support the malformed initial/slice expressions observed in the corpus.
-    const baseMatch = trimmed.match(/^([A-Za-z][A-Za-z0-9_]*)(?::0(?::1)?|\.charAt\(0\)|\.slice\(0\s*,\s*1\)|\s*\|\s*first)$/i);
+    const baseMatch = trimmed.match(/^([A-Za-z][A-Za-z0-9_]*)(?::0(?::1)?|\.charAt\(0\)|\.slice\(0\s*,\s*1\)|\s*\|\s*(?:first|slice\s*:\s*0\s*[, :]\s*1))$/i);
     const simple = trimmed.match(/^[A-Za-z][A-Za-z0-9_]*$/) ? trimmed : baseMatch?.[1];
     if (!simple) {
       materialized += 1;
@@ -666,6 +669,13 @@ function normalizeExpressions(html: string, fields: readonly CanonicalField[], f
     }
     const sourceName = normalizeFieldName(simple);
     const canonical = TOKEN_ALIASES[sourceName] ?? sourceName;
+    if (baseMatch) {
+      // Initial expressions describe a compact monogram, not a full-name
+      // field. Preserve that intent as ordinary editable preset text.
+      const preset = defaults.get(sourceName) ?? defaults.get(canonical);
+      materialized += 1;
+      return escapeHtml(concreteDefault(preset) ? [...preset!.trim()][0]! : 'P');
+    }
     if (isCorePersonalizationToken(canonical)) {
       if (canonical !== simple.toUpperCase() || baseMatch) aliases += 1;
       return `{{${canonical}}}`;
@@ -875,17 +885,26 @@ function isProofContainer(node: HtmlNode): boolean {
 }
 
 function ensureMainLandmark(document: HtmlNode): number {
-  if (findElement(document, 'main')) return 0;
-
-  let roleMain: HtmlNode | undefined;
+  const mains: HtmlNode[] = [];
   walk(document, (node) => {
-    if (!roleMain && node.tagName && /^main$/i.test(getAttr(node, 'role') ?? '')) roleMain = node;
+    if (node.tagName === 'main' || /^main$/i.test(getAttr(node, 'role') ?? '')) mains.push(node);
   });
-  if (roleMain) {
-    roleMain.tagName = 'main';
-    roleMain.nodeName = 'main';
-    removeAttr(roleMain, 'role');
-    return 1;
+  if (mains.length > 0) {
+    const primary = mains.find(node => node.tagName === 'main') ?? mains[0]!;
+    let count = primary.tagName === 'main' ? 0 : 1;
+    primary.tagName = primary.nodeName = 'main';
+    removeAttr(primary, 'role');
+    for (const extra of mains.filter(node => node !== primary)) {
+      // Retain sibling and nested content/layout without exposing several main
+      // landmarks after legacy role-page composition.
+      if (extra.tagName === 'main') {
+        extra.tagName = extra.nodeName = 'div';
+        setAttr(extra, 'data-dc-original-main', 'true');
+      }
+      removeAttr(extra, 'role');
+      count += 1;
+    }
+    return count;
   }
 
   const body = findElement(document, 'body');
@@ -960,9 +979,49 @@ function ensureMainLandmark(document: HtmlNode): number {
   return 1;
 }
 
+/** Metadata emitted after an accidental body opener still belongs in head. */
+function restoreHeadMetadata(document: HtmlNode): number {
+  const head = findElement(document, 'head');
+  if (!head) return 0;
+  const misplaced: HtmlNode[] = [];
+  walk(document, (node) => {
+    if (!['title', 'meta'].includes(node.tagName ?? '') || node.parentNode === head || isWithinSvg(node)) return;
+    misplaced.push(node);
+  });
+  for (const node of misplaced) {
+    removeNode(node);
+    node.parentNode = head;
+    head.childNodes ??= [];
+    head.childNodes.push(node);
+  }
+  return misplaced.length;
+}
+
+/** Recover SVG paint copied literally out of a percent-encoded data URI. */
+function normalizeSvgPaintAttributes(document: HtmlNode): number {
+  let count = 0;
+  walk(document, (node) => {
+    if (!isWithinSvg(node)) return;
+    for (const attr of node.attrs ?? []) {
+      if (!['fill', 'stroke', 'stop-color', 'flood-color', 'lighting-color', 'filter', 'clip-path', 'mask'].includes(attr.name)) continue;
+      const next = attr.value
+        .replace(/^%23([0-9a-f]{3,8})$/i, '#$1')
+        .replace(/url\(\s*(["']?)%23([a-z_][a-z0-9_.:-]*)\1\s*\)/gi, 'url(#$2)');
+      if (next === attr.value) continue;
+      attr.value = next;
+      count += 1;
+    }
+    if (node.tagName === 'svg' && /^auto$/i.test(getAttr(node, 'height') ?? '')) {
+      // auto is CSS sizing, not a valid SVG length attribute.
+      removeAttr(node, 'height');
+      count += 1;
+    }
+  });
+  return count;
+}
+
 function ensureHeading(document: HtmlNode, file: string): number {
-  if (findElement(document, 'h1') || findElement(document, 'h2') || findElement(document, 'h3')
-    || findElement(document, 'h4') || findElement(document, 'h5') || findElement(document, 'h6')) return 0;
+  if (findElement(document, 'h1') || findElement(document, 'h2') || findElement(document, 'h3')) return 0;
   const main = findElement(document, 'main') ?? findElement(document, 'body') ?? document;
   const stem = file.split('/').pop()?.replace(/\.html?$/i, '').replace(/[-_]+/g, ' ').trim() ?? '';
   const label = /^(?:index|home)$/i.test(stem) || !stem
@@ -1008,7 +1067,7 @@ function relocateOrphanDecorativeOverlays(document: HtmlNode): number {
   return count;
 }
 
-const DECORATIVE_HIT_LAYER_SIGNAL = /(?:^|[-_\s])(?:aura|backdrop|blob|decor(?:ation|ative)?|glow|gradient|grain|noise|orb|ornament|overlay|pattern|texture)(?:$|[-_\s])/i;
+const DECORATIVE_HIT_LAYER_SIGNAL = /(?:^|[-_\s])(?:aura|backdrop|blob|deco|decor(?:ation|ative)?|diag(?:onal)?|glow|gradient|grain|noise|orb|ornament|overlay|pattern|ripple|texture)(?:$|[-_\s])/i;
 const BACKGROUND_HIT_LAYER_SIGNAL = /(?:^|[-_\s])(?:background|bg)(?:$|[-_\s])/i;
 const INTERACTIVE_DESCENDANT_TAGS = new Set(['a', 'button', 'details', 'input', 'option', 'select', 'summary', 'textarea']);
 
@@ -1022,20 +1081,39 @@ function markDecorativeHitLayers(document: HtmlNode): number {
   let count = 0;
   walk(document, (node) => {
     if (!node.tagName || !['aside', 'div', 'img', 'section', 'span', 'svg'].includes(node.tagName)) return;
+    if (node.tagName === 'svg') {
+      let interactive = false;
+      walk(node, (child) => {
+        if (INTERACTIVE_DESCENDANT_TAGS.has(child.tagName ?? '') || getAttr(child, 'tabindex') !== undefined
+          || getAttr(child, 'contenteditable') !== undefined || /^(?:button|link)$/i.test(getAttr(child, 'role') ?? '')) interactive = true;
+      });
+      // SVG geometry has no canvas editor slot. A static illustration can
+      // intercept unrelated copy even when its transparent bounding box is
+      // much larger than the painted artwork. Preserve accessible SVG names
+      // and geometry while allowing pointer events through that static layer.
+      if (!interactive && getAttr(node, 'data-dc-static-svg') !== 'true') {
+        setAttr(node, 'data-dc-static-svg', 'true');
+        count += 1;
+      }
+    }
     const identity = `${getAttr(node, 'id') ?? ''} ${getAttr(node, 'class') ?? ''}`;
     const stronglyDecorative = DECORATIVE_HIT_LAYER_SIGNAL.test(identity);
     const backgroundNamed = BACKGROUND_HIT_LAYER_SIGNAL.test(identity);
+    const hiddenLayer = getAttr(node, 'aria-hidden')?.trim().toLowerCase() === 'true';
     const role = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    if (getAttr(node, 'tabindex') !== undefined || getAttr(node, 'href') !== undefined
+      || getAttr(node, 'contenteditable') !== undefined || /^(?:button|link|switch|checkbox|radio)$/.test(role)) return;
     const explicitlyDecorativeSelf = node.tagName === 'img' && (
       getAttr(node, 'aria-hidden')?.trim().toLowerCase() === 'true'
       || role === 'none'
       || role === 'presentation'
+      || /^(?:decorative\s+)?(?:pattern|background|texture)$/i.test(getAttr(node, 'alt')?.trim() ?? '')
       || (!getAttr(node, 'alt')?.trim() && (stronglyDecorative || backgroundNamed))
     );
     if ((!stronglyDecorative && !backgroundNamed && !explicitlyDecorativeSelf) || textContent(node).trim()) return;
 
     let ownsMeaningfulContent = false;
-    let hasExplicitDecorativeDescendant = explicitlyDecorativeSelf;
+    let hasExplicitDecorativeDescendant = explicitlyDecorativeSelf || hiddenLayer;
     const inspect = (candidate: HtmlNode): void => {
       if (ownsMeaningfulContent) return;
       if (candidate !== node && candidate.tagName) {
@@ -1062,7 +1140,7 @@ function markDecorativeHitLayers(document: HtmlNode): number {
         if (candidate.tagName === 'img') {
           const hidden = getAttr(candidate, 'aria-hidden')?.trim().toLowerCase() === 'true';
           const presentation = role === 'none' || role === 'presentation';
-          if (!hidden && !presentation && Boolean(getAttr(candidate, 'alt')?.trim())) {
+          if (!hiddenLayer && !hidden && !presentation && Boolean(getAttr(candidate, 'alt')?.trim())) {
             ownsMeaningfulContent = true;
             return;
           }
@@ -1073,6 +1151,7 @@ function markDecorativeHitLayers(document: HtmlNode): number {
         }
         if (
           candidate.tagName === 'svg'
+          && !hiddenLayer
           && getAttr(candidate, 'aria-hidden')?.trim().toLowerCase() !== 'true'
           && (role === 'img' || Boolean(getAttr(candidate, 'aria-label')?.trim()))
         ) {
@@ -1698,8 +1777,70 @@ function normalizeStandardFormAccessibleNames(document: HtmlNode): number {
   return count;
 }
 
-function normalizeAccessibility(document: HtmlNode): number {
+export function generatedContentSelectors(css: string): string[] {
+  const selectors: string[] = [];
+  try {
+    postcss.parse(css).walkRules(rule => {
+      const styledBox = (rule.nodes ?? []).some(node => node.type === 'decl'
+        && /^(?:display|position|(?:min-|max-)?(?:width|height)|padding(?:-.+)?|border(?:-.+)?|background(?:-.+)?|mask(?:-.+)?)$/i.test(node.prop));
+      const generatedContent = (rule.nodes ?? []).some(node => node.type === 'decl' && node.prop.toLowerCase() === 'content' && !/^(?:none|normal)$/i.test(node.value.trim()));
+      if (!styledBox && !generatedContent) return;
+      for (const selector of rule.selectors) {
+        if (!generatedContent && /:(?:hover|active|focus(?:-within|-visible)?|checked)\b/.test(selector)) continue;
+        if (styledBox || /::?(?:before|after)\s*$/i.test(selector)) selectors.push(selector.replace(/::?(?:before|after)\s*$/i, ''));
+      }
+    });
+  } catch { selectors.push(':unsupported-generated-content'); }
+  return selectors;
+}
+
+/** Over-approximate conditional styling only to protect possible icon owners. */
+export function possibleStyledTargets(document: HtmlNode, selector: string): HtmlNode[] | undefined {
+  const exact = resolveStaticSelectorTargets(document, selector);
+  if (exact !== undefined) return exact;
+  try {
+    const parsed = selectorParser().astSync(selector);
+    // Removing a condition broadens this protection set; it never creates an
+    // editor slot or changes the stylesheet's actual matching behavior.
+    parsed.walkPseudos(pseudo => {
+      if (!pseudo.parent) return;
+      if (pseudo.value === ':root') {
+        pseudo.replaceWith(selectorParser.tag({ value:'html' }));
+        return;
+      }
+      const compound: selectorParser.Node[] = [];
+      for (let node = pseudo.prev(); node && node.type !== 'combinator'; node = node.prev()) compound.push(node);
+      for (let node = pseudo.next(); node && node.type !== 'combinator'; node = node.next()) compound.push(node);
+      if (compound.some(node => ['tag','class','id','attribute','universal'].includes(node.type))) pseudo.remove();
+      else pseudo.replaceWith(selectorParser.universal({ value:'*' }));
+    });
+    return resolveStaticSelectorTargets(document, parsed.toString());
+  } catch { return undefined; }
+}
+
+function normalizeAccessibility(document: HtmlNode, cssGeneratedSelectors: readonly string[] = []): number {
   let count = 0;
+  const generatedSelectors = [...cssGeneratedSelectors];
+  walk(document, node => { if (node.tagName === 'style') generatedSelectors.push(...generatedContentSelectors(textContent(node))); });
+  const generatedTargets = new Set<HtmlNode>();
+  let unresolvedGeneratedSelector = false;
+  for (const selector of generatedSelectors) {
+    const targets = possibleStyledTargets(document, selector);
+    if (targets === undefined) unresolvedGeneratedSelector = true;
+    else for (const target of targets) generatedTargets.add(target);
+  }
+  const emptyAnchors: HtmlNode[] = [];
+  walk(document, (node) => {
+    if (node.tagName !== 'a' || isWithinSvg(node) || textContent(node).trim()
+      || (node.childNodes ?? []).some(child => child.tagName)
+      || unresolvedGeneratedSelector || generatedTargets.has(node)) return;
+    // Inline risk-copy normalization can leave bare, zero-width links behind.
+    // Keep any author styling/identity hook (including CSS icon links); an
+    // otherwise empty anchor has neither visible content nor a usable action.
+    const inertAttributes = new Set(['href', 'aria-label', 'rel', 'target', 'data-dc-edit-id', 'data-dc-edit-attribute', 'data-pb-edit-id', 'data-pb-edit-attribute']);
+    if ((node.attrs ?? []).every(attribute => inertAttributes.has(attribute.name))) emptyAnchors.push(node);
+  });
+  for (const node of emptyAnchors) { removeNode(node); count += 1; }
   const explicitLabels = new Set<string>();
   const nodesById = new Map<string, HtmlNode>();
   walk(document, (node) => {
@@ -1816,6 +1957,7 @@ function normalizeAccessibility(document: HtmlNode): number {
   };
   const compositeChildren: Readonly<Record<string, ReadonlySet<string>>> = {
     tablist: new Set(['tab']),
+    radiogroup: new Set(['radio']),
     listbox: new Set(['option']),
     menu: new Set(['menuitem', 'menuitemcheckbox', 'menuitemradio']),
     menubar: new Set(['menuitem', 'menuitemcheckbox', 'menuitemradio']),
@@ -1873,8 +2015,45 @@ function normalizeAccessibility(document: HtmlNode): number {
         count += 1;
       }
     }
+    if (node.tagName === 'dt' || node.tagName === 'dd') {
+      const owner = node.parentNode?.tagName === 'div' ? node.parentNode.parentNode : node.parentNode;
+      if (owner?.tagName !== 'dl') {
+        setAttr(node, 'data-dc-repaired-semantics', node.tagName);
+        node.tagName = node.nodeName = 'div';
+        count += 1;
+      }
+    }
+    if (node.tagName === 'li' && !['ul', 'ol', 'menu'].includes(node.parentNode?.tagName ?? '')
+      && (!node.parentNode || getAttr(node.parentNode, 'role') !== 'list')) {
+      setAttr(node, 'data-dc-repaired-semantics', 'listitem');
+      node.tagName = node.nodeName = 'div';
+      count += 1;
+    }
 
     const nodeRole = (getAttr(node, 'role') ?? '').trim().toLowerCase();
+    if (nodeRole === 'table' && node.tagName !== 'table') {
+      const rows = (node.childNodes ?? []).filter(child => Boolean(child.tagName));
+      const existingRows = rows.some(child => /^(?:row|rowgroup)$/.test(getAttr(child, 'role') ?? ''));
+      if (!existingRows) {
+        const cells = rows.map(row => (row.childNodes ?? []).filter(child => Boolean(child.tagName)));
+        const rectangular = rows.length > 1 && cells[0]!.length > 1
+          && rows.every((row, index) => row.tagName === 'div' && !getAttr(row, 'role')
+            && cells[index]!.length === cells[0]!.length
+            && cells[index]!.every(cell => cell.tagName === 'div' && !getAttr(cell, 'role')))
+          && !hasFocusableDescendant(node);
+        if (rectangular) {
+          rows.forEach((row, index) => {
+            setAttr(row, 'role', 'row');
+            cells[index]!.forEach(cell => setAttr(cell, 'role', 'cell'));
+          });
+        } else {
+          setAttr(node, 'role', 'group');
+          removeAttr(node, 'aria-rowcount');
+          removeAttr(node, 'aria-colcount');
+        }
+        count += 1;
+      }
+    }
     const requiredChildren = compositeChildren[nodeRole];
     if (requiredChildren) {
       // Legacy scripts are removed, so composite widget roles would promise
@@ -1882,7 +2061,7 @@ function normalizeAccessibility(document: HtmlNode): number {
       // A surviving set of native controls can still be exposed as a simple
       // named group. If sanitization removed those controls, also remove the
       // now-prohibited accessible name from the generic container.
-      if (nodeRole === 'tablist' && hasFocusableDescendant(node)) {
+      if ((nodeRole === 'tablist' || nodeRole === 'radiogroup') && hasFocusableDescendant(node)) {
         setAttr(node, 'role', 'group');
       } else {
         removeAttr(node, 'role');
@@ -1900,6 +2079,44 @@ function normalizeAccessibility(document: HtmlNode): number {
       removeAttr(node, 'role');
       removeAttr(node, 'aria-selected');
       setAttr(node, 'data-dc-repaired-semantics', 'tab');
+      count += 1;
+    }
+    if (nodeRole === 'img' && hasFocusableDescendant(node)) {
+      setAttr(node, 'role', 'group');
+      count += 1;
+    }
+    if (nodeRole === 'switch' && node.tagName !== 'input') {
+      // These switches depended on removed source scripts. Native buttons
+      // retain their native semantics; a DIV cannot promise a live switch.
+      removeAttr(node, 'role');
+      removeAttr(node, 'tabindex');
+      removeAttr(node, 'aria-pressed');
+      removeAttr(node, 'aria-checked');
+      count += 1;
+    }
+    if (nodeRole === 'progressbar' && !getAttr(node, 'aria-label')?.trim() && !hasReferencedName(node)) {
+      const label = (node.parentNode?.childNodes ?? []).find(child => child.tagName === 'label' && textContent(child).trim());
+      if (label) {
+        setAttr(node, 'aria-label', textContent(label).trim());
+        count += 1;
+      }
+    }
+    if (node.tagName === 'button' && !/^(?:tab|option|radio|checkbox|switch|menuitemcheckbox|menuitemradio)$/.test(getAttr(node, 'role') ?? '')) {
+      for (const attribute of ['aria-selected', 'aria-checked']) {
+        if (getAttr(node, attribute) === undefined) continue;
+        removeAttr(node, attribute);
+        count += 1;
+      }
+    }
+    if (node.tagName === 'svg' && nodeRole === 'img' && getAttr(node, 'aria-hidden') !== 'true'
+      && !getAttr(node, 'aria-label')?.trim() && !getAttr(node, 'title')?.trim() && !hasReferencedName(node)
+      && !(node.childNodes ?? []).some(child => child.tagName === 'title' && textContent(child).trim())) {
+      const parent = node.parentNode;
+      const siblings = (parent?.childNodes ?? []).filter(child => child !== node && /^(?:h[1-6]|figcaption|strong|p)$/.test(child.tagName ?? ''));
+      const sourceLabel = parent && (getAttr(parent, 'aria-label')?.trim() || siblings.map(child => accessibleText(child).trim()).find(Boolean));
+      const svgText: string[] = [];
+      walk(node, child => { if (child.tagName === 'text') svgText.push(textContent(child).trim()); });
+      setAttr(node, 'aria-label', sourceLabel?.slice(0, 160) || svgText.filter(Boolean).join(', ').slice(0, 160) || 'Practice illustration');
       count += 1;
     }
     if (nodeRole === 'list') {
@@ -2697,10 +2914,14 @@ function annotateEditableNodes(
     // alt/label/title metadata editable even when an enclosing link or figure
     // already owns the visible-text slot.
     const ariaLabel = getAttr(node, 'aria-label')?.trim();
+    // A brand link's leaf copy fills its hit area; the editor targets those
+    // leaves before an ancestor aria-label. Keep the accessible name intact,
+    // but advertise its metadata slot only when it has its own physical path
+    // (for example an icon-only button).
     const ariaLabelCanBePhysicallyTargeted = Boolean(ariaLabel) && (
-      !hasElementChildren
-      || INTERACTIVE_ARIA_LABEL_TAGS.has(node.tagName)
-      || ['button', 'link'].includes((getAttr(node, 'role') ?? '').trim().toLowerCase())
+      (!hasElementChildren && hasCustomerEditableText(text))
+      || (!hasCustomerEditableText(text) && (INTERACTIVE_ARIA_LABEL_TAGS.has(node.tagName)
+        || ['button', 'link'].includes((getAttr(node, 'role') ?? '').trim().toLowerCase())))
     );
     const attributeCandidate = !textCandidate
       ? node.tagName === 'meta'
@@ -2713,7 +2934,7 @@ function annotateEditableNodes(
             ? 'placeholder'
           : ariaLabelCanBePhysicallyTargeted
             ? 'aria-label'
-            : getAttr(node, 'title')?.trim()
+            : getAttr(node, 'title')?.trim() && (!hasElementChildren || !hasCustomerEditableText(text))
               ? 'title'
               : undefined
       : undefined;
@@ -2776,12 +2997,12 @@ export function detectFoundation(html: string): string | undefined {
   return marker?.replace(/\s+/g, ' ');
 }
 
-const MOBILE_GRID_REPAIR_MARKER = 'dc-repair-mobile-grid';
+const MOBILE_GRID_REPAIR_MARKER = 'dc-repair-mobile-grid-v2';
 const LEGACY_MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex';
-const MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex-v4';
+const MOBILE_FLEX_REPAIR_MARKER = 'dc-repair-mobile-content-flex-v7';
 const MOBILE_FIXED_FLOW_REPAIR_MARKER = 'dc-repair-mobile-fixed-flow';
-const MOBILE_CONTENT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:cards?|columns?|content|features?|grid|hero(?:-inner|-grid)?|layout|lead-magnet|planners?|plans?|pricing|roadmaps?|rotor|services?|split|tiles?|top)(?:$|[-_.:#\[\s>+~])/i;
-const MOBILE_COMPACT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:actions?|brand|breadcrumbs?|buttons?|controls?|header|logo|menu|nav|pagination|social|tabs?|toolbar)(?:$|[-_.:#\[\s>+~])/i;
+const MOBILE_CONTENT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:cards?|columns?|content|cta|expect|features?|footer|grid|hero(?:-inner|-grid)?|intro|layout|lead(?:-magnet)?|mast|metrics|overview|panel|pillars?|planner(?:s|Wrap)?|plans?|prices?|pricing|products?|prog|ritual|roadmaps?|rotor|row|section|services?|split|steps?|team|tiers?|tiles?|top|wheel-wrap|wrap)(?:$|[-_.:#\[\s>+~])/i;
+const MOBILE_COMPACT_FLEX_SIGNAL = /(?:^|[-_.#\s>+~])(?:actions?|avatar|brand|breadcrumbs?|buttons?|coach-card|controls?|header|logo|menu|nav|pagination|social|tabs?|toolbar)(?:$|[-_.:#\[\s>+~])/i;
 const FIXED_TRANSIENT_UI_SIGNAL = /(?:^|[-_.#\s>+~])(?:dialog|drawer|lightbox|modal|popover|popup)(?:$|[-_.:#\[\s>+~])/i;
 
 function topLevelGridTracks(value: string): string[] {
@@ -2830,6 +3051,12 @@ function needsMobileSingleColumn(value: string): boolean {
  * grid formatting context and more than one fixed track.
  */
 function addMobileGridFallbacks(root: postcss.Root): number {
+  root.walkComments((comment) => {
+    if (comment.text.trim() !== 'dc-repair-mobile-grid') return;
+    const generatedMedia = comment.next();
+    if (generatedMedia?.type === 'atrule' && generatedMedia.name.toLowerCase() === 'media') generatedMedia.remove();
+    comment.remove();
+  });
   let alreadyRepaired = false;
   root.walkComments((comment) => {
     if (comment.text.trim() === MOBILE_GRID_REPAIR_MARKER) alreadyRepaired = true;
@@ -2863,6 +3090,16 @@ function addMobileGridFallbacks(root: postcss.Root): number {
     flow.important = true;
     rule.append(columns, flow);
     media.append(rule);
+    // A full-width desktop heading often retains grid-column:1/3. Once the
+    // parent stacks, that span creates an implicit second track and collapses
+    // the real first track. Reset placement only inside these stacked grids.
+    const children = postcss.rule({ selector: `${selector}>*` });
+    for (const property of ['grid-column', 'grid-row']) {
+      const placement = postcss.decl({ prop: property, value: 'auto' });
+      placement.important = true;
+      children.append(placement);
+    }
+    media.append(children);
   }
   root.append(postcss.comment({ text: MOBILE_GRID_REPAIR_MARKER }), media);
   return selectors.size;
@@ -2881,7 +3118,7 @@ function addMobileContentFlexFallbacks(root: postcss.Root): number {
   // can be re-attested safely; immutable catalogue sources normally never hit
   // this migration path.
   root.walkComments((comment) => {
-    if (![LEGACY_MOBILE_FLEX_REPAIR_MARKER, 'dc-repair-mobile-content-flex-v2', 'dc-repair-mobile-content-flex-v3'].includes(comment.text.trim())) return;
+    if (![LEGACY_MOBILE_FLEX_REPAIR_MARKER, 'dc-repair-mobile-content-flex-v2', 'dc-repair-mobile-content-flex-v3', 'dc-repair-mobile-content-flex-v4', 'dc-repair-mobile-content-flex-v5', 'dc-repair-mobile-content-flex-v6'].includes(comment.text.trim())) return;
     const generatedMedia = comment.next();
     if (generatedMedia?.type === 'atrule' && generatedMedia.name.toLowerCase() === 'media') {
       generatedMedia.remove();
@@ -2897,6 +3134,7 @@ function addMobileContentFlexFallbacks(root: postcss.Root): number {
 
   const columnSelectors = new Set<string>();
   root.walkRules((rule) => {
+    for (let ancestor: postcss.Node['parent'] = rule.parent; ancestor; ancestor = ancestor.parent) if (ancestor.type === 'rule') return;
     const declarations = (rule.nodes ?? []).filter((node): node is postcss.Declaration => node.type === 'decl');
     const columnDirection = declarations.some((declaration) => {
       const property = decodeCssEscapes(declaration.prop).toLowerCase();
@@ -2924,7 +3162,10 @@ function addMobileContentFlexFallbacks(root: postcss.Root): number {
         || MOBILE_COMPACT_FLEX_SIGNAL.test(selector)
         || !MOBILE_CONTENT_FLEX_SIGNAL.test(selector)
       ) continue;
-      selectors.add(selector);
+      // CTA names also occur on individual links/buttons. Only flow their
+      // structural content containers, preserving compact action controls.
+      selectors.add(/(?:^|[-_.#\s>+~])cta(?:$|[-_.:#\[\s>+~])/i.test(selector)
+        ? `${selector}:is(section,article,aside,div)` : selector);
     }
   });
   if (selectors.size === 0) return 0;
@@ -2979,37 +3220,58 @@ function restoreStaticRootVisibility(root: postcss.Root): number {
  * these content classes; modal, hidden, and state-qualified rules keep their
  * own visibility semantics. Native details disclosures remain interactive.
  */
-function restoreScriptDependentContent(root: postcss.Root): number {
+/** Keep large pages scrollable and script-owned visible dialogs in document flow. */
+function restoreStaticPageGeometry(root: postcss.Root): number {
   let count = 0;
-  root.walkRules((rule) => {
-    // Nested selectors inherit their ancestor's activation state. Repair only
-    // flat base content rules, never an authored state or disclosure variant.
-    for (let ancestor: postcss.Node['parent'] = rule.parent; ancestor; ancestor = ancestor.parent) {
-      if (ancestor.type === 'rule') return;
+  let compactAvatar = false;
+  root.walkRules(rule => {
+    if (rule.selector.trim() !== '.avatar') return;
+    if (['width', 'height'].every(property => (rule.nodes ?? []).some(node => node.type === 'decl' && node.prop === property && /^\d+(?:\.\d+)?(?:px|rem|em)$/.test(node.value.trim())))) compactAvatar = true;
+  });
+  root.walkRules(rule => {
+    const selectors = splitSelectorList(rule.selector) ?? [];
+    const declarations = new Map<string, postcss.Declaration>();
+    for (const node of rule.nodes ?? []) {
+      if (node.type !== 'decl') continue;
+      const property = node.prop.toLowerCase();
+      const previous = declarations.get(property);
+      if (!previous?.important || node.important) declarations.set(property, node);
     }
-    const selectors = splitSelectorList(rule.selector);
-    if (!selectors?.length || !selectors.every((selector) => (
-      /^\.(?:reveal|acc-body|accordion-body)$/.test(selector.trim())
-      || /^\[data-reveal(?:=[^\]]+)?\]$/.test(selector.trim())
-    ))) return;
-    let changed = false;
-    for (const declaration of rule.nodes ?? []) {
-      if (declaration.type !== 'decl') continue;
-      const property = decodeCssEscapes(declaration.prop).toLowerCase();
-      const value = declaration.value.trim().toLowerCase();
-      const replacement = property === 'opacity' && /^0(?:\.0*)?$/.test(value) ? '1'
-        : property === 'visibility' && /^(?:hidden|collapse)$/.test(value) ? 'visible'
-          : property === 'display' && value === 'none' ? 'block'
-            : property === 'max-height' && /^0(?:px|rem|em|%)?$/.test(value) ? 'none'
-              : property === 'height' && /^0(?:px|rem|em|%)?$/.test(value) ? 'auto'
-                : property === 'overflow' && value === 'hidden' ? 'visible'
-                  : property === 'transform' && value !== 'none' ? 'none'
-                    : undefined;
-      if (replacement === undefined) continue;
-      declaration.value = replacement;
-      changed = true;
+    if (selectors.length && selectors.every(selector => /^(?:html|body)$/.test(selector.trim()))) {
+      for (const property of ['align-items', 'justify-content']) {
+        const declaration = declarations.get(property);
+        if (declaration?.value.trim() !== 'center') continue;
+        declaration.value = 'safe center';
+        count += 1;
+      }
     }
-    if (changed) count += 1;
+    if (selectors.length && selectors.every(selector => /^(?:header|\.[\w-]*header)$/.test(selector.trim()))
+      && declarations.get('position')?.value.trim() === 'sticky' && !declarations.has('z-index')) {
+      rule.append(postcss.decl({ prop: 'z-index', value: '1' }));
+      count += 1;
+    }
+    if (selectors.length && selectors.every(selector => /^\.[\w-]*modal$|^#[\w-]*[Mm]odal$/.test(selector.trim()))
+      && declarations.get('position')?.value.trim() === 'fixed'
+      && /^(?:flex|grid|block|inline-flex|inline-grid)$/.test(declarations.get('display')?.value.trim() ?? '')
+      && declarations.get('visibility')?.value.trim() !== 'hidden'
+      && !/^0(?:\.0*)?$/.test(declarations.get('opacity')?.value.trim() ?? '')) {
+      for (const declaration of [...rule.nodes]) {
+        if (declaration.type === 'decl' && declaration.prop.toLowerCase() === 'display' && declaration !== declarations.get('display')) declaration.remove();
+      }
+      for (const [property, value] of [['position', 'relative'], ['inset', 'auto'], ['transform', 'none'], ['z-index', 'auto'], ['margin-block', '1rem']]) {
+        const declaration = declarations.get(property!);
+        if (declaration) declaration.value = value!;
+        else rule.append(postcss.decl({ prop: property!, value: value! }));
+      }
+      count += 1;
+    }
+    if (compactAvatar && selectors.some(selector => /^\.hero-art\s+img$/.test(selector.trim()))) {
+      // The broad hero-image selector accidentally resized a nested compact
+      // portrait. Exclude only that authored avatar class; its own cascade,
+      // including later responsive sizes, remains completely intact.
+      rule.selector = selectors.map(selector => /^\.hero-art\s+img$/.test(selector.trim()) ? `${selector}:not(:where(.avatar))` : selector).join(',');
+      count += 1;
+    }
   });
   return count;
 }
@@ -3172,6 +3434,8 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
     }
   }
 
+  const malformedMedia = restoreMalformedMediaRules(root);
+  if (malformedMedia) transformations.push({ rule: 'restore-malformed-media-rule', file, count: malformedMedia });
   let proofSelectorReferences = 0;
   root.walkRules((rule) => {
     const repaired = sanitizeProofSelector(rule.selector);
@@ -3332,6 +3596,8 @@ export function repairStylesheet(css: string, file: string): StylesheetRepairRes
   if (staticContent) {
     transformations.push({ rule: 'restore-script-dependent-content', file, count: staticContent });
   }
+  const staticGeometry = restoreStaticPageGeometry(root);
+  if (staticGeometry) transformations.push({ rule: 'restore-static-page-geometry', file, count: staticGeometry });
   const mobileGridFallbacks = addMobileGridFallbacks(root);
   if (mobileGridFallbacks) {
     transformations.push({ rule: 'stack-fixed-grid-on-mobile', file, count: mobileGridFallbacks });
@@ -3381,6 +3647,8 @@ export function repairSvgAsset(
   const document = parseFragment(svg) as unknown as HtmlNode;
   const issues: RepairIssue[] = [];
   const transformations: Transformation[] = [];
+  const paintAttributes = normalizeSvgPaintAttributes(document);
+  if (paintAttributes) transformations.push({ rule: 'restore-svg-paint-values', file, count: paintAttributes });
   const removals = new Set<HtmlNode>();
   let active = 0;
   let semantic = 0;
@@ -3532,10 +3800,37 @@ function retainFoundationThemeOverrides(css: string): { css: string; removed: nu
 }
 
 export function repairPage(html: string, options: RepairPageOptions): PageRepairResult {
+  // One source serialized a missing list-item bracket into an invalid tag.
+  // Recover its native list/text structure so styling and accessibility can
+  // address the actual authored copy again.
+  html = html.replace(/<li<strong>/gi, '<li><strong>').replace(/<\/li<strong>/gi, '</strong></li>');
   const expressionResult = normalizeExpressions(html, options.fields, options.file);
   const document = parse(expressionResult.html, { sourceCodeLocationInfo: false }) as unknown as HtmlNode;
   const issues = [...expressionResult.issues];
   const transformations = [...expressionResult.transformations];
+  let escapedWhitespace = 0;
+  walk(document, node => {
+    if (node.nodeName !== '#text' || !node.value || !/^(?:\s|\\[nrt])+$/.test(node.value) || !/\\[nrt]/.test(node.value)) return;
+    if (['pre', 'code', 'script', 'style', 'textarea'].includes(node.parentNode?.tagName ?? '')) return;
+    node.value = node.value.replace(/\\r/g, '\r').replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+    escapedWhitespace += 1;
+  });
+  if (escapedWhitespace) transformations.push({ rule: 'restore-escaped-markup-whitespace', file: options.file, count: escapedWhitespace });
+  let monograms = 0;
+  walk(document, node => {
+    if (!hasClassOrId(node, /(?:^|\s)(?:logo|avatar|monogram)(?:$|\s)/i)
+      || (node.childNodes ?? []).some(child => child.tagName)
+      || textContent(node).trim() !== 'Contact the practice for current details.') return;
+    // Repair an already-materialized legacy initial expression without
+    // altering ordinary logos or any customer-authored monogram.
+    replaceWithText(node, 'P');
+    monograms += 1;
+  });
+  if (monograms) transformations.push({ rule: 'restore-compact-monogram', file: options.file, count: monograms });
+  const metadata = restoreHeadMetadata(document);
+  if (metadata) transformations.push({ rule: 'restore-document-head-metadata', file: options.file, count: metadata });
+  const paintAttributes = normalizeSvgPaintAttributes(document);
+  if (paintAttributes) transformations.push({ rule: 'restore-svg-paint-values', file: options.file, count: paintAttributes });
   const pageBackgrounds: BackgroundSelector[] = [];
   const cssContentAttributes = new Set(options.cssContentAttributes ?? []);
   walk(document, (node) => {
@@ -3678,6 +3973,16 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
       nextAttrs.push(attr);
     }
     node.attrs = nextAttrs;
+    if (getAttr(node, 'style') && hasClassOrId(node, /modal/i) && getAttr(node, 'hidden') === undefined) {
+      try {
+        const inlineRoot = postcss.parse(`.dc-script-modal{${getAttr(node, 'style')}}`);
+        if (restoreStaticPageGeometry(inlineRoot)) {
+          const rule = inlineRoot.first as postcss.Rule;
+          setAttr(node, 'style', rule.nodes.map(declaration => declaration.toString()).join(';'));
+          transformations.push({ rule: 'flow-visible-script-modal', file: options.file, count: 1 });
+        }
+      } catch { /* Preserve declarations already validated by attribute cleanup. */ }
+    }
 
     if (node.tagName === 'a') {
       const href = getAttr(node, 'href');
@@ -3857,7 +4162,7 @@ export function repairPage(html: string, options: RepairPageOptions): PageRepair
   const proofVocabulary = sanitizeProofVocabulary(document, options.pageNames);
   const mainLandmarks = ensureMainLandmark(document);
   const headings = ensureHeading(document, options.file);
-  const accessibility = normalizeAccessibility(document);
+  const accessibility = normalizeAccessibility(document, options.cssGeneratedContentSelectors);
   const decorativeHitLayers = markDecorativeHitLayers(document);
   const mobileNavigationFallbacks = markMobileNavigationFallbacks(document);
   const mobileStackContainers = markMobileStackContainers(document);
