@@ -1,7 +1,8 @@
 import { createHash } from 'node:crypto'
 import rehabCatalogContract from './rehab-catalog-contract.json'
+import { CERTIFIED_STORE, assertCatalogDeployment, canonicalDigest, validateCertification, validateCertifiedPointer, type CertifiedPointer } from './certified-catalog-contract.mjs'
 
-export type TemplateCatalogProfile = 'launch' | 'rehab-staging'
+export type TemplateCatalogProfile = 'launch' | 'rehab-staging' | 'rehab-certified'
 
 export const TEMPLATE_CATALOG_PROFILE_ENV = 'DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE'
 export const LAUNCH_TEMPLATE_STORE = 'templates'
@@ -24,7 +25,7 @@ const V3_ID = {
 
 export interface TemplateCatalogProfileConfig {
   profile: TemplateCatalogProfile
-  storeName: typeof LAUNCH_TEMPLATE_STORE | typeof REHAB_STAGING_TEMPLATE_STORE
+  storeName: typeof LAUNCH_TEMPLATE_STORE | typeof REHAB_STAGING_TEMPLATE_STORE | typeof CERTIFIED_STORE
 }
 
 export interface RehabStagingActivePointer {
@@ -100,8 +101,19 @@ export function resolveTemplateCatalogProfile(
 ): TemplateCatalogProfileConfig {
   const raw = (env[TEMPLATE_CATALOG_PROFILE_ENV] ?? 'launch').trim().toLowerCase()
   if (raw === 'launch') return { profile: 'launch', storeName: LAUNCH_TEMPLATE_STORE }
+  if (raw === 'rehab-certified') {
+    assertCatalogDeployment(env, 'production')
+    return { profile: 'rehab-certified', storeName: CERTIFIED_STORE }
+  }
   if (raw !== 'rehab-staging') {
-    throw new Error(`${TEMPLATE_CATALOG_PROFILE_ENV} must be launch or rehab-staging`)
+    throw new Error(`${TEMPLATE_CATALOG_PROFILE_ENV} must be launch or rehab-staging or rehab-certified`)
+  }
+
+  // A separate staging site uses Netlify's production deploy context. Its
+  // explicitly pinned deployment identity, never CONTEXT alone, permits it.
+  if (env.DAILYCLARITY_ENVIRONMENT || env.SITE_ID || env.DAILYCLARITY_STAGING_SITE_ID) {
+    assertCatalogDeployment(env, 'staging')
+    return { profile: 'rehab-staging', storeName: REHAB_STAGING_TEMPLATE_STORE }
   }
 
   const context = deploymentContext(env)
@@ -479,4 +491,15 @@ export async function loadRehabStagingCatalog(
     catalog: snapshot.catalog,
     pointer,
   }
+}
+
+export async function loadCertifiedCatalog(store: RehabCatalogStore): Promise<LoadedRehabCatalogSnapshot & { profile: 'rehab-certified'; storeName: typeof CERTIFIED_STORE; pointer: CertifiedPointer }> {
+  const pointer = validateCertifiedPointer(await getJson(store, REHAB_STAGING_ACTIVE_KEY))
+  const receipt = await getJson(store, pointer.certificationKey)
+  if (canonicalDigest(receipt) !== pointer.certificationHash) throw new Error('Certified catalogue receipt hash does not match its pointer')
+  validateCertification(receipt, { catalogHash: pointer.catalogHash, manifestHash: pointer.manifestHash, releaseSha: pointer.releaseSha })
+  const snapshot = await loadRehabCatalogSnapshot(store, pointer)
+  const validation = validateRehabStagingCatalogDocuments(snapshot.manifest, snapshot.catalog)
+  if (!validation.pass) throw new Error(`Certified catalogue failed validation: ${validation.errors.join('; ')}`)
+  return { ...snapshot, profile: 'rehab-certified', storeName: CERTIFIED_STORE, pointer }
 }

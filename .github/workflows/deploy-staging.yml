@@ -35,6 +35,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Install Playwright browsers
+        run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
+
       - name: Run the complete release gate
         run: |
           pnpm validate
@@ -58,6 +61,7 @@ jobs:
           NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
           NETLIFY_EXPECTED_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
           NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_CATALOG_PROFILE: ${{ vars.DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE }}
 
       - name: Build and publish the separate staging site
         shell: bash

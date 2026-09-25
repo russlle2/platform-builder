@@ -114,6 +114,10 @@ it('serves staging metadata and assets only from the active hash prefix in the i
   expect(reads).toContain(assetKey)
   expect(reads).not.toContain('_manifest.json')
   expect(fetchMock).not.toHaveBeenCalled()
+  const readiness = await registry.getTemplateCatalogReadiness()
+  expect(readiness).toMatchObject({ ready: true, profile: 'rehab-staging', actualTotal: 5486, expectedTotal: 5486, catalogHash: fixture.pointer.catalogHash, manifestHash: fixture.pointer.manifestHash })
+  values.set(fixture.pointer.manifestKey, {})
+  expect(await registry.getTemplateCatalogReadiness()).toMatchObject({ ready: false, profile: 'rehab-staging', expectedTotal: 5486 })
 })
 
 it('keeps a saved edit bound to its historical hash after the active pointer changes', async () => {

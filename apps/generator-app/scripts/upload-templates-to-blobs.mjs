@@ -34,6 +34,7 @@ import { createHash } from 'node:crypto'
 import { fileURLToPath } from 'node:url'
 import { parse } from 'parse5'
 import postcss from 'postcss'
+import { assertCatalogDeployment, forEachBounded } from '../src/lib/templates/certified-catalog-contract.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const APP_ROOT = path.resolve(__dirname, '..')
@@ -2705,6 +2706,10 @@ export function hasMatchingUploadMetadata(remote, expected) {
 }
 
 export function assertRehabStagingUploadEnvironment(env) {
+  if (env.DAILYCLARITY_ENVIRONMENT || env.SITE_ID || env.DAILYCLARITY_STAGING_SITE_ID) {
+    assertCatalogDeployment(env, 'staging')
+    return 'staging'
+  }
   const context = String(env.CONTEXT || env.NETLIFY_CONTEXT || '').trim().toLowerCase()
   if (context === 'production' || context === 'prod') {
     throw new Error('Rehabilitation staging publication is forbidden in production context')
@@ -2792,6 +2797,7 @@ export async function publishRehabStagingCatalog({
   manifest,
   catalogBytes,
   activatedAt,
+  activate = true,
   onProgress = () => {},
 }) {
   const rawCatalog = Buffer.from(catalogBytes)
@@ -2831,7 +2837,7 @@ export async function publishRehabStagingCatalog({
   let skipped = 0
   let processed = 0
 
-  for (const key of [...expectedFiles].sort()) {
+  await forEachBounded([...expectedFiles].sort(), async (key) => {
     const file = suppliedByKey.get(key)
     const content = Buffer.from(await file.read())
     const sha256 = createHash('sha256').update(content).digest('hex')
@@ -2860,7 +2866,7 @@ export async function publishRehabStagingCatalog({
     }
     processed += 1
     onProgress({ processed, total: expectedFiles.size, uploaded, skipped, key: objectKey })
-  }
+  })
 
   const catalogKey = `${prefix}/_catalog-v3.json`
   const priorCatalog = bytesFromStoreValue(await store.get(catalogKey))
@@ -2896,11 +2902,13 @@ export async function publishRehabStagingCatalog({
 
   const pointer = createRehabStagingActivePointer({ catalogHash, manifestHash, activatedAt })
   // This is the only mutable write and must remain the final operation.
-  await store.setJSON(REHAB_STAGING_ACTIVE_KEY, pointer)
-  const pointerReadback = await store.get(REHAB_STAGING_ACTIVE_KEY, { type: 'json' })
-  const pointerVerification = verifyRehabStagingActivePointer(pointer, pointerReadback)
-  if (!pointerVerification.pass) {
-    throw new Error(`Rehabilitation active pointer readback failed:\n  - ${pointerVerification.errors.join('\n  - ')}`)
+  if (activate) {
+    await store.setJSON(REHAB_STAGING_ACTIVE_KEY, pointer)
+    const pointerReadback = await store.get(REHAB_STAGING_ACTIVE_KEY, { type: 'json' })
+    const pointerVerification = verifyRehabStagingActivePointer(pointer, pointerReadback)
+    if (!pointerVerification.pass) {
+      throw new Error(`Rehabilitation active pointer readback failed:\n  - ${pointerVerification.errors.join('\n  - ')}`)
+    }
   }
 
   return {
@@ -3079,7 +3087,8 @@ export async function main(argv = process.argv.slice(2), env = process.env, depe
 
   if (options.dryRun) {
     console.log('[upload-templates] Dry run complete. No credentials loaded and no writes performed.')
-    return { dryRun: true, files: files.length, bytes: totalBytes, totalTemplates }
+    return { dryRun: true, files: files.length, bytes: totalBytes, totalTemplates,
+      ...(dependencies.includePlan && options.rehabV3Staging ? { manifest, fileRecords: files, catalogBytes: await fsp.readFile(path.join(PLATFORM_BUILDER_ROOT, '_catalog-v3.json')) } : {}) }
   }
 
   if (options.rehabV3Staging) assertRehabStagingUploadEnvironment(env)

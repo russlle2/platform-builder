@@ -8,6 +8,7 @@ import {
   LAUNCH_TEMPLATE_STORE,
   REHAB_STAGING_EXPECTED_BY_NICHE,
   REHAB_STAGING_EXPECTED_TOTAL,
+  loadCertifiedCatalog,
   loadRehabCatalogSnapshot,
   loadRehabStagingCatalog,
   resolveTemplateCatalogProfile,
@@ -165,6 +166,8 @@ interface CatalogState {
   manifest: ManifestShape
   catalogHash?: string
   manifestHash?: string
+  releaseSha?: string
+  certificationHash?: string
 }
 
 let _catalogStatePromise: Promise<CatalogState> | null = null
@@ -180,7 +183,7 @@ function loadCatalogState(): Promise<CatalogState> {
   ) return _catalogStatePromise
 
   const request: Promise<CatalogState> = (async (): Promise<CatalogState> => {
-    if (profile.profile === 'rehab-staging') {
+    if (profile.profile !== 'launch') {
       // This branch is intentionally Blob-only. It must never fall back to the
       // launch filesystem, launch store, or public HTTP manifest.
       const store = getBlobsStore(profile.storeName)
@@ -189,7 +192,7 @@ function loadCatalogState(): Promise<CatalogState> {
         return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
       }
       try {
-        const loaded = await loadRehabStagingCatalog(store)
+        const loaded = profile.profile === 'rehab-certified' ? await loadCertifiedCatalog(store) : await loadRehabStagingCatalog(store)
         return {
           profile: loaded.profile,
           storeName: loaded.storeName,
@@ -197,6 +200,7 @@ function loadCatalogState(): Promise<CatalogState> {
           manifest: loaded.manifest as ManifestShape,
           catalogHash: loaded.pointer.catalogHash,
           manifestHash: loaded.pointer.manifestHash,
+          ...('releaseSha' in loaded.pointer ? { releaseSha: loaded.pointer.releaseSha, certificationHash: loaded.pointer.certificationHash } : {}),
         }
       } catch (error) {
         console.error('[niche-registry] rehabilitation staging catalogue failed closed:', error)
@@ -450,7 +454,7 @@ export function isPublishableTemplateMeta(
   )) {
     return false
   }
-  if (profile === 'rehab-staging' && (
+  if (profile !== 'launch' && (
     typeof template.designId !== 'string' || !/^design_[A-Za-z0-9_-]+$/.test(template.designId) ||
     typeof template.contentPresetId !== 'string' || !/^content_[A-Za-z0-9_-]+$/.test(template.contentPresetId) ||
     typeof template.themePresetId !== 'string' || !/^theme_[A-Za-z0-9_-]+$/.test(template.themePresetId) ||
@@ -596,6 +600,30 @@ export async function getLaunchCatalogIdentitySnapshot() {
       artifactSha256: template.artifactSha256 || '',
     })),
   }))
+}
+
+/** Admin attestation refreshes the pointer; catalogue identity is never browser-selected. */
+export async function getTemplateCatalogReadiness() {
+  _catalogStateExpiresAt = 0
+  const profile = resolveTemplateCatalogProfile(process.env)
+  const state = await loadCatalogState()
+  const cache = (await getCaches()).all
+  const niches = [...cache.entries()].map(([slug, templates]) => ({
+    slug, templates: templates.map((template) => ({ slug: template.slug, artifactSha256: template.artifactSha256 || '' })),
+  }))
+  const actualByNiche = Object.fromEntries(niches.map((niche) => [niche.slug, niche.templates.length]))
+  const actualTotal = Object.values(actualByNiche).reduce((sum, count) => sum + count, 0)
+  const issues = profile.profile === 'launch' ? [] : Object.entries(REHAB_STAGING_EXPECTED_BY_NICHE)
+    .filter(([niche, count]) => actualByNiche[niche] !== count)
+    .map(([niche, count]) => `${niche}: expected ${count}, found ${actualByNiche[niche] || 0}`)
+  if (profile.profile !== 'launch' && (!state.catalogHash || !state.manifestHash)) issues.push('Immutable catalogue coordinates are unavailable')
+  const integrity = profile.profile === 'launch' ? inspectLaunchCatalog(niches) : {
+    ready: issues.length === 0 && actualTotal === REHAB_STAGING_EXPECTED_TOTAL,
+    actualTotal, expectedTotal: REHAB_STAGING_EXPECTED_TOTAL, actualByNiche,
+    expectedByNiche: REHAB_STAGING_EXPECTED_BY_NICHE, issues,
+  }
+  return { ...integrity, profile: profile.profile, catalogHash: state.catalogHash ?? null, manifestHash: state.manifestHash ?? null,
+    certificationHash: state.certificationHash ?? null, catalogueReleaseSha: state.releaseSha ?? null }
 }
 
 function safeTemplateKey(...parts: string[]): string | null {

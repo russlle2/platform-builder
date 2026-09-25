@@ -5,44 +5,19 @@ import {
   getTemplateFulfillmentConfigIssues,
   isDedicatedSupabaseProjectConfigured,
 } from '@/lib/stripe-runtime'
-import { getLaunchCatalogIdentitySnapshot } from '@/lib/templates/niche-registry'
+import { getTemplateCatalogReadiness } from '@/lib/templates/niche-registry'
 import {
   inspectLaunchCatalog,
   type LaunchCatalogIntegrity,
 } from '@/lib/templates/launch-catalog-integrity'
 
-const EXPECTED_LAUNCH_SCHEMA_VERSION = '20260903.3'
+import { EXPECTED_LAUNCH_SCHEMA_VERSION, EXPECTED_BOOKING_KIT_SCHEMA_VERSION, inspectReleaseSchema } from '@/lib/release-schema'
 
 function getSupabaseProjectRef(value: string | undefined): string | null {
   try {
     return new URL(value || '').hostname.toLowerCase().match(/^([a-z0-9-]+)\.supabase\.co$/)?.[1] || null
   } catch {
     return null
-  }
-}
-
-async function inspectLaunchSchema(url: string | undefined, serviceKey: string | undefined) {
-  if (!url || !serviceKey) return { ready: false, schemaVersion: null }
-  try {
-    const response = await fetch(`${url.replace(/\/$/, '')}/rest/v1/rpc/launch_schema_readiness`, {
-      method: 'POST',
-      headers: {
-        apikey: serviceKey,
-        authorization: `Bearer ${serviceKey}`,
-        'content-type': 'application/json',
-      },
-      body: '{}',
-      cache: 'no-store',
-      signal: AbortSignal.timeout(10_000),
-    })
-    if (!response.ok) return { ready: false, schemaVersion: null }
-    const result = await response.json() as { ready?: boolean; schemaVersion?: string }
-    return {
-      ready: result.ready === true && result.schemaVersion === EXPECTED_LAUNCH_SCHEMA_VERSION,
-      schemaVersion: typeof result.schemaVersion === 'string' ? result.schemaVersion : null,
-    }
-  } catch {
-    return { ready: false, schemaVersion: null }
   }
 }
 
@@ -80,9 +55,10 @@ export async function GET(req: NextRequest) {
   const hasDedicatedSupabaseRef = !!process.env.DAILYCLARITY_SUPABASE_PROJECT_REF
   const supabaseProjectMatches = isDedicatedSupabaseProjectConfigured()
   const supabaseProjectRef = getSupabaseProjectRef(process.env.NEXT_PUBLIC_SUPABASE_URL)
-  const launchSchema = await inspectLaunchSchema(
+  const launchSchema = await inspectReleaseSchema(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
     process.env.SUPABASE_SERVICE_ROLE_KEY,
+    process.env.DAILYCLARITY_SUPABASE_PROJECT_REF,
   )
   const supabaseReady =
     hasSupabaseUrl &&
@@ -95,10 +71,9 @@ export async function GET(req: NextRequest) {
   const netlifyReady = hasNetlifyToken && hasPlatformDomain
   const portalSigningReady = !!process.env.PORTAL_TOKEN_SECRET
 
-  let catalogIntegrity: LaunchCatalogIntegrity = inspectLaunchCatalog([])
+  let catalogIntegrity: LaunchCatalogIntegrity & { profile?: string; catalogHash?: string | null; manifestHash?: string | null; certificationHash?: string | null; catalogueReleaseSha?: string | null } = inspectLaunchCatalog([])
   try {
-    const niches = await getLaunchCatalogIdentitySnapshot()
-    catalogIntegrity = inspectLaunchCatalog(niches)
+    catalogIntegrity = await getTemplateCatalogReadiness()
   } catch (error) {
     console.error('[integrations/status] template catalog check failed:', error)
   }
@@ -109,7 +84,7 @@ export async function GET(req: NextRequest) {
     ...getTemplateFulfillmentConfigIssues(),
     ...(!hasStripePriceBasic ? ['STRIPE_PRICE_BASIC'] : []),
     ...(!hasStripePriceGrowth ? ['STRIPE_PRICE_GROWTH'] : []),
-    ...(!launchSchema.ready ? [`supabase_schema_${EXPECTED_LAUNCH_SCHEMA_VERSION}`] : []),
+    ...(!launchSchema.ready ? [`supabase_schema_${EXPECTED_LAUNCH_SCHEMA_VERSION}_kit_${EXPECTED_BOOKING_KIT_SCHEMA_VERSION}`] : []),
     ...(!templateCatalogReady ? ['validated_template_catalog'] : []),
   ]
   const checkoutReady = missingRequirements.length === 0
@@ -158,8 +133,8 @@ export async function GET(req: NextRequest) {
             : !supabaseProjectMatches
               ? 'NEXT_PUBLIC_SUPABASE_URL does not match the dedicated DailyClarity project ref'
               : !launchSchema.ready
-                ? `Dedicated project schema/API probe failed (expected ${EXPECTED_LAUNCH_SCHEMA_VERSION})`
-                : `Dedicated project and schema ${launchSchema.schemaVersion} verified`,
+                ? `Dedicated project schema/API probe failed (expected ${EXPECTED_LAUNCH_SCHEMA_VERSION} and ${EXPECTED_BOOKING_KIT_SCHEMA_VERSION})`
+                : `Dedicated project and schemas ${launchSchema.schemaVersion}, ${launchSchema.kitSchemaVersion} verified`,
     },
     {
       name: 'Netlify',
@@ -188,7 +163,7 @@ export async function GET(req: NextRequest) {
       name: 'Template catalog',
       configured: templateCatalogReady,
       detail: templateCatalogReady
-        ? `${publishedTemplateCount} validated editable templates available (12 in each launch niche)`
+        ? `${publishedTemplateCount} validated editable templates available (${catalogIntegrity.profile} catalogue)`
         : `${publishedTemplateCount}/${catalogIntegrity.expectedTotal} validated editable templates; ${catalogIntegrity.issues.join('; ')}`,
     },
   ]
@@ -203,10 +178,18 @@ export async function GET(req: NextRequest) {
     platformDomain: getPlatformDomain(),
     deploymentSiteId: process.env.SITE_ID || null,
     deploymentReleaseSha: process.env.NEXT_PUBLIC_RELEASE_SHA || null,
+    bookingKitSalesEnabled: process.env.BOOKING_KIT_ENABLED === 'true',
     supabaseProjectRef,
     supabaseSchemaVersion: launchSchema.schemaVersion,
+    bookingKitSchemaVersion: launchSchema.kitSchemaVersion,
     supabaseSchemaReady: launchSchema.ready,
     publishedTemplateCount,
+    templateCatalogReady,
+    templateCatalogProfile: catalogIntegrity.profile ?? null,
+    templateCatalogHash: catalogIntegrity.catalogHash ?? null,
+    templateManifestHash: catalogIntegrity.manifestHash ?? null,
+    templateCertificationHash: catalogIntegrity.certificationHash ?? null,
+    templateCatalogueReleaseSha: catalogIntegrity.catalogueReleaseSha ?? null,
     expectedTemplateCount: catalogIntegrity.expectedTotal,
     templateCountsByNiche: catalogIntegrity.actualByNiche,
     expectedTemplateCountsByNiche: catalogIntegrity.expectedByNiche,

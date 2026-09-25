@@ -1,4 +1,4 @@
-name: Validate or publish curated templates
+name: Validate baseline or publish staging templates
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         default: false
         type: boolean
       target_environment:
-        description: 'Protected environment whose isolated Blob store receives the catalog'
+        description: 'Protected target; production permits baseline validation only'
         required: true
         default: staging
         type: choice
@@ -26,10 +26,6 @@ on:
         required: false
         default: false
         type: boolean
-      production_confirmation:
-        description: 'For a production publish, type PUBLISH PRODUCTION'
-        required: false
-        type: string
 
 permissions:
   contents: read
@@ -40,10 +36,20 @@ concurrency:
 
 jobs:
   verify-staging-connection:
-    if: ${{ inputs.verification_only && inputs.target_environment == 'staging' && !inputs.publish }}
+    if: ${{ inputs.verification_only }}
     runs-on: ubuntu-latest
     environment: staging
     steps:
+      - name: Reject non-staging or mixed publication requests
+        shell: bash
+        run: |
+          if [[ "$TARGET_ENVIRONMENT" != "staging" || "$PUBLISH" == "true" ]]; then
+            echo "Read-only verification accepts staging with publish=false only." >&2
+            exit 1
+          fi
+        env:
+          TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
+          PUBLISH: ${{ inputs.publish }}
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -64,6 +70,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ inputs.target_environment }}
     steps:
+      - name: Require certified release tooling for production publication
+        if: ${{ inputs.target_environment == 'production' && inputs.publish }}
+        run: |
+          echo "Curated templates are rollback material. Use the certified release workflow for production." >&2
+          exit 1
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
@@ -125,8 +136,8 @@ jobs:
             echo "Refusing catalog publication: environment sentinel mismatch." >&2
             exit 1
           fi
-          if [[ "$TARGET_ENVIRONMENT" == "production" && "$PRODUCTION_CONFIRMATION" != "PUBLISH PRODUCTION" ]]; then
-            echo "Refusing production catalog publication: confirmation phrase mismatch." >&2
+          if [[ "$TARGET_ENVIRONMENT" != "staging" ]]; then
+            echo "Curated publication is staging-only; production requires full certification." >&2
             exit 1
           fi
           args=(--root "$RUNNER_TEMP/dailyclarity-curated")
@@ -139,5 +150,4 @@ jobs:
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           CATALOG_PUBLISH_ENVIRONMENT: ${{ vars.CATALOG_PUBLISH_ENVIRONMENT }}
           TARGET_ENVIRONMENT: ${{ inputs.target_environment }}
-          PRODUCTION_CONFIRMATION: ${{ inputs.production_confirmation }}
           FORCE_UPLOAD: ${{ inputs.force }}

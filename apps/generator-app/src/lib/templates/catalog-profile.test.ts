@@ -10,10 +10,18 @@ import {
   createRehabStagingActivePointer,
   loadRehabCatalogSnapshot,
   loadRehabStagingCatalog,
+  loadCertifiedCatalog,
   rehabCatalogPrefix,
   resolveTemplateCatalogProfile,
   validateRehabStagingCatalogDocuments,
 } from './catalog-profile'
+import {
+  CERTIFIED_STORE,
+  PRODUCTION_NETLIFY_SITE_ID,
+  canonicalDigest,
+  createCertifiedPointer,
+  type Certification,
+} from './certified-catalog-contract.mjs'
 
 function completeRehabDocuments(): {
   manifest: Record<string, Array<Record<string, unknown>>>
@@ -125,6 +133,26 @@ class MemoryReadStore {
   }
 }
 
+const STAGING_SITE_ID = '12345678-1234-4234-8234-123456789abc'
+
+function certifiedFixture(documents = completeRehabDocuments()) {
+  const catalogText = JSON.stringify(documents.catalog)
+  const receipt: Certification = {
+    version: 1, profile: 'rehab-certified', releaseSha: 'a'.repeat(40),
+    catalogHash: catalogDocumentHash(catalogText), manifestHash: catalogManifestHash(documents.manifest),
+    fullGateHash: 'b'.repeat(64), sourceCatalogHash: 'c'.repeat(64),
+    templateEvidenceHash: 'd'.repeat(64), fileEvidenceHash: 'e'.repeat(64),
+    sourceTemplates: 5486, certifiedTemplates: 5486, neutralFallbacks: 0,
+    customizationDiagnostics: 0, files: 16458, pages: 5486,
+  }
+  const pointer = createCertifiedPointer(receipt, '2026-09-25T12:00:00.000Z')
+  const values = new Map<string, unknown>([
+    [REHAB_STAGING_ACTIVE_KEY, pointer], [pointer.certificationKey, receipt],
+    [pointer.catalogKey, catalogText], [pointer.manifestKey, documents.manifest],
+  ])
+  return { receipt, pointer, values, store: new MemoryReadStore(values) }
+}
+
 describe('template catalogue profile isolation', () => {
   it('defaults to the unchanged launch store and ignores public browser configuration', () => {
     expect(resolveTemplateCatalogProfile({
@@ -150,6 +178,118 @@ describe('template catalogue profile isolation', () => {
     expect(() => resolveTemplateCatalogProfile({
       DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE: 'surprise',
     })).toThrow(/must be launch or rehab-staging/i)
+  })
+
+  it('allows the pinned staging site production deploy without permitting the actual production site', () => {
+    const env = {
+      DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE: 'rehab-staging', CONTEXT: 'production', NODE_ENV: 'production',
+      DAILYCLARITY_ENVIRONMENT: 'staging', SITE_ID: STAGING_SITE_ID, DAILYCLARITY_STAGING_SITE_ID: STAGING_SITE_ID,
+    }
+    expect(resolveTemplateCatalogProfile(env)).toEqual({ profile: 'rehab-staging', storeName: REHAB_STAGING_TEMPLATE_STORE })
+    for (const invalid of [
+      { ...env, SITE_ID: PRODUCTION_NETLIFY_SITE_ID },
+      { ...env, SITE_ID: PRODUCTION_NETLIFY_SITE_ID, DAILYCLARITY_STAGING_SITE_ID: PRODUCTION_NETLIFY_SITE_ID },
+      { ...env, DAILYCLARITY_STAGING_SITE_ID: undefined },
+      { ...env, SITE_ID: undefined },
+      { ...env, DAILYCLARITY_ENVIRONMENT: undefined },
+      { ...env, DAILYCLARITY_ENVIRONMENT: 'production' },
+      { ...env, DAILYCLARITY_ENVIRONMENT: 'preview' },
+    ]) expect(() => resolveTemplateCatalogProfile(invalid)).toThrow()
+  })
+
+  it('requires both production environment and the fixed production site for certified releases', () => {
+    const env = {
+      DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE: 'rehab-certified',
+      DAILYCLARITY_ENVIRONMENT: 'production', SITE_ID: PRODUCTION_NETLIFY_SITE_ID,
+    }
+    expect(resolveTemplateCatalogProfile(env)).toEqual({ profile: 'rehab-certified', storeName: CERTIFIED_STORE })
+    for (const invalid of [
+      { DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE: 'rehab-certified', CONTEXT: 'production' },
+      { ...env, DAILYCLARITY_ENVIRONMENT: undefined }, { ...env, DAILYCLARITY_ENVIRONMENT: 'staging' },
+      { ...env, DAILYCLARITY_ENVIRONMENT: 'prod' }, { ...env, SITE_ID: undefined },
+      { ...env, SITE_ID: STAGING_SITE_ID }, { ...env, SITE_ID: 'wrong' },
+    ]) expect(() => resolveTemplateCatalogProfile(invalid)).toThrow()
+  })
+
+  it('retains local development behavior while rejecting partial or conflicting deployment pins', () => {
+    for (const context of [undefined, 'dev', 'development', 'test', 'branch-deploy', 'deploy-preview']) {
+      expect(resolveTemplateCatalogProfile({ DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE: 'rehab-staging', CONTEXT: context })).toEqual({ profile: 'rehab-staging', storeName: REHAB_STAGING_TEMPLATE_STORE })
+    }
+    for (const pins of [
+      { SITE_ID: STAGING_SITE_ID }, { DAILYCLARITY_ENVIRONMENT: 'staging' },
+      { DAILYCLARITY_STAGING_SITE_ID: STAGING_SITE_ID }, { DAILYCLARITY_ENVIRONMENT: 'unknown' },
+    ]) expect(() => resolveTemplateCatalogProfile({ DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE: 'rehab-staging', CONTEXT: 'dev', ...pins })).toThrow()
+  })
+})
+
+describe('certified catalogue loader', () => {
+  it('loads the complete hash-bound receipt and 5,486-template snapshot from the certified store', async () => {
+    const fixture = certifiedFixture()
+    const loaded = await loadCertifiedCatalog(fixture.store)
+    expect(loaded.profile).toBe('rehab-certified')
+    expect(loaded.storeName).toBe(CERTIFIED_STORE)
+    expect(Object.values(loaded.manifest).flat()).toHaveLength(5486)
+    expect(loaded.pointer.releaseSha).toBe(fixture.receipt.releaseSha)
+    expect(fixture.store.reads).toEqual([REHAB_STAGING_ACTIVE_KEY, fixture.pointer.certificationKey, fixture.pointer.catalogKey, fixture.pointer.manifestKey])
+  })
+
+  it('rejects receipt tampering before reading the catalogue and has no launch fallback', async () => {
+    const fixture = certifiedFixture()
+    fixture.values.set(fixture.pointer.certificationKey, { ...fixture.receipt, neutralFallbacks: 1 })
+    fixture.values.set('_manifest.json', completeRehabDocuments().manifest)
+    await expect(loadCertifiedCatalog(fixture.store)).rejects.toThrow(/receipt hash/i)
+    expect(fixture.store.reads).toEqual([REHAB_STAGING_ACTIVE_KEY, fixture.pointer.certificationKey])
+    const empty = new MemoryReadStore(new Map([['_manifest.json', {}]]))
+    await expect(loadCertifiedCatalog(empty)).rejects.toThrow(/pointer/i)
+    expect(empty.reads).toEqual([REHAB_STAGING_ACTIVE_KEY])
+  })
+
+  it('rejects self-consistent receipt hashes that do not bind to the approved release and documents', async () => {
+    for (const [key, value] of [['releaseSha', 'f'.repeat(40)], ['catalogHash', 'f'.repeat(64)], ['manifestHash', 'f'.repeat(64)]] as const) {
+      const fixture = certifiedFixture()
+      const altered = { ...fixture.receipt, [key]: value }
+      const hash = canonicalDigest(altered)
+      const certificationKey = `certifications/${hash}.json`
+      fixture.values.set(REHAB_STAGING_ACTIVE_KEY, { ...fixture.pointer, certificationHash: hash, certificationKey })
+      fixture.values.set(certificationKey, altered)
+      await expect(loadCertifiedCatalog(fixture.store)).rejects.toThrow(/does not match the approved release/i)
+      expect(fixture.store.reads).toEqual([REHAB_STAGING_ACTIVE_KEY, certificationKey])
+    }
+  })
+
+  it('rejects catalogue or manifest tampering despite a valid receipt', async () => {
+    const catalogue = certifiedFixture()
+    catalogue.values.set(catalogue.pointer.catalogKey, `${String(catalogue.values.get(catalogue.pointer.catalogKey))} `)
+    await expect(loadCertifiedCatalog(catalogue.store)).rejects.toThrow(/catalogue bytes do not match/i)
+    const manifest = certifiedFixture()
+    manifest.values.set(manifest.pointer.manifestKey, {})
+    await expect(loadCertifiedCatalog(manifest.store)).rejects.toThrow(/manifest does not match/i)
+  })
+
+  it('rejects incomplete or neutral certifications even when their hashes are rebuilt', async () => {
+    for (const change of [{ certifiedTemplates: 5485 }, { sourceTemplates: 5485 }, { neutralFallbacks: 1 }, { customizationDiagnostics: 1 }, { pages: 5485 }, { files: 5485 }]) {
+      const fixture = certifiedFixture()
+      const receipt = { ...fixture.receipt, ...change }
+      const hash = canonicalDigest(receipt)
+      const certificationKey = `certifications/${hash}.json`
+      fixture.values.set(REHAB_STAGING_ACTIVE_KEY, { ...fixture.pointer, certificationHash: hash, certificationKey })
+      fixture.values.set(certificationKey, receipt)
+      await expect(loadCertifiedCatalog(fixture.store)).rejects.toThrow(/complete browser\/customization evidence/i)
+    }
+  })
+
+  it('rejects a valid historical snapshot hidden behind an overstated full certification', async () => {
+    const fixture = certifiedFixture(futureHistoricalDocuments())
+    await expect(loadCertifiedCatalog(fixture.store)).rejects.toThrow(/Certified catalogue failed validation/i)
+  })
+
+  it('rejects pointer namespace escapes and profile substitution before any object read', async () => {
+    for (const change of [{ catalogKey: '_catalog-v3.json' }, { manifestKey: '../_manifest.json' }, { certificationKey: 'certifications/other.json' }, { profile: 'rehab-staging' }]) {
+      const fixture = certifiedFixture()
+      fixture.values.set(REHAB_STAGING_ACTIVE_KEY, { ...fixture.pointer, ...change })
+      await expect(loadCertifiedCatalog(fixture.store)).rejects.toThrow(/pointer/i)
+      expect(fixture.store.reads).toEqual([REHAB_STAGING_ACTIVE_KEY])
+    }
   })
 })
 

@@ -12,7 +12,7 @@
     "build": "pnpm -r --workspace-concurrency=1 --if-present build",
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm --filter @platform-builder/generator-app exec tsc --noEmit && pnpm exec tsc --noEmit -p netlify/functions/tsconfig.json",
-    "test": "pnpm -r --if-present test && node apps/generator-app/scripts/upload-templates-to-blobs.test.mjs && node apps/generator-app/scripts/netlify-target-contract.test.mjs && node apps/generator-app/scripts/launch-migration.pglite.test.mjs && node apps/generator-app/scripts/booking-kit-migration.pglite.test.mjs && node apps/generator-app/scripts/full-migration-replay.pglite.test.mjs",
+    "test": "pnpm -r --if-present test && node apps/generator-app/scripts/upload-templates-to-blobs.test.mjs && node apps/generator-app/scripts/netlify-target-contract.test.mjs && node apps/generator-app/scripts/certified-catalog-release.test.mjs && node apps/generator-app/scripts/launch-migration.pglite.test.mjs && node apps/generator-app/scripts/booking-kit-migration.pglite.test.mjs && node apps/generator-app/scripts/full-migration-replay.pglite.test.mjs",
     "test:e2e": "pnpm --filter @platform-builder/generator-app exec playwright test",
     "validate": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "clean": "node scripts/clean.mjs",

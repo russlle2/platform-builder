@@ -166,3 +166,15 @@ test('rejects crossed, hidden, under-scoped, or unprotected Netlify database val
     config,
   ), /does not match the protected environment/)
 })
+
+test('staging production-context builds require the profile and site pin in both scopes', () => {
+  const config = { context: 'production', expectedSupabaseUrl: 'https://stagingref.supabase.co', expectedSupabaseProjectRef: 'stagingref', expectedDeploymentEnvironment: 'staging', expectedCatalogProfile: 'rehab-staging', expectedSiteId: '11111111-1111-1111-1111-111111111111' }
+  const variable = (key, value) => ({ key, scopes: ['builds', 'functions'], is_secret: false, values: [{ context: 'production', value }] })
+  const full = [...runtimeEnvironment, variable('DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE', 'rehab-staging'), variable('DAILYCLARITY_STAGING_SITE_ID', config.expectedSiteId)]
+  assert.doesNotThrow(() => assertNetlifyRuntimeEnvironment(full, config))
+  assert.throws(() => assertNetlifyRuntimeEnvironment(runtimeEnvironment, config), /not pinned/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment(full, { ...config, expectedSiteId: 'different' }), /not pinned/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment(full.map((entry) => entry.key === 'DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE' ? { ...entry, scopes: ['builds'] } : entry), config), /not pinned/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment(full, { ...config, expectedCatalogProfile: 'rehab-certified' }), /conflict/)
+  assert.throws(() => assertNetlifyRuntimeEnvironment([...full, variable('BOOKING_KIT_ENABLED', 'true')], config), /sales to remain disabled/)
+})

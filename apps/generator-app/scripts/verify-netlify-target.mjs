@@ -43,6 +43,8 @@ assertNetlifyRuntimeEnvironment(await envResponse.json(), {
   expectedSupabaseUrl: process.env.NETLIFY_EXPECTED_SUPABASE_URL,
   expectedSupabaseProjectRef: process.env.NETLIFY_EXPECTED_SUPABASE_PROJECT_REF,
   expectedDeploymentEnvironment: process.env.DEPLOY_ENVIRONMENT,
+  expectedCatalogProfile: process.env.NETLIFY_EXPECTED_CATALOG_PROFILE,
+  expectedSiteId: process.env.NETLIFY_EXPECTED_SITE_ID,
 })
 
 console.log(

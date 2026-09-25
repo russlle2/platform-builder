@@ -1,4 +1,5 @@
-export const PRODUCTION_NETLIFY_SITE_ID = '4a98d266-bb9f-44ab-bf27-30597d741705'
+import { PRODUCTION_NETLIFY_SITE_ID } from '../src/lib/templates/certified-catalog-contract.mjs'
+export { PRODUCTION_NETLIFY_SITE_ID }
 const PRODUCTION_HOSTNAMES = new Set(['dailyclarity.org', 'www.dailyclarity.org'])
 
 function normalized(value) {
@@ -138,6 +139,18 @@ export function assertNetlifyRuntimeEnvironment(environmentVariables, config) {
   }
   if (normalized(contextValue(deploymentEnvironment, context)) !== expectedDeploymentEnvironment) {
     throw new Error('Netlify DAILYCLARITY_ENVIRONMENT does not match the protected environment.')
+  }
+
+  if (config.expectedCatalogProfile) {
+    const expectedProfile = config.expectedCatalogProfile
+    if (!['rehab-staging', 'rehab-certified'].includes(expectedProfile) || (expectedProfile === 'rehab-certified') !== (expectedDeploymentEnvironment === 'production')) throw new Error('Catalogue profile and protected deployment environment conflict.')
+    const expectedValues = new Map([['DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE', expectedProfile]])
+    if (expectedProfile === 'rehab-staging') expectedValues.set('DAILYCLARITY_STAGING_SITE_ID', normalized(config.expectedSiteId))
+    for (const [key, expected] of expectedValues) {
+      const variable = environmentVariables.find((entry) => entry?.key === key)
+      if (!expected || variable?.is_secret || !variable?.scopes?.includes('builds') || !variable?.scopes?.includes('functions') || normalized(contextValue(variable, context)) !== expected) throw new Error(`Netlify ${key} is not pinned in builds and functions.`)
+    }
+    if (contextValue(environmentVariables.find((entry) => entry?.key === 'BOOKING_KIT_ENABLED'), context) === 'true') throw new Error('Certified catalogue preparation requires Booking Kit sales to remain disabled.')
   }
 
   const serviceRole = environmentVariables.find(
