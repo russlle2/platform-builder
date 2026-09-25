@@ -49,7 +49,7 @@ const AUTO_FILL_DATA: Partial<WizardData> = {
   email: 'contact@prohvac.com',
   address: '123 Industrial Blvd, Suite 100',
   services: 'AC Repair, Heating Installation, Duct Cleaning, Maintenance Plans',
-  description: 'Professional HVAC services with 20+ years of experience.',
+  description: 'Professional HVAC services for local homes and businesses.',
 };
 
 const TEMPLATES = [
@@ -264,7 +264,7 @@ export function EditorWizard() {
                   href="/pricing"
                   className="block w-full py-4 bg-white text-amber-900 font-bold text-lg rounded-xl shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300 text-center"
                 >
-                  See Transparent Pricing &amp; Reserve Your Spot
+                  See Transparent Pricing &amp; Choose a Plan
                 </Link>
                 <Link
                   href="/pricing"

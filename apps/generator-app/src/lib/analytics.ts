@@ -10,6 +10,8 @@
  * Safe to call during SSR — all window access is guarded.
  */
 
+import { canLoadBrowserAnalytics } from './analytics-privacy'
+
 type Properties = Record<string, string | number | boolean | null | undefined>
 
 declare global {
@@ -22,6 +24,7 @@ declare global {
 
 export function track(eventName: string, properties: Properties = {}): void {
   if (typeof window === 'undefined') return
+  if (!canLoadBrowserAnalytics(window.location.pathname)) return
 
   // Plausible
   if (window.plausible) {

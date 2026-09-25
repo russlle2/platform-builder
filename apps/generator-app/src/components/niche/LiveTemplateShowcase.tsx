@@ -80,7 +80,7 @@ export function LiveTemplateShowcase({
           Real templates built for {nicheLabel.toLowerCase()} professionals
         </h2>
         <p className="text-slate-300 text-lg">
-          Each style below is a real, customizable template — preview it with your business details in minutes.
+          Each published style can be previewed with supported business fields before purchase.
         </p>
       </div>
 
@@ -127,7 +127,7 @@ export function LiveTemplateShowcase({
           href={browseHref}
           className={`inline-flex items-center gap-2 text-base font-semibold ${headingClass} hover:text-white transition-colors`}
         >
-          Browse all {totalCount}+ templates →
+          Browse all {totalCount} {totalCount === 1 ? 'template' : 'templates'} →
         </Link>
       </div>
     </section>

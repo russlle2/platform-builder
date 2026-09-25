@@ -1,49 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
-
-const MIN_SLUG_LENGTH = 3
-const MAX_SLUG_LENGTH = 30
-const RESERVED_SLUGS = new Set([
-  'admin',
-  'api',
-  'app',
-  'billing',
-  'blog',
-  'dashboard',
-  'help',
-  'login',
-  'portal',
-  'pricing',
-  'settings',
-  'signup',
-  'support',
-  'www',
-])
-
-const normalizeSlug = (value: string) => {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, '-')
-    .replace(/-+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-const validateSlug = (value: string) => {
-  if (!value) {
-    return 'Slug is required.'
-  }
-  if (value.length < MIN_SLUG_LENGTH) {
-    return `Slug must be at least ${MIN_SLUG_LENGTH} characters.`
-  }
-  if (value.length > MAX_SLUG_LENGTH) {
-    return `Slug must be ${MAX_SLUG_LENGTH} characters or fewer.`
-  }
-  if (!/^[a-z0-9-]+$/.test(value)) {
-    return 'Use only lowercase letters, numbers, and hyphens.'
-  }
-  return null
-}
+import { normalizeSiteSlug, validateSiteSlug } from '@/lib/site-slug'
 
 export async function POST(req: NextRequest) {
   const allowed = rateLimitByIp(req, 'slug-check', 60, 10 * 60 * 1000)
@@ -51,26 +9,19 @@ export async function POST(req: NextRequest) {
 
   try {
     const { slug } = await req.json()
-    const normalized = normalizeSlug(String(slug || ''))
-    const error = validateSlug(normalized)
+    const normalized = normalizeSiteSlug(String(slug || ''))
+    const error = validateSiteSlug(normalized)
     if (error) {
       return NextResponse.json({ available: false, reason: error })
     }
 
-    if (RESERVED_SLUGS.has(normalized)) {
-      return NextResponse.json({
-        available: false,
-        reason: 'This slug is reserved. Please choose another.',
-      })
-    }
-
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
     if (!supabaseUrl || !supabaseKey) {
       return NextResponse.json({
-        available: true,
-        reason: 'Available (connection check pending).',
-      })
+        available: false,
+        reason: 'Availability checks are temporarily unavailable.',
+      }, { status: 503 })
     }
 
     const supabase = createClient(supabaseUrl, supabaseKey, {
@@ -107,9 +58,9 @@ export async function POST(req: NextRequest) {
 
     if (slugError || portalError) {
       return NextResponse.json({
-        available: true,
-        reason: 'Available (final confirmation happens at checkout).',
-      })
+        available: false,
+        reason: 'Unable to confirm availability. Please try again.',
+      }, { status: 503 })
     }
 
     return NextResponse.json({ available: true })

@@ -1,0 +1,376 @@
+import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { afterEach, describe, expect, it } from 'vitest'
+import {
+  parseVerifyRehabCustomizationArgs,
+  runVerifyRehabCustomizationCli,
+} from '../../scripts/verify-rehab-customization'
+import { verifyRehabCustomizationStaging } from './rehab-customization-verifier'
+
+const temporaryRoots: string[] = []
+
+const catalogueEntry = {
+  legacySlug: 'good-template',
+  designId: 'design_good',
+  contentPresetId: 'content_good',
+  themePresetId: 'theme_good',
+  niche: 'wellness_coach',
+  qualityReceipt: 'receipt_good',
+}
+
+async function writeJson(path: string, value: unknown): Promise<void> {
+  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, 'utf8')
+}
+
+async function createStaging(overrides?: {
+  html?: string
+  css?: string
+  entries?: unknown[]
+  images?: unknown[]
+  tokens?: unknown[]
+  pages?: string[]
+}): Promise<string> {
+  const root = await mkdtemp(join(tmpdir(), 'dc-rehab-verifier-'))
+  temporaryRoots.push(root)
+  const templateRoot = join(root, catalogueEntry.niche, catalogueEntry.legacySlug)
+  await mkdir(join(templateRoot, '.dailyclarity'), { recursive: true })
+  await mkdir(join(templateRoot, 'assets', 'css'), { recursive: true })
+  await writeJson(join(root, '_catalog-v3.json'), {
+    contractVersion: 3,
+    sourceTemplates: 1,
+    templates: [catalogueEntry],
+  })
+  await writeJson(join(root, '_manifest.json'), {
+    [catalogueEntry.niche]: [{
+      ...catalogueEntry,
+      slug: catalogueEntry.legacySlug,
+      nicheSlug: catalogueEntry.niche,
+    }],
+  })
+  await writeJson(join(templateRoot, 'template.json'), {
+    contractVersion: 3,
+    legacySlug: catalogueEntry.legacySlug,
+    niche: catalogueEntry.niche,
+    pages: overrides?.pages ?? ['index.html'],
+    designId: catalogueEntry.designId,
+    contentPresetId: catalogueEntry.contentPresetId,
+    themePresetId: catalogueEntry.themePresetId,
+    qualityReceipt: catalogueEntry.qualityReceipt,
+  })
+  await writeJson(join(templateRoot, '.dailyclarity', 'content-preset.json'), {
+    id: catalogueEntry.contentPresetId,
+    legacySlug: catalogueEntry.legacySlug,
+    entries: overrides?.entries ?? [
+      { nodeId: 'txt_heading', page: 'index.html', html: 'Welcome', text: 'Welcome' },
+      { nodeId: 'txt_meta', page: 'index.html', html: 'A description', text: 'A description', attribute: 'content' },
+      { nodeId: 'txt_title', page: 'index.html', html: 'Title', text: 'Title' },
+      { nodeId: 'txt_option', page: 'index.html', html: 'First', text: 'First' },
+      { nodeId: 'txt_caption', page: 'index.html', html: 'Caption', text: 'Caption' },
+      { nodeId: 'txt_111111111111111111', page: 'index.html', html: 'About', text: 'About' },
+      { nodeId: 'txt_222222222222222222', page: 'index.html', html: 'Name', text: 'Name' },
+      { nodeId: 'txt_333333333333333333', page: 'index.html', html: 'Your name', text: 'Your name', attribute: 'placeholder' },
+      { nodeId: 'txt_444444444444444444', page: 'index.html', html: 'Send', text: 'Send' },
+    ],
+    images: overrides?.images ?? [
+      { slotId: 'img_hero', page: 'index.html', kind: 'image', source: '/hero.webp', attribute: 'src' },
+      {
+        slotId: 'css_hero',
+        page: 'index.html',
+        kind: 'background',
+        source: '/background.webp',
+        stylesheet: 'assets/css/styles.css',
+        selector: '.hero',
+        attribute: 'css-url',
+      },
+      {
+        slotId: 'source_responsive',
+        page: 'index.html',
+        kind: 'image',
+        source: 'wide.webp 1x, wide-2x.webp 2x',
+        attribute: 'srcset',
+      },
+    ],
+    hash: 'content-hash',
+  })
+  await writeJson(join(templateRoot, '.dailyclarity', 'theme-preset.json'), {
+    id: catalogueEntry.themePresetId,
+    legacySlug: catalogueEntry.legacySlug,
+    tokens: overrides?.tokens ?? [
+      { id: 'color_bg_123456', kind: 'color', value: '#ffffff' },
+      { id: 'font_body_123456', kind: 'font', value: 'Arial, sans-serif' },
+    ],
+    fontImports: [],
+    hash: 'theme-hash',
+  })
+  await writeFile(join(templateRoot, 'index.html'), overrides?.html ?? [
+    '<!doctype html><html><head>',
+    '<title data-dc-edit-id="txt_title">Title</title>',
+    '<meta content="A description" data-dc-edit-id="txt_meta" data-dc-edit-attribute="content">',
+    '</head><body>',
+    '<h1 data-dc-edit-id="txt_heading">Welcome</h1>',
+    '<select><option data-dc-edit-id="txt_option">First</option></select>',
+    '<table><caption data-dc-edit-id="txt_caption">Caption</caption></table>',
+    '<nav><a href="about.html"><span data-dc-edit-id="txt_111111111111111111">About</span></a></nav>',
+    '<form action="/" method="post" data-dc-standard-form="safe"><label><span data-dc-edit-id="txt_222222222222222222">Name</span>',
+    '<input name="name" aria-label="Customer name" placeholder="Your name" data-dc-edit-id="txt_333333333333333333" data-dc-edit-attribute="placeholder"></label>',
+    '<button type="submit"><span data-dc-edit-id="txt_444444444444444444">Send</span></button></form>',
+    '<picture><source data-dc-image-id="source_responsive" srcset="wide.webp 1x, wide-2x.webp 2x">',
+    '<img data-dc-image-id="img_hero" src="/hero.webp" alt=""></picture>',
+    '<section class="hero" data-dc-image-id="css_hero">Background</section>',
+    '</body></html>',
+  ].join(''), 'utf8')
+  await writeFile(join(templateRoot, 'assets', 'css', 'styles.css'), overrides?.css ?? [
+    ':root {',
+    '  --dc-theme-color_bg_123456: #ffffff;',
+    '  --dc-theme-font_body_123456: Arial, sans-serif;',
+    '}',
+    'body { background: var(--dc-theme-color_bg_123456); font-family: var(--dc-theme-font_body_123456); }',
+  ].join('\n'), 'utf8')
+  return root
+}
+
+afterEach(async () => {
+  await Promise.all(temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })))
+})
+
+describe('verifyRehabCustomizationStaging', () => {
+  it('proves ID-first text, attribute, image, persistence, deploy, and theme paths', async () => {
+    const root = await createStaging()
+    const result = await verifyRehabCustomizationStaging({ root, workers: 2 })
+
+    expect(result).toMatchObject({
+      pass: true,
+      catalogTemplates: 1,
+      scannedTemplates: 1,
+      pages: 1,
+      stylesheets: 1,
+      contentEntries: 9,
+      imageSlots: 3,
+      themeTokens: 2,
+      diagnosticCount: 0,
+      diagnosticsTruncated: 0,
+    })
+    expect(result.diagnostics).toEqual([])
+  })
+
+  it('rejects structural text targets and aria-label-first visible placeholders', async () => {
+    const root = await createStaging({
+      html: [
+        '<html><body><nav data-dc-edit-id="txt_structural"><a href="about.html">About</a></nav>',
+        '<form><label>Name <input name="name" aria-label="Customer name" placeholder="Your name" ',
+        'data-dc-edit-id="txt_placeholder" data-dc-edit-attribute="aria-label"></label></form></body></html>',
+      ].join(''),
+      entries: [
+        { nodeId: 'txt_structural', page: 'index.html', html: '<a href="about.html">About</a>', text: 'About' },
+        { nodeId: 'txt_placeholder', page: 'index.html', html: 'Customer name', text: 'Customer name', attribute: 'aria-label' },
+      ],
+      images: [],
+    })
+    const result = await verifyRehabCustomizationStaging({ root, maxDiagnostics: 100 })
+    const codes = result.diagnostics.map((diagnostic) => diagnostic.code)
+
+    expect(result.pass).toBe(false)
+    expect(codes).toContain('content_target_not_leaf')
+    expect(codes).toContain('visible_placeholder_uneditable')
+  })
+
+  it('executes the sanitized customer preview route instead of accepting stripped targets', async () => {
+    const root = await createStaging({
+      html: '<html><head></head><body><iframe data-dc-edit-id="txt_frame">Frame copy</iframe></body></html>',
+      entries: [{ nodeId: 'txt_frame', page: 'index.html', html: 'Frame copy', text: 'Frame copy' }],
+      images: [],
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+
+    expect(result.pass).toBe(false)
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain('content_customer_path_failed')
+  })
+
+  it('reports ambiguous IDs and non-HTML image slots', async () => {
+    const root = await createStaging({
+      html: '<html><body><p data-dc-edit-id="txt_heading">One</p><p data-dc-edit-id="txt_heading">Two</p></body></html>',
+      entries: [{ nodeId: 'txt_heading', page: 'index.html', html: 'One', text: 'One' }],
+      images: [{ slotId: 'css_hero', page: 'assets/css/styles.css', kind: 'background', source: '/hero.webp', attribute: 'css-url' }],
+      css: [
+        ':root { --dc-theme-font_weight_123456: 700; }',
+        'h1 { font-weight: var(--dc-theme-font_weight_123456); }',
+      ].join('\n'),
+      tokens: [{ id: 'font_weight_123456', kind: 'font', value: '700' }],
+    })
+    const result = await verifyRehabCustomizationStaging({ root, maxDiagnostics: 100 })
+    const codes = result.diagnostics.map((diagnostic) => diagnostic.code)
+
+    expect(result.pass).toBe(false)
+    expect(codes).toContain('content_target_ambiguous')
+    expect(codes).toContain('image_page_not_customer_editable')
+    expect(codes).not.toContain('theme_token_not_overridden')
+  })
+
+  it('rejects hidden text and decorative or action-stealing background slots', async () => {
+    const root = await createStaging({
+      html: [
+        '<html><body><h1 data-dc-edit-id="txt_visible">Visible heading</h1>',
+        '<section hidden><p data-dc-edit-id="txt_hidden">Hidden legacy modal copy</p></section>',
+        '<section style="pointer-events:none"><p data-dc-edit-id="txt_pointerless">Pointerless copy</p><img data-dc-image-id="img_pointerless" src="/img/pointerless.webp" alt=""></section>',
+        '<div class="pattern" data-dc-image-id="css_pattern"></div>',
+        '<img hidden data-dc-image-id="img_hidden" src="/img/hidden.webp" alt="">',
+        '<a href="contact.html" data-dc-image-id="css_link">Contact</a></body></html>',
+      ].join(''),
+      entries: [
+        { nodeId: 'txt_visible', page: 'index.html', html: 'Visible heading', text: 'Visible heading' },
+        { nodeId: 'txt_hidden', page: 'index.html', html: 'Hidden legacy modal copy', text: 'Hidden legacy modal copy' },
+        { nodeId: 'txt_pointerless', page: 'index.html', html: 'Pointerless copy', text: 'Pointerless copy' },
+      ],
+      images: [
+        { slotId: 'css_pattern', page: 'index.html', kind: 'background', source: '/img/pattern.svg', selector: '.pattern', attribute: 'css-url' },
+        { slotId: 'img_hidden', page: 'index.html', kind: 'image', source: '/img/hidden.webp', attribute: 'src' },
+        { slotId: 'img_pointerless', page: 'index.html', kind: 'image', source: '/img/pointerless.webp', attribute: 'src' },
+        { slotId: 'css_link', page: 'index.html', kind: 'background', source: '/img/hero.webp', selector: 'a', attribute: 'css-url' },
+      ],
+    })
+    const result = await verifyRehabCustomizationStaging({ root, maxDiagnostics: 100 })
+    const codes = result.diagnostics.map((diagnostic) => diagnostic.code)
+
+    expect(result.pass).toBe(false)
+    expect(codes).toContain('content_target_not_customer_visible')
+    expect(codes).toContain('image_target_not_customer_visible')
+    expect(codes).toContain('decorative_image_slot_advertised')
+    expect(codes).toContain('background_slot_steals_customer_action')
+  })
+
+  it('rejects manifest pages that the customer preview and persistence routes cannot address', async () => {
+    for (const page of ['legacy.htm', '/absolute.html', 'pages//empty.html']) {
+      const root = await createStaging({ pages: [page], entries: [], images: [] })
+      const result = await verifyRehabCustomizationStaging({ root })
+      expect(result.pass).toBe(false)
+      expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain('manifest_pages_invalid')
+    }
+  })
+
+  it('preserves non-family compiler font tokens while mapping family tokens', async () => {
+    const root = await createStaging({
+      css: [
+        ':root {',
+        '  --dc-theme-font_weight_123456: 700;',
+        '  --dc-theme-font_body_123456: Arial, sans-serif;',
+        '}',
+        'body { font-family: var(--dc-theme-font_body_123456); }',
+        'h1 { font-weight: var(--dc-theme-font_weight_123456); }',
+      ].join('\n'),
+      tokens: [
+        { id: 'font_weight_123456', kind: 'font', value: '700' },
+        { id: 'font_body_123456', kind: 'font', value: 'Arial, sans-serif' },
+      ],
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+
+    expect(result.pass).toBe(true)
+    expect(result.themeTokens).toBe(2)
+    expect(result.diagnostics).toEqual([])
+  })
+
+  it('counts every failure while bounding returned diagnostics', async () => {
+    const root = await createStaging({
+      html: '<html><body></body></html>',
+      entries: [
+        { nodeId: 'missing_one', page: 'index.html', html: 'One', text: 'One' },
+        { nodeId: 'missing_two', page: 'index.html', html: 'Two', text: 'Two' },
+        { nodeId: 'missing_three', page: 'index.html', html: 'Three', text: 'Three' },
+      ],
+    })
+    const result = await verifyRehabCustomizationStaging({ root, maxDiagnostics: 2 })
+
+    expect(result.pass).toBe(false)
+    expect(result.diagnostics).toHaveLength(2)
+    expect(result.diagnosticCount).toBeGreaterThan(2)
+    expect(result.diagnosticsTruncated).toBe(result.diagnosticCount - 2)
+  })
+
+  it('fails when a complete preset exceeds the actual persistence limits', async () => {
+    const entries = Array.from({ length: 251 }, (_, index) => ({
+      nodeId: `txt_${index}`,
+      page: 'index.html',
+      html: `Text ${index}`,
+      text: `Text ${index}`,
+    }))
+    const html = `<html><body>${entries.map((entry) => `<p data-dc-edit-id="${entry.nodeId}">${entry.text}</p>`).join('')}</body></html>`
+    const root = await createStaging({ entries, html })
+    const result = await verifyRehabCustomizationStaging({ root })
+
+    expect(result.pass).toBe(false)
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toContain('inline_persistence_roundtrip_failed')
+  })
+
+  it('checks a near-limit page as one aggregate customer payload', async () => {
+    const entries = Array.from({ length: 240 }, (_, index) => ({
+      nodeId: `txt_${index}`,
+      page: 'index.html',
+      html: `Text ${index}`,
+      text: `Text ${index}`,
+    }))
+    const images = Array.from({ length: 49 }, (_, index) => ({
+      slotId: `img_${index}`,
+      page: 'index.html',
+      kind: 'image',
+      source: `/image-${index}.webp`,
+      attribute: 'src',
+    }))
+    const html = [
+      '<html><body>',
+      ...entries.map((entry) => `<p data-dc-edit-id="${entry.nodeId}">${entry.text}</p>`),
+      ...images.map((image) => `<img data-dc-image-id="${image.slotId}" src="${image.source}" alt="">`),
+      '</body></html>',
+    ].join('')
+    const root = await createStaging({ entries, images, html })
+    const started = performance.now()
+    const result = await verifyRehabCustomizationStaging({ root })
+
+    expect(result.pass).toBe(true)
+    expect(result.contentEntries).toBe(240)
+    expect(result.imageSlots).toBe(49)
+    expect(performance.now() - started).toBeLessThan(2_000)
+  }, 5_000)
+})
+
+describe('verify-rehab-customization CLI', () => {
+  it('requires an explicit staging root and validates numeric bounds', () => {
+    expect(() => parseVerifyRehabCustomizationArgs([])).toThrow('--root is required')
+    expect(() => parseVerifyRehabCustomizationArgs(['--root', '.', '--workers', '0'])).toThrow('--workers must be between 1 and 64')
+    expect(parseVerifyRehabCustomizationArgs(['--help'])).toBeNull()
+  })
+
+  it('returns zero for a clean catalogue and one for a bounded gate failure', async () => {
+    const cleanRoot = await createStaging()
+    const failingRoot = await createStaging({
+      html: '<html><body></body></html>',
+      entries: [{ nodeId: 'missing', page: 'index.html', html: 'Missing', text: 'Missing' }],
+    })
+    const cleanOutput: string[] = []
+    const failingOutput: string[] = []
+
+    await expect(runVerifyRehabCustomizationCli(
+      ['--root', cleanRoot, '--json'],
+      { stdout: (value) => cleanOutput.push(value), stderr: (value) => cleanOutput.push(value) },
+    )).resolves.toBe(0)
+    await expect(runVerifyRehabCustomizationCli(
+      ['--root', failingRoot, '--json', '--max-diagnostics', '1'],
+      { stdout: (value) => failingOutput.push(value), stderr: (value) => failingOutput.push(value) },
+    )).resolves.toBe(1)
+
+    expect(JSON.parse(cleanOutput[0]!).pass).toBe(true)
+    const failed = JSON.parse(failingOutput[0]!) as { pass: boolean; diagnostics: unknown[]; diagnosticsTruncated: number }
+    expect(failed.pass).toBe(false)
+    expect(failed.diagnostics).toHaveLength(1)
+    expect(failed.diagnosticsTruncated).toBeGreaterThan(0)
+  })
+
+  it('returns two when the verifier cannot run', async () => {
+    const errors: string[] = []
+    await expect(runVerifyRehabCustomizationCli(
+      ['--root', join(tmpdir(), 'dc-staging-that-does-not-exist')],
+      { stdout: () => undefined, stderr: (value) => errors.push(value) },
+    )).resolves.toBe(2)
+    expect(errors[0]).toContain('Verification could not run')
+  })
+})

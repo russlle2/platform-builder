@@ -3,22 +3,45 @@
 import { useState } from 'react'
 
 export default function ContactPage() {
-  const [submitted, setSubmitted] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    // For Netlify forms, we can rely on standard submission or use fetch
-    // Using fetch allows us to stay on the page and show a custom success message without redirect
-    const myForm = e.currentTarget
-    const formData = new FormData(myForm)
+    const form = e.currentTarget
+    const formData = new FormData(form)
 
-    fetch('/__forms.html', {
-      method: 'POST',
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(formData as any).toString(),
-    })
-      .then(() => setSubmitted(true))
-      .catch((error) => alert(error))
+    setStatus('submitting')
+    setErrorMessage('')
+
+    try {
+      const response = await fetch('/api/forms/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          slug: '',
+          name: String(formData.get('name') || '').trim(),
+          email: String(formData.get('email') || '').trim(),
+          message: String(formData.get('message') || '').trim(),
+        }),
+      })
+
+      const result = (await response.json().catch(() => null)) as { error?: string } | null
+
+      if (!response.ok) {
+        throw new Error(result?.error || 'We could not send your message. Please try again.')
+      }
+
+      form.reset()
+      setStatus('success')
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'We could not send your message. Please try again.'
+      )
+      setStatus('error')
+    }
   }
 
   return (
@@ -33,8 +56,12 @@ export default function ContactPage() {
           </p>
         </div>
 
-        {submitted ? (
-          <div className="text-center py-12 bg-green-900/40 rounded-xl border border-green-500/30">
+        {status === 'success' ? (
+          <div
+            className="text-center py-12 bg-green-900/40 rounded-xl border border-green-500/30"
+            role="status"
+            aria-live="polite"
+          >
             <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg className="w-10 h-10 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -45,7 +72,7 @@ export default function ContactPage() {
               Thanks for reaching out! We&apos;ll be in touch shortly.
             </p>
             <button
-              onClick={() => setSubmitted(false)}
+              onClick={() => setStatus('idle')}
               className="px-6 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-all"
             >
               Send Another Message
@@ -55,15 +82,8 @@ export default function ContactPage() {
           <form 
             onSubmit={handleSubmit}
             className="space-y-8"
-            name="contact-platform"
-            method="POST"
-            action="/__forms.html"
-            data-netlify="true"
-            netlify-honeypot="bot-field"
+            method="post"
           >
-            <input type="hidden" name="bot-field" />
-            <input type="hidden" name="form-name" value="contact-platform" />
-            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <label htmlFor="name" className="block text-white font-semibold mb-2 ml-1">
@@ -74,6 +94,8 @@ export default function ContactPage() {
                   id="name"
                   name="name"
                   required
+                  maxLength={200}
+                  autoComplete="name"
                   className="w-full px-5 py-4 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                   placeholder="Your full name"
                 />
@@ -88,6 +110,8 @@ export default function ContactPage() {
                   id="email"
                   name="email"
                   required
+                  maxLength={320}
+                  autoComplete="email"
                   className="w-full px-5 py-4 bg-slate-900/80 border border-slate-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
                   placeholder="your@email.com"
                 />
@@ -112,12 +136,24 @@ export default function ContactPage() {
               </p>
             </div>
 
+            {status === 'error' && (
+              <p
+                id="contact-form-status"
+                className="rounded-xl border border-red-400/30 bg-red-500/10 px-5 py-4 text-sm text-red-200"
+                role="alert"
+              >
+                {errorMessage}
+              </p>
+            )}
+
             <div className="flex justify-center pt-4">
               <button
                 type="submit"
-                className="cta-button w-full md:w-auto px-12"
+                disabled={status === 'submitting'}
+                aria-describedby={status === 'error' ? 'contact-form-status' : undefined}
+                className="cta-button w-full md:w-auto px-12 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Send Message
+                {status === 'submitting' ? 'Sending…' : 'Send Message'}
               </button>
             </div>
           </form>

@@ -33,6 +33,8 @@ export interface MatchedTemplate {
   nicheSlug: string
   templateSlug: string
   templateName: string
+  /** Every editable HTML page declared by the audited template manifest. */
+  pages?: string[]
   matchScore: number
   reason: string
 }
@@ -54,6 +56,7 @@ interface PreviewState {
   /* Actions */
   setStep: (step: PreviewStep) => void
   setBusinessInfo: (info: Partial<BusinessInfo>) => void
+  replaceBusinessInfo: (info: BusinessInfo) => void
   setStylePreferences: (prefs: Partial<StylePreferences>) => void
   setMatchedTemplate: (match: MatchedTemplate) => void
   markInfoSaved: () => void
@@ -128,6 +131,14 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
     set({ businessInfo: next })
   },
 
+  replaceBusinessInfo: (info) => {
+    saveToStorage('pb_biz_info', info)
+    saveToStorage('pb_matched', null)
+    saveToStorage('pb_info_saved', false)
+    saveToStorage('pb_style_prefs', defaultStylePreferences)
+    set({ businessInfo: info, stylePreferences: defaultStylePreferences, matchedTemplate: null, infoSaved: false, step: 'info' })
+  },
+
   setStylePreferences: (prefs) => {
     const next = { ...get().stylePreferences, ...prefs }
     saveToStorage('pb_style_prefs', next)
@@ -162,7 +173,13 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
     const b = get().businessInfo
     return {
       BUSINESS_NAME: b.businessName,
+      PRACTICE_NAME: b.businessName,
+      BRAND_NAME: b.businessName,
+      STUDIO_NAME: b.businessName,
       OWNER_NAME: b.ownerName,
+      PRACTITIONER_NAME: b.ownerName,
+      COACH_NAME: b.ownerName,
+      FACILITATOR_NAME: b.ownerName,
       EMAIL: b.email,
       PHONE: b.phone,
       PHONE_NUMBER: b.phone,
@@ -170,10 +187,16 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
       TAGLINE: b.tagline,
       DESCRIPTION: b.description,
       SERVICES: b.services,
-      WEBSITE: b.website,
+      PRIMARY_CTA_URL: '/contact.html',
+      BOOKING_URL: '/contact.html',
+      PRIMARY_CTA_LABEL: 'Get in touch',
+      CTA_LABEL: 'Get in touch',
       // Common aliases used in templates
       business_name: b.businessName,
       owner_name: b.ownerName,
+      practitioner_name: b.ownerName,
+      coach_name: b.ownerName,
+      facilitator_name: b.ownerName,
       email: b.email,
       phone: b.phone,
       phone_number: b.phone,

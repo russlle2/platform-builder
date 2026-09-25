@@ -1,11 +1,12 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Barlow_Condensed, Sora } from 'next/font/google'
-import Script from 'next/script'
+import Analytics from '@/components/Analytics'
 import Chatbot from '@/components/Chatbot'
 import { AppLayout } from '@/components/layout/AppLayout'
 import { JsonLd } from '@/components/JsonLd'
 import { organizationSchema, websiteSchema, serviceSchema } from '@/lib/seo'
+import { shouldIndexDeployment } from '@/lib/deployment-environment'
 import type { ReactNode } from 'react'
 
 const display = Barlow_Condensed({
@@ -19,6 +20,12 @@ const body = Sora({
   variable: '--font-body',
 })
 
+const configuredGaId = process.env.NEXT_PUBLIC_GA_ID?.trim()
+const googleAnalyticsId = configuredGaId && /^G-[A-Z0-9]+$/i.test(configuredGaId)
+  ? configuredGaId
+  : null
+const allowSearchIndexing = shouldIndexDeployment()
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dailyclarity.org'),
   title: {
@@ -26,7 +33,7 @@ export const metadata: Metadata = {
     template: '%s | DailyClarity',
   },
   description:
-    'Choose from 500+ unique website templates for wellness coaches, therapists, sound bath facilitators, aromatherapy, and holistic medicine. Preview live, customize, launch.',
+    'Explore published website templates for wellness coaches, therapists, sound bath facilitators, aromatherapy, and holistic medicine. Preview supported fields with your content, customize, and launch.',
   keywords: [
     'website builder',
     'website templates',
@@ -39,13 +46,9 @@ export const metadata: Metadata = {
     'sound bath website',
     'DailyClarity',
   ],
-  alternates: {
-    canonical: '/',
-  },
   openGraph: {
     type: 'website',
     siteName: 'DailyClarity',
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://dailyclarity.org',
     images: [
       {
         url: '/og-image.png',
@@ -64,9 +67,9 @@ export const metadata: Metadata = {
     apple: '/icon.png',
   },
   robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true },
+    index: allowSearchIndexing,
+    follow: allowSearchIndexing,
+    googleBot: { index: allowSearchIndexing, follow: allowSearchIndexing },
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
@@ -92,25 +95,7 @@ export default function RootLayout({
           {children}
         </AppLayout>
         <Chatbot />
-        {process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN && (
-          <Script
-            defer
-            data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
-            src="https://plausible.io/js/script.js"
-            strategy="afterInteractive"
-          />
-        )}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga-init" strategy="afterInteractive">
-              {`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${process.env.NEXT_PUBLIC_GA_ID}');`}
-            </Script>
-          </>
-        )}
+        <Analytics plausibleDomain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN} googleAnalyticsId={googleAnalyticsId} />
       </body>
     </html>
   )

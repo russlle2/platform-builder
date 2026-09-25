@@ -27,6 +27,7 @@ export interface PortalSiteData {
 interface DashboardClientProps {
   userEmail: string
   site: PortalSiteData | null
+  sites: { slug: string; name: string }[]
 }
 
 function StatusBadge({ status }: { status: string }) {
@@ -62,7 +63,7 @@ function ChecklistItem({ done, label }: { done: boolean; label: string }) {
   )
 }
 
-export default function DashboardClient({ userEmail, site }: DashboardClientProps) {
+export default function DashboardClient({ userEmail, site, sites }: DashboardClientProps) {
   const [billingLoading, setBillingLoading] = useState(false)
   const [billingError, setBillingError] = useState('')
 
@@ -73,15 +74,14 @@ export default function DashboardClient({ userEmail, site }: DashboardClientProp
   const checklist = site
     ? [
         { label: 'Site published', done: site.status === 'active' },
-        { label: 'Custom domain connected', done: Boolean(customDomain) },
+        { label: 'Custom domain added', done: Boolean(customDomain) },
         {
-          label: 'Business info complete',
+          label: 'Business details added',
           done: Boolean(
             site.data.customerValues &&
               Object.values(site.data.customerValues).filter(Boolean).length >= 3,
           ),
         },
-        { label: 'Contact form tested (log into your site to test)', done: false },
       ]
     : []
 
@@ -89,7 +89,11 @@ export default function DashboardClient({ userEmail, site }: DashboardClientProp
     setBillingLoading(true)
     setBillingError('')
     try {
-      const res = await fetch('/api/stripe/portal', { method: 'POST' })
+      const res = await fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug: site?.slug }),
+      })
       if (!res.ok) {
         const body = (await res.json()) as { error?: string }
         setBillingError(body.error ?? 'Unable to open billing portal')
@@ -137,6 +141,24 @@ export default function DashboardClient({ userEmail, site }: DashboardClientProp
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white">My Dashboard</h1>
           <p className="text-slate-400 text-sm mt-1">Manage your DailyClarity website, billing, and settings.</p>
+          {sites.length > 1 && (
+            <nav aria-label="Your websites" className="mt-5 flex flex-wrap gap-2">
+              {sites.map((candidate) => (
+                <Link
+                  key={candidate.slug}
+                  href={`/dashboard?site=${encodeURIComponent(candidate.slug)}`}
+                  aria-current={candidate.slug === site?.slug ? 'page' : undefined}
+                  className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
+                    candidate.slug === site?.slug
+                      ? 'border-cyan-400/60 bg-cyan-500/15 text-cyan-100'
+                      : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
+                  }`}
+                >
+                  {candidate.name}
+                </Link>
+              ))}
+            </nav>
+          )}
         </div>
 
         {!site ? (
@@ -149,7 +171,7 @@ export default function DashboardClient({ userEmail, site }: DashboardClientProp
             </div>
             <h2 className="text-xl font-bold text-white mb-2">You don&apos;t have a site yet</h2>
             <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-              Get your professional wellness website live in minutes — no tech skills needed.
+              Start a guided, editable wellness website preview with no blank-canvas setup.
             </p>
             <Link
               href="/preview-your-business"
@@ -196,7 +218,7 @@ export default function DashboardClient({ userEmail, site }: DashboardClientProp
                   </Link>
                 )}
                 <Link
-                  href="/portal"
+                  href={`/portal?slug=${encodeURIComponent(site.slug)}`}
                   className="inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 rounded-lg border border-white/10 transition-all"
                 >
                   Open portal
@@ -255,13 +277,15 @@ export default function DashboardClient({ userEmail, site }: DashboardClientProp
               {customDomain ? (
                 <div>
                   <p className="text-white font-medium text-sm mb-1">{customDomain}</p>
-                  <p className="text-slate-400 text-xs mb-4">Your custom domain is connected.</p>
+                  <p className="text-slate-400 text-xs mb-4">
+                    This domain is saved for your site. Check DNS status in the portal before announcing it.
+                  </p>
                 </div>
               ) : (
                 <div>
                   <p className="text-slate-400 text-sm mb-4">No custom domain yet. Point your own domain to your DailyClarity site.</p>
                   <Link
-                    href="/docs/custom-domain"
+                    href={`/portal?slug=${encodeURIComponent(site.slug)}#domain`}
                     className="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-xs font-semibold uppercase tracking-[0.12em] transition-colors"
                   >
                     Connect domain
@@ -278,7 +302,7 @@ export default function DashboardClient({ userEmail, site }: DashboardClientProp
               <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-400 mb-4">Image library</h2>
               <p className="text-slate-400 text-sm mb-4">View and manage the photos on your website.</p>
               <Link
-                href="/portal"
+                href={`/portal?slug=${encodeURIComponent(site.slug)}`}
                 className="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-xs font-semibold uppercase tracking-[0.12em] transition-colors"
               >
                 View &amp; manage images

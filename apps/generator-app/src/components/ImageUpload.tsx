@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import { getOrCreateImageOwnerId, uploadCustomerImageFile } from '@/lib/image-swaps'
 
 export function ImageUpload() {
   const [uploading, setUploading] = useState(false)
@@ -16,23 +17,10 @@ export function ImageUpload() {
     setError(null)
 
     try {
-      const formData = new FormData()
-      formData.append('file', file)
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (response.ok) {
-        setUploadedUrl(data.url)
-      } else {
-        setError(data.error || 'Upload failed')
-      }
+      const uploaded = await uploadCustomerImageFile(file, getOrCreateImageOwnerId())
+      setUploadedUrl(uploaded.url)
     } catch (err) {
-      setError('Upload failed')
+      setError(err instanceof Error ? err.message : 'Upload failed')
     } finally {
       setUploading(false)
     }

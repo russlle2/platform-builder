@@ -4,7 +4,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
-export const revalidate = 3600
+// The catalog is stored in Netlify Blobs and is not guaranteed to be available
+// to the build process. Resolve it in the request-scoped runtime so a build
+// without Blob credentials cannot cache an empty niche gallery.
+export const dynamic = 'force-dynamic'
 
 /* ---------- Accent color lookup for Tailwind classes ---------- */
 const accentMap: Record<string, { badge: string; heading: string; btn: string; glow: string; border: string; chip: string }> = {
@@ -99,7 +102,7 @@ const nicheLandingContent: Record<string, NicheLandingContent> = {
       'Booking paths are buried — visitors leave before they understand how to work with you',
     ],
     trustBuilders: [
-      'Blend menus with notes, benefits, and use context built into every template',
+      'Available blend-menu sections cover notes, benefits, and use context',
       'Safety and dilution guidance sections that show you take client care seriously',
       'Workshop and consultation booking paths designed for scent-curious first-timers',
     ],
@@ -218,7 +221,7 @@ const nicheLandingContent: Record<string, NicheLandingContent> = {
       'Group session, private event, and inquiry forms structured for organizers and first-timers alike',
     ],
     ctaHeadline: 'Fill your next sound bath before you announce it',
-    ctaUrgency: 'Workshops and private events book weeks ahead — get your site live while slots are still open.',
+    ctaUrgency: 'Preview a clear booking path for upcoming workshops and private events.',
     benefits: [
       'Session types, pricing, and what-to-expect sections',
       'Contraindications and FAQ for nervous-system care',
@@ -563,12 +566,6 @@ function NicheSymbols({ niche }: { niche: string }) {
   }
 }
 
-/* ---------- Static generation ---------- */
-
-export async function generateStaticParams() {
-  return Object.keys(NICHE_META).map((slug) => ({ niche: slug }))
-}
-
 export async function generateMetadata({
   params,
 }: {
@@ -576,7 +573,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { niche } = await params
   const meta = NICHE_META[niche]
-  if (!meta) return { title: 'Templates' }
+  if (!meta) return { title: 'Templates', robots: { index: false, follow: false } }
   const builderLabel: Record<string, string> = {
     aromatherapy: 'Aromatherapy Website Builder',
     holistic_medicine: 'Holistic Medicine Website Builder',
@@ -587,9 +584,18 @@ export async function generateMetadata({
   // Root metadata applies the "| DailyClarity" suffix through its title
   // template, so child pages must provide only their page-specific title.
   const title = builderLabel[niche] || `${meta.label} Website Builder`
+  const description = `${meta.description} Preview real templates with your business details — no coding required.`
   return {
     title,
-    description: `${meta.description} Preview real templates with your business details — no coding required.`,
+    description,
+    alternates: { canonical: `/${niche}` },
+    openGraph: {
+      title: `${title} | DailyClarity`,
+      description,
+      url: `/${niche}`,
+      type: 'website',
+      images: ['/og-image.png'],
+    },
   }
 }
 
@@ -668,8 +674,8 @@ export default async function NicheLandingPage({
                   <p className="text-3xl font-bold text-white">{templateCount}</p>
                 </div>
                 <div className="stat-card">
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Avg Launch</p>
-                  <p className="text-3xl font-bold text-white">48 hrs</p>
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Preview</p>
+                  <p className="text-xl font-bold text-white">Before purchase</p>
                 </div>
               </div>
             </div>
@@ -805,7 +811,7 @@ export default async function NicheLandingPage({
               {
                 step: '01',
                 title: 'Share your details',
-                copy: `Tell us about your ${meta.label.toLowerCase()} practice — content fills every page automatically.`,
+                copy: `Tell us about your ${meta.label.toLowerCase()} practice — supported business fields populate across the preview.`,
               },
               {
                 step: '02',
@@ -834,12 +840,12 @@ export default async function NicheLandingPage({
               <div className="text-5xl">{meta.icon}</div>
               <h2 className="text-3xl font-bold text-white">{copy.objection}</h2>
               <p className="text-slate-300 text-lg">
-                Every template is professionally designed, mobile-first, and SEO-ready —
-                built to guide visitors toward booking and contact. No coding required.
+                Published templates are designed for mobile viewing and structured to guide visitors
+                toward booking and contact. Review the live preview for the exact pages and fields included.
               </p>
             </div>
             <div className="card-mahogany space-y-6 flex flex-col justify-center">
-              <p className="text-6xl font-bold text-white">{templateCount}+</p>
+              <p className="text-6xl font-bold text-white">{templateCount}</p>
               <p className="text-xl text-slate-200">{copy.proof}</p>
               <p className="text-slate-400">
                 Each template features unique layout families, voice styles, and page structures.
@@ -853,9 +859,9 @@ export default async function NicheLandingPage({
         <section className="container-hvac py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { icon: '🎨', title: 'Unique Designs', description: `Every template has a distinct layout, color palette, and content strategy tailored for ${meta.label.toLowerCase()}.` },
+              { icon: '🎨', title: 'Design Options', description: `Published styles offer layouts, color palettes, and content structures tailored for ${meta.label.toLowerCase()}.` },
               { icon: '📱', title: 'Mobile-First', description: 'Responsive on every device. Your clients can find and book you from anywhere.' },
-              { icon: '🔍', title: 'SEO Built In', description: 'Meta tags, structured headings, sitemaps, and robots.txt — all included out of the box.' },
+              { icon: '🔍', title: 'SEO Foundations', description: 'Published sites include crawl controls and metadata; review and personalize the final content before launch.' },
               { icon: '⚡', title: 'Instant Preview', description: 'See your real content in the template before purchasing. No surprises.' },
             ].map((card) => (
               <div key={card.title} className="card-mahogany text-center space-y-4 hover:scale-105 transition-transform">
@@ -874,7 +880,7 @@ export default async function NicheLandingPage({
               {copy.ctaHeadline}
             </h2>
             <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-              {copy.ctaUrgency} Add your business details once, preview {templateCount}+ layouts filled with your real info,
+              {copy.ctaUrgency} Add your business details once, browse the currently published layouts with your supported fields,
               and launch when you are ready. No commitment until you purchase.
             </p>
             <NicheActionLinks niche={niche} metaLabel={meta.label} colors={colors} layout="center" />

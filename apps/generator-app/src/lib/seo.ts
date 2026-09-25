@@ -15,7 +15,7 @@ export const SITE_URL = (
 export const SITE_NAME = 'DailyClarity'
 
 export const SITE_DESCRIPTION =
-  'Choose from 500+ unique website templates for wellness coaches, therapists, sound bath facilitators, aromatherapy, and holistic medicine. Preview live, customize, and launch with hosting, email, and payments included.'
+  'Explore published website templates for wellness coaches, therapists, sound bath facilitators, aromatherapy, and holistic medicine. Preview supported fields with your content, customize, and launch with managed hosting.'
 
 export const organizationSchema = {
   '@context': 'https://schema.org',
@@ -56,7 +56,7 @@ export const pricingSchema = {
   '@type': 'Product',
   name: 'DailyClarity website plans',
   description:
-    'Launch a hosted business website from a professional template, with email, database, and Stripe payments connected. Includes a 7-day free trial.',
+    'Launch a business website from a published professional template, with managed hosting, SSL, contact-form email notifications, and self-serve editing for supported fields. Any trial terms are shown before checkout.',
   brand: { '@type': 'Brand', name: SITE_NAME },
   url: `${SITE_URL}/pricing`,
   offers: {
@@ -68,7 +68,7 @@ export const pricingSchema = {
     offers: [
       {
         '@type': 'Offer',
-        name: 'Basic Services',
+        name: 'Basic',
         price: '20.00',
         priceCurrency: 'USD',
         url: `${SITE_URL}/pricing`,
@@ -76,7 +76,7 @@ export const pricingSchema = {
       },
       {
         '@type': 'Offer',
-        name: 'Growth Partner',
+        name: 'Security + Ads',
         price: '80.00',
         priceCurrency: 'USD',
         url: `${SITE_URL}/pricing`,
@@ -96,12 +96,12 @@ export const pricingSchema = {
 
 const pricingFaq: Array<{ q: string; a: string }> = [
   {
-    q: "What's included in Basic Services?",
-    a: 'We launch your site on a hosted subdomain and connect Postmark for email, Supabase for storage, and Stripe for payments. You can edit anytime through your portal.',
+    q: "What's included in Basic?",
+    a: 'We launch your editable site on a hosted subdomain with SSL, contact-form email notifications, secure storage, and self-serve portal access. Stripe securely handles your DailyClarity subscription billing.',
   },
   {
     q: 'How fast can I launch?',
-    a: 'Most builds go live within 48 hours once your intake is complete and your subscription is active.',
+    a: 'Launch timing depends on the completeness of your intake, the template you choose, and any domain or integration work required. We confirm the applicable next steps after checkout.',
   },
   {
     q: 'How does the $500 custom website build work?',
@@ -109,11 +109,11 @@ const pricingFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'Is there a free trial?',
-    a: 'Yes — every plan includes a 7-day trial. We collect your card at checkout, but you are not charged until the trial ends. Cancel anytime in Stripe before then.',
+    a: 'When a trial is offered, its length and billing start date are shown before checkout. A card is required for subscription checkout, and the one-time custom build does not include a trial.',
   },
   {
-    q: 'Can I switch plans later?',
-    a: 'Absolutely. You can upgrade or downgrade at any time. Changes take effect immediately, and we prorate any differences.',
+    q: 'How do I change plans?',
+    a: 'Contact DailyClarity support to change plans. Self-service plan switching stays disabled until the service scope and billing adjustment can be reconciled safely.',
   },
   {
     q: 'Do I need technical skills?',

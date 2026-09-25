@@ -21,7 +21,14 @@ interface DnsCheckResult {
 interface DomainConnectCardProps {
   slug: string
   currentDomain?: string
-  portalToken: string
+  portalToken?: string
+}
+
+function portalHeaders(portalToken?: string, json = false): HeadersInit {
+  const headers: Record<string, string> = {}
+  if (json) headers['Content-Type'] = 'application/json'
+  if (portalToken) headers['x-portal-token'] = portalToken
+  return headers
 }
 
 const REGISTRAR_GUIDES: { name: string; steps: string }[] = [
@@ -105,11 +112,12 @@ export function DomainConnectCard({ slug, currentDomain, portalToken }: DomainCo
   const [openGuide, setOpenGuide] = useState<string | null>(null)
 
   const fetchDomainInfo = useCallback(async () => {
-    if (!slug || !portalToken) return
+    if (!slug) return
     setConnectStatus('loading')
     try {
       const response = await fetch(
-        `/api/sites/domain?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalToken)}`,
+        `/api/sites/domain?slug=${encodeURIComponent(slug)}`,
+        { headers: portalHeaders(portalToken), cache: 'no-store' },
       )
       const data = await response.json()
       if (response.ok) {
@@ -140,7 +148,7 @@ export function DomainConnectCard({ slug, currentDomain, portalToken }: DomainCo
 
   const connectDomain = async () => {
     const trimmed = domainInput.trim()
-    if (!trimmed || !portalToken) {
+    if (!trimmed) {
       setConnectStatus('error')
       setConnectMessage('Enter a valid domain name.')
       return
@@ -150,14 +158,10 @@ export function DomainConnectCard({ slug, currentDomain, portalToken }: DomainCo
     try {
       const response = await fetch('/api/sites/domain', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-portal-token': portalToken,
-        },
+        headers: portalHeaders(portalToken, true),
         body: JSON.stringify({
           slug,
           customDomain: trimmed,
-          token: portalToken,
         }),
       })
       const data = await response.json()
@@ -169,7 +173,7 @@ export function DomainConnectCard({ slug, currentDomain, portalToken }: DomainCo
         setRecordsData(data.records as DomainRecordsData)
       }
       setConnectStatus('idle')
-      setConnectMessage('Custom domain connected. Add the DNS records below at your registrar.')
+      setConnectMessage('Custom domain saved. Add the DNS records below, then use Check DNS Status to verify it.')
     } catch (error) {
       setConnectStatus('error')
       setConnectMessage(error instanceof Error ? error.message : 'Unable to configure domain.')
@@ -177,12 +181,13 @@ export function DomainConnectCard({ slug, currentDomain, portalToken }: DomainCo
   }
 
   const checkDns = async () => {
-    if (!slug || !portalToken) return
+    if (!slug) return
     setCheckStatus('loading')
     setCheckResult(null)
     try {
       const response = await fetch(
-        `/api/sites/domain?slug=${encodeURIComponent(slug)}&check=true&token=${encodeURIComponent(portalToken)}`,
+        `/api/sites/domain?slug=${encodeURIComponent(slug)}&check=true`,
+        { headers: portalHeaders(portalToken), cache: 'no-store' },
       )
       const data = (await response.json()) as DnsCheckResult
       if (response.ok && data.checked) {
@@ -213,10 +218,11 @@ export function DomainConnectCard({ slug, currentDomain, portalToken }: DomainCo
     <div className="mt-4 space-y-6">
       {!connectedDomain && (
         <div className="space-y-3">
-          <label className="text-xs uppercase tracking-[0.3em] text-slate-400 block">
+          <label htmlFor="custom-domain" className="text-xs uppercase tracking-[0.3em] text-slate-400 block">
             Enter your custom domain
           </label>
           <input
+            id="custom-domain"
             value={domainInput}
             onChange={(e) => setDomainInput(e.target.value)}
             placeholder="www.mysite.com"
@@ -235,7 +241,7 @@ export function DomainConnectCard({ slug, currentDomain, portalToken }: DomainCo
 
       {connectedDomain && (
         <div className="rounded-xl bg-emerald-500/10 border border-emerald-400/30 px-4 py-3">
-          <p className="text-xs uppercase tracking-[0.3em] text-emerald-300/80 mb-1">Connected domain</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-emerald-300/80 mb-1">Configured domain</p>
           <p className="text-sm font-semibold text-emerald-100 break-all">{connectedDomain}</p>
         </div>
       )}

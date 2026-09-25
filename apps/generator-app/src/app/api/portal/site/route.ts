@@ -3,10 +3,17 @@ import { createClient } from '@supabase/supabase-js'
 import path from 'path'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 import { existsSync } from 'fs'
-import { buildDeployFiles, type InlineTextEdit } from '@/lib/site-deploy'
-import type { ImageSwap } from '@/lib/image-swaps'
+import {
+  buildDeployFiles,
+  sanitizeCustomerValues,
+  sanitizeInlineEditMap,
+  type InlineTextEdit,
+} from '@/lib/site-deploy'
+import { sanitizeImageSwapMap, type ImageSwap } from '@/lib/image-swaps'
 import { deploySiteFiles } from '@/lib/netlify'
 import { requireInternalAdminOrThrow } from '@/lib/server-auth'
+import type { CustomTheme } from '@/lib/custom-theme'
+import type { CatalogRevisionPin } from '@/lib/catalog-revision'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -17,6 +24,8 @@ interface SiteData {
   colorScheme?: string
   fontVariation?: string
   structureVariation?: string
+  customTheme?: CustomTheme | null
+  catalogRevision?: CatalogRevisionPin
   customerValues?: Record<string, string>
   inlineEdits?: Record<string, InlineTextEdit[]>
   imageSwaps?: Record<string, ImageSwap[]>
@@ -25,6 +34,7 @@ interface SiteData {
   netlify_site_id?: string
   site_url?: string
   plan?: string
+  allowSearchIndexing?: boolean
   [key: string]: unknown
 }
 
@@ -105,7 +115,7 @@ export async function GET(req: NextRequest) {
  */
 async function republishSite(slug: string, data: SiteData): Promise<boolean> {
   const siteId = data.netlify_site_id
-  if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.niche || !data.template) {
+  if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.site_url || !data.niche || !data.template) {
     return false
   }
   const deployFiles = await buildDeployFiles({
@@ -115,9 +125,13 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     colorScheme: data.colorScheme,
     fontVariation: data.fontVariation,
     structureVariation: data.structureVariation,
+    customTheme: data.customTheme,
+    catalogRevision: data.catalogRevision,
     inlineEdits: data.inlineEdits,
     imageSwaps: data.imageSwaps,
     slug,
+    siteUrl: data.site_url,
+    allowSearchIndexing: data.allowSearchIndexing !== false,
   })
   if (!deployFiles) return false
   await deploySiteFiles(siteId, deployFiles)
@@ -137,12 +151,13 @@ export async function POST(req: NextRequest) {
   // Incoming edits: a partial customerValues map (canonical {{TOKEN}} keys) and
   // optional inline text edits. We merge them onto the existing stored config
   // so we never clobber niche/template/variation/hosting info.
-  const incomingValues: Record<string, string> =
-    body.customerValues && typeof body.customerValues === 'object' ? body.customerValues : {}
-  const incomingInlineEdits: Record<string, InlineTextEdit[]> | undefined =
-    body.inlineEdits && typeof body.inlineEdits === 'object' ? body.inlineEdits : undefined
-  const incomingImageSwaps: Record<string, ImageSwap[]> | undefined =
-    body.imageSwaps && typeof body.imageSwaps === 'object' ? body.imageSwaps : undefined
+  const incomingValues = sanitizeCustomerValues(body.customerValues)
+  const incomingInlineEdits = body.inlineEdits === undefined
+    ? undefined
+    : sanitizeInlineEditMap(body.inlineEdits)
+  const incomingImageSwaps = body.imageSwaps === undefined
+    ? undefined
+    : sanitizeImageSwapMap(body.imageSwaps)
 
   const supabase = getSupabase()
 
@@ -163,7 +178,24 @@ export async function POST(req: NextRequest) {
       updated_at: new Date().toISOString(),
     }
     await writeLocalSite(slug, sitePayload)
-    return NextResponse.json({ ok: true, fallback: 'local-cache', republished: false })
+    let republished = false
+    let publishError: string | null = null
+    try {
+      republished = await republishSite(slug, mergedData)
+    } catch (err) {
+      console.error('[portal/site] local-cache republish failed:', err)
+      publishError = err instanceof Error ? err.message : 'Publish failed'
+    }
+    if (mergedData.netlify_site_id && !republished) {
+      return NextResponse.json({
+        error: 'The changes were saved, but the live publish failed. Please retry.',
+        saved: true,
+        republished: false,
+        code: 'publish_failed',
+        ...(process.env.NODE_ENV === 'development' && publishError ? { detail: publishError } : {}),
+      }, { status: 502 })
+    }
+    return NextResponse.json({ ok: true, fallback: 'local-cache', republished })
   }
 
   // Load current config so the merge is non-destructive.
@@ -195,10 +227,21 @@ export async function POST(req: NextRequest) {
 
   // Push the edits live so post-purchase changes actually reach the site.
   let republished = false
+  let publishError: string | null = null
   try {
     republished = await republishSite(slug, mergedData)
   } catch (err) {
     console.error('[portal/site] republish failed:', err)
+    publishError = err instanceof Error ? err.message : 'Publish failed'
+  }
+  if (mergedData.netlify_site_id && !republished) {
+    return NextResponse.json({
+      error: 'The changes were saved, but the live publish failed. Please retry.',
+      saved: true,
+      republished: false,
+      code: 'publish_failed',
+      ...(process.env.NODE_ENV === 'development' && publishError ? { detail: publishError } : {}),
+    }, { status: 502 })
   }
 
   return NextResponse.json({ ok: true, republished })

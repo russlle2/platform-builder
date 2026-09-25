@@ -2,36 +2,43 @@
   "name": "platform-builder-monorepo",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@11.19.0",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "scripts": {
     "dev": "pnpm --filter @platform-builder/generator-app dev",
-    "build": "pnpm -r --if-present build",
+    "build": "pnpm -r --workspace-concurrency=1 --if-present build",
     "lint": "pnpm -r --if-present lint",
-    "typecheck": "pnpm --filter @platform-builder/generator-app exec tsc --noEmit",
-    "test": "pnpm --filter @platform-builder/generator-app test",
+    "typecheck": "pnpm --filter @platform-builder/generator-app exec tsc --noEmit && pnpm exec tsc --noEmit -p netlify/functions/tsconfig.json",
+    "test": "pnpm -r --if-present test && node apps/generator-app/scripts/upload-templates-to-blobs.test.mjs && node apps/generator-app/scripts/netlify-target-contract.test.mjs && node apps/generator-app/scripts/certified-catalog-release.test.mjs && node apps/generator-app/scripts/launch-migration.pglite.test.mjs && node apps/generator-app/scripts/booking-kit-migration.pglite.test.mjs && node apps/generator-app/scripts/full-migration-replay.pglite.test.mjs",
     "test:e2e": "pnpm --filter @platform-builder/generator-app exec playwright test",
     "validate": "pnpm lint && pnpm typecheck && pnpm test && pnpm build",
-    "clean": "rm -rf node_modules apps/*/node_modules apps/*/.next apps/*/dist packages/*/node_modules packages/*/dist",
+    "clean": "node scripts/clean.mjs",
     "generator:dev": "pnpm --filter @platform-builder/generator-app dev",
     "generator:build": "pnpm --filter @platform-builder/generator-app build",
     "client:build": "pnpm --filter @platform-builder/client-template build",
     "create-client": "node infrastructure/scripts/create-client-site.js",
     "sync-content": "node infrastructure/scripts/sync-content.js",
-    "optimize-images": "node infrastructure/scripts/optimize-images.js"
+    "optimize-images": "node infrastructure/scripts/optimize-images.js",
+    "templates:legacy": "pnpm --filter @platform/template-factory exec tsx src/legacy/cli.ts"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.2.0",
+    "@supabase/supabase-js": "^2.108.2",
+    "stripe": "^22.6.1",
+    "tldts": "7.4.11"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.5.8",
     "@opentelemetry/api": "^1.9.0",
-    "@types/node": "^20.10.0",
-    "typescript": "^5.3.2",
-    "sharp": "^0.33.0",
-    "@types/sharp": "^0.32.0"
+    "@types/node": "^22.20.1",
+    "sharp": "^0.35.4",
+    "typescript": "^5.3.2"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": ">=22.0.0 <25",
     "npm": ">=9.0.0"
   }
 }

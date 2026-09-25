@@ -20,10 +20,12 @@ interface LibraryImage {
  */
 export function CustomerImageLibrary({
   owner: ownerProp,
+  portalToken,
   onPickImage,
   compact = false,
 }: {
   owner?: string
+  portalToken?: string
   /** When user clicks a saved image (e.g. to paste URL into a swap). */
   onPickImage?: (url: string) => void
   compact?: boolean
@@ -43,14 +45,14 @@ export function CustomerImageLibrary({
     setLoading(true)
     setError(null)
     try {
-      const list = await fetchCustomerImageLibrary(id)
+      const list = await fetchCustomerImageLibrary(id, portalToken)
       setImages(list)
     } catch {
       setError('Could not load your images.')
     } finally {
       setLoading(false)
     }
-  }, [ownerProp])
+  }, [ownerProp, portalToken])
 
   useEffect(() => {
     refresh()
@@ -63,7 +65,7 @@ export function CustomerImageLibrary({
     setUploading(true)
     setError(null)
     try {
-      await uploadCustomerImageFile(file, id)
+      await uploadCustomerImageFile(file, id, portalToken)
       await refresh()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed')
