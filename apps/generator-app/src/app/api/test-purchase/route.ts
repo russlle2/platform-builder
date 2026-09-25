@@ -312,10 +312,13 @@ export async function POST(req: Request) {
     }
 
     const businessName = safeCustomerValues.BUSINESS_NAME || normalizedSlug
-    await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials.token, niche).catch((err) =>
-      console.error('[test-purchase] order confirmation email failed:', err),
-    )
-    log.push(`Order confirmation email sent to ${customerEmail}`)
+    try {
+      await sendOrderConfirmationEmail(customerEmail, businessName, normalizedSlug, portalCredentials.token, niche)
+      log.push(`Order confirmation email accepted by provider for ${customerEmail}`)
+    } catch (err) {
+      console.error('[test-purchase] order confirmation email failed:', err)
+      log.push('Order confirmation email failed; provisioning completed without email confirmation')
+    }
   } catch (err) {
     deploymentError = err instanceof Error ? err.message : String(err)
     deploymentSucceeded = false
