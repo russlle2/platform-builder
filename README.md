@@ -8,6 +8,8 @@ A web-only Next.js platform for wellness and professional service businesses to 
 
 **Current release status:** [launch readiness](docs/LAUNCH_READINESS_2026-10-14.md) and [template audit](docs/TEMPLATE_AUDIT_2026-10-14.md). Local tests and deployment previews do not establish connected production fulfillment.
 
+The [complete live metadata census](docs/LIVE_CATALOGUE_CENSUS_2026-10-14.md) enumerates all 5,485 current entries, including the missing aromatherapy count and malformed display/editing metadata.
+
 ---
 
 ## What It Does

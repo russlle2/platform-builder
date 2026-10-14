@@ -33,6 +33,8 @@ The available evidence does not support a guaranteed production launch by 15 Oct
 
 ## Release gate bug repaired in this change
 
+The production dependency audit initially found six advisories. Next.js was patched to `15.5.27`, Sharp to `0.35.5`, `postcss-selector-parser` to `7.1.6`, and transitive `source-map-js` to `1.2.2`. The frozen lockfile installs and `pnpm audit --prod --audit-level moderate` reports no known vulnerabilities. CI now runs that audit. The selector-parser upgrade crosses its major version because no patched 6.x release was available; its type check and focused browser regressions passed. This changes the compiler dependency fingerprint, so old original-corpus browser receipts cannot certify the new dependency set.
+
 The latest migration and application expected schema `20260903.4`, and staging actually returned that version. Three release scripts still required `20260903.3`, so they would reject the correctly migrated database:
 
 - `apps/generator-app/scripts/verify-launch-schema.mjs`
