@@ -4,6 +4,10 @@ A web-only Next.js platform for wellness and professional service businesses to 
 
 **Live:** [dailyclarity.org](https://dailyclarity.org)
 
+**Free PayPal checkout rehearsal:** run `pnpm paypal:trial` after installing dependencies, then open `http://localhost:3001/paypal-test`. It uses $1 of Sandbox money and costs $0 real money. See the [setup and trial steps](docs/PAYPAL_ZERO_DOLLAR_TRIAL.md). This diagnostic does not purchase or provision a hosted website.
+
+**Current release status:** [launch readiness](docs/LAUNCH_READINESS_2026-10-14.md) and [template audit](docs/TEMPLATE_AUDIT_2026-10-14.md). Local tests and deployment previews do not establish connected production fulfillment.
+
 ---
 
 ## What It Does
@@ -204,7 +208,7 @@ The app is deployed on Netlify (or any Next.js-compatible host).
 3. In each protected GitHub environment, set `NETLIFY_EXPECTED_SITE_ID`, `NETLIFY_EXPECTED_SITE_HOSTNAME`, and `NETLIFY_EXPECTED_ACCOUNT_SLUG` as environment variables. The authenticated Netlify API response must match all three before any app or Blob publication.
 4. Add the runtime environment variables in Netlify → Site settings → Environment variables. Set `DAILYCLARITY_ENVIRONMENT` to the matching environment name. Keep `NEXT_PUBLIC_SUPABASE_URL`, `DAILYCLARITY_SUPABASE_PROJECT_REF`, and `DAILYCLARITY_ENVIRONMENT` readable, non-secret, and available to both builds and functions; mark `SUPABASE_SERVICE_ROLE_KEY` secret and expose it only to functions. The release gate compares all three public identities to the protected GitHub environment and then proves the deployed runtime can execute the readiness RPC with its own secret.
 5. Apply and verify the matching Supabase migration before deploying the app. The workflow calls the value-free `launch_schema_readiness()` sentinel and refuses an old or partial schema.
-6. Publish to staging with `.github/workflows/deploy-staging.yml` (`STAGE` confirmation), complete the full-funnel test, then promote reviewed `main` with `.github/workflows/deploy.yml` (`DEPLOY` confirmation).
+6. Publish to staging with `.github/workflows/deploy-staging.yml` (`STAGE` confirmation), complete the connected full-funnel tests, and retain the full 5,486-template certification bundle. Promote the exact CI-passing `main` commit with `.github/workflows/deploy.yml` (`promote` operation, reviewed artifact IDs/hashes, and `PROMOTE CERTIFIED` confirmation). Follow [the certified release and rollback runbook](docs/CERTIFIED_CATALOGUE_RELEASE.md); the curated 60-template baseline is rollback material, not a substitute certification.
 
 The protected GitHub `staging` environment keeps public database identity separate
 from credentials: set `STAGING_SUPABASE_URL` and
@@ -212,7 +216,7 @@ from credentials: set `STAGING_SUPABASE_URL` and
 `STAGING_SUPABASE_SERVICE_ROLE_KEY` as an environment secret. The deploy and
 full-funnel workflows map that single contract to the application's runtime names,
 compare it to the site-level Netlify environment, pin the published deploy to the
-reviewed commit, and live-probe schema `20260903.3`. Store the same independent
+reviewed commit, and live-probe schema `20260903.4`. Store the same independent
 `INTERNAL_ADMIN_TOKEN` in the protected GitHub environment and the matching
 Netlify site so that probe remains authenticated. The full-funnel workflow derives
 its URL from the attested hostname rather than accepting an unrelated URL secret,
@@ -264,18 +268,17 @@ pnpm --filter @platform/template-factory export:curated -- --output /absolute/pa
 # Exercise the exact publisher contract without credentials or writes
 node apps/generator-app/scripts/upload-templates-to-blobs.mjs --dry-run --root /absolute/path/to/curated-template-library
 
-# Publish only after the dry-run report has been reviewed
-node apps/generator-app/scripts/upload-templates-to-blobs.mjs --root /absolute/path/to/curated-template-library
 ```
 
 The uploader publishes only templates that satisfy publication contract v2.
 It verifies the approved report SHA-256 plus every niche/slug/artifact digest,
 uploads to an immutable catalog-digest prefix, reads every object back, and only
 then atomically switches `_manifest.json`. An interrupted upload therefore
-leaves the prior catalog live and rollback-capable. Production publication is
-main-only, protected by an exact `PUBLISH PRODUCTION` confirmation, and bound
-to the verified production Netlify site. Legacy generated templates remain
-excluded until they are normalized and pass the same contract.
+leaves the prior catalog live and rollback-capable. This baseline is for local
+validation and preserved rollback material. The pending production release
+requires the complete original catalogue through the separate certified release
+workflow; do not publish the 60-template baseline in place of it. See
+[the certified release runbook](docs/CERTIFIED_CATALOGUE_RELEASE.md).
 
 ---
 

@@ -126,9 +126,12 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
   setStep: (step) => set({ step }),
 
   setBusinessInfo: (info) => {
-    const next = { ...get().businessInfo, ...info }
+    const previous = get().businessInfo
+    const next = { ...previous, ...info }
+    const nicheChanged = next.niche !== previous.niche
     saveToStorage('pb_biz_info', next)
-    set({ businessInfo: next })
+    if (nicheChanged) saveToStorage('pb_matched', null)
+    set({ businessInfo: next, ...(nicheChanged ? { matchedTemplate: null } : {}) })
   },
 
   replaceBusinessInfo: (info) => {

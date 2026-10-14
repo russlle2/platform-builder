@@ -4,7 +4,7 @@ The kit is deterministic, versioned composition for one service in the existing 
 
 ## Configuration and staging
 
-Apply both Booking Kit migrations after the existing launch migrations, even while kit sales are disabled: the shared website worker also records durable positive-payment evidence. The combined deployment gate requires website schema `20260903.3` and kit/payment-evidence schema `20260925.2`. The private tables enable RLS and revoke all browser-role access. The server requires the pinned Supabase project, `PORTAL_TOKEN_SECRET` of at least 32 characters for durable recovery limits, the existing fulfillment worker secret, and Postmark configuration.
+Apply every migration through `20260925222605_attest_booking_inquiry_cleanup_filter.sql`, including the Booking Kit migrations, even while kit sales are disabled: the shared website worker also records durable positive-payment evidence. The combined deployment gate requires website schema `20260903.4` and kit/payment-evidence schema `20260925.2`. The private tables enable RLS and revoke all browser-role access. The server requires the pinned Supabase project, `PORTAL_TOKEN_SECRET` of at least 32 characters for durable recovery limits, the existing fulfillment worker secret, and Postmark configuration.
 
 Set `STRIPE_PRICE_BOOKING_KIT` to an active one-time USD 900-cent price in the intended Stripe account and mode. The route retrieves and validates this price before checkout. Use `DAILYCLARITY_ENVIRONMENT=staging` with a Stripe test key on the isolated staging site. Production requires its explicit environment identity and a live key. Do not enable production sales before the release gates below pass.
 

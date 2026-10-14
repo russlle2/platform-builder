@@ -26,6 +26,7 @@ describe('private kit analytics exclusion', () => {
     expect(canLoadPageAnalytics('/pricing', empty)).toBe(true)
     expect(canLoadPageAnalytics('/booking-kit', empty)).toBe(false)
     expect(canLoadPageAnalytics('/booking-kit/result', empty)).toBe(false)
+    expect(canLoadPageAnalytics('/paypal-test', empty)).toBe(false)
     expect(canLoadPageAnalytics('/preview-your-business', credential)).toBe(false)
     expect(canLoadPageAnalytics('/pricing', credential)).toBe(false)
     expect(canLoadPageAnalytics('/pricing', { getItem: () => { throw new Error('Storage unavailable') } })).toBe(false)

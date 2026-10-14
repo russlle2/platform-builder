@@ -6,7 +6,7 @@ export function isBookingKitPath(pathname: string | null): boolean {
 
 /** A kit credential stays usable in the tab without allowing third-party trackers alongside it. */
 export function canLoadPageAnalytics(pathname: string | null, storage: Pick<Storage, 'getItem'>): boolean {
-  if (!pathname || isBookingKitPath(pathname)) return false
+  if (!pathname || isBookingKitPath(pathname) || pathname === '/paypal-test') return false
   try { return !storage.getItem(BOOKING_KIT_ACCESS_STORAGE_KEY) } catch { return false }
 }
 

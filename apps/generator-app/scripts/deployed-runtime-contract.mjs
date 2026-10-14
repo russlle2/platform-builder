@@ -2,7 +2,7 @@ export function assertDeployedRuntime(readiness, expected) {
   for (const [field, value] of Object.entries({ deploymentSiteId: expected.siteId, supabaseProjectRef: expected.projectRef, deploymentReleaseSha: expected.releaseSha })) {
     if (!value || readiness?.[field]?.toLowerCase() !== value.toLowerCase()) throw new Error(`Deployed runtime ${field} does not match the reviewed release`)
   }
-  if (readiness?.supabaseSchemaVersion !== '20260903.3' || readiness?.bookingKitSchemaVersion !== '20260925.2' || readiness?.supabaseSchemaReady !== true) throw new Error('Deployed runtime schema probe failed')
+  if (readiness?.supabaseSchemaVersion !== '20260903.4' || readiness?.bookingKitSchemaVersion !== '20260925.2' || readiness?.supabaseSchemaReady !== true) throw new Error('Deployed runtime schema probe failed')
   if (expected.catalogProfile || expected.catalogHash || expected.manifestHash || expected.certificationHash) {
     if (!['rehab-staging', 'rehab-certified'].includes(expected.catalogProfile) || !/^[a-f0-9]{64}$/.test(expected.catalogHash ?? '') || !/^[a-f0-9]{64}$/.test(expected.manifestHash ?? '')) throw new Error('Expected immutable catalogue identity is incomplete')
     if (readiness?.templateCatalogReady !== true || readiness?.publishedTemplateCount !== 5486 || readiness?.expectedTemplateCount !== 5486) throw new Error('Deployed full catalogue is not ready')

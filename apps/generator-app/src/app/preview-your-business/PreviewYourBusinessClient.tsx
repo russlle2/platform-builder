@@ -288,7 +288,8 @@ export default function PreviewYourBusinessClient() {
   const searchParams = useSearchParams()
   const demoRecord = searchParams.get('demoRecord') === '1'
   const nichePrefill = searchParams.get('niche')
-  const nichePrefilledRef = useRef(false)
+  const templatePrefill = searchParams.get('template')
+  const appliedSelectionRef = useRef<string | null>(null)
 
   const {
     step,
@@ -416,7 +417,7 @@ export default function PreviewYourBusinessClient() {
   /* ================ Match template ================ */
   const runMatching = useCallback(async () => {
     setStep('matching')
-    let tpls = templates
+    let tpls = templates.filter((template) => template.nicheSlug === businessInfo.niche)
     if (tpls.length === 0 && businessInfo.niche) {
       tpls = await fetchTemplatesForNiche(businessInfo.niche)
     }
@@ -442,7 +443,12 @@ export default function PreviewYourBusinessClient() {
     })
     scored.sort((a: { score: number }, b: { score: number }) => b.score - a.score)
 
-    const best = scored[0]
+    // A published gallery link is an explicit selection, ahead of quiz ranking.
+    // Resolve only against this niche's catalog; never trust arbitrary URL slugs.
+    const requestedTemplate = nichePrefill === businessInfo.niche && templatePrefill
+      ? scored.find((template) => template.slug === templatePrefill)
+      : undefined
+    const best = requestedTemplate || scored[0]
     const resolvedNiche = best.nicheSlug || businessInfo.niche
     setMatchedTemplate({
       nicheSlug: resolvedNiche,
@@ -450,12 +456,16 @@ export default function PreviewYourBusinessClient() {
       templateName: best.name,
       pages: best.pages,
       matchScore: best.score,
-      reason: best.reason,
+      reason: requestedTemplate
+        ? 'selected from the template gallery'
+        : nichePrefill === businessInfo.niche && templatePrefill
+          ? `The style from your link is no longer available. We matched an available style: ${best.reason}`
+          : best.reason,
     })
 
     // Find 2 alternatives with different layoutFamily or voiceFamily
     const alts: ApiTemplate[] = []
-    for (const t of scored.slice(1)) {
+    for (const t of scored.filter((template) => template.slug !== best.slug)) {
       if (alts.length >= 2) break
       const diffVoice = t.voiceFamily !== best.voiceFamily
       const diffLayout = t.layoutFamily !== best.layoutFamily
@@ -464,14 +474,14 @@ export default function PreviewYourBusinessClient() {
       }
     }
     // If we didn't find 2 diverse ones, just grab the next top scorers
-    for (const t of scored.slice(1)) {
+    for (const t of scored.filter((template) => template.slug !== best.slug)) {
       if (alts.length >= 2) break
       if (!alts.some((a) => a.slug === t.slug)) alts.push(t)
     }
     setAlternativeTemplates(alts)
 
     setTemplatesLoading(false)
-  }, [templates, businessInfo, stylePreferences, setStep, setMatchedTemplate, fetchTemplatesForNiche])
+  }, [templates, businessInfo, stylePreferences, nichePrefill, templatePrefill, setStep, setMatchedTemplate, fetchTemplatesForNiche])
 
   /* ================ Load live preview ================ */
   const loadPreview = useCallback(
@@ -610,13 +620,27 @@ export default function PreviewYourBusinessClient() {
   )
 
   useEffect(() => {
-    if (nichePrefilledRef.current || !nichePrefill) return
-    if (!NICHE_OPTIONS.some((n) => n.slug === nichePrefill)) return
-    if (!businessInfo.niche) {
-      setBusinessInfo({ niche: nichePrefill })
+    if (!nichePrefill) {
+      appliedSelectionRef.current = null
+      return
     }
-    nichePrefilledRef.current = true
-  }, [nichePrefill, businessInfo.niche, setBusinessInfo])
+    if (!NICHE_OPTIONS.some((n) => n.slug === nichePrefill)) return
+    const selection = JSON.stringify([nichePrefill, templatePrefill])
+    if (appliedSelectionRef.current === selection) return
+    appliedSelectionRef.current = selection
+    if (businessInfo.niche !== nichePrefill) {
+      setBusinessInfo({ niche: nichePrefill })
+      setTemplates([])
+      setAlternativeTemplates([])
+      setBrowseTemplates([])
+      // Discard any preview still resolving for the previous industry.
+      previewRequestIdRef.current += 1
+      setPreviewHtml(null)
+      setPreviewLoading(false)
+      setPreviewError(null)
+    }
+    setStep('info')
+  }, [nichePrefill, templatePrefill, businessInfo.niche, setBusinessInfo, setStep])
 
   /* ================ Restore persisted customization ================ */
   useEffect(() => {
@@ -854,6 +878,17 @@ export default function PreviewYourBusinessClient() {
   /* ================================================================ */
   /* Render                                                           */
   /* ================================================================ */
+
+  // The saved draft lives in sessionStorage. Wait until the browser restores it
+  // before exposing interactive controls, so server markup cannot show stale
+  // niche fields or accept a click before React has attached their handlers.
+  if (!customThemeReady) {
+    return (
+      <main className="min-h-screen pt-24 pb-20" aria-busy="true">
+        <p className="container-hvac py-8 text-slate-300" role="status">Loading your preview…</p>
+      </main>
+    )
+  }
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">

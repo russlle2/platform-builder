@@ -327,7 +327,7 @@ export async function main(args = process.argv.slice(2), env = process.env) {
   }
   if (command === 'bootstrap') {
     if (rollback.previousProfile !== 'launch' || runtime.templateCatalogProfile !== 'launch' || runtime.deploymentReleaseSha !== rollback.previousReleaseSha || site.published_deploy?.id !== rollback.previousDeploymentId) throw new Error('Bootstrap requires the captured launch deployment to remain live')
-  } else if (runtime.deploymentReleaseSha !== head || runtime.templateCatalogProfile !== 'rehab-certified' || runtime.bookingKitSalesEnabled !== false || runtime.supabaseSchemaReady !== true || runtime.supabaseSchemaVersion !== '20260903.3' || runtime.bookingKitSchemaVersion !== '20260925.2' || runtime.supabaseProjectRef !== env.NETLIFY_EXPECTED_SUPABASE_PROJECT_REF) throw new Error('Published application commit, profile, sales flag, or database does not match the verified release')
+  } else if (runtime.deploymentReleaseSha !== head || runtime.templateCatalogProfile !== 'rehab-certified' || runtime.bookingKitSalesEnabled !== false || runtime.supabaseSchemaReady !== true || runtime.supabaseSchemaVersion !== '20260903.4' || runtime.bookingKitSchemaVersion !== '20260925.2' || runtime.supabaseProjectRef !== env.NETLIFY_EXPECTED_SUPABASE_PROJECT_REF) throw new Error('Published application commit, profile, sales flag, or database does not match the verified release')
   const result = await publishCertifiedCatalog({ store, prepared, approvedReceiptHash: receiptHash, rollback, siteId: site.id, deploymentId: site.published_deploy?.id })
   const journal = await store.get(result.journalKey, { type: 'json' })
   await writeFile(flags['--record'], `${JSON.stringify(journal, null, 2)}\n`)
