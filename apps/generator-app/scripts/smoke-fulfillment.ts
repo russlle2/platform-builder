@@ -176,7 +176,11 @@ async function checkTestPurchaseGate(): Promise<Check> {
     if (res.status === 403 && json.error?.includes('not enabled')) {
       return { name: 'Test purchase gate', ok: true, detail: 'Correctly disabled in production' }
     }
-    return { name: 'Test purchase gate', ok: true, detail: `HTTP ${res.status} (unexpected but not blocking)` }
+    return {
+      name: 'Test purchase gate',
+      ok: false,
+      detail: `Expected the disabled-gate 403 response, received HTTP ${res.status}`,
+    }
   } catch (err) {
     return {
       name: 'Test purchase gate',

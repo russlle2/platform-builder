@@ -4,9 +4,18 @@ import { SeoPageShell } from '@/components/seo/SeoPageShell'
 import { SeoCtaGroup } from '@/components/seo/SeoCtaGroup'
 
 export const metadata: Metadata = {
-  title: 'Aromatherapy Website Builder | DailyClarity',
+  title: 'Aromatherapy Website Builder',
   description:
     'Guided aromatherapy website builder with blend menus, safety guidance, workshop paths, and consultation CTAs for scent-based practices.',
+  alternates: { canonical: '/aromatherapy-website-builder' },
+  openGraph: {
+    title: 'Aromatherapy Website Builder | DailyClarity',
+    description:
+      'Guided aromatherapy website builder with blend menus, safety guidance, workshop paths, and consultation CTAs for scent-based practices.',
+    url: '/aromatherapy-website-builder',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
 }
 
 export default function AromatherapyWebsiteBuilderPage() {

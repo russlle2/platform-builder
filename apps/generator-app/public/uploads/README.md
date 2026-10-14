@@ -16,7 +16,7 @@ The upload API automatically:
 
 ## Features
 
-- Maximum file size: 10MB
+- Maximum file size: 4MB (fits the production function request limit)
 - Supported formats: JPEG, PNG, GIF, WebP
 - Optional image optimization with Sharp
 - Automatic file management

@@ -20,8 +20,7 @@ create table if not exists public.orders (
 
 alter table public.orders enable row level security;
 
--- All public access revoked by 20260617215143_harden_advisor_warnings.
--- Service-role key bypasses RLS and is the only writer.
+revoke all on public.orders from anon, authenticated;
 
 -- ── booking_inquiries ─────────────────────────────────────────────────────────
 -- Visitor booking requests submitted via site contact/booking forms.
@@ -36,8 +35,16 @@ create table if not exists public.booking_inquiries (
 
 alter table public.booking_inquiries enable row level security;
 
--- Public INSERT (validated by 20260617215232_validate_public_form_insert_policies).
--- SELECT/UPDATE/DELETE are revoked for anon/authenticated by harden migration.
+revoke all on public.booking_inquiries from anon, authenticated;
+grant insert on public.booking_inquiries to anon, authenticated;
+drop policy if exists "Allow public booking insert" on public.booking_inquiries;
+create policy "Allow public booking insert" on public.booking_inquiries
+  for insert to anon, authenticated
+  with check (
+    visitor_email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'
+    and char_length(visitor_name) between 1 and 200
+    and char_length(message) between 1 and 5000
+  );
 
 -- ── newsletter_subscribers ────────────────────────────────────────────────────
 -- Email addresses collected from marketing opt-in widgets on generated sites.
@@ -52,5 +59,9 @@ create table if not exists public.newsletter_subscribers (
 
 alter table public.newsletter_subscribers enable row level security;
 
--- Public INSERT (validated by 20260617215232_validate_public_form_insert_policies).
--- SELECT/UPDATE/DELETE are revoked for anon/authenticated by harden migration.
+revoke all on public.newsletter_subscribers from anon, authenticated;
+grant insert on public.newsletter_subscribers to anon, authenticated;
+drop policy if exists "Allow public newsletter insert" on public.newsletter_subscribers;
+create policy "Allow public newsletter insert" on public.newsletter_subscribers
+  for insert to anon, authenticated
+  with check (email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$');

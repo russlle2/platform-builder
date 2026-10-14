@@ -16,10 +16,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { niche } = await params
   const meta = NICHE_META[niche]
-  if (!meta) return { title: 'Demo' }
+  if (!meta) return { title: 'Demo', robots: { index: false, follow: false } }
+  const title = `${meta.label} Build Walkthrough`
+  const description = `Watch a full ${meta.label.toLowerCase()} website build and customization walkthrough.`
   return {
-    title: `${meta.label} Build Walkthrough | DailyClarity`,
-    description: `Watch a full ${meta.label.toLowerCase()} website build and customization walkthrough.`,
+    title,
+    description,
+    alternates: { canonical: `/demo/${niche}` },
+    openGraph: {
+      title: `${title} | DailyClarity`,
+      description,
+      url: `/demo/${niche}`,
+      type: 'website',
+      images: ['/og-image.png'],
+    },
   }
 }
 

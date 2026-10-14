@@ -1,236 +1,181 @@
-'use client'
-
-import { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
+import type { Metadata } from 'next'
 import Link from 'next/link'
 
-const testimonials = [
+export const metadata: Metadata = {
+  title: 'Product proof — explore DailyClarity before you buy',
+  description:
+    'Explore DailyClarity templates, build an editable preview with your own business details, and compare published plan scope before checkout.',
+  alternates: { canonical: '/proof' },
+}
+
+const productEvidence = [
   {
-    quote: 'We filled four new client slots in the first week after launch.',
-    name: 'Logan P.',
-    company: 'Evergreen Wellness Co.',
+    eyebrow: 'Explore',
+    title: 'Interactive template demos',
+    copy: 'Browse purpose-built layouts and inspect the pages, structure, and mobile experience directly. The product is the evidence.',
+    href: '/demo/platform-builder',
+    linkLabel: 'Watch the platform demo',
   },
   {
-    quote: 'The platform looks premium and the mobile calls-to-action convert.',
-    name: 'Alana G.',
-    company: 'Stillwater Holistic',
+    eyebrow: 'Personalize',
+    title: 'An editable business preview',
+    copy: 'Add your own business details, choose a template, and review the result before you are asked to select a plan.',
+    href: '/preview-your-business',
+    linkLabel: 'Build my preview',
   },
   {
-    quote: 'Finally a system that feels built for practitioners, not generic SaaS.',
-    name: 'Micah R.',
-    company: 'Harmony Sound Bath',
+    eyebrow: 'Compare',
+    title: 'Published plan scope',
+    copy: 'See current prices, trial terms, included platform features, and managed services together—without a sales call.',
+    href: '/pricing',
+    linkLabel: 'Compare plans',
+  },
+]
+
+const publicationStandards = [
+  {
+    step: '01',
+    title: 'Permission first',
+    copy: 'A customer story will appear only after the customer approves the words, identity details, and work shown.',
   },
   {
-    quote: 'Inquiries doubled once our booking flow went live on mobile.',
-    name: 'Priya S.',
-    company: 'Lumen Aromatherapy',
+    step: '02',
+    title: 'Define the measurement',
+    copy: 'Any result will name the metric, baseline, observation window, and material factors that shaped it.',
+  },
+  {
+    step: '03',
+    title: 'Publish useful context',
+    copy: 'Case studies will show what was built and for whom—not imply that every business should expect the same outcome.',
   },
 ]
 
 export default function ProofPage() {
-  const [activeIndex, setActiveIndex] = useState(0)
-  const [isPaused, setIsPaused] = useState(false)
-  const touchStartX = useRef<number | null>(null)
-  const swipeHandled = useRef(false)
-
-  useEffect(() => {
-    if (isPaused) {
-      return
-    }
-    const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % testimonials.length)
-    }, 6000)
-    return () => clearInterval(interval)
-  }, [isPaused])
-
-  const active = testimonials[activeIndex]
-  const swipeThreshold = 40
-
   return (
     <main className="min-h-screen pt-24 pb-20">
       <section className="container-hvac py-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_0.8fr] gap-10 items-center">
           <div className="space-y-6">
-            <span className="signal-chip">Proof</span>
+            <span className="signal-chip">Product proof</span>
             <h1 className="text-5xl md:text-6xl font-bold text-bright-white">
-              Results that convert for wellness businesses
+              See what works today. We&apos;ll earn the case studies next.
             </h1>
-            <p className="text-xl text-slate-200 max-w-2xl">
-              We build platforms that feel premium on mobile, surface bookings fast, and
-              turn clicks into new clients.
+            <p className="text-xl text-slate-200 max-w-3xl leading-relaxed">
+              DailyClarity is in early access. Instead of filling this page with anonymous quotes,
+              borrowed benchmarks, or results we cannot substantiate, we invite you to inspect the
+              platform and build with your own content.
             </p>
-            <div className="flex flex-wrap gap-6 text-sm text-slate-300">
-              <span>⚡ 48-hour average launch</span>
-              <span>📈 Conversion-first layouts</span>
-              <span>🔐 Portal edits included</span>
+            <div className="flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-300">
+              <span>Interactive demos</span>
+              <span>Editable preview</span>
+              <span>Clear plan details</span>
+            </div>
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Link href="/preview-your-business" className="cta-button">
+                Build My Preview
+              </Link>
+              <Link
+                href="/demo/platform-builder"
+                className="inline-flex items-center justify-center rounded-lg border border-white/20 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                Watch the Demo
+              </Link>
             </div>
           </div>
-          <div className="glass-panel rounded-3xl p-8">
-            <h2 className="text-2xl font-bold text-white">Pilot metrics</h2>
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              <div className="stat-card">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Inquiries</p>
-                <p className="text-3xl font-bold text-white">+32%</p>
-              </div>
-              <div className="stat-card">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Bookings</p>
-                <p className="text-3xl font-bold text-white">+28%</p>
-              </div>
-              <div className="stat-card">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Bounce</p>
-                <p className="text-3xl font-bold text-white">-21%</p>
-              </div>
-              <div className="stat-card">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Speed</p>
-                <p className="text-3xl font-bold text-white">94</p>
-              </div>
+
+          <aside className="glass-panel rounded-3xl p-8" aria-labelledby="evidence-status-title">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
+              Evidence status
+            </p>
+            <h2 id="evidence-status-title" className="mt-3 text-2xl font-bold text-white">
+              Transparent early access
+            </h2>
+            <p className="mt-4 leading-relaxed text-slate-300">
+              The demos, preview workflow, plan comparison, and checkout terms are available to
+              evaluate now. Verified customer outcomes are not yet published.
+            </p>
+            <div className="mt-6 rounded-2xl border border-cyan-300/20 bg-cyan-300/5 p-5">
+              <p className="font-semibold text-white">Our publishing rule</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-300">
+                We will add customer names, visuals, and performance results only with permission
+                and enough measurement detail for you to judge the claim fairly.
+              </p>
             </div>
-          </div>
+          </aside>
         </div>
       </section>
 
-      <section className="container-hvac pb-20">
-        <div
-          className="glass-panel rounded-3xl p-10"
-          onMouseEnter={() => setIsPaused(true)}
-          onMouseLeave={() => setIsPaused(false)}
-        >
-          <h2 className="text-3xl font-bold text-white mb-6">Before & after snapshots</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-4">
-                <div className="card-mahogany">
-                  <div className="text-xs uppercase tracking-[0.3em] text-slate-400 mb-3">
-                    Before
-                  </div>
-                  <div className="relative aspect-video bg-slate-900 rounded-lg overflow-hidden">
-                    <Image
-                      src={`/images/proof-${i}.jpg`}
-                      alt={`Before site ${i}`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 33vw"
-                    />
-                  </div>
-                </div>
-                <div className="card-mahogany">
-                  <div className="text-xs uppercase tracking-[0.3em] text-cyan-200 mb-3">
-                    After
-                  </div>
-                  <div className="relative aspect-video bg-slate-900 rounded-lg overflow-hidden">
-                    <Image
-                      src={`/images/proof-${i + 3}.jpg`}
-                      alt={`After site ${i}`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 33vw"
-                    />
-                  </div>
-                </div>
-              </div>
+      <section className="container-hvac pb-20" aria-labelledby="verify-now-title">
+        <div className="glass-panel rounded-3xl p-8 md:p-10">
+          <div className="max-w-3xl">
+            <span className="signal-chip">Available now</span>
+            <h2 id="verify-now-title" className="mt-5 text-3xl md:text-4xl font-bold text-white">
+              Three ways to evaluate DailyClarity for yourself
+            </h2>
+            <p className="mt-4 text-lg leading-relaxed text-slate-300">
+              You do not need a testimonial to decide whether the workflow, design quality, and
+              commercial terms fit your business.
+            </p>
+          </div>
+
+          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {productEvidence.map((item) => (
+              <article key={item.title} className="card-mahogany flex h-full flex-col">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
+                  {item.eyebrow}
+                </p>
+                <h3 className="mt-3 text-2xl font-bold text-white">{item.title}</h3>
+                <p className="mt-4 flex-1 leading-relaxed text-slate-300">{item.copy}</p>
+                <Link
+                  href={item.href}
+                  className="mt-6 inline-flex items-center font-semibold text-cyan-200 hover:text-cyan-100"
+                >
+                  {item.linkLabel} <span aria-hidden="true" className="ml-2">→</span>
+                </Link>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="container-hvac pb-20">
-        <div className="glass-panel rounded-3xl p-10">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <div>
-              <h2 className="text-3xl font-bold text-white">What clients say</h2>
-              <p className="text-slate-300 mt-2">
-                Rotating highlights from early pilots and launch partners.
-              </p>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveIndex((prev) =>
-                    prev === 0 ? testimonials.length - 1 : prev - 1
-                  )
-                }
-                className="px-4 py-2 rounded-lg border border-white/20 text-white hover:bg-white/10"
-              >
-                Prev
-              </button>
-              <button
-                type="button"
-                onClick={() =>
-                  setActiveIndex((prev) => (prev + 1) % testimonials.length)
-                }
-                className="px-4 py-2 rounded-lg border border-white/20 text-white hover:bg-white/10"
-              >
-                Next
-              </button>
-            </div>
+      <section className="container-hvac pb-20" aria-labelledby="future-proof-title">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[0.7fr_1.3fr]">
+          <div className="space-y-5">
+            <span className="signal-chip">What comes next</span>
+            <h2 id="future-proof-title" className="text-3xl md:text-4xl font-bold text-white">
+              Customer proof with a paper trail
+            </h2>
+            <p className="text-lg leading-relaxed text-slate-300">
+              As early-access sites launch, this page will grow into a library of consented,
+              measured case studies. Until then, an empty claim is less useful than a product you
+              can actually try.
+            </p>
           </div>
 
-          <div
-            className="mt-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_240px] gap-8 items-center"
-            onTouchStart={(event) => {
-              setIsPaused(true)
-              touchStartX.current = event.touches[0]?.clientX ?? null
-              swipeHandled.current = false
-            }}
-            onTouchMove={(event) => {
-              if (swipeHandled.current || touchStartX.current === null) {
-                return
-              }
-              const currentX = event.touches[0]?.clientX ?? touchStartX.current
-              const deltaX = currentX - touchStartX.current
-              if (Math.abs(deltaX) < swipeThreshold) {
-                return
-              }
-              swipeHandled.current = true
-              if (deltaX > 0) {
-                setActiveIndex((prev) =>
-                  prev === 0 ? testimonials.length - 1 : prev - 1
-                )
-              } else {
-                setActiveIndex((prev) => (prev + 1) % testimonials.length)
-              }
-            }}
-            onTouchEnd={() => {
-              setIsPaused(false)
-              touchStartX.current = null
-              swipeHandled.current = false
-            }}
-          >
-            <div className="card-mahogany space-y-4">
-              <p className="text-2xl text-slate-100 leading-relaxed">&ldquo;{active.quote}&rdquo;</p>
-              <div>
-                <p className="text-white font-semibold text-lg">{active.name}</p>
-                <p className="text-sm text-slate-400">{active.company}</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              {testimonials.map((item, index) => (
-                <button
-                  key={item.name}
-                  type="button"
-                  onClick={() => setActiveIndex(index)}
-                  className={`text-left p-3 rounded-xl border text-xs uppercase tracking-[0.2em] transition-all ${
-                    index === activeIndex
-                      ? 'border-cyan-300 text-cyan-200 bg-white/10'
-                      : 'border-white/10 text-slate-400 hover:bg-white/5'
-                  }`}
-                >
-                  {item.company}
-                </button>
-              ))}
-            </div>
-          </div>
+          <ol className="space-y-4">
+            {publicationStandards.map((item) => (
+              <li key={item.step} className="card-mahogany grid gap-4 sm:grid-cols-[auto_1fr]">
+                <span className="text-xl font-bold text-cyan-200" aria-hidden="true">
+                  {item.step}
+                </span>
+                <div>
+                  <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                  <p className="mt-2 leading-relaxed text-slate-300">{item.copy}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
       <section className="container-hvac pb-20">
-        <div className="glass-panel rounded-3xl p-12 text-center">
+        <div className="glass-panel rounded-3xl p-10 md:p-12 text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            Ready to build yours?
+            Put your own business in the frame
           </h2>
-          <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
-            Add your business details, preview your full site with real content, and launch when you&apos;re ready.
+          <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Add your details, explore compatible templates, and review an editable preview before
+            choosing a plan.
           </p>
           <Link href="/preview-your-business" className="cta-button">
             Build My Preview

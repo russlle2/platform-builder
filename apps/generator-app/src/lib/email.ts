@@ -22,6 +22,8 @@ interface SendEmailOptions {
   replyTo?: string
   /** Postmark message stream (default: "outbound") */
   messageStream?: string
+  /** Disable provider tracking for private credential delivery. */
+  disableTracking?: boolean
 }
 
 interface PostmarkResponse {
@@ -56,6 +58,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
     TextBody: options.textBody || stripHtml(options.htmlBody),
     ReplyTo: options.replyTo || undefined,
     MessageStream: options.messageStream || 'outbound',
+    ...(options.disableTracking ? { TrackOpens: false, TrackLinks: 'None' } : {}),
   }
 
   const response = await fetch(POSTMARK_API, {
@@ -66,6 +69,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
       'X-Postmark-Server-Token': token,
     },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(10_000),
   })
 
   const data: PostmarkResponse = await response.json()
@@ -93,7 +97,7 @@ export async function sendOrderConfirmationEmail(
     'https://dailyclarity.org'
   const baseClean = base.replace(/\/$/, '')
   const portalUrl = portalAccessToken
-    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
+    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}#token=${encodeURIComponent(portalAccessToken)}`
     : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
   const nicheLabel = niche ? ` ${escapeHtml(niche)}` : ''
 
@@ -213,7 +217,7 @@ export async function sendWebsiteLiveEmail(
     'https://dailyclarity.org'
   const baseClean = base.replace(/\/$/, '')
   const portalUrl = portalAccessToken
-    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}&token=${encodeURIComponent(portalAccessToken)}`
+    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}#token=${encodeURIComponent(portalAccessToken)}`
     : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
   const platformDomain =
     process.env.PLATFORM_DOMAIN ||

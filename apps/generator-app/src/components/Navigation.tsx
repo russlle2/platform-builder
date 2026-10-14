@@ -51,7 +51,7 @@ export default function Navigation() {
             href="/pricing"
             className="hidden md:block px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all hover:scale-105 shadow-lg"
           >
-            Reserve Your Spot
+            View Pricing
           </Link>
 
           {/* Mobile Menu Button */}

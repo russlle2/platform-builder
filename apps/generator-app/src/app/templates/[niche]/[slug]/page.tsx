@@ -5,21 +5,46 @@ import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import {
   type InlineTextEdit,
-  INLINE_EDITS_KEY,
+  buildCustomizationScope,
+  isEditableAttributeForTag,
+  isSafeEditableAttribute,
+  isSafeInlineEditId,
   mergeInlineEdit,
   applyInlineEditsToHtml,
   loadInlineEdits,
+  sanitizeStoredInlineEditMap,
+  saveInlineEdits,
 } from '@/lib/inline-edits'
 import {
   type ImageSwapMap,
   loadImageSwaps,
-  applyImageSwapsToHtml,
   handlePersistentImageUpload,
   getOrCreateImageOwnerId,
+  normalizeCoordinatedImageSlotIds,
+  sanitizeImageSwapMap,
   saveImageSwaps,
 } from '@/lib/image-swaps'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
+import { PageSeoSettingsPanel } from '@/components/PageSeoSettingsPanel'
 import { getStoredPortalToken } from '@/lib/portal-token-client'
+import {
+  isSafePreviewImageUrl,
+  isSafePreviewPage,
+  isSafePreviewText,
+} from '@/lib/template-preview-security'
+import { composeCustomerPreviewDocument } from '@/lib/customer-preview-document'
+import { getCustomerPreviewEditorScript } from '@/lib/customer-preview-editor-runtime'
+import {
+  CUSTOM_THEME_STORAGE_KEY,
+  customThemeAfterVariationChange,
+  sanitizeCustomTheme,
+  type CustomTheme,
+} from '@/lib/custom-theme'
+import {
+  buildPageSeoInlineEdit,
+  type PageSeoField,
+} from '@/lib/page-seo-settings'
+import type { CatalogRevisionPin } from '@/lib/catalog-revision'
 
 interface TemplateField {
   name: string
@@ -39,6 +64,7 @@ interface TemplateData {
   pages: string[]
   fields: TemplateField[]
   snippet: string
+  catalogRevision?: CatalogRevisionPin
 }
 
 /* ---------- Accent map ---------- */
@@ -58,108 +84,7 @@ const nicheLabels: Record<string, string> = {
   wellness_coach: 'Wellness Coach',
 }
 
-/* ---------- Script injected into preview iframe for editing + nav ---------- */
-function getIframeInjectionScript(): string {
-  return `
-<script>
-(function(){
-  /* ---- Inline text editing ---- */
-  var editableSelectors = 'h1,h2,h3,h4,h5,h6,p,span,li,td,th,a,blockquote,figcaption,label,button,dt,dd';
-
-  document.addEventListener('dblclick', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (!el || el.isContentEditable) return;
-    var originalText = el.textContent;
-    el.contentEditable = 'true';
-    el.style.outline = '2px solid #3b82f6';
-    el.style.outlineOffset = '2px';
-    el.style.borderRadius = '2px';
-    el.style.cursor = 'text';
-    el.focus();
-
-    el.addEventListener('blur', function onBlur() {
-      el.contentEditable = 'false';
-      el.style.outline = '';
-      el.style.outlineOffset = '';
-      el.style.cursor = '';
-      el.removeEventListener('blur', onBlur);
-      // Notify parent of the edit (include the pre-edit text so it can persist)
-      window.parent.postMessage({ type: 'textEdited', tag: el.tagName, original: originalText, text: el.textContent }, '*');
-    }, { once: true });
-
-    e.preventDefault();
-    e.stopPropagation();
-  });
-
-  /* ---- Hover outlines for editable text ---- */
-  var lastHovered = null;
-  document.addEventListener('mouseover', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (lastHovered && lastHovered !== el && !lastHovered.isContentEditable) {
-      lastHovered.style.outline = '';
-      lastHovered.style.outlineOffset = '';
-    }
-    if (el && !el.isContentEditable) {
-      el.style.outline = '1px dashed rgba(59,130,246,0.4)';
-      el.style.outlineOffset = '1px';
-      lastHovered = el;
-    }
-  });
-  document.addEventListener('mouseout', function(e) {
-    var el = e.target.closest(editableSelectors);
-    if (el && !el.isContentEditable) {
-      el.style.outline = '';
-      el.style.outlineOffset = '';
-    }
-  });
-
-  /* ---- Image swap / insert ---- */
-  document.addEventListener('click', function(e) {
-    var img = e.target.closest('img');
-    if (!img) return;
-    e.preventDefault();
-    e.stopPropagation();
-    // Ask parent to open file picker
-    window.parent.postMessage({ type: 'imageSwapRequest', src: img.src, id: img.id || '' }, '*');
-  });
-
-  // Listen for image swap response from parent
-  window.addEventListener('message', function(e) {
-    if (e.data && e.data.type === 'imageSwapResponse') {
-      var newSrc = e.data.imageUrl || e.data.dataUrl;
-      if (!newSrc) return;
-      var imgs = document.querySelectorAll('img');
-      for (var i = 0; i < imgs.length; i++) {
-        if (imgs[i].src === e.data.originalSrc || (!e.data.originalSrc && i === 0)) {
-          imgs[i].src = newSrc;
-          break;
-        }
-      }
-    }
-  });
-
-  /* ---- Live page navigation ---- */
-  document.addEventListener('click', function(e) {
-    var link = e.target.closest('a[href]');
-    if (!link) return;
-    var href = link.getAttribute('href');
-    if (!href) return;
-    // Only intercept internal .html links
-    if (href.endsWith('.html') || href === '/' || href === './') {
-      e.preventDefault();
-      e.stopPropagation();
-      var page = href;
-      if (page === '/' || page === './') page = 'index.html';
-      if (!page.endsWith('.html')) page = page + '.html';
-      // Strip leading ./ or /
-      page = page.replace(/^\\.?\\//, '');
-      window.parent.postMessage({ type: 'navigatePage', page: page }, '*');
-    }
-  });
-})();
-</script>
-`
-}
+const CHECKOUT_CATALOG_REVISION_KEY = 'pb_catalog_revision'
 
 export default function TemplateCustomizePage({
   params: paramsPromise,
@@ -176,12 +101,17 @@ export default function TemplateCustomizePage({
   const [values, setValues] = useState<Record<string, string>>({})
   const [previewHtml, setPreviewHtml] = useState<string | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [previewError, setPreviewError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState('index.html')
   const [step, setStep] = useState<'form' | 'preview'>('form')
   const [editMode, setEditMode] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null!)
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef<string>('')
+  const pendingImageSwapSlotId = useRef<string>('')
+  const pendingImageSwapSlotIds = useRef<string[]>([])
+  const pendingImageSwapPage = useRef<string>('index.html')
+  const imageUploadQueueRef = useRef<Promise<void>>(Promise.resolve())
   // Inline text edits keyed by page filename, persisted so they survive page
   // navigation, variation switches, and carry through to purchase.
   const [inlineEdits, setInlineEdits] = useState<Record<string, InlineTextEdit[]>>({})
@@ -190,13 +120,17 @@ export default function TemplateCustomizePage({
   const [imageSwaps, setImageSwaps] = useState<ImageSwapMap>({})
   const imageSwapsRef = useRef<ImageSwapMap>({})
   imageSwapsRef.current = imageSwaps
+  const activeCustomizationScopeRef = useRef('')
   const currentPageRef = useRef('index.html')
+  const previewRequestIdRef = useRef(0)
+  const loadPreviewRef = useRef<(page?: string) => void>(() => {})
   currentPageRef.current = currentPage
 
   // Variation state
   const [colorScheme, setColorScheme] = useState('original')
   const [fontVariation, setFontVariation] = useState('original')
   const [structureVariation, setStructureVariation] = useState('original')
+  const [customTheme, setCustomTheme] = useState<CustomTheme | null>(null)
   const [variationOptions, setVariationOptions] = useState<{
     colorSchemes: { id: string; name: string }[]
     fontVariations: { id: string; name: string }[]
@@ -210,12 +144,34 @@ export default function TemplateCustomizePage({
 
   // Restore any inline edits captured earlier this session
   useEffect(() => {
-    setInlineEdits(loadInlineEdits())
-    const swaps = loadImageSwaps()
+    if (!params) return
+    const scope = buildCustomizationScope(params.niche, params.slug, portalSlug)
+    activeCustomizationScopeRef.current = scope
+    const edits = loadInlineEdits(scope)
+    setInlineEdits(edits)
+    inlineEditsRef.current = edits
+    const swaps = loadImageSwaps(scope)
     setImageSwaps(swaps)
     imageSwapsRef.current = swaps
     getOrCreateImageOwnerId(portalSlug)
-  }, [portalSlug])
+  }, [params, portalSlug])
+
+  // Carry the exact server-issued revision from the approved preview into
+  // checkout. The checkout API re-resolves and verifies it server-side.
+  useEffect(() => {
+    if (!params || !template || portalSlug) return
+    try {
+      if (template.catalogRevision) {
+        sessionStorage.setItem(CHECKOUT_CATALOG_REVISION_KEY, JSON.stringify({
+          niche: params.niche,
+          template: params.slug,
+          catalogRevision: template.catalogRevision,
+        }))
+      } else {
+        sessionStorage.removeItem(CHECKOUT_CATALOG_REVISION_KEY)
+      }
+    } catch { /* quota exceeded — checkout will resolve the active revision */ }
+  }, [params, portalSlug, template])
 
   // Fetch available variation options
   useEffect(() => {
@@ -229,13 +185,60 @@ export default function TemplateCustomizePage({
   // + auto-populate from saved Preview Your Business info if available
   useEffect(() => {
     if (!params) return
-    fetch(`/api/templates/${params.niche}/${params.slug}`)
-      .then((r) => {
-        if (!r.ok) throw new Error('Template not found')
-        return r.json()
-      })
-      .then((data: TemplateData) => {
+    let cancelled = false
+    ;(async () => {
+        let portalData: Record<string, unknown> | null = null
+        if (portalSlug) {
+          const token = getStoredPortalToken(portalSlug) || ''
+          const response = await fetch(`/api/portal/customer?slug=${encodeURIComponent(portalSlug)}`, {
+            headers: token ? { 'x-portal-token': token } : undefined,
+          })
+          const result = await response.json().catch(() => ({}))
+          if (!response.ok || !result.authenticated || !result.site?.data) {
+            throw new Error('Your portal session could not authorize this site editor.')
+          }
+          portalData = result.site.data as Record<string, unknown>
+          if (portalData.niche !== params.niche || portalData.template !== params.slug) {
+            throw new Error('This template does not match the site in your portal.')
+          }
+        }
+
+        const metadataResponse = await fetch(`/api/templates/${params.niche}/${params.slug}`, portalData?.catalogRevision
+          ? {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ catalogRevision: portalData.catalogRevision }),
+            }
+          : undefined)
+        const metadata = await metadataResponse.json().catch(() => ({}))
+        if (!metadataResponse.ok) {
+          throw new Error(
+            typeof metadata.error === 'string'
+              ? metadata.error
+              : 'Template not found',
+          )
+        }
+        if (cancelled) return
+        const data = metadata as TemplateData
         setTemplate(data)
+
+        if (portalData) {
+          if (typeof portalData.colorScheme === 'string') setColorScheme(portalData.colorScheme)
+          if (typeof portalData.fontVariation === 'string') setFontVariation(portalData.fontVariation)
+          if (typeof portalData.structureVariation === 'string') setStructureVariation(portalData.structureVariation)
+          setCustomTheme(sanitizeCustomTheme(portalData.customTheme))
+
+          if (portalData.inlineEdits && typeof portalData.inlineEdits === 'object') {
+            const edits = sanitizeStoredInlineEditMap(portalData.inlineEdits)
+            setInlineEdits(edits)
+            inlineEditsRef.current = edits
+            saveInlineEdits(edits, activeCustomizationScopeRef.current)
+          }
+          const swaps = sanitizeImageSwapMap(portalData.imageSwaps)
+          setImageSwaps(swaps)
+          imageSwapsRef.current = swaps
+          saveImageSwaps(swaps, activeCustomizationScopeRef.current)
+        }
 
         // Try to load saved business info from Preview Your Business flow
         let savedValues: Record<string, string> = {}
@@ -246,7 +249,13 @@ export default function TemplateCustomizePage({
             const info = JSON.parse(savedInfo)
             savedValues = {
               BUSINESS_NAME: info.businessName || '',
+              PRACTICE_NAME: info.businessName || '',
+              BRAND_NAME: info.businessName || '',
+              STUDIO_NAME: info.businessName || '',
               OWNER_NAME: info.ownerName || '',
+              PRACTITIONER_NAME: info.ownerName || '',
+              COACH_NAME: info.ownerName || '',
+              FACILITATOR_NAME: info.ownerName || '',
               EMAIL: info.email || '',
               PHONE: info.phone || '',
               PHONE_NUMBER: info.phone || '',
@@ -255,6 +264,10 @@ export default function TemplateCustomizePage({
               DESCRIPTION: info.description || '',
               SERVICES: info.services || '',
               WEBSITE: info.website || '',
+              PRIMARY_CTA_URL: '/contact.html',
+              BOOKING_URL: '/contact.html',
+              PRIMARY_CTA_LABEL: 'Get in touch',
+              CTA_LABEL: 'Get in touch',
               business_name: info.businessName || '',
               owner_name: info.ownerName || '',
               email: info.email || '',
@@ -266,6 +279,9 @@ export default function TemplateCustomizePage({
             }
           }
         } catch { /* ignore */ }
+        if (portalData?.customerValues && typeof portalData.customerValues === 'object') {
+          savedValues = portalData.customerValues as Record<string, string>
+        }
 
         const initial: Record<string, string> = {}
         data.fields.forEach((f) => {
@@ -280,44 +296,86 @@ export default function TemplateCustomizePage({
         })
         setValues(initial)
         setLoading(false)
-      })
-      .catch((e) => {
+      })().catch((e) => {
+        if (cancelled) return
         setError(e.message)
         setLoading(false)
       })
-  }, [params])
+    return () => { cancelled = true }
+  }, [params, portalSlug])
 
   // Listen for postMessage from iframe
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
+      if (e.source !== iframeRef.current?.contentWindow) return
       if (!e.data || typeof e.data !== 'object') return
 
       if (e.data.type === 'navigatePage') {
-        const page = e.data.page as string
-        if (template?.pages.includes(page)) {
-          loadPreview(page)
+        const page = e.data.page
+        if (isSafePreviewPage(page) && template?.pages.includes(page)) {
+          loadPreviewRef.current(page)
         }
       }
 
       if (e.data.type === 'imageSwapRequest') {
-        pendingImageSwapSrc.current = e.data.src
-        fileInputRef.current?.click()
+        const slotIds = normalizeCoordinatedImageSlotIds(e.data.slotId, e.data.pictureSlotIds)
+        if (isSafePreviewImageUrl(e.data.src) && slotIds) {
+          pendingImageSwapSrc.current = e.data.src
+          pendingImageSwapSlotId.current = slotIds[0]
+          pendingImageSwapSlotIds.current = slotIds
+          pendingImageSwapPage.current = currentPageRef.current
+          fileInputRef.current?.click()
+        }
       }
 
       if (e.data.type === 'textEdited') {
+        if (!isSafePreviewText(e.data.original) || !isSafePreviewText(e.data.text)) return
+        const nodeId = e.data.nodeId !== undefined ? e.data.nodeId : e.data.id
+        if (nodeId !== undefined && !isSafeInlineEditId(nodeId)) return
         const page = currentPageRef.current
-        const original = (e.data.original as string) || ''
-        const updated = (e.data.text as string) || ''
+        const original = e.data.original
+        const updated = e.data.text
         const pageEdits = mergeInlineEdit(
           inlineEditsRef.current[page] || [],
           original,
           updated,
+          nodeId,
         )
         const next = { ...inlineEditsRef.current, [page]: pageEdits }
         setInlineEdits(next)
-        try {
-          sessionStorage.setItem(INLINE_EDITS_KEY, JSON.stringify(next))
-        } catch { /* ignore */ }
+        inlineEditsRef.current = next
+        saveInlineEdits(next, activeCustomizationScopeRef.current)
+      }
+
+      if (e.data.type === 'editValueRequest') {
+        if (!isSafeInlineEditId(e.data.nodeId) || !isSafePreviewText(e.data.original)) return
+        const rawAttribute = e.data.attribute
+        if (rawAttribute !== '' && !isSafeEditableAttribute(rawAttribute)) return
+        const attribute = isSafeEditableAttribute(rawAttribute) ? rawAttribute : undefined
+        if (attribute && !isEditableAttributeForTag(e.data.tag, attribute)) return
+        const label = attribute
+          ? `Edit ${attribute.replace('-', ' ')} text`
+          : 'Edit text'
+        const updated = window.prompt(label, e.data.original)
+        if (updated === null || !isSafePreviewText(updated) || updated === e.data.original) return
+
+        const page = currentPageRef.current
+        const pageEdits = mergeInlineEdit(
+          inlineEditsRef.current[page] || [],
+          e.data.original,
+          updated,
+          e.data.nodeId,
+        )
+        const next = { ...inlineEditsRef.current, [page]: pageEdits }
+        setInlineEdits(next)
+        inlineEditsRef.current = next
+        saveInlineEdits(next, activeCustomizationScopeRef.current)
+        iframeRef.current?.contentWindow?.postMessage({
+          type: 'editValueResponse',
+          nodeId: e.data.nodeId,
+          attribute: attribute || '',
+          text: updated,
+        }, '*')
       }
     }
 
@@ -330,99 +388,130 @@ export default function TemplateCustomizePage({
   const handleImageFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
-    const page = currentPageRef.current
+    const page = pendingImageSwapPage.current
     const originalSrc = pendingImageSwapSrc.current
-    const owner = getOrCreateImageOwnerId()
-    try {
-      const { map, url } = await handlePersistentImageUpload(
-        file,
-        owner,
-        originalSrc,
-        page,
-        imageSwapsRef.current,
-      )
-      setImageSwaps(map)
-      imageSwapsRef.current = map
-      iframeRef.current?.contentWindow?.postMessage(
-        { type: 'imageSwapResponse', imageUrl: url, originalSrc },
-        '*',
-      )
-    } catch (err) {
-      console.error('Image upload failed:', err)
-      alert(err instanceof Error ? err.message : 'Image upload failed')
-    }
+    const slotId = pendingImageSwapSlotId.current
+    const coordinatedSlotIds = [...pendingImageSwapSlotIds.current]
     e.target.value = ''
-  }, [])
+    const upload = async () => {
+      const owner = getOrCreateImageOwnerId(portalSlug)
+      try {
+        const { map, url, slotIds } = await handlePersistentImageUpload(
+          file,
+          owner,
+          originalSrc,
+          page,
+          imageSwapsRef.current,
+          portalSlug ? getStoredPortalToken(portalSlug) || undefined : undefined,
+          activeCustomizationScopeRef.current,
+          slotId,
+          coordinatedSlotIds,
+        )
+        setImageSwaps(map)
+        imageSwapsRef.current = map
+        if (currentPageRef.current === page) {
+          iframeRef.current?.contentWindow?.postMessage(
+            { type: 'imageSwapResponse', imageUrl: url, originalSrc, slotId, slotIds },
+            '*',
+          )
+        }
+      } catch (err) {
+        console.error('Image upload failed:', err)
+        alert(err instanceof Error ? err.message : 'Image upload failed')
+      }
+    }
+    const queued = imageUploadQueueRef.current.then(upload, upload)
+    imageUploadQueueRef.current = queued
+    await queued
+  }, [portalSlug])
 
   // Load preview
   const loadPreview = useCallback(
     async (page: string = 'index.html') => {
       if (!params || !template) return
+      const requestId = ++previewRequestIdRef.current
+      setCurrentPage(page)
       setPreviewLoading(true)
+      setPreviewError(null)
+      setPreviewHtml(null)
       try {
         const res = await fetch(`/api/templates/${params.niche}/${params.slug}/preview`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page, values, colorScheme, fontVariation, structureVariation }),
+          body: JSON.stringify({
+            page,
+            values,
+            colorScheme,
+            fontVariation,
+            structureVariation,
+            customTheme,
+            catalogRevision: template.catalogRevision,
+          }),
         })
-        if (!res.ok) throw new Error('Failed to load preview')
-        const data = await res.json()
-
-        let html = data.html as string
-        const assetBase = `/api/templates/${params.niche}/${params.slug}/assets`
-
-        // Rewrite relative href/src paths to use asset API (skip .html links)
-        html = html.replace(
-          /(href|src)="(?!https?:\/\/|\/\/|data:|mailto:|tel:|#)([^"]+)"/g,
-          (match, attr, path) => {
-            if (path.endsWith('.html')) return match
-            return `${attr}="${assetBase}/${path}"`
-          }
-        )
-
-        // Inject CSS if available
-        if (data.css) {
-          html = html.replace('</head>', `<style>${data.css}</style></head>`)
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) {
+          throw new Error(
+            typeof data.error === 'string' ? data.error : 'Failed to load preview',
+          )
         }
+        if (requestId !== previewRequestIdRef.current) return
 
-        // Inject variation CSS overrides (must come after base CSS)
-        if (data.variationCSS) {
-          html = html.replace('</head>', `<style id="variation-overrides">${data.variationCSS}</style></head>`)
-        }
-
-        // Inject base styles + editing/navigation scripts
-        html = html.replace('</head>', `
-          <style>
-            body { margin: 0; }
-            img { cursor: pointer; transition: outline 0.15s; }
-            img:hover { outline: 3px solid #8b5cf6; outline-offset: 2px; border-radius: 2px; }
-          </style>
-        </head>`)
-
-        // Re-apply any inline text edits the user made (they aren't part of
-        // the server hydration, which only fills {{TOKENS}}).
-        html = applyInlineEditsToHtml(html, inlineEditsRef.current[page])
-        html = applyImageSwapsToHtml(html, imageSwapsRef.current[page])
-
-        // Inject interaction scripts before </body>
-        html = html.replace('</body>', getIframeInjectionScript() + '</body>')
+        const revision = template.catalogRevision
+        const assetBase = revision?.catalogHash && revision.manifestHash
+          ? `/api/templates/${params.niche}/${params.slug}/assets/__catalog/${revision.catalogHash}/${revision.manifestHash}`
+          : `/api/templates/${params.niche}/${params.slug}/assets`
+        const html = composeCustomerPreviewDocument({
+          html: data.html as string,
+          css: typeof data.css === 'string' ? data.css : null,
+          variationCSS: typeof data.variationCSS === 'string' ? data.variationCSS : null,
+          assetBase,
+          page,
+          inlineEdits: inlineEditsRef.current[page],
+          imageSwaps: imageSwapsRef.current[page],
+          trustedEditorScript: getCustomerPreviewEditorScript(page),
+        })
 
         setPreviewHtml(html)
-        setCurrentPage(page)
       } catch (e) {
+        if (requestId !== previewRequestIdRef.current) return
         console.error('Preview error:', e)
+        setPreviewHtml(null)
+        setPreviewError(e instanceof Error ? e.message : 'Unable to load this preview page.')
       } finally {
-        setPreviewLoading(false)
+        if (requestId === previewRequestIdRef.current) setPreviewLoading(false)
       }
     },
-    [params, template, values, colorScheme, fontVariation, structureVariation]
+    [params, template, values, colorScheme, fontVariation, structureVariation, customTheme]
   )
+  loadPreviewRef.current = loadPreview
+
+  const handlePageSeoChange = useCallback((field: PageSeoField, updated: string): boolean => {
+    const edit = buildPageSeoInlineEdit(previewHtml, field, updated)
+    if (!edit) return false
+
+    const page = currentPage
+    const pageEdits = mergeInlineEdit(
+      inlineEditsRef.current[page] || [],
+      edit.original || '',
+      edit.updated,
+      edit.nodeId,
+    )
+    const next = { ...inlineEditsRef.current, [page]: pageEdits }
+    setInlineEdits(next)
+    inlineEditsRef.current = next
+    saveInlineEdits(next, activeCustomizationScopeRef.current)
+    setPreviewHtml((current) => (
+      current ? applyInlineEditsToHtml(current, [edit], page) : current
+    ))
+    return true
+  }, [currentPage, previewHtml])
 
   const handleGeneratePreview = () => {
     // Persist customer values so they survive navigation to pricing page
     try {
       sessionStorage.setItem('pb_template_values', JSON.stringify(values))
-      saveImageSwaps(imageSwapsRef.current)
+      saveImageSwaps(imageSwapsRef.current, activeCustomizationScopeRef.current)
+      if (!portalSlug) sessionStorage.removeItem(CUSTOM_THEME_STORAGE_KEY)
     } catch { /* ignore */ }
     setStep('preview')
     loadPreview('index.html')
@@ -447,6 +536,10 @@ export default function TemplateCustomizePage({
           customerValues: values,
           inlineEdits,
           imageSwaps: imageSwapsRef.current,
+          colorScheme,
+          fontVariation,
+          structureVariation,
+          customTheme,
         }),
       })
       const data = await res.json()
@@ -455,7 +548,7 @@ export default function TemplateCustomizePage({
     } catch {
       setPublishStatus('error')
     }
-  }, [portalSlug, values, inlineEdits])
+  }, [portalSlug, values, inlineEdits, colorScheme, fontVariation, structureVariation, customTheme])
 
   if (loading || !params) {
     return (
@@ -528,6 +621,7 @@ export default function TemplateCustomizePage({
             template={template}
             previewHtml={previewHtml}
             previewLoading={previewLoading}
+            previewError={previewError}
             currentPage={currentPage}
             onPageChange={(page) => loadPreview(page)}
             onBack={() => setStep('form')}
@@ -538,13 +632,23 @@ export default function TemplateCustomizePage({
             editMode={editMode}
             setEditMode={setEditMode}
             colorScheme={colorScheme}
-            setColorScheme={setColorScheme}
+            setColorScheme={(value) => {
+              setCustomTheme((current) => customThemeAfterVariationChange(current, 'color'))
+              setColorScheme(value)
+            }}
             fontVariation={fontVariation}
-            setFontVariation={setFontVariation}
+            setFontVariation={(value) => {
+              setCustomTheme((current) => customThemeAfterVariationChange(current, 'font'))
+              setFontVariation(value)
+            }}
             structureVariation={structureVariation}
-            setStructureVariation={setStructureVariation}
+            setStructureVariation={(value) => {
+              setCustomTheme((current) => customThemeAfterVariationChange(current, 'structure'))
+              setStructureVariation(value)
+            }}
             variationOptions={variationOptions}
             onReloadPreview={() => loadPreview(currentPage)}
+            onPageSeoChange={handlePageSeoChange}
             portalSlug={portalSlug}
             publishStatus={publishStatus}
             onPublishLive={publishToLiveSite}
@@ -883,6 +987,7 @@ function PreviewStep({
   template,
   previewHtml,
   previewLoading,
+  previewError,
   currentPage,
   onPageChange,
   onBack,
@@ -900,6 +1005,7 @@ function PreviewStep({
   setStructureVariation,
   variationOptions,
   onReloadPreview,
+  onPageSeoChange,
   portalSlug,
   publishStatus,
   onPublishLive,
@@ -907,6 +1013,7 @@ function PreviewStep({
   template: TemplateData
   previewHtml: string | null
   previewLoading: boolean
+  previewError: string | null
   currentPage: string
   onPageChange: (page: string) => void
   onBack: () => void
@@ -928,10 +1035,12 @@ function PreviewStep({
     structureVariations: { id: string; name: string }[]
   } | null
   onReloadPreview: () => void
+  onPageSeoChange: (field: PageSeoField, updated: string) => boolean
   portalSlug: string | null
   publishStatus: 'idle' | 'saving' | 'done' | 'error'
   onPublishLive: () => void
 }) {
+  const [showSeoPanel, setShowSeoPanel] = useState(false)
   // Generic cycler helper
   const cycle = (
     list: { id: string; name: string }[] | undefined,
@@ -976,8 +1085,8 @@ function PreviewStep({
           </span>
           <h1 className="text-3xl font-bold text-white">{template.name}</h1>
           <p className="text-slate-400">
-            Your business info has been populated into every page.
-            <span className="text-blue-300 ml-1">Double-click text to edit &bull; Click images to swap</span>
+            Supported business fields have been populated across the template pages.
+            <span className="text-blue-300 ml-1">Double-click text or labels to edit &bull; Click images to swap</span>
           </p>
         </div>
         <div className="flex gap-3 flex-wrap">
@@ -1002,7 +1111,7 @@ function PreviewStep({
             </button>
           )}
           <Link
-            href={`/pricing?template=${template.slug}&niche=${niche}&color=${colorScheme}&font=${fontVariation}&structure=${structureVariation}`}
+            href={`/pricing?template=${encodeURIComponent(template.slug)}&niche=${encodeURIComponent(niche)}&color=${encodeURIComponent(colorScheme)}&font=${encodeURIComponent(fontVariation)}&structure=${encodeURIComponent(structureVariation)}`}
             className={`px-6 py-3 text-sm font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
             style={{ boxShadow: `0 0 20px ${colors.glow}` }}
           >
@@ -1011,19 +1120,22 @@ function PreviewStep({
         </div>
       </div>
 
-      <CustomerImageLibrary owner={portalSlug || undefined} />
+      <CustomerImageLibrary
+        owner={portalSlug || undefined}
+        portalToken={portalSlug ? getStoredPortalToken(portalSlug) || undefined : undefined}
+      />
 
       {/* ═══════ Variation Switcher Bar ═══════ */}
-      {variationOptions && (
+      {previewHtml && (
         <div className="glass-panel rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" /></svg>
-            <span className="text-sm font-semibold text-white">Style Variations</span>
-            <span className="text-xs text-slate-500 ml-2">Use arrows to cycle through 10 options for each</span>
+            <span className="text-sm font-semibold text-white">Customize this page</span>
+            <span className="text-xs text-slate-500 ml-2">Style and search settings update the live preview</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
             {/* Color Scheme */}
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+            {variationOptions && <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
               <button
                 onClick={() => cycle(variationOptions.colorSchemes, colorScheme, -1, setColorScheme)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
@@ -1042,10 +1154,10 @@ function PreviewStep({
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
-            </div>
+            </div>}
 
             {/* Font */}
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+            {variationOptions && <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
               <button
                 onClick={() => cycle(variationOptions.fontVariations, fontVariation, -1, setFontVariation)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
@@ -1064,10 +1176,10 @@ function PreviewStep({
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
-            </div>
+            </div>}
 
             {/* Structure */}
-            <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
+            {variationOptions && <div className="flex items-center gap-2 bg-white/5 rounded-xl px-3 py-2.5 border border-white/10">
               <button
                 onClick={() => cycle(variationOptions.structureVariations, structureVariation, -1, setStructureVariation)}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all hover:scale-110 flex-shrink-0"
@@ -1086,8 +1198,34 @@ function PreviewStep({
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" /></svg>
               </button>
-            </div>
+            </div>}
+
+            <button
+              type="button"
+              onClick={() => setShowSeoPanel((current) => !current)}
+              aria-expanded={showSeoPanel}
+              className={`flex items-center justify-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all ${
+                showSeoPanel
+                  ? 'border-cyan-400 bg-cyan-500/15 text-cyan-100'
+                  : 'border-white/10 bg-white/5 text-white hover:bg-white/10'
+              }`}
+            >
+              <span aria-hidden="true" className="text-base">⌕</span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-semibold uppercase tracking-widest text-slate-500">Page</span>
+                <span className="block truncate text-sm font-bold">SEO settings</span>
+              </span>
+            </button>
           </div>
+          {showSeoPanel && (
+            <div className="mt-4">
+              <PageSeoSettingsPanel
+                html={previewHtml}
+                page={currentPage}
+                onApply={onPageSeoChange}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -1164,9 +1302,21 @@ function PreviewStep({
             srcDoc={previewHtml}
             className="w-full bg-white"
             style={{ height: 'min(85vh, 1200px)', minHeight: '70vh' }}
-            sandbox="allow-same-origin allow-scripts"
+            sandbox="allow-scripts"
+            referrerPolicy="no-referrer"
             title="Template preview"
           />
+        ) : previewError ? (
+          <div className="flex h-[700px] flex-col items-center justify-center gap-4 bg-slate-900 px-6 text-center">
+            <p className="max-w-md text-sm text-red-200">{previewError}</p>
+            <button
+              type="button"
+              onClick={() => onPageChange(currentPage)}
+              className="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10"
+            >
+              Retry preview
+            </button>
+          </div>
         ) : (
           <div className="flex items-center justify-center h-[700px] bg-slate-900">
             <p className="text-slate-400">Preview will appear here</p>
@@ -1178,11 +1328,11 @@ function PreviewStep({
       <div className="flex flex-wrap items-center gap-6 px-6 py-3 rounded-xl bg-slate-800/60 border border-white/5 text-xs text-slate-400">
         <span className="flex items-center gap-2">
           <span className="inline-block w-2.5 h-2.5 rounded-sm bg-blue-400/60" />
-          <strong className="text-slate-300">Double-click</strong> any text to edit inline
+          <strong className="text-slate-300">Double-click</strong> text or accessibility labels to edit
         </span>
         <span className="flex items-center gap-2">
           <span className="inline-block w-2.5 h-2.5 rounded-sm bg-violet-400/60" />
-          <strong className="text-slate-300">Click</strong> any image to swap or replace it
+          <strong className="text-slate-300">Click</strong> an image to replace it; double-click for alt text
         </span>
         <span className="flex items-center gap-2">
           <span className="inline-block w-2.5 h-2.5 rounded-sm bg-emerald-400/60" />
@@ -1199,7 +1349,7 @@ function PreviewStep({
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            href={`/pricing?template=${template.slug}&niche=${niche}`}
+            href={`/pricing?template=${encodeURIComponent(template.slug)}&niche=${encodeURIComponent(niche)}&color=${encodeURIComponent(colorScheme)}&font=${encodeURIComponent(fontVariation)}&structure=${encodeURIComponent(structureVariation)}`}
             className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
             style={{ boxShadow: `0 0 30px ${colors.glow}` }}
           >

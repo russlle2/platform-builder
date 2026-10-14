@@ -7,6 +7,15 @@ export const metadata: Metadata = {
   title: 'Watch a Build Walkthrough',
   description:
     'See how DailyClarity Platform Builder guides wellness and practice owners from business info to a live, booking-ready website preview.',
+  alternates: { canonical: '/demo' },
+  openGraph: {
+    title: 'Watch a Build Walkthrough | DailyClarity',
+    description:
+      'See how DailyClarity Platform Builder guides wellness and practice owners from business info to a live, booking-ready website preview.',
+    url: '/demo',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
 }
 
 export default function DemoHubPage() {

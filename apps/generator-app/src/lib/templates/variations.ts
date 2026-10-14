@@ -3,6 +3,11 @@
 /* 10 color schemes · 10 font families · 10 structural layouts         */
 /* ------------------------------------------------------------------ */
 
+import {
+  buildCompilerThemeOverrides,
+  type CompilerColorPalette,
+} from '../compiler-theme'
+
 export interface ColorScheme {
   id: string
   name: string
@@ -355,6 +360,40 @@ export function getStructureVariation(id: string): StructureVariation {
   return STRUCTURE_VARIATIONS.find((s) => s.id === id) || STRUCTURE_VARIATIONS[0]
 }
 
+const QUIZ_COLOR_SCHEMES: Record<string, string> = {
+  'dark-elegant': 'midnight-bloom',
+  'light-airy': 'arctic-frost',
+  'rich-warm': 'warm-ember',
+  'cool-modern': 'ocean-breeze',
+  'nature-organic': 'sage-garden',
+  'vibrant-energy': 'rose-quartz',
+}
+
+const QUIZ_FONT_VARIATIONS: Record<string, string> = {
+  serif: 'source-serif',
+  'sans-serif': 'inter',
+  mixed: 'lora',
+}
+
+const QUIZ_STRUCTURE_VARIATIONS: Record<string, string> = {
+  spacious: 'elegant-serif',
+  balanced: 'rounded-soft',
+  compact: 'compact-dense',
+}
+
+/** Translate style-quiz vocabulary to actual variation IDs used by deploys. */
+export function resolveQuizColorScheme(value: string): string {
+  return QUIZ_COLOR_SCHEMES[value] || getColorScheme(value).id
+}
+
+export function resolveQuizFontVariation(value: string): string {
+  return QUIZ_FONT_VARIATIONS[value] || getFontVariation(value).id
+}
+
+export function resolveQuizStructureVariation(value: string): string {
+  return QUIZ_STRUCTURE_VARIATIONS[value] || getStructureVariation(value).id
+}
+
 /**
  * Generate CSS to inject into a template for the given variation choices.
  * Returns a <style> block string or empty string if all are 'original'.
@@ -363,6 +402,7 @@ export function buildVariationCSS(
   colorId: string,
   fontId: string,
   structureId: string,
+  stylesheet = '',
 ): string {
   const parts: string[] = []
 
@@ -390,6 +430,22 @@ export function buildVariationCSS(
   if (structure.css) {
     parts.push(structure.css)
   }
+
+  const colorPalette = Object.keys(color.vars).length > 0
+    ? {
+      background: color.vars['--bg'],
+      text: color.vars['--fg'],
+      muted: color.vars['--muted'],
+      primary: color.vars['--primary'],
+      accent: color.vars['--accent'],
+      card: color.vars['--card'],
+    } as CompilerColorPalette
+    : undefined
+  const compilerOverrides = buildCompilerThemeOverrides(stylesheet, {
+    ...(colorPalette ? { colors: colorPalette } : {}),
+    ...(font.family ? { fonts: { body: font.family, heading: font.family } } : {}),
+  })
+  if (compilerOverrides) parts.push(compilerOverrides)
 
   if (parts.length === 0) return ''
 

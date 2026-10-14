@@ -1,73 +1,104 @@
-name: Deploy
-
+name: Promote or roll back a certified production release
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
-
+    inputs:
+      operation:
+        type: choice
+        required: true
+        default: verify
+        options: [verify, promote, rollback]
+      artifact_run_id:
+        description: 'Run containing the reviewed certification bundle or rollback record'
+        required: true
+        type: string
+      artifact_id:
+        description: 'Exact artifact ID (library/, promotion-dry-run.json, certification.json, connected-staging.json)'
+        required: true
+        type: string
+      receipt_hash:
+        description: 'Approved canonical certification SHA-256, or rollback-record SHA-256'
+        required: true
+        type: string
+      connected_evidence_hash:
+        description: 'Approved raw connected-staging.json SHA-256 (required for promotion)'
+        required: false
+        type: string
+      confirm:
+        description: 'For writes: PROMOTE CERTIFIED or ROLLBACK CERTIFIED'
+        required: false
+        type: string
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: dailyclarity-production
+  cancel-in-progress: false
 jobs:
-  deploy-generator:
+  certified-release:
+    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    
+    environment: production
+    env:
+      RECEIPT_HASH: ${{ inputs.receipt_hash }}
+      CONNECTED_EVIDENCE_HASH: ${{ inputs.connected_evidence_hash }}
+      OPERATION: ${{ inputs.operation }}
+      CONFIRMATION: ${{ inputs.confirm }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+      NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+      NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+      NETLIFY_EXPECTED_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+      INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+      DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+      DAILYCLARITY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '20.x'
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      
-      - name: Build generator app
-        run: pnpm run generator:build
-      
-      - name: Deploy to Netlify
-        continue-on-error: true
-        uses: nwtgck/actions-netlify@v2
+          node-version: '22'
+      - name: Configure temporary artifact paths
+        run: |
+          echo "RELEASE_BUNDLE=$RUNNER_TEMP/certified-bundle" >> "$GITHUB_ENV"
+          echo "ROLLBACK_RECORD=$RUNNER_TEMP/rollback.json" >> "$GITHUB_ENV"
+      - name: Install exact dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Install Playwright browsers
+        run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          publish-dir: './apps/generator-app/.next'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
+          artifact-ids: ${{ inputs.artifact_id }}
+          run-id: ${{ inputs.artifact_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.RELEASE_BUNDLE }}
+          merge-multiple: true
+      - name: Require successful GitHub CI on this exact main commit
+        if: ${{ inputs.operation != 'rollback' }}
+        run: node apps/generator-app/scripts/verify-release-ci.mjs
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-  
-  deploy-client-site:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Enable Corepack
-        run: corepack enable
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20.x'
-          cache: 'pnpm'
-      
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-      
-      - name: Build client site
-        run: pnpm run client:build
-      
-      - name: Deploy to Netlify
-        continue-on-error: true
-        uses: nwtgck/actions-netlify@v2
-        with:
-          publish-dir: './apps/client-template/.next'
-          production-branch: main
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: "Deploy from GitHub Actions"
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Verify production schema and future deployment configuration
+        if: ${{ inputs.operation == 'promote' }}
+        run: |
+          node apps/generator-app/scripts/verify-launch-schema.mjs
+          node apps/generator-app/scripts/verify-netlify-target.mjs
         env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_CLIENT }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          DAILYCLARITY_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_CATALOG_PROFILE: rehab-certified
+      - name: Verify, promote, or restore only the approved immutable release
+        run: node apps/generator-app/scripts/run-certified-promotion.mjs
+        env:
+          NEXT_PUBLIC_RELEASE_SHA: ${{ github.sha }}
+      - name: Preserve rollback record even when deployment or attestation fails
+        if: ${{ always() && inputs.operation == 'promote' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: certified-rollback-${{ github.sha }}
+          path: ${{ env.ROLLBACK_RECORD }}
+          if-no-files-found: warn

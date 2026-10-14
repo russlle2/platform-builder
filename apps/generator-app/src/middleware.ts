@@ -35,6 +35,22 @@ function templateCatalogRedirect(req: NextRequest): NextResponse | null {
 }
 
 export default async function middleware(req: NextRequest) {
+  // Sandbox diagnostics have their own signed cookie and no account dependency.
+  // Keep PayPal return parameters away from trackers and referrers.
+  if (req.nextUrl.pathname === '/paypal-test' || req.nextUrl.pathname.startsWith('/api/paypal/sandbox/')) {
+    const response = NextResponse.next()
+    response.headers.set('Cache-Control', 'private, no-store, max-age=0')
+    response.headers.set('Referrer-Policy', 'no-referrer')
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Content-Security-Policy', [
+      "default-src 'self'", "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data: blob:",
+      "connect-src 'self'", "frame-src 'none'", "object-src 'none'", "base-uri 'self'", "form-action 'self'",
+    ].join('; '))
+    return response
+  }
   const catalogRedirect = templateCatalogRedirect(req)
   if (catalogRedirect) return catalogRedirect
 
@@ -69,6 +85,19 @@ export default async function middleware(req: NextRequest) {
       "worker-src 'self' blob:",
     ].join('; ')
   )
+
+  if (req.nextUrl.pathname === '/booking-kit/result' || req.nextUrl.pathname.startsWith('/booking-kit/result/')) {
+    supabaseResponse.headers.set('Cache-Control', 'private, no-store, max-age=0')
+    supabaseResponse.headers.set('Referrer-Policy', 'no-referrer')
+    supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    // Enforce the private document boundary even if a tracker is accidentally
+    // added to a shared layout in a future change.
+    supabaseResponse.headers.set('Content-Security-Policy', [
+      "default-src 'self'", "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+      "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data: blob:",
+      "connect-src 'self'", "frame-src 'none'", "object-src 'none'", "base-uri 'self'", "form-action 'self'",
+    ].join('; '))
+  }
 
   return supabaseResponse
 }

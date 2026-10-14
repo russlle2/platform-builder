@@ -5,20 +5,31 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
+import { getSafeRedirectPath } from '@/lib/safe-redirect'
+
+const authConfigured = Boolean(
+  process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+)
 
 function LoginForm() {
   const searchParams = useSearchParams()
-  const next = searchParams.get('next') ?? '/dashboard'
+  const next = getSafeRedirectPath(searchParams.get('next'))
+  const callbackFailed = searchParams.get('error') === 'auth_callback_failed'
 
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+    callbackFailed ? 'error' : 'idle'
+  )
+  const [errorMessage, setErrorMessage] = useState(
+    callbackFailed ? 'That sign-in link could not be verified. Please request a new one.' : ''
+  )
 
   useEffect(() => {
+    if (!authConfigured) return
     const supabase = createClient()
     supabase.auth.getUser().then(({ data }) => {
       if (data.user) {
-        window.location.href = next
+        window.location.assign(next)
       }
     })
   }, [next])
@@ -26,6 +37,12 @@ function LoginForm() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!email.trim()) return
+
+    if (!authConfigured) {
+      setStatus('error')
+      setErrorMessage('Sign-in is temporarily unavailable. Please contact support.')
+      return
+    }
 
     setStatus('loading')
     setErrorMessage('')
@@ -51,7 +68,7 @@ function LoginForm() {
   return (
     <div className="bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl">
       {status === 'success' ? (
-        <div className="text-center py-4">
+        <div className="text-center py-4" role="status" aria-live="polite">
           <div className="w-14 h-14 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-5">
             <svg className="w-7 h-7 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -76,9 +93,10 @@ function LoginForm() {
       ) : (
         <>
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-white mb-2">Welcome back</h1>
+            <h1 className="text-2xl font-bold text-white mb-2">Sign in or create your account</h1>
             <p className="text-slate-400 text-sm">
-              Get a magic link emailed to you &mdash; no password needed.
+              We&apos;ll email you a secure magic link. Returning customers sign in, and new
+              customers create an account when they verify their email &mdash; no password needed.
             </p>
           </div>
 
@@ -100,7 +118,10 @@ function LoginForm() {
             </div>
 
             {status === 'error' && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-sm text-red-300">
+              <div
+                className="bg-red-500/10 border border-red-500/30 rounded-lg px-4 py-3 text-sm text-red-300"
+                role="alert"
+              >
                 {errorMessage || 'Something went wrong. Please try again.'}
               </div>
             )}
@@ -119,9 +140,21 @@ function LoginForm() {
                   Sending...
                 </>
               ) : (
-                'Send magic link'
+                'Continue with email'
               )}
             </button>
+
+            <p className="text-center text-slate-500 text-xs leading-relaxed">
+              By continuing, you agree to the{' '}
+              <Link href="/terms" className="text-cyan-400 hover:text-cyan-300 underline">
+                Terms of Service
+              </Link>{' '}
+              and acknowledge the{' '}
+              <Link href="/privacy" className="text-cyan-400 hover:text-cyan-300 underline">
+                Privacy Policy
+              </Link>
+              .
+            </p>
           </form>
 
           <div className="mt-6 pt-5 border-t border-white/10 text-center">
@@ -164,7 +197,10 @@ export default function LoginPage() {
         </Suspense>
 
         <p className="text-center text-slate-600 text-xs mt-6">
-          &copy; {new Date().getFullYear()} DailyClarity. All rights reserved.
+          &copy; {new Date().getFullYear()} DailyClarity.{' '}
+          <Link href="/privacy" className="hover:text-slate-400">Privacy</Link>
+          {' · '}
+          <Link href="/terms" className="hover:text-slate-400">Terms</Link>
         </p>
       </div>
     </div>

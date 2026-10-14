@@ -7,6 +7,15 @@ export const metadata: Metadata = {
   title: 'DailyClarity vs Wix for Wellness Websites',
   description:
     'Compare DailyClarity and Wix for therapy, coaching, and wellness practices — flexibility vs guided, conversion-focused site structure.',
+  alternates: { canonical: '/dailyclarity-vs-wix' },
+  openGraph: {
+    title: 'DailyClarity vs Wix for Wellness Websites',
+    description:
+      'Compare DailyClarity and Wix for therapy, coaching, and wellness practices — flexibility vs guided, conversion-focused site structure.',
+    url: '/dailyclarity-vs-wix',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
 }
 
 const COMPARISON_ROWS: { topic: string; wix: string; dailyclarity: string }[] = [

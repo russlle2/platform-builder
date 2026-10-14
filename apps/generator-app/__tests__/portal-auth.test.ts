@@ -1,6 +1,7 @@
 import { describe, it, expect, afterEach } from 'vitest'
 import {
   createPortalAccessCredentials,
+  buildPortalMagicLink,
   hashPortalToken,
   verifyPortalTokenHash,
   toPublicPortalSite,
@@ -22,6 +23,16 @@ describe('portal-auth', () => {
     expect(creds!.token.length).toBeGreaterThan(20)
     expect(verifyPortalTokenHash(creds!.token, creds!.hash)).toBe(true)
     expect(verifyPortalTokenHash('wrong', creds!.hash)).toBe(false)
+    expect(verifyPortalTokenHash(
+      creds!.token,
+      creds!.hash,
+      new Date(Date.now() - 1_000).toISOString(),
+    )).toBe(false)
+    expect(verifyPortalTokenHash(
+      creds!.token,
+      creds!.hash,
+      new Date(Date.now() + 60_000).toISOString(),
+    )).toBe(true)
   })
 
   it('hashPortalToken is stable for the same input', () => {
@@ -29,6 +40,26 @@ describe('portal-auth', () => {
     const a = hashPortalToken('abc')
     const b = hashPortalToken('abc')
     expect(a).toBe(b)
+  })
+
+  it('creates stable checkout-bound credentials without exposing the secret', () => {
+    process.env.PORTAL_TOKEN_SECRET = 'stable'
+    const first = createPortalAccessCredentials('cs_test_123')
+    const retry = createPortalAccessCredentials('cs_test_123')
+    const other = createPortalAccessCredentials('cs_test_456')
+
+    expect(first).toEqual(retry)
+    expect(first?.token).not.toContain('stable')
+    expect(other?.token).not.toBe(first?.token)
+    expect(verifyPortalTokenHash(first!.token, first!.hash)).toBe(true)
+  })
+
+  it('keeps portal bearer credentials out of the request query string', () => {
+    process.env.PORTAL_TOKEN_SECRET = 'stable'
+    const link = new URL(buildPortalMagicLink('demo-site', 'private-token'))
+    expect(link.searchParams.get('slug')).toBe('demo-site')
+    expect(link.searchParams.has('token')).toBe(false)
+    expect(new URLSearchParams(link.hash.slice(1)).get('token')).toBe('private-token')
   })
 
   it('toPublicPortalSite omits sensitive data fields', () => {
@@ -47,6 +78,9 @@ describe('portal-auth', () => {
     })
     expect(pub.public.siteUrl).toBe('https://demo.example.com')
     expect(pub).not.toHaveProperty('data')
+    expect(pub).not.toHaveProperty('status')
+    expect(pub).not.toHaveProperty('updated_at')
+    expect(pub.public).not.toHaveProperty('plan')
     expect(JSON.stringify(pub)).not.toContain('secret@example.com')
   })
 })

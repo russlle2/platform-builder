@@ -1,8 +1,27 @@
 import Link from 'next/link'
-import Stripe from 'stripe'
+import type { Metadata } from 'next'
+import { createStripeClient } from '@/lib/stripe-client'
 import { getPlan } from '@/lib/plans'
 
 export const dynamic = 'force-dynamic'
+
+export const metadata: Metadata = {
+  title: 'Checkout Complete',
+  description: 'Review the status and next steps for your DailyClarity order.',
+  alternates: { canonical: '/success' },
+  openGraph: {
+    title: 'Checkout Complete | DailyClarity',
+    description: 'Review the status and next steps for your DailyClarity order.',
+    url: '/success',
+    type: 'website',
+    images: ['/og-image.png'],
+  },
+  robots: {
+    index: false,
+    follow: false,
+    googleBot: { index: false, follow: false },
+  },
+}
 
 type VerifiedSession = {
   ok: boolean
@@ -12,6 +31,7 @@ type VerifiedSession = {
   managed?: boolean
   customBuild?: boolean
   requestId?: string
+  trialStarted?: boolean
 }
 
 async function verifySession(sessionId: string | undefined): Promise<VerifiedSession> {
@@ -19,7 +39,7 @@ async function verifySession(sessionId: string | undefined): Promise<VerifiedSes
   const secret = process.env.STRIPE_SECRET_KEY
   if (!secret) return { ok: false }
   try {
-    const stripe = new Stripe(secret, { apiVersion: '2023-10-16' })
+    const stripe = createStripeClient(secret)
     const session = await stripe.checkout.sessions.retrieve(sessionId)
     // A completed Checkout Session means payment succeeded or a trial started.
     if (session.status !== 'complete') return { ok: false }
@@ -31,12 +51,16 @@ async function verifySession(sessionId: string | undefined): Promise<VerifiedSes
         requestId: meta.customBuildRequestId || undefined,
       }
     }
+    if (meta.checkoutType !== 'template_subscription') return { ok: false }
+    const trialStarted = session.payment_status === 'no_payment_required' && Boolean(session.subscription)
+    const paymentConfirmed = session.payment_status === 'paid'
     const plan = getPlan(meta.planKey)
     return {
-      ok: true,
+      ok: paymentConfirmed || trialStarted,
       slug: meta.slug || undefined,
       planName: plan?.name,
       managed: plan?.managedService ?? false,
+      trialStarted,
     }
   } catch {
     return { ok: false }
@@ -132,10 +156,10 @@ export default async function SuccessPage({
       <div className="glass-panel rounded-3xl p-12 max-w-4xl mx-auto">
         <div className="text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-bright-white mb-4">
-            Payment confirmed
+            {result.trialStarted ? 'Trial started' : 'Payment confirmed'}
           </h1>
           <p className="text-gray-300 text-lg">
-            Your {result.planName ? <strong>{result.planName}</strong> : null} subscription is active.
+            Your {result.planName ? <strong>{result.planName}</strong> : null} subscription {result.trialStarted ? 'trial' : ''} is active.
             We&rsquo;re provisioning your website now and will email you when it&rsquo;s live.
           </p>
 

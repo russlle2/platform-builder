@@ -27,6 +27,52 @@ test('contact page form appears', async ({ page }) => {
   await expect(page.locator('form')).toBeVisible()
 })
 
+test('contact page does not report success when the API rejects a submission', async ({ page }) => {
+  await page.route('**/api/forms/contact', async (route) => {
+    await route.fulfill({
+      status: 503,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Contact submissions are temporarily unavailable.' }),
+    })
+  })
+
+  await page.goto('/contact')
+  await page.getByLabel('Name').fill('Test Visitor')
+  await page.getByLabel('Email').fill('visitor@example.com')
+  await page.getByLabel('Message').fill('Please tell me more about DailyClarity.')
+  await page.getByRole('button', { name: 'Send Message' }).click()
+
+  await expect(page.locator('#contact-form-status')).toContainText('temporarily unavailable')
+  await expect(page.getByRole('heading', { name: 'Message Received' })).toHaveCount(0)
+  await expect(page.locator('form')).toBeVisible()
+})
+
+test('templates navigation disclosure works with click and keyboard', async ({ page }) => {
+  await page.goto('/')
+  const button = page.getByRole('button', { name: 'Templates', exact: true })
+
+  await expect(button).toHaveAttribute('aria-expanded', 'false')
+  await button.click()
+  await expect(button).toHaveAttribute('aria-expanded', 'true')
+  await expect(page.getByRole('link', { name: /Aromatherapy/ }).first()).toBeVisible()
+
+  await button.press('Escape')
+  await expect(button).toHaveAttribute('aria-expanded', 'false')
+  await expect(button).toBeFocused()
+})
+
+for (const [path, heading] of [
+  ['/privacy', 'Privacy Policy'],
+  ['/terms', 'Terms of Service'],
+  ['/refund-policy', 'Refund Policy'],
+] as const) {
+  test(`${path} legal page loads`, async ({ page }) => {
+    const response = await page.goto(path)
+    expect(response?.ok()).toBe(true)
+    await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible()
+  })
+}
+
 test('pricing page loads', async ({ page }) => {
   await page.goto('/pricing')
   await expect(page).toHaveTitle(/Pricing|DailyClarity/)

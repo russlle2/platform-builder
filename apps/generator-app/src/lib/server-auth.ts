@@ -7,23 +7,47 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { isIP } from 'node:net'
 
 // ─── Rate Limiting ────────────────────────────────────────────────────────────
 
 interface RateLimitEntry {
   count: number
   windowStart: number
+  expiresAt: number
 }
 
 const rateLimitStore = new Map<string, RateLimitEntry>()
+const MAX_RATE_LIMIT_KEYS = 10_000
+
+function normalizeIp(value: string | null): string | null {
+  if (!value) return null
+  const candidate = value.trim()
+  return candidate.length <= 64 && isIP(candidate) ? candidate : null
+}
 
 function getClientIp(req: NextRequest | Request): string {
   const r = req as NextRequest
+  // Netlify strips and supplies this header at its trusted edge. Prefer it over
+  // X-Forwarded-For, whose left-most value can be supplied by the caller.
+  const netlifyIp = normalizeIp(r.headers?.get('x-nf-client-connection-ip'))
+  if (netlifyIp) return netlifyIp
+  if (process.env.NETLIFY === 'true') return 'unknown'
+
+  // Local development and non-Netlify reverse proxies may not supply the
+  // platform header. Keep a validated fallback without accepting arbitrary
+  // strings as unbounded map keys.
   return (
-    r.headers?.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-    r.headers?.get('x-real-ip') ||
+    normalizeIp(r.headers?.get('x-forwarded-for')?.split(',')[0] || null) ||
+    normalizeIp(r.headers?.get('x-real-ip')) ||
     'unknown'
   )
+}
+
+function pruneExpiredRateLimits(now: number): void {
+  for (const [key, entry] of rateLimitStore) {
+    if (entry.expiresAt <= now) rateLimitStore.delete(key)
+  }
 }
 
 /**
@@ -42,7 +66,13 @@ export function rateLimitByIp(
   const entry = rateLimitStore.get(storeKey)
 
   if (!entry || now - entry.windowStart > windowMs) {
-    rateLimitStore.set(storeKey, { count: 1, windowStart: now })
+    if (!entry && rateLimitStore.size >= MAX_RATE_LIMIT_KEYS) {
+      pruneExpiredRateLimits(now)
+      // Bound memory during a distributed/spoofed-IP flood. Established keys
+      // continue to work, while new keys fail closed until capacity expires.
+      if (rateLimitStore.size >= MAX_RATE_LIMIT_KEYS) return false
+    }
+    rateLimitStore.set(storeKey, { count: 1, windowStart: now, expiresAt: now + windowMs })
     return true
   }
 
