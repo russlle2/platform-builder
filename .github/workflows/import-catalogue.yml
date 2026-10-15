@@ -1,0 +1,96 @@
+name: Import reviewed full catalogue from an unpublished transfer
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'First prove normal workflow access to a harmless draft asset, then import the full library'
+        required: true
+        default: check-transport
+        type: choice
+        options: [check-transport, import]
+      release_id:
+        description: 'Exact numeric draft release ID in this repository'
+        required: true
+        type: string
+      manifest_asset_id:
+        description: 'Exact numeric canary asset ID for check-transport, or transport-manifest.json ID for import'
+        required: true
+        type: string
+      manifest_hash:
+        description: 'Reviewed raw transport manifest SHA-256'
+        required: false
+        type: string
+      receipt_hash:
+        description: 'Reviewed canonical full5486 certification SHA-256'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-catalogue-import
+  cancel-in-progress: false
+
+jobs:
+  import:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    # Draft releases are visible to repository writers. This short-lived token
+    # stays inside this reviewed job; the helper performs GET requests only.
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      TRANSPORT_RELEASE_ID: ${{ inputs.release_id }}
+      TRANSPORT_MANIFEST_ASSET_ID: ${{ inputs.manifest_asset_id }}
+      TRANSPORT_MANIFEST_HASH: ${{ inputs.manifest_hash }}
+      RECEIPT_HASH: ${{ inputs.receipt_hash }}
+      TRANSPORT_WORK_ROOT: ${{ runner.temp }}/catalogue-import
+      HANDOFF_REPORT: ${{ runner.temp }}/catalogue-import-report.json
+      HANDOFF_OPERATION: ${{ inputs.operation }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Install exact dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Require successful push CI for this exact main commit
+        run: node apps/generator-app/scripts/verify-release-ci.mjs
+      - name: Check authenticated draft transport or verify the full certified library
+        run: node apps/generator-app/scripts/catalogue-handoff.mjs "$HANDOFF_OPERATION"
+      - name: Retain exact candidate bytes including reviewed hidden browser receipts
+        if: ${{ inputs.operation == 'import' }}
+        id: candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: catalogue-candidate-${{ github.sha }}
+          path: ${{ runner.temp }}/catalogue-import/bundle
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 1
+      - name: Record immutable artifact identity
+        if: ${{ inputs.operation == 'import' }}
+        run: |
+          node -e 'const fs=require("node:fs"); const p=process.env.HANDOFF_REPORT; const r=JSON.parse(fs.readFileSync(p)); r.artifact={id:process.env.ARTIFACT_ID,digest:process.env.ARTIFACT_DIGEST}; fs.writeFileSync(p,JSON.stringify(r,null,2)+"\n");'
+        env:
+          ARTIFACT_ID: ${{ steps.candidate.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.candidate.outputs.artifact-digest }}
+      - name: Retain sanitized transport provenance separately
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: catalogue-import-provenance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HANDOFF_REPORT }}
+          if-no-files-found: error
+          retention-days: 14

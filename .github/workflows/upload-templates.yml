@@ -31,7 +31,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: dailyclarity-template-catalog
+  group: ${{ inputs.target_environment == 'staging' && 'dailyclarity-staging' || 'dailyclarity-template-catalog' }}
   cancel-in-progress: false
 
 jobs:
