@@ -22,23 +22,29 @@ type MockOptions = {
   approvalUrl?: string
   captureResponse?: Record<string, unknown>
   captureStatus?: number
+  captureSequence?: Array<{ status?: number; response?: Record<string, unknown>; networkError?: boolean }>
+  configSequence?: Array<Record<string, unknown>>
 }
 
 async function mockSandbox(page: Page, options: MockOptions = {}) {
   const counts = { config: 0, order: 0, capture: 0, receipt: 0, reset: 0 }
+  const requests: string[] = []
   let savedReceipt = options.savedReceipt ?? null
   let savedOrderId = options.savedOrderId ?? null
   await page.route('**/api/paypal/sandbox/**', async (route) => {
     const action = new URL(route.request().url()).pathname.split('/').pop() as keyof typeof counts
     expect(Object.keys(counts)).toContain(action)
     counts[action]++
-    if (action === 'config') return route.fulfill({ json: options.config ?? config })
+    requests.push(action)
+    if (action === 'config') return route.fulfill({ json: options.configSequence?.[counts.config - 1] ?? options.config ?? config })
     if (action === 'receipt') return route.fulfill({ json: { receipt: savedReceipt, orderId: savedOrderId } })
     expect(route.request().method()).toBe('POST')
     if (action === 'order') return route.fulfill({ json: { orderId, approvalUrl: options.approvalUrl ?? `https://www.sandbox.paypal.com/checkoutnow?token=${orderId}` } })
     if (action === 'capture') {
       expect(route.request().postDataJSON()).toEqual({ orderId })
-      return route.fulfill({ status: options.captureStatus ?? 200, json: options.captureResponse ?? { receipt } })
+      const next = options.captureSequence?.[counts.capture - 1]
+      if (next?.networkError) return route.abort('failed')
+      return route.fulfill({ status: next?.status ?? options.captureStatus ?? 200, json: next?.response ?? options.captureResponse ?? { receipt } })
     }
     if (action === 'reset') {
       savedReceipt = null
@@ -47,7 +53,7 @@ async function mockSandbox(page: Page, options: MockOptions = {}) {
     }
     return route.fulfill({ status: 500, json: { error: 'Unexpected test request' } })
   })
-  return counts
+  return Object.assign(counts, { requests })
 }
 
 test.beforeEach(async ({ page }) => {
@@ -185,3 +191,83 @@ for (const approvalUrl of [
     await expect(page.getByRole('heading', { name: 'Test purchase complete' })).toHaveCount(0)
   })
 }
+
+const originRejection = { status: 403, response: { error: 'Open the sandbox test on its configured website and try again.', code: 'origin_mismatch' } }
+
+test('automatic return recovers one origin rejection after rechecking the same signed order, without duplicate StrictMode captures', async ({ page }) => {
+  const counts = await mockSandbox(page, { savedOrderId: orderId, captureSequence: [originRejection, { response: { receipt } }] })
+  await page.goto(`/paypal-test?token=${orderId}&PayerID=TESTPAYER`)
+  await expect(page.getByRole('heading', { name: 'Test purchase complete' })).toBeFocused()
+  await expect(page).toHaveURL(/\/paypal-test$/)
+  expect(counts.requests).toEqual(['config', 'capture', 'config', 'receipt', 'capture'])
+  expect(counts.order).toBe(0)
+  expect(counts.reset).toBe(0)
+})
+
+test('an already completed matching signed receipt avoids another capture after the origin rejection', async ({ page }) => {
+  const counts = await mockSandbox(page, { savedOrderId: orderId, savedReceipt: receipt, captureSequence: [originRejection] })
+  await page.goto(`/paypal-test?token=${orderId}`)
+  await expect(page.getByRole('heading', { name: 'Test purchase complete' })).toBeVisible()
+  expect(counts.requests).toEqual(['config', 'capture', 'config', 'receipt'])
+})
+
+for (const savedOrderId of [null, 'DIFFERENTORDER1234']) {
+  test(`an origin rejection cannot retry without the same signed-session order: ${savedOrderId}`, async ({ page }) => {
+    const counts = await mockSandbox(page, { savedOrderId, captureSequence: [originRejection] })
+    await page.goto(`/paypal-test?token=${orderId}`)
+    await expect(page.getByRole('heading', { name: 'Payment is not confirmed yet' })).toBeVisible()
+    expect(counts.requests).toEqual(['config', 'capture', 'config', 'receipt'])
+  })
+}
+
+for (const invalidSavedReceipt of [
+  { ...receipt, orderId: 'DIFFERENTORDER1234' },
+  { ...receipt, amount: '10.00' },
+  { ...receipt, status: 'PENDING' },
+  { ...receipt, environment: 'live' },
+]) {
+  test(`invalid saved receipt stops origin recovery: ${JSON.stringify(invalidSavedReceipt)}`, async ({ page }) => {
+    const counts = await mockSandbox(page, { savedOrderId: orderId, savedReceipt: invalidSavedReceipt, captureSequence: [originRejection] })
+    await page.goto(`/paypal-test?token=${orderId}`)
+    await expect(page.getByRole('heading', { name: 'Payment is not confirmed yet' })).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Download receipt' })).toHaveCount(0)
+    expect(counts.requests).toEqual(['config', 'capture', 'config', 'receipt'])
+  })
+}
+
+for (const failure of [
+  { status: 403, response: { error: 'Unrelated forbidden request.', code: 'other_error' } },
+  { status: 403, response: { error: 'Untyped rejection.' } },
+  { status: 409, response: { error: 'This test expired.', code: 'sandbox_session_expired' } },
+  { status: 502, response: { error: 'Provider unavailable.', code: 'paypal_unavailable' } },
+  { status: 500, response: { error: 'Other status.', code: 'origin_mismatch' } },
+  { networkError: true },
+]) {
+  test(`automatic return never retries an ambiguous or different rejection: ${JSON.stringify(failure)}`, async ({ page }) => {
+    const counts = await mockSandbox(page, { savedOrderId: orderId, captureSequence: [failure] })
+    await page.goto(`/paypal-test?token=${orderId}`)
+    await expect(page.getByRole('heading', { name: 'Payment is not confirmed yet' })).toBeVisible()
+    expect(counts.requests).toEqual(['config', 'capture'])
+  })
+}
+
+for (const changedConfig of [{ ...config, enabled: false }, { ...config, environment: 'live' }]) {
+  test(`origin recovery stops when fresh configuration is unavailable or invalid: ${JSON.stringify(changedConfig)}`, async ({ page }) => {
+    const counts = await mockSandbox(page, { savedOrderId: orderId, configSequence: [config, changedConfig], captureSequence: [originRejection] })
+    await page.goto(`/paypal-test?token=${orderId}`)
+    await expect(page.getByRole('heading', { name: 'Payment is not confirmed yet' })).toBeVisible()
+    expect(counts.requests).toEqual(['config', 'capture', 'config'])
+  })
+}
+
+test('a second origin rejection stops, and a later manual check gets no automatic retry', async ({ page }) => {
+  const counts = await mockSandbox(page, { savedOrderId: orderId, captureSequence: [originRejection, originRejection, originRejection] })
+  await page.goto(`/paypal-test?token=${orderId}`)
+  await expect(page.getByRole('heading', { name: 'Payment is not confirmed yet' })).toBeVisible()
+  expect(counts.requests).toEqual(['config', 'capture', 'config', 'receipt', 'capture'])
+  await page.getByRole('button', { name: 'Check test payment again' }).click()
+  await expect(page.getByRole('heading', { name: 'Payment is not confirmed yet' })).toBeVisible()
+  expect(counts.requests).toEqual(['config', 'capture', 'config', 'receipt', 'capture', 'config', 'capture'])
+  expect(counts.order).toBe(0)
+  expect(counts.reset).toBe(0)
+})
