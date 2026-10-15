@@ -40,6 +40,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const APP_ROOT = path.resolve(__dirname, '..')
 let PLATFORM_BUILDER_ROOT = ''
 const SHA256_RE = /^[a-f0-9]{64}$/
+// Match the browser-final producer contract in template-factory/src/legacy/types.ts.
+const FINAL_QUALITY_RECEIPT_VERSION = 2
+const FINAL_RENDER_PROTOCOL = 'customer-preview-v1'
 
 function loadLaunchCatalogContract() {
   const contractPath = path.join(
@@ -1931,6 +1934,8 @@ function validateReceiptEvidence(receipt, meta, errors) {
       evidence.passed !== true ||
       !SHA256_RE.test(evidence.screenshotSha256) ||
       !/^[a-f0-9]{16}$/.test(evidence.perceptualHash) ||
+      !SHA256_RE.test(evidence.thumbnailSha256) ||
+      !Number.isSafeInteger(evidence.thumbnailBytes) || evidence.thumbnailBytes <= 0 ||
       !Number.isSafeInteger(evidence.editSlots) || evidence.editSlots < 0 ||
       !Number.isSafeInteger(evidence.imageSlots) || evidence.imageSlots < 0 ||
       !Array.isArray(evidence.issues) || evidence.issues.length !== 0
@@ -2019,9 +2024,12 @@ export function validateV3QualityReceipt(templateDir, meta) {
     errors.push(`catalog v3 artifact inventory is invalid: ${error instanceof Error ? error.message : String(error)}`)
   }
 
-  if (typeof receipt !== 'object' || Array.isArray(receipt) || receipt.version !== 1) {
+  if (typeof receipt !== 'object' || Array.isArray(receipt) || receipt.version !== FINAL_QUALITY_RECEIPT_VERSION) {
     errors.push('catalog v3 final quality receipt shape is invalid')
     return errors
+  }
+  if (receipt.renderProtocol !== FINAL_RENDER_PROTOCOL) {
+    errors.push('catalog v3 final receipt does not use the customer-preview-v1 browser protocol')
   }
   if (receipt.id !== meta.qualityReceipt) errors.push('catalog v3 final receipt id does not match manifest metadata')
   const { id: _receiptId, ...receiptBody } = receipt
@@ -2033,7 +2041,10 @@ export function validateV3QualityReceipt(templateDir, meta) {
   if (
     !SHA256_RE.test(receipt.sourceHash) ||
     typeof receipt.ruleVersion !== 'string' || !receipt.ruleVersion.trim() ||
-    typeof receipt.generatedAt !== 'string' || !Number.isFinite(Date.parse(receipt.generatedAt))
+    typeof receipt.generatedAt !== 'string' || !Number.isFinite(Date.parse(receipt.generatedAt)) ||
+    receipt.sourcePreserved !== true ||
+    !['primary', 'cloud_fragment'].includes(receipt.repairMode) ||
+    ![null, 'accessibility'].includes(receipt.renderRemediation)
   ) {
     errors.push('catalog v3 final receipt provenance is invalid')
   }

@@ -51,7 +51,7 @@ test('full gate refuses missing, partial, stale, or nonzero diagnostic evidence'
   assert.throws(() => validateFullGate(null, 'a'.repeat(64)))
 })
 test('final receipts reject neutral replacement, swapped source or identity, and fabricated digests', () => {
-  const body = { legacySlug: 'source', niche: 'sound_bath', sourceHash: 'a'.repeat(64), artifactHash: 'b'.repeat(64), ruleVersion: 'rule', checks: { static: 'passed', desktop: 'passed', mobile: 'passed', criticalDefects: 0, seriousDefects: 0 } }
+  const body = { version: 2, renderProtocol: 'customer-preview-v1', legacySlug: 'source', niche: 'sound_bath', sourceHash: 'a'.repeat(64), artifactHash: 'b'.repeat(64), ruleVersion: 'rule', repairMode: 'primary', renderRemediation: null, sourcePreserved: true, checks: { static: 'passed', desktop: 'passed', mobile: 'passed', criticalDefects: 0, seriousDefects: 0 } }
   const receipt = { ...body, id: `receipt_${canonicalDigest(body).slice(0, 24)}` }
   const mapping = { legacySlug: 'source', niche: 'sound_bath', qualityReceipt: receipt.id }
   const rehab = { ruleVersion: 'rule', sourceHash: body.sourceHash, sourcePreserved: true, repairMode: 'primary' }
