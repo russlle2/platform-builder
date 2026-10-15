@@ -62,6 +62,8 @@ jobs:
       EXPECTED_PREVIOUS_DEPLOYMENT_ID: ${{ inputs.previous_deployment_id }}
       EXPECTED_PREVIOUS_RELEASE_SHA: ${{ inputs.previous_release_sha }}
       JOURNAL_HASH: ${{ inputs.journal_hash }}
+      RECOVERY_SOURCE_RUN_ID: ${{ inputs.artifact_run_id }}
+      RECOVERY_SOURCE_ARTIFACT_ID: ${{ inputs.artifact_id }}
       GITHUB_TOKEN: ${{ github.token }}
       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
@@ -78,6 +80,8 @@ jobs:
       DAILYCLARITY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # Prove the journal commit is an ancestor before resuming from newer main.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
