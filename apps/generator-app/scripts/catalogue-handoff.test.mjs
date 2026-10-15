@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, writeFile, readFile, rm, symlink } from 'node:fs/promis
 import path from 'node:path'
 import os from 'node:os'
 import { canonicalDigest } from '../src/lib/templates/certified-catalog-contract.mjs'
-import { REPOSITORY, TRANSPORT_CANARY, hash, safeBundlePath, validateManifest, validateConnectedReport, assertWorkflow, createGithub, draftAssets, assertArtifactSource, verifyCandidate, candidateInventory, finalizeCandidate, checkDraftTransport } from './catalogue-handoff.mjs'
+import { REPOSITORY, TRANSPORT_CANARY, hash, safeBundlePath, validateManifest, validateConnectedReport, assertWorkflow, createGithub, draftAssets, assertArtifactSource, assertCandidateSource, verifyCandidate, candidateInventory, finalizeCandidate, checkDraftTransport } from './catalogue-handoff.mjs'
 
 const sha = 'a'.repeat(40), digest = 'b'.repeat(64)
 const receipt = { version: 1, profile: 'rehab-certified', releaseSha: sha, catalogHash: hash('{}'), manifestHash: digest, fullGateHash: hash('{"fixture":true}\n'), sourceCatalogHash: digest, templateEvidenceHash: digest, fileEvidenceHash: digest, sourceTemplates: 5486, certifiedTemplates: 5486, neutralFallbacks: 0, customizationDiagnostics: 0, files: 5486, pages: 5486 }
@@ -110,6 +110,18 @@ test('artifact selection binds successful exact producer run, branch, commit and
   assert.equal((await check()).artifactId, '13')
   for (const change of [{ head_sha: 'c'.repeat(40) }, { head_branch: 'other' }, { path: '.github/workflows/other.yml' }, { conclusion: 'failure' }, { status: 'in_progress' }, { event: 'pull_request' }]) await assert.rejects(check({ ...run, ...change }))
   for (const change of [{ expired: true }, { name: 'unexpected' }, { workflow_run: { id: 99, head_sha: sha } }, { id: 99 }]) await assert.rejects(check(run, { ...artifact, ...change }))
+})
+
+test('candidate source permits only exact-main import or guarded rebind producers without relaxing historical import checks', async () => {
+  const run = { id: 12, repository: { full_name: REPOSITORY }, head_sha: sha, head_branch: 'main', event: 'workflow_dispatch', path: '.github/workflows/rebind-catalogue.yml', status: 'completed', conclusion: 'success', run_attempt: 1 }
+  const artifact = { id: 13, name: `catalogue-candidate-${sha}`, expired: false, workflow_run: { id: 12, head_sha: sha }, digest: `sha256:${digest}` }
+  const github = { json: async (url) => url.includes('/runs/') ? run : artifact }
+  assert.equal((await assertCandidateSource(github, '12', '13', sha)).artifactId, '13')
+  await assert.rejects(assertArtifactSource(github, '12', '13', sha, '.github/workflows/import-catalogue.yml', artifact.name), /producer/)
+  run.path = '.github/workflows/other.yml'
+  await assert.rejects(assertCandidateSource(github, '12', '13', sha), /reviewed import or guarded source rebind/)
+  run.path = '.github/workflows/import-catalogue.yml'; run.head_sha = 'e'.repeat(40)
+  await assert.rejects(assertCandidateSource(github, '12', '13', sha), /producer/)
 })
 
 async function fixture() {

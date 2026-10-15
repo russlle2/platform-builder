@@ -250,6 +250,12 @@ export async function assertArtifactSource(github, runId, artifactId, sha, allow
   return { runId: String(runId), runAttempt: String(run.run_attempt), workflowSha: sha, artifactId: String(artifactId), artifactDigest: artifact.digest ?? null }
 }
 
+export async function assertCandidateSource(github, runId, artifactId, sha) {
+  const run = await github.json(`actions/runs/${requireId(runId)}`)
+  requireThat(['.github/workflows/import-catalogue.yml', '.github/workflows/rebind-catalogue.yml'].includes(run.path), 'Candidate must come from the reviewed import or guarded source rebind workflow')
+  return assertArtifactSource(github, runId, artifactId, sha, run.path, `catalogue-candidate-${sha}`)
+}
+
 export async function checkDraftTransport(github, releaseId, assetId, sha, output) {
   const before = await draftAssets(github, releaseId, sha)
   const asset = approvedAsset(before.assets, assetId, 'catalogue-transfer-canary.txt', TRANSPORT_CANARY.length, hash(TRANSPORT_CANARY))
@@ -300,7 +306,7 @@ async function main() {
   requireThat(head === env.GITHUB_SHA, 'Workflow checkout differs from its main commit')
   const github = createGithub(env.GITHUB_TOKEN)
   if (mode === 'source-check') {
-    console.log(JSON.stringify(await assertArtifactSource(github, env.CANDIDATE_RUN_ID, env.CANDIDATE_ARTIFACT_ID, head, '.github/workflows/import-catalogue.yml', `catalogue-candidate-${head}`)))
+    console.log(JSON.stringify(await assertCandidateSource(github, env.CANDIDATE_RUN_ID, env.CANDIDATE_ARTIFACT_ID, head)))
     return
   }
   let result
@@ -314,7 +320,7 @@ async function main() {
     result = { ...workflow, source: result.source, certificationHash: env.RECEIPT_HASH, transportVerified: true }
   } else if (mode === 'finalize') {
     outsideCheckout(env.RELEASE_BUNDLE); outsideCheckout(env.HANDOFF_REPORT)
-    const source = await assertArtifactSource(github, env.CANDIDATE_RUN_ID, env.CANDIDATE_ARTIFACT_ID, head, '.github/workflows/import-catalogue.yml', `catalogue-candidate-${head}`)
+    const source = await assertCandidateSource(github, env.CANDIDATE_RUN_ID, env.CANDIDATE_ARTIFACT_ID, head)
     const draft = await draftAssets(github, env.CONNECTED_RELEASE_ID, head)
     const asset = draft.assets.find((item) => String(item.id) === requireId(env.CONNECTED_ASSET_ID))
     requireThat(asset?.state === 'uploaded' && asset.name === 'connected-staging.json' && asset.size <= 16 * 1024, 'Connected evidence asset is missing or oversized')

@@ -1,0 +1,115 @@
+name: Reuse a certified catalogue after release tooling fixes
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: 'Exact original import SHA; all application, compiler and dependency bytes must still match'
+        required: true
+        type: string
+      source_run_id:
+        description: 'Exact successful original import-catalogue run'
+        required: true
+        type: string
+      source_artifact_id:
+        description: 'Exact immutable original catalogue candidate artifact ID'
+        required: true
+        type: string
+      source_provenance_id:
+        description: 'Exact original import provenance artifact ID from that same successful run'
+        required: true
+        type: string
+      source_artifact_digest:
+        description: 'Reviewed raw SHA-256 of the original candidate artifact ZIP (without sha256: prefix)'
+        required: true
+        type: string
+      source_receipt_hash:
+        description: 'Reviewed canonical SHA-256 of the original full catalogue certificate'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-catalogue-import
+  cancel-in-progress: false
+
+jobs:
+  rebind:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 90
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SOURCE_ARTIFACT_ID: ${{ inputs.source_artifact_id }}
+      SOURCE_PROVENANCE_ID: ${{ inputs.source_provenance_id }}
+      SOURCE_ARTIFACT_DIGEST: ${{ inputs.source_artifact_digest }}
+      SOURCE_RECEIPT_HASH: ${{ inputs.source_receipt_hash }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Set artifact paths outside the clean checkout
+        run: |
+          echo "RELEASE_BUNDLE=$RUNNER_TEMP/rebound-catalogue" >> "$GITHUB_ENV"
+          echo "SOURCE_PROVENANCE_DIR=$RUNNER_TEMP/original-import-provenance" >> "$GITHUB_ENV"
+          echo "HANDOFF_REPORT=$RUNNER_TEMP/catalogue-rebind-report.json" >> "$GITHUB_ENV"
+      - name: Install exact unchanged dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Require successful exact main CI, protected source identity and original immutable provenance
+        run: |
+          node apps/generator-app/scripts/verify-release-ci.mjs
+          node apps/generator-app/scripts/rebind-catalogue.mjs source-check
+      - name: Download the exact successful original candidate
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.source_artifact_id }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.RELEASE_BUNDLE }}
+          merge-multiple: true
+      - name: Download the exact original import provenance separately
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.source_provenance_id }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.SOURCE_PROVENANCE_DIR }}
+          merge-multiple: true
+      - name: Verify every original artifact byte and recompute the unchanged catalogue certificate for this exact SHA
+        run: node apps/generator-app/scripts/rebind-catalogue.mjs rebind
+      - name: Retain the new immutable candidate with original template and browser evidence bytes
+        id: candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: catalogue-candidate-${{ github.sha }}
+          path: ${{ env.RELEASE_BUNDLE }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 1
+      - name: Record the new immutable artifact identity
+        run: |
+          node -e 'const fs=require("node:fs"); const p=process.env.HANDOFF_REPORT; const r=JSON.parse(fs.readFileSync(p)); r.artifact={id:process.env.ARTIFACT_ID,digest:process.env.ARTIFACT_DIGEST}; fs.writeFileSync(p,JSON.stringify(r,null,2)+"\n");'
+        env:
+          ARTIFACT_ID: ${{ steps.candidate.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.candidate.outputs.artifact-digest }}
+      - name: Retain source closure, original provenance and unchanged byte evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: catalogue-rebind-provenance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HANDOFF_REPORT }}
+          if-no-files-found: error
+          retention-days: 14
