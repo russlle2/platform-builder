@@ -1,6 +1,10 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { recoveryConfiguration, orchestrateRecovery, assertRecoveryEnvironment, activateWithAttestationRetry } from './run-baseline-recovery.mjs'
+import { mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
+import os from 'node:os'
+import path from 'node:path'
+import { execFileSync } from 'node:child_process'
+import { recoveryConfiguration, orchestrateRecovery, assertRecoveryEnvironment, activateWithAttestationRetry, inspectRecoveryResumeSource, verifyRecoveryResumeSource, validateRecoveryJournalSource } from './run-baseline-recovery.mjs'
 import { canonicalDigest, PRODUCTION_NETLIFY_SITE_ID } from '../src/lib/templates/certified-catalog-contract.mjs'
 
 const sha = 'a'.repeat(40)
@@ -27,6 +31,7 @@ function harness(operation = 'recover') {
     capture: step('capture', journal), saveJournal: step('save-journal'), stage: step('stage'), writeProof: step('proof'),
     deploy: step('deploy'), bindIfChanged: step('bind'), activate: step('activate', { templates: 60, salesPaused: true }),
     readJournal: step('read-journal', journal), validateJournal: () => events.push('validate-journal'),
+    checkActivationSource: step('check-activation-source'),
     rollback: step('rollback', { templates: 0, originalBrokenStateRestored: true }),
   }
   return { deps, events, receipt, journal, config: { operation, receiptHash: canonicalDigest(receipt), journalHash: canonicalDigest(journal) } }
@@ -101,9 +106,93 @@ test('staging and binding failures cannot activate a partially verified catalogu
 test('activation resumes the same journal without preparing, recapturing, or redeploying', async () => {
   const h = harness('activate')
   await orchestrateRecovery(h.config, h.deps)
-  assert.deepEqual(h.events, ['read-journal', 'validate-journal', 'save-journal', 'check-release', 'check-future', 'bind', 'activate'])
-  h.deps.head = 'c'.repeat(40)
-  await assert.rejects(orchestrateRecovery(h.config, h.deps), /exact journal release commit/)
+  assert.deepEqual(h.events, ['read-journal', 'validate-journal', 'save-journal', 'check-release', 'check-activation-source', 'check-future', 'bind', 'activate'])
+})
+
+test('unverified activation source cannot bind or write, and verified provenance preserves the original journal', async () => {
+  const h = harness('activate')
+  h.deps.checkActivationSource = async () => { throw new Error('source changed') }
+  await assert.rejects(orchestrateRecovery(h.config, h.deps), /source changed/)
+  assert.equal(h.events.includes('bind'), false)
+  assert.equal(h.events.includes('activate'), false)
+  const before = structuredClone(h.journal)
+  const proof = { deploymentReleaseSha: sha, executorReleaseSha: originalSha, recoverySource: { runId: 123 }, activationSource: { unchangedNonControllerSource: true } }
+  h.deps.checkActivationSource = async () => proof
+  const result = await orchestrateRecovery(h.config, h.deps)
+  assert.deepEqual(h.journal, before)
+  assert.equal(result.deploymentReleaseSha, sha)
+  assert.equal(result.executorReleaseSha, originalSha)
+  assert.deepEqual(result.recoverySource, proof.recoverySource)
+})
+
+async function gitFixture(t) {
+  const repo = await mkdtemp(path.join(os.tmpdir(), 'recovery-resume-'))
+  t.after(() => rm(repo, { recursive: true, force: true }))
+  const git = (...args) => execFileSync('git', args, { cwd: repo, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()
+  git('init', '-b', 'main'); git('config', 'user.name', 'Recovery tests'); git('config', 'user.email', 'recovery@example.test')
+  const put = async (file, value) => { await mkdir(path.dirname(path.join(repo, file)), { recursive: true }); await writeFile(path.join(repo, file), value) }
+  await put('apps/generator-app/src/app/page.tsx', 'original application')
+  await put('.github/workflows/import-catalogue.yml', 'original workflow')
+  git('add', '.'); git('commit', '-m', 'original main')
+  const original = git('rev-parse', 'HEAD')
+  const commit = () => { git('add', '.'); git('commit', '-m', 'reviewed next main'); return git('rev-parse', 'HEAD') }
+  return { repo, git, put, original, commit }
+}
+
+function passingCi(releaseSha) {
+  return { id: 1234, head_sha: releaseSha, status: 'completed', conclusion: 'success', event: 'push', head_branch: 'main', path: '.github/workflows/ci.yml', head_repository: { full_name: 'russlle2/platform-builder' } }
+}
+
+test('real Git ancestry and exact changed paths allow controller-only resumption with original main CI', async t => {
+  const f = await gitFixture(t)
+  await f.put('.github/workflows/import-catalogue.yml', 'correct path initialization')
+  await f.put('apps/generator-app/scripts/run-baseline-recovery.mjs', 'reviewed controller')
+  const head = f.commit()
+  const result = await verifyRecoveryResumeSource(f.original, head, { repo: f.repo, loadCiRuns: async original => { assert.equal(original, f.original); return [passingCi(original)] } })
+  assert.equal(result.journalReleaseSha, f.original)
+  assert.equal(result.executorReleaseSha, head)
+  assert.equal(result.originalCiRunId, 1234)
+  assert.equal(result.unchangedNonControllerSource, true)
+  assert.notEqual(result.journalTree, result.executorTree)
+  assert.deepEqual(result.changedControlPaths, ['.github/workflows/import-catalogue.yml', 'apps/generator-app/scripts/run-baseline-recovery.mjs'])
+})
+
+test('real Git source comparison refuses app, core, dependencies and whitespace-disguised paths', async t => {
+  const f = await gitFixture(t)
+  for (const file of ['apps/generator-app/src/app/page.tsx', 'apps/generator-app/scripts/baseline-recovery.mjs', 'pnpm-lock.yaml', ' docs/BASELINE_RECOVERY.md']) {
+    f.git('reset', '--hard', f.original)
+    await f.put(file, 'unapproved changed source')
+    const head = f.commit()
+    assert.throws(() => inspectRecoveryResumeSource(f.original, head, f.repo), /unapproved source changed/)
+  }
+})
+
+test('matching files on another branch and unavailable history cannot substitute for main ancestry', async t => {
+  const f = await gitFixture(t)
+  await f.put('docs/BASELINE_RECOVERY.md', 'original branch'); const divergent = f.commit()
+  f.git('checkout', '-b', 'other', f.original)
+  await f.put('docs/BASELINE_RECOVERY.md', 'another branch'); const head = f.commit()
+  assert.throws(() => inspectRecoveryResumeSource(divergent, head, f.repo), /ancestor/)
+  assert.throws(() => inspectRecoveryResumeSource('e'.repeat(40), head, f.repo), /ancestor/)
+  assert.throws(() => inspectRecoveryResumeSource('--all', head, f.repo), /exact original/)
+})
+
+test('source equivalence alone never bypasses exact successful original push CI', async t => {
+  const f = await gitFixture(t)
+  for (const mutation of [{ conclusion: 'failure' }, { event: 'pull_request' }, { head_branch: 'feature' }, { head_sha: sha }, { path: '.github/workflows/other.yml' }, { head_repository: { full_name: 'other/repo' } }]) {
+    await assert.rejects(verifyRecoveryResumeSource(f.original, f.original, { repo: f.repo, loadCiRuns: async () => [{ ...passingCi(f.original), ...mutation }] }), /successful GitHub CI/)
+  }
+  await assert.rejects(verifyRecoveryResumeSource(f.original, f.original, { repo: f.repo, loadCiRuns: async () => [{ ...passingCi(f.original), id: null }] }), /run identity/)
+})
+
+test('journal provenance binds the original workflow attempt, exact artifact and original application SHA', () => {
+  const artifact = { id: 456, name: 'baseline-recovery-123-1', expired: false, digest: `sha256:${'a'.repeat(64)}`, workflow_run: { id: 123, head_sha: sha, head_branch: 'main' } }
+  const run = { id: 123, run_attempt: 1, head_sha: sha, head_branch: 'main', path: '.github/workflows/recover-baseline.yml', event: 'workflow_dispatch', status: 'completed', conclusion: 'failure', head_repository: { full_name: 'russlle2/platform-builder' } }
+  const input = { artifact, run, runId: '123', artifactId: '456', releaseSha: sha }
+  assert.deepEqual(validateRecoveryJournalSource(input), { runId: 123, attempt: 1, artifactId: 456, artifactDigest: artifact.digest, releaseSha: sha })
+  for (const changed of [{ run: { ...run, run_attempt: 2 } }, { run: { ...run, head_sha: originalSha } }, { run: { ...run, path: '.github/workflows/other.yml' } }, { run: { ...run, head_repository: { full_name: 'other/repo' } } }, { artifact: { ...artifact, expired: true } }, { artifact: { ...artifact, id: 999 } }, { artifact: { ...artifact, name: 'baseline-recovery-999-1' } }, { artifact: { ...artifact, workflow_run: { ...artifact.workflow_run, head_sha: originalSha } } }]) {
+    assert.throws(() => validateRecoveryJournalSource({ ...input, ...changed }), /original recovery workflow/)
+  }
 })
 
 test('rollback preserves the journal and does not require current CI or healthy future configuration', async () => {

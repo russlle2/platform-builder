@@ -8,10 +8,60 @@ import * as core from './baseline-recovery.mjs'
 import { connectedTarget, reviewedHead } from './certified-catalog-release.mjs'
 import { canonicalDigest, PRODUCTION_NETLIFY_SITE_ID } from '../src/lib/templates/certified-catalog-contract.mjs'
 import { assertNetlifyRuntimeEnvironment } from './netlify-target-contract.mjs'
+import { assertReleaseCi } from './verify-release-ci.mjs'
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
 const HASH = /^[a-f0-9]{64}$/
 const confirmations = { recover: 'RECOVER BASELINE', activate: 'ACTIVATE BASELINE', rollback: 'ROLLBACK BASELINE' }
+
+// These reviewed controller/docs changes do not enter the deployed application.
+// Every other tracked path, including recovery core and runtime contracts, must
+// remain byte/mode-identical to the journal's original application commit.
+const RESUME_CONTROL_PATHS = new Set([
+  '.github/workflows/import-catalogue.yml',
+  '.github/workflows/finalize-catalogue.yml',
+  '.github/workflows/recover-baseline.yml',
+  'apps/generator-app/scripts/run-baseline-recovery.mjs',
+  'apps/generator-app/scripts/run-baseline-recovery.test.mjs',
+  'docs/BASELINE_RECOVERY.md',
+])
+
+export function inspectRecoveryResumeSource(releaseSha, head, repo = REPO) {
+  if (![releaseSha, head].every(value => /^[a-f0-9]{40}$/.test(value ?? ''))) throw new Error('Recovery resume requires exact original and executor commits')
+  const git = args => execFileSync('git', args, { cwd: repo, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] })
+  try { git(['merge-base', '--is-ancestor', releaseSha, head]) } catch { throw new Error('The recorded recovery release must be an available ancestor of the current main executor') }
+  const changedControlPaths = git(['diff', '--no-renames', '--name-only', '-z', releaseSha, head]).split('\0').filter(Boolean)
+  if (changedControlPaths.some(file => !RESUME_CONTROL_PATHS.has(file))) throw new Error('Application, build, or other unapproved source changed since the recorded recovery release')
+  return {
+    journalReleaseSha: releaseSha, executorReleaseSha: head,
+    journalTree: git(['rev-parse', `${releaseSha}^{tree}`]).trim(), executorTree: git(['rev-parse', `${head}^{tree}`]).trim(),
+    changedControlPaths, unchangedNonControllerSource: true,
+  }
+}
+
+export async function verifyRecoveryResumeSource(releaseSha, head, { repo = REPO, loadCiRuns } = {}) {
+  const source = inspectRecoveryResumeSource(releaseSha, head, repo)
+  const runs = await loadCiRuns(releaseSha)
+  assertReleaseCi(runs, releaseSha, 'russlle2/platform-builder')
+  const originalCi = runs.find(run => {
+    try { assertReleaseCi([run], releaseSha, 'russlle2/platform-builder'); return true } catch { return false }
+  })
+  if (!Number.isSafeInteger(originalCi.id) || originalCi.id <= 0) throw new Error('Original recovery CI run identity is invalid')
+  return { ...source, originalCiRunId: originalCi.id }
+}
+
+export function validateRecoveryJournalSource({ run, artifact, runId, artifactId, releaseSha }) {
+  const match = artifact?.name?.match(/^baseline-recovery-([1-9][0-9]*)-([1-9][0-9]*)$/)
+  if (![runId, artifactId].every(value => /^[1-9][0-9]*$/.test(value ?? '') && Number.isSafeInteger(Number(value))) || !match || !Number.isSafeInteger(Number(match[2])) || match[1] !== runId ||
+    artifact.id !== Number(artifactId) || artifact.expired !== false || !/^sha256:[a-f0-9]{64}$/.test(artifact.digest ?? '') ||
+    artifact.workflow_run?.id !== Number(runId) || artifact.workflow_run?.head_sha !== releaseSha || artifact.workflow_run?.head_branch !== 'main' ||
+    run?.id !== Number(runId) || run.run_attempt !== Number(match[2]) || run.head_sha !== releaseSha || run.head_branch !== 'main' ||
+    run.path !== '.github/workflows/recover-baseline.yml' || run.event !== 'workflow_dispatch' ||
+    run.head_repository?.full_name !== 'russlle2/platform-builder' || run.status !== 'completed' || !['success', 'failure'].includes(run.conclusion)) {
+    throw new Error('Activation requires the exact retained original recovery workflow journal artifact and attempt')
+  }
+  return { runId: run.id, attempt: run.run_attempt, artifactId: artifact.id, artifactDigest: artifact.digest, releaseSha }
+}
 
 export async function activateWithAttestationRetry(activate, { pause = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
   for (let attempt = 0; attempt < 6; attempt++) {
@@ -33,12 +83,14 @@ export function recoveryConfiguration(env) {
   if (operation === 'recover' && (!HASH.test(env.RECEIPT_HASH ?? '') || !HASH.test(env.LEGACY_MANIFEST_HASH ?? ''))) throw new Error('Reviewed recovery receipt and raw legacy manifest hashes are required')
   if (operation === 'recover' && (!/^[A-Za-z0-9_-]+$/.test(env.EXPECTED_PREVIOUS_DEPLOYMENT_ID ?? '') || !/^[a-f0-9]{40}$/.test(env.EXPECTED_PREVIOUS_RELEASE_SHA ?? ''))) throw new Error('The reviewed original deployment ID and release SHA are required')
   if (['activate', 'rollback'].includes(operation) && !HASH.test(env.JOURNAL_HASH ?? '')) throw new Error('Reviewed recovery journal hash is required')
+  if (operation === 'activate' && ![env.RECOVERY_SOURCE_RUN_ID, env.RECOVERY_SOURCE_ARTIFACT_ID].every(value => /^[1-9][0-9]*$/.test(value ?? ''))) throw new Error('Activation requires the original recovery run and journal artifact IDs')
   for (const name of ['RECOVERY_BUNDLE', 'RECOVERY_JOURNAL', 'RECOVERY_RECEIPT']) {
     const value = env[name]
     if (!value || !path.isAbsolute(value) || !path.relative(REPO, value).startsWith(`..${path.sep}`)) throw new Error(`${name} must be an explicit path outside the checkout`)
   }
   return { operation, bundle: env.RECOVERY_BUNDLE, journalPath: env.RECOVERY_JOURNAL, receiptPath: env.RECOVERY_RECEIPT,
     receiptHash: env.RECEIPT_HASH, legacyHash: env.LEGACY_MANIFEST_HASH, journalHash: env.JOURNAL_HASH,
+    sourceRunId: env.RECOVERY_SOURCE_RUN_ID, sourceArtifactId: env.RECOVERY_SOURCE_ARTIFACT_ID,
     previousDeploymentId: env.EXPECTED_PREVIOUS_DEPLOYMENT_ID, previousReleaseSha: env.EXPECTED_PREVIOUS_RELEASE_SHA,
     target: { expectedAccountSlug: env.NETLIFY_EXPECTED_ACCOUNT_SLUG, expectedHostname: env.NETLIFY_EXPECTED_SITE_HOSTNAME, expectedSupabaseProjectRef: env.NETLIFY_EXPECTED_SUPABASE_PROJECT_REF } }
 }
@@ -46,7 +98,7 @@ export function recoveryConfiguration(env) {
 /** Ordered orchestration; dependencies are injected for failure-path rehearsal. */
 export async function orchestrateRecovery(config, deps) {
   const { operation } = config
-  let journal, prepared
+  let journal, prepared, activationEvidence
   if (operation === 'rollback' || operation === 'activate') {
     journal = await deps.readJournal()
     deps.validateJournal(journal, config.journalHash)
@@ -54,7 +106,7 @@ export async function orchestrateRecovery(config, deps) {
   }
   if (operation !== 'rollback') {
     await deps.checkRelease()
-    if (operation === 'activate' && journal.nextReceipt.releaseSha !== deps.head) throw new Error('Activation must use the exact journal release commit')
+    if (operation === 'activate') activationEvidence = await deps.checkActivationSource(journal)
     await deps.checkFutureEnvironment()
   }
   if (operation === 'verify' || operation === 'recover') {
@@ -83,7 +135,7 @@ export async function orchestrateRecovery(config, deps) {
   // or the CLI failed after publishing but before saving a deployment binding.
   await deps.bindIfChanged(journal)
   const result = operation === 'rollback' ? await deps.rollback(journal) : await deps.activate(journal)
-  return { ...result, journalHash: canonicalDigest(journal) }
+  return { ...result, journalHash: canonicalDigest(journal), ...(activationEvidence ?? {}) }
 }
 
 async function api(resource, env, method = 'GET') {
@@ -91,6 +143,15 @@ async function api(resource, env, method = 'GET') {
     headers: { authorization: `Bearer ${env.NETLIFY_AUTH_TOKEN}`, accept: 'application/json' },
     redirect: 'error', signal: AbortSignal.timeout(30_000) })
   if (!response.ok) throw new Error(`Netlify recovery API failed (${response.status})`)
+  return response.json()
+}
+
+async function githubEvidence(resource, env) {
+  const response = await fetch(`https://api.github.com/repos/russlle2/platform-builder/${resource}`, {
+    headers: { authorization: `Bearer ${env.GITHUB_TOKEN}`, accept: 'application/vnd.github+json' },
+    redirect: 'error', signal: AbortSignal.timeout(20_000),
+  })
+  if (!response.ok) throw new Error(`Original recovery GitHub evidence unavailable (${response.status})`)
   return response.json()
 }
 
@@ -139,6 +200,20 @@ export async function runBaselineRecovery(env = process.env) {
     checkRelease: async () => {
       execFileSync(process.execPath, ['apps/generator-app/scripts/verify-release-ci.mjs'], { cwd: REPO, stdio: 'inherit', env })
       execFileSync(process.execPath, ['apps/generator-app/scripts/verify-launch-schema.mjs'], { cwd: REPO, stdio: 'inherit', env })
+    },
+    checkActivationSource: async journal => {
+      const releaseSha = journal.nextReceipt.releaseSha
+      const artifact = await githubEvidence(`actions/artifacts/${config.sourceArtifactId}`, env)
+      const attempt = artifact?.name?.match(/^baseline-recovery-([1-9][0-9]*)-([1-9][0-9]*)$/)?.[2]
+      if (!attempt) throw new Error('Original recovery artifact attempt is unavailable')
+      const run = await githubEvidence(`actions/runs/${config.sourceRunId}/attempts/${attempt}`, env)
+      const recoverySource = validateRecoveryJournalSource({ run, artifact, runId: config.sourceRunId, artifactId: config.sourceArtifactId, releaseSha })
+      const activationSource = await verifyRecoveryResumeSource(releaseSha, head, {
+        loadCiRuns: async sha => (await githubEvidence(`actions/workflows/ci.yml/runs?head_sha=${sha}&status=success&per_page=100`, env)).workflow_runs,
+      })
+      const proof = { deploymentReleaseSha: releaseSha, executorReleaseSha: head, recoverySource, activationSource }
+      console.log(JSON.stringify({ operation: 'activation-source-check', ...proof }))
+      return proof
     },
     checkFutureEnvironment: async () => assertRecoveryEnvironment(await api(`accounts/${encodeURIComponent(site.account_slug)}/env?site_id=${encodeURIComponent(site.id)}&context_name=production`, env), env),
     prepare: async () => core.prepareRecovery(path.join(config.bundle, 'library'), head),
