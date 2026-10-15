@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest, NextResponse } from 'next/server'
 
 const { updateSession } = vi.hoisted(() => ({ updateSession: vi.fn() }))
@@ -7,8 +7,11 @@ import middleware from './middleware'
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://dailyclarity-staging.netlify.app')
   updateSession.mockResolvedValue({ supabaseResponse: NextResponse.next(), user: null })
 })
+
+afterEach(() => vi.unstubAllEnvs())
 
 describe('dashboard authentication redirects', () => {
   it('stays on the public cookie origin and preserves the requested website', async () => {
@@ -16,13 +19,30 @@ describe('dashboard authentication redirects', () => {
       headers: { 'x-forwarded-host': 'attacker.example' },
     })
     const response = await middleware(request)
-    expect(response.headers.get('location')).toBe('/login?next=%2Fdashboard%3Fsite%3Downed-site')
-    expect(new URL(response.headers.get('location')!, 'https://dailyclarity-staging.netlify.app').origin).toBe('https://dailyclarity-staging.netlify.app')
+    expect(response.headers.get('location')).toBe('https://dailyclarity-staging.netlify.app/login?next=%2Fdashboard%3Fsite%3Downed-site')
+    // Netlify constructs URL(Location) without a base for middleware responses.
+    expect(new URL(response.headers.get('location')!).origin).toBe('https://dailyclarity-staging.netlify.app')
   })
 
   it('does not carry used callback credentials into login or its next parameter', async () => {
     const response = await middleware(new NextRequest('https://dailyclarity-staging.netlify.app/dashboard?code=used-code&refresh_token=used-token&site=owned-site'))
-    expect(response.headers.get('location')).toBe('/login?next=%2Fdashboard%3Fsite%3Downed-site')
+    expect(response.headers.get('location')).toBe('https://dailyclarity-staging.netlify.app/login?next=%2Fdashboard%3Fsite%3Downed-site')
+  })
+
+  it('fails closed when production has no trusted public origin', async () => {
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', '')
+    const response = await middleware(new NextRequest('https://attacker.example/dashboard'))
+    expect(response.status).toBe(503)
+    expect(response.headers.get('location')).toBeNull()
+    expect(response.headers.get('cache-control')).toContain('no-store')
+  })
+
+  it('preserves local development redirects without production configuration', async () => {
+    vi.stubEnv('NODE_ENV', 'development')
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', '')
+    const response = await middleware(new NextRequest('http://localhost:3000/dashboard'))
+    expect(response.headers.get('location')).toBe('http://localhost:3000/login?next=%2Fdashboard')
   })
 
   it('preserves session cookie cleanup when a visitor needs to sign in', async () => {

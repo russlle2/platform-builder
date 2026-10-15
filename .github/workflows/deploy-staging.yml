@@ -104,3 +104,9 @@ jobs:
           NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
           NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
           NETLIFY_EXPECTED_RELEASE_SHA: ${{ github.sha }}
+
+      - name: Verify anonymous sign-in routes through the deployed hosting adapter
+        run: node apps/generator-app/scripts/verify-auth-entrypoint.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}

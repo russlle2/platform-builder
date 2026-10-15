@@ -27,6 +27,12 @@ test('contact page form appears', async ({ page }) => {
   await expect(page.locator('form')).toBeVisible()
 })
 
+test('signed-out dashboard opens the local sign-in page and keeps the selected website', async ({ page, baseURL }) => {
+  await page.goto('/dashboard?site=release-check')
+  await expect(page).toHaveURL(`${new URL(baseURL!).origin}/login?next=%2Fdashboard%3Fsite%3Drelease-check`)
+  await expect(page.getByLabel('Email address', { exact: true })).toBeVisible()
+})
+
 test('contact page does not report success when the API rejects a submission', async ({ page }) => {
   await page.route('**/api/forms/contact', async (route) => {
     await route.fulfill({
