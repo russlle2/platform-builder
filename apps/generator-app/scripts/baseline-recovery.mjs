@@ -63,9 +63,52 @@ function assertTarget(site, target) {
   if (!site.published_deploy?.id || site.published_deploy.state !== 'ready') throw new Error('The currently published production deployment is not ready')
 }
 
-function assertRuntime(runtime, target, releaseSha) {
-  if (runtime?.deploymentSiteId !== PRODUCTION_NETLIFY_SITE_ID || !COMMIT.test(runtime.deploymentReleaseSha ?? '') || (releaseSha && runtime.deploymentReleaseSha !== releaseSha) || runtime.supabaseProjectRef !== target.expectedSupabaseProjectRef || !target.expectedSupabaseProjectRef || runtime.supabaseSchemaVersion !== '20260903.4' || runtime.bookingKitSchemaVersion !== '20260925.2' || runtime.supabaseSchemaReady !== true) throw new Error('Production runtime identity or live database schema is not verified')
+function assertRuntimeIdentity(runtime, target, releaseSha) {
+  if (runtime?.deploymentSiteId !== PRODUCTION_NETLIFY_SITE_ID || !COMMIT.test(runtime.deploymentReleaseSha ?? '') || (releaseSha && runtime.deploymentReleaseSha !== releaseSha) || runtime.supabaseProjectRef !== target.expectedSupabaseProjectRef || !target.expectedSupabaseProjectRef) throw new Error('Production runtime identity is not verified')
   if (runtime.templateCatalogProfile !== 'launch' || runtime.expectedTemplateCount !== 60) throw new Error('Recovery applies only to the launch-profile application')
+}
+
+function assertRuntime(runtime, target, releaseSha) {
+  assertRuntimeIdentity(runtime, target, releaseSha)
+  if (runtime.supabaseSchemaVersion !== '20260903.4' || runtime.bookingKitSchemaVersion !== '20260925.2' || runtime.supabaseSchemaReady !== true) throw new Error('Production runtime live database schema is not verified')
+}
+
+function previousSchemaState(runtime, recorded = false) {
+  // The old app can identify its database URL while lacking the separate ref
+  // required to call its schema probe. Retain only this known failure code,
+  // never the arbitrary provider details or missing-requirements array.
+  const issues = Array.isArray(runtime.missingRequirements) ? runtime.missingRequirements : []
+  const missingRefOnly = issues.includes('DAILYCLARITY_SUPABASE_PROJECT_REF')
+    && !['NEXT_PUBLIC_SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY', 'SUPABASE_PROJECT_REF_MISMATCH'].some((issue) => issues.includes(issue))
+  return {
+    supabaseSchemaReady: runtime.supabaseSchemaReady,
+    supabaseSchemaVersion: runtime.supabaseSchemaVersion,
+    bookingKitSchemaVersion: runtime.bookingKitSchemaVersion,
+    schemaProbeFailure: recorded ? runtime.schemaProbeFailure ?? null : missingRefOnly ? 'missing-project-ref' : null,
+  }
+}
+
+function assertPreviousRuntime(runtime, target, releaseSha, { recorded = false, expected } = {}) {
+  assertRuntimeIdentity(runtime, target, releaseSha)
+  const schema = previousSchemaState(runtime, recorded)
+  const ready = schema.supabaseSchemaReady === true && schema.supabaseSchemaVersion === '20260903.4'
+    && schema.bookingKitSchemaVersion === '20260925.2' && schema.schemaProbeFailure === null
+  const missingRef = schema.supabaseSchemaReady === false && schema.supabaseSchemaVersion === null
+    && schema.bookingKitSchemaVersion === null && schema.schemaProbeFailure === 'missing-project-ref'
+  if (!ready && !missingRef) throw new Error('Original runtime schema state is not the reviewed healthy or missing-project-ref state')
+  if (expected && canonicalDigest(schema) !== canonicalDigest(previousSchemaState(expected, true))) throw new Error('Original runtime schema state changed from the captured snapshot')
+  return schema
+}
+
+/** Safe evidence for the reviewed old deployment; never a new-app readiness gate. */
+export function describePreviousRuntime(runtime, target, releaseSha) {
+  const schema = assertPreviousRuntime(runtime, target, releaseSha)
+  if (runtime.templateCatalogReady !== false || runtime.publishedTemplateCount !== 0) throw new Error('Recovery refuses a healthy or unexpected serving catalogue')
+  for (const field of ['checkoutReady', 'customBuildCheckoutReady', 'bookingKitSalesEnabled']) {
+    if (typeof runtime[field] !== 'boolean') throw new Error('Original runtime sales capability is unavailable')
+  }
+  if (runtime.salesPaused !== undefined && typeof runtime.salesPaused !== 'boolean') throw new Error('Original runtime sales-pause capability is invalid')
+  return { ...snapshotRuntime(runtime), schemaProbeFailure: schema.schemaProbeFailure }
 }
 
 function targetOf(journal) {
@@ -76,7 +119,7 @@ export function validateRecoveryJournal(journal, approvedJournalHash) {
   if (!journal || journal.version !== 1 || journal.kind !== 'legacy-launch-recovery' || journal.siteId !== PRODUCTION_NETLIFY_SITE_ID || !COMMIT.test(journal.previousReleaseSha ?? '') || !/^[A-Za-z0-9_-]+$/.test(journal.previousDeploymentId ?? '') || !SHA.test(journal.id ?? '') || journal.backupPrefix !== `recoveries/${journal.id}` || !SHA.test(journal.previousManifestSha256 ?? '') || !SHA.test(journal.previousMetadataHash ?? '') || !journal.accountSlug || !journal.hostname || !journal.projectRef) throw new Error('Recovery journal identity is invalid')
   validateReceipt(journal.nextReceipt, false)
   const old = journal.previousRuntime
-  assertRuntime(old, targetOf(journal), journal.previousReleaseSha)
+  assertPreviousRuntime(old, targetOf(journal), journal.previousReleaseSha, { recorded: true })
   if (old.templateCatalogReady !== false || old.publishedTemplateCount !== 0) throw new Error('Recovery journal does not describe the broken zero-serving baseline')
   if (!SHA.test(approvedJournalHash ?? '') || canonicalDigest(journal) !== approvedJournalHash) throw new Error('Recovery journal differs from its approved hash')
   return journal
@@ -108,7 +151,7 @@ export async function captureRecovery({ launchStore, certifiedStore, auditStore,
   if (!SHA.test(expectedLegacyHash ?? '')) throw new Error('An independently reviewed raw legacy manifest SHA-256 is required')
   const { site, runtime } = await inspect()
   assertTarget(site, target)
-  assertRuntime(runtime, target)
+  const previousRuntime = describePreviousRuntime(runtime, target)
   if (!expectedPreviousDeploymentId || !COMMIT.test(expectedPreviousReleaseSha ?? '') || site.published_deploy.id !== expectedPreviousDeploymentId || runtime.deploymentReleaseSha !== expectedPreviousReleaseSha) throw new Error('Previous deployment differs from the independently reviewed recovery identity')
   if (runtime.templateCatalogReady !== false || runtime.publishedTemplateCount !== 0) throw new Error('Recovery refuses a healthy or unexpected serving catalogue')
   if (site.published_deploy.commit_ref && site.published_deploy.commit_ref !== runtime.deploymentReleaseSha) throw new Error('Published deployment and runtime commit disagree')
@@ -118,7 +161,7 @@ export async function captureRecovery({ launchStore, certifiedStore, auditStore,
   validateLegacyManifest(original.bytes)
   const identity = { siteId: site.id, previousDeploymentId: site.published_deploy.id, previousManifestSha256: expectedLegacyHash, nextReceipt: prepared.receipt, capturedAt: now }
   const id = canonicalDigest(identity)
-  const journal = { version: 1, kind: 'legacy-launch-recovery', id, backupPrefix: `recoveries/${id}`, ...identity, accountSlug: target.expectedAccountSlug, hostname: target.expectedHostname, projectRef: target.expectedSupabaseProjectRef, previousReleaseSha: runtime.deploymentReleaseSha, previousMetadataHash: canonicalDigest(original.metadata), previousRuntime: snapshotRuntime(runtime) }
+  const journal = { version: 1, kind: 'legacy-launch-recovery', id, backupPrefix: `recoveries/${id}`, ...identity, accountSlug: target.expectedAccountSlug, hostname: target.expectedHostname, projectRef: target.expectedSupabaseProjectRef, previousReleaseSha: runtime.deploymentReleaseSha, previousMetadataHash: canonicalDigest(original.metadata), previousRuntime }
   validateRecoveryJournal(journal, canonicalDigest(journal))
   await immutableBytes(auditStore, `${journal.backupPrefix}/legacy-manifest.bin`, original.bytes)
   await immutableBytes(auditStore, `${journal.backupPrefix}/legacy-metadata.json`, jsonBytes(original.metadata))
@@ -141,7 +184,7 @@ async function verifyBackup(auditStore, journal) {
 async function assertOriginalState({ launchStore, certifiedStore, journal, inspect }) {
   const { site, runtime } = await inspect()
   assertTarget(site, targetOf(journal))
-  assertRuntime(runtime, targetOf(journal), journal.previousReleaseSha)
+  assertPreviousRuntime(runtime, targetOf(journal), journal.previousReleaseSha, { expected: journal.previousRuntime })
   if (site.published_deploy.id !== journal.previousDeploymentId || runtime.publishedTemplateCount !== 0 || runtime.templateCatalogReady !== false) throw new Error('Original deployment or broken-catalogue state changed concurrently')
   await assertNoCertifiedPointer(certifiedStore)
   const current = await readManifest(launchStore)
@@ -275,7 +318,7 @@ export async function rollbackRecovery({ launchStore, certifiedStore, auditStore
   if (site.published_deploy.id !== journal.previousDeploymentId) await restoreDeployment(journal.previousDeploymentId)
   const after = await inspect()
   assertTarget(after.site, targetOf(journal))
-  assertRuntime(after.runtime, targetOf(journal), journal.previousReleaseSha)
+  assertPreviousRuntime(after.runtime, targetOf(journal), journal.previousReleaseSha, { expected: journal.previousRuntime })
   if (after.site.published_deploy.id !== journal.previousDeploymentId || after.runtime.publishedTemplateCount !== 0 || after.runtime.templateCatalogReady !== false) throw new Error('Original broken deployment restoration is not yet attested')
   await assertNoCertifiedPointer(certifiedStore)
   await immutableBytes(auditStore, `${journal.backupPrefix}/rolled-back.json`, jsonBytes({ journalHash: approvedJournalHash, deploymentId: journal.previousDeploymentId, templates: 0, originalBrokenStateRestored: true }))

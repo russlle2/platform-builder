@@ -147,7 +147,8 @@ export async function runBaselineRecovery(env = process.env) {
       const raw = await launchStore.get('_manifest.json', { type: 'arrayBuffer' })
       if (raw === null || current.runtime.templateCatalogReady !== false || current.runtime.publishedTemplateCount !== 0) throw new Error('Read-only verification does not identify the expected broken baseline')
       core.validateLegacyManifest(raw)
-      return { previousDeploymentId: current.site.published_deploy.id, previousReleaseSha: current.runtime.deploymentReleaseSha, legacyManifestHash: core.hashBytes(Buffer.from(raw)) }
+      return { previousDeploymentId: current.site.published_deploy.id, previousReleaseSha: current.runtime.deploymentReleaseSha,
+        legacyManifestHash: core.hashBytes(Buffer.from(raw)), previousRuntime: core.describePreviousRuntime(current.runtime, config.target) }
     },
     saveReceipt: receipt => writeFile(config.receiptPath, `${JSON.stringify(receipt, null, 2)}\n`, { flag: 'wx', mode: 0o600 }),
     saveJournal: journal => writeFile(config.journalPath, `${JSON.stringify(journal, null, 2)}\n`, { flag: 'wx', mode: 0o600 }),
@@ -157,7 +158,7 @@ export async function runBaselineRecovery(env = process.env) {
     writeProof: journal => writeFile(path.join(REPO, 'apps/generator-app/public/__dailyclarity_release.json'), core.recoveryDeploymentProofBytes(journal)),
     deploy: async journal => {
       await inspectOriginal()
-      execFileSync('pnpm', ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--build', '--prod', '--context', 'production', '--site', env.NETLIFY_SITE_ID,
+      execFileSync('pnpm', ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--filter', '@platform-builder/generator-app', '--build', '--prod', '--context', 'production', '--site', env.NETLIFY_SITE_ID,
         '--message', `Baseline recovery ${head} journal ${canonicalDigest(journal)}`], { cwd: REPO, stdio: 'inherit', env: { ...env, NEXT_PUBLIC_RELEASE_SHA: head } })
     },
     bindIfChanged,
