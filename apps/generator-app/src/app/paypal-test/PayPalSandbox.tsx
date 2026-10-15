@@ -38,11 +38,21 @@ function object(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' ? value as Record<string, unknown> : {}
 }
 
+class SandboxRequestError extends Error {
+  constructor(message: string, readonly status: number, readonly code: string | null) {
+    super(message)
+  }
+}
+
 async function request(path: string, init?: RequestInit): Promise<Record<string, unknown>> {
   const response = await fetch(`${api}/${path}`, { ...init, cache: 'no-store', credentials: 'same-origin' })
   const payload = object(await response.json().catch(() => null))
   if (!response.ok) {
-    throw new Error(typeof payload.error === 'string' ? payload.error.slice(0, 250) : 'The test service could not complete this request. Please try again.')
+    throw new SandboxRequestError(
+      typeof payload.error === 'string' ? payload.error.slice(0, 250) : 'The test service could not complete this request. Please try again.',
+      response.status,
+      typeof payload.code === 'string' ? payload.code : null,
+    )
   }
   return payload
 }
@@ -69,14 +79,41 @@ async function capture(orderId: string): Promise<SandboxReceipt> {
   return receipt
 }
 
-async function initialize(orderId: string | null, cancelled: boolean): Promise<InitialResult> {
+async function sandboxReady(): Promise<boolean> {
+  const config = await request('config') as unknown as SandboxConfig
+  if (config.enabled !== true || config.configured !== true) return false
+  if (config.environment !== 'sandbox' || config.amount !== '1.00' || config.currency !== 'USD') {
+    throw new Error('Sandbox settings could not be verified. No checkout was started.')
+  }
+  return true
+}
+
+async function captureReturn(orderId: string): Promise<SandboxReceipt> {
   try {
-    const config = await request('config') as unknown as SandboxConfig
-    if (config.enabled !== true || config.configured !== true) return { stage: 'setup' }
-    if (config.environment !== 'sandbox' || config.amount !== '1.00' || config.currency !== 'USD') {
-      throw new Error('Sandbox settings could not be verified. No checkout was started.')
+    return await capture(orderId)
+  } catch (error) {
+    // This exact rejection happens before the server accesses PayPal. An
+    // observed return recovered on a same-order retry; its original request
+    // headers were unavailable. Never retry an ambiguous/provider failure.
+    if (!(error instanceof SandboxRequestError) || error.status !== 403 || error.code !== 'origin_mismatch') throw error
+    if (!await sandboxReady()) throw error
+    const saved = await request('receipt')
+    if (saved.orderId !== orderId) throw error
+    if (saved.receipt) {
+      const receipt = verifiedReceipt(saved.receipt)
+      if (receipt.orderId !== orderId) throw new Error('The receipt did not match this test order. Please check the payment again.')
+      return receipt
     }
-    if (orderId) return { stage: 'complete', receipt: await capture(orderId) }
+    // One additional capture at most, using the same signed browser order.
+    // A second failure leaves the existing explicit retry available.
+    return capture(orderId)
+  }
+}
+
+async function initialize(orderId: string | null, cancelled: boolean, automaticReturn = false): Promise<InitialResult> {
+  try {
+    if (!await sandboxReady()) return { stage: 'setup' }
+    if (orderId) return { stage: 'complete', receipt: await (automaticReturn ? captureReturn(orderId) : capture(orderId)) }
     const result = await request('receipt')
     if (result.receipt) return { stage: 'complete', receipt: verifiedReceipt(result.receipt) }
     // Recover an interrupted return from the signed browser session. Do not
@@ -118,8 +155,8 @@ export default function PayPalSandbox() {
       if (window.location.search) window.history.replaceState(window.history.state, '', window.location.pathname)
       if (token) setStage('capturing')
       // React StrictMode replays effects. Share the promise so a return visit
-      // sends one capture request, and let the active effect receive its result.
-      bootstrap.current = initialize(token, cancelled)
+      // starts one verification flow, and let the active effect receive its result.
+      bootstrap.current = initialize(token, cancelled, true)
     }
     void bootstrap.current.then((result) => { if (active) apply(result) })
     return () => { active = false }
