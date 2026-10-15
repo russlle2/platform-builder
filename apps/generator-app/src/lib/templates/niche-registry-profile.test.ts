@@ -10,7 +10,7 @@ import {
 const getStoreMock = vi.hoisted(() => vi.fn())
 vi.mock('@netlify/blobs', () => ({ getStore: getStoreMock }))
 
-function completeRuntimeFixture(identitySuffix = '') {
+function completeRuntimeFixture(identitySuffix = '', firstNames: Record<string, string> = {}) {
   const manifest: Record<string, Array<Record<string, unknown>>> = {}
   const mappings: Array<Record<string, unknown>> = []
   const gallery: Record<string, string[]> = {}
@@ -34,7 +34,7 @@ function completeRuntimeFixture(identitySuffix = '') {
         slug,
         nicheSlug: niche,
         dir: `${niche}/${slug}`,
-        name: slug,
+        name: index === 0 ? firstNames[niche] ?? slug : slug,
         pages: ['index.html'],
         files: ['index.html'],
         fields: [{ name: 'BUSINESS_NAME', label: 'Business name', type: 'text' }],
@@ -70,14 +70,25 @@ afterEach(() => {
 })
 
 it('serves staging metadata and assets only from the active hash prefix in the isolated store', async () => {
-  const fixture = completeRuntimeFixture()
+  const names = {
+    aromatherapy: ['Warm Ember Outfit Â· Clinical Modern â€” Aromatherapy', 'Warm Ember Outfit · Clinical Modern — Aromatherapy'],
+    holistic_medicine: ['Cream Linen Plus Jakarta Â· Café · Âme – Ω', 'Cream Linen Plus Jakarta · Café · Âme – Ω'],
+    private_practice_therapist: ['Golden Hour Cormorant Â· Care — Élan', 'Golden Hour Cormorant · Care — Élan'],
+    sound_bath: ['Rose Quartz Inter Â· Calm â€” Sound Bath', 'Rose Quartz Inter · Calm — Sound Bath'],
+    wellness_coach: ['Original Lora Â· Wellness – 日本語', 'Original Lora · Wellness – 日本語'],
+  }
+  const fixture = completeRuntimeFixture('', Object.fromEntries(
+    Object.entries(names).map(([niche, [raw]]) => [niche, raw!]),
+  ))
+  const rawManifest = JSON.stringify(fixture.manifest)
   const first = fixture.manifest.aromatherapy![0]!
   const assetKey = `${fixture.pointer.catalogHash ? `catalogs/${fixture.pointer.catalogHash}` : ''}/${first.dir}/index.html`
+  const sourceHtml = '<main><h1>{{BUSINESS_NAME}}</h1><p>Â· â€” Café</p></main>'
   const values = new Map<string, unknown>([
     [REHAB_STAGING_ACTIVE_KEY, fixture.pointer],
     [fixture.pointer.catalogKey, fixture.catalogText],
     [fixture.pointer.manifestKey, fixture.manifest],
-    [assetKey, '<main><h1>{{BUSINESS_NAME}}</h1></main>'],
+    [assetKey, sourceHtml],
   ])
   const reads: string[] = []
   const store = {
@@ -103,10 +114,23 @@ it('serves staging metadata and assets only from the active hash prefix in the i
   expect(template?.legacySlug).toBe(first.legacySlug)
   expect(template?.catalogHash).toBe(fixture.pointer.catalogHash)
   expect(template?.manifestHash).toBe(fixture.pointer.manifestHash)
+  for (const [niche, [, displayName]] of Object.entries(names)) {
+    const original = fixture.manifest[niche]![0]!
+    const displayed = (await registry.getTemplatesForNiche(niche))[0]
+    expect(displayed).toEqual({
+      ...original,
+      name: displayName,
+      catalogHash: fixture.pointer.catalogHash,
+      manifestHash: fixture.pointer.manifestHash,
+    })
+    await expect(registry.getTemplate(niche, String(original.slug))).resolves.toEqual(displayed)
+  }
+  expect(JSON.stringify(fixture.manifest)).toBe(rawManifest)
+  expect(catalogManifestHash(fixture.manifest)).toBe(fixture.pointer.manifestHash)
   await expect(registry.readTemplateFile('aromatherapy', String(first.slug), 'index.html'))
-    .resolves.toContain('{{BUSINESS_NAME}}')
+    .resolves.toBe(sourceHtml)
   const bytes = await registry.readTemplateFileBuffer('aromatherapy', String(first.slug), 'index.html')
-  expect(bytes?.toString('utf8')).toContain('{{BUSINESS_NAME}}')
+  expect(bytes).toEqual(Buffer.from(sourceHtml, 'utf8'))
   await expect(registry.readTemplateFile('aromatherapy', String(first.slug), 'missing.html'))
     .resolves.toBeNull()
 
@@ -122,7 +146,10 @@ it('serves staging metadata and assets only from the active hash prefix in the i
 
 it('keeps a saved edit bound to its historical hash after the active pointer changes', async () => {
   const active = completeRuntimeFixture('_active')
-  const historical = completeRuntimeFixture('_purchased')
+  const historical = completeRuntimeFixture('_purchased', {
+    aromatherapy: 'Warm Ember Outfit Â· Clinical Modern â€” Café · Âme – Ω',
+  })
+  const rawHistoricalManifest = JSON.stringify(historical.manifest)
   const first = historical.manifest.aromatherapy![0]!
   const activeFirst = active.manifest.aromatherapy![0]!
   const historicalPrefix = `catalogs/${historical.pointer.catalogHash}`
@@ -182,6 +209,18 @@ it('keeps a saved edit bound to its historical hash after the active pointer cha
     pin,
   )
   expect(resolved?.qualityReceipt).toBe(first.qualityReceipt)
+  expect(resolved).toEqual({
+    ...first,
+    name: 'Warm Ember Outfit · Clinical Modern — Café · Âme – Ω',
+    catalogHash: historical.pointer.catalogHash,
+    manifestHash: historical.pointer.manifestHash,
+  })
+  await expect(registry.getTemplateAtCatalogSnapshot('aromatherapy', String(first.slug), {
+    catalogHash: historical.pointer.catalogHash,
+    manifestHash: historical.pointer.manifestHash,
+  })).resolves.toEqual(resolved)
+  expect(JSON.stringify(historical.manifest)).toBe(rawHistoricalManifest)
+  expect(catalogManifestHash(historical.manifest)).toBe(historical.pointer.manifestHash)
   await expect(registry.readTemplateFile(
     'aromatherapy',
     String(first.slug),
