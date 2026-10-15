@@ -49,19 +49,29 @@ export async function prepareCertification(root, planPath, head = reviewedHead()
   validateFullGate(plan, catalogHash)
   const evidence = []
   const expectedFiles = new Map()
+  const artifactFiles = []
   for (const mapping of catalog.templates) {
     const dir = path.join(root, mapping.niche, mapping.legacySlug)
     const meta = validated.manifest[mapping.niche].find((entry) => entry.legacySlug === mapping.legacySlug)
     const errors = validateV3QualityReceipt(dir, { ...meta, contractVersion: 3 })
     if (errors.length) throw new Error(`Invalid final receipt: ${errors[0]}`)
-    const receipt = await json(path.join(dir, '.dailyclarity/final-quality-receipt.json'))
-    const tree = await json(path.join(dir, '.dailyclarity/artifact-tree.json'))
+    const receiptBytes = await readFile(path.join(dir, '.dailyclarity/final-quality-receipt.json'))
+    const treeBytes = await readFile(path.join(dir, '.dailyclarity/artifact-tree.json'))
+    const receipt = JSON.parse(receiptBytes.toString('utf8'))
+    const tree = JSON.parse(treeBytes.toString('utf8'))
     const records = tree.files.map(({ path: file, sha256, bytes }) => ({ path: file, sha256, bytes })).sort((a, b) => a.path.localeCompare(b.path))
     if (canonicalDigest(records) !== receipt.artifactHash || tree.treeHash !== receipt.artifactHash) throw new Error('Artifact tree changed after final receipt verification')
-    for (const record of records) expectedFiles.set(`${mapping.niche}/${mapping.legacySlug}/${record.path}`, record)
+    for (const record of records) {
+      const key = `${mapping.niche}/${mapping.legacySlug}/${record.path}`
+      expectedFiles.set(key, record)
+      artifactFiles.push({ key, bytes: record.bytes, sha256: record.sha256 })
+    }
     const rehabBytes = await readFile(path.join(dir, '.dailyclarity/rehabilitation.json'))
     if (digest(rehabBytes) !== records.find((record) => record.path === '.dailyclarity/rehabilitation.json')?.sha256) throw new Error('Rehabilitation evidence differs from the browser-certified tree')
     evidence.push(validateTemplateEvidence(mapping, receipt, JSON.parse(rehabBytes.toString('utf8')), catalog.ruleVersion))
+    for (const [file, bytes] of [['final-quality-receipt.json', receiptBytes], ['artifact-tree.json', treeBytes]]) {
+      artifactFiles.push({ key: `${mapping.niche}/${mapping.legacySlug}/.dailyclarity/${file}`, bytes: bytes.length, sha256: digest(bytes) })
+    }
   }
   const fileEvidence = []
   const files = []
@@ -83,7 +93,9 @@ export async function prepareCertification(root, planPath, head = reviewedHead()
   fileEvidence.sort((a, b) => a.key.localeCompare(b.key))
   const receipt = { version: 1, profile: 'rehab-certified', releaseSha: head, catalogHash, manifestHash: manifestDigest(validated.manifest), fullGateHash: digest(planBytes), sourceCatalogHash: plan.sourceCatalogHash, templateEvidenceHash: canonicalDigest(evidence), fileEvidenceHash: canonicalDigest(fileEvidence), sourceTemplates: CERTIFIED_TOTAL, certifiedTemplates: evidence.length, neutralFallbacks: 0, customizationDiagnostics: 0, files: files.length, pages: plan.emittedPages }
   validateCertification(receipt)
-  return { receipt, manifest: validated.manifest, catalogBytes: validated.catalogBytes, files }
+  // Transport needs the complete browser-bound tree, including authoring metadata
+  // that is deliberately absent from the public runtime upload file list.
+  return { receipt, manifest: validated.manifest, catalogBytes: validated.catalogBytes, files, artifactFiles }
 }
 
 export async function verifySnapshot(store, pointer) {

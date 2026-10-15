@@ -7,10 +7,10 @@ import { canonicalDigest } from '../src/lib/templates/certified-catalog-contract
 import { REPOSITORY, TRANSPORT_CANARY, hash, safeBundlePath, validateManifest, validateConnectedReport, assertWorkflow, createGithub, draftAssets, assertArtifactSource, verifyCandidate, candidateInventory, finalizeCandidate, checkDraftTransport } from './catalogue-handoff.mjs'
 
 const sha = 'a'.repeat(40), digest = 'b'.repeat(64)
-const receipt = { version: 1, profile: 'rehab-certified', releaseSha: sha, catalogHash: digest, manifestHash: digest, fullGateHash: digest, sourceCatalogHash: digest, templateEvidenceHash: digest, fileEvidenceHash: digest, sourceTemplates: 5486, certifiedTemplates: 5486, neutralFallbacks: 0, customizationDiagnostics: 0, files: 5486, pages: 5486 }
+const receipt = { version: 1, profile: 'rehab-certified', releaseSha: sha, catalogHash: hash('{}'), manifestHash: digest, fullGateHash: hash('{"fixture":true}\n'), sourceCatalogHash: digest, templateEvidenceHash: digest, fileEvidenceHash: digest, sourceTemplates: 5486, certifiedTemplates: 5486, neutralFallbacks: 0, customizationDiagnostics: 0, files: 5486, pages: 5486 }
 const receiptHash = canonicalDigest(receipt)
 const now = Date.parse('2026-10-15T10:00:00Z')
-const connected = () => ({ releaseSha: sha, catalogHash: digest, manifestHash: digest, certificationHash: receiptHash, reviewedAt: new Date(now).toISOString(), evidenceUrl: `https://github.com/${REPOSITORY}/actions/runs/123`, checks: Object.fromEntries(['stripe', 'email', 'provisioning', 'previewEditing', 'refundRecovery', 'rollback'].map((key) => [key, 'passed'])) })
+const connected = () => ({ releaseSha: sha, catalogHash: receipt.catalogHash, manifestHash: digest, certificationHash: receiptHash, reviewedAt: new Date(now).toISOString(), evidenceUrl: `https://github.com/${REPOSITORY}/actions/runs/123`, checks: Object.fromEntries(['stripe', 'email', 'provisioning', 'previewEditing', 'refundRecovery', 'rollback'].map((key) => [key, 'passed'])) })
 const manifest = () => ({ version: 1, format: 'tar+gzip', repository: REPOSITORY, releaseSha: sha, certificationHash: receiptHash, archiveSha256: digest, archiveBytes: 20, expandedBytes: 6, files: ['library/_catalog-v3.json', 'promotion-dry-run.json', 'certification.json'].map((file) => ({ path: file, bytes: 2, sha256: digest })), parts: [{ name: 'catalogue.part-00000', bytes: 20, sha256: digest }] })
 
 test('manifest rejects drift, private extras, bounds, traversal, collisions and unordered parts', () => {
@@ -116,7 +116,7 @@ async function fixture() {
   const root = await mkdtemp(path.join(os.tmpdir(), 'handoff-candidate-'))
   const bundle = path.join(root, 'bundle')
   const dir = 'aromatherapy/example'
-  const prepared = { receipt, manifest: { aromatherapy: [{ dir, files: ['index.html'] }] } }
+  const prepared = { receipt, manifest: { aromatherapy: [{ dir, files: ['index.html'], pages: ['index.html'] }] }, artifactFiles: [] }
   const data = {
     'certification.json': JSON.stringify(receipt, null, 2) + '\n',
     'promotion-dry-run.json': '{"fixture":true}\n',
@@ -126,7 +126,19 @@ async function fixture() {
     [`library/${dir}/.dailyclarity/final-quality-receipt.json`]: '{}',
   }
   for (const [key, value] of Object.entries(data)) { await mkdir(path.dirname(path.join(bundle, key)), { recursive: true }); await writeFile(path.join(bundle, key), value) }
+  prepared.catalogBytes = Buffer.from(data['library/_catalog-v3.json'])
+  prepared.certificationBytes = Buffer.from(data['certification.json'])
+  prepared.artifactFiles = Object.entries(data).filter(([key]) => key.startsWith(`library/${dir}/`)).map(([key, value]) => ({ key: key.slice('library/'.length), bytes: Buffer.byteLength(value), sha256: hash(value) }))
   return { root, bundle, prepared, prepare: async () => prepared }
+}
+
+async function addArtifact(f, file, value = '{}', runtime = false) {
+  const template = f.prepared.manifest.aromatherapy[0], key = `${template.dir}/${file}`
+  const target = path.join(f.bundle, 'library', key)
+  await mkdir(path.dirname(target), { recursive: true })
+  await writeFile(target, value)
+  f.prepared.artifactFiles.push({ key, bytes: Buffer.byteLength(value), sha256: hash(value) })
+  if (runtime) template.files.push(file)
 }
 
 test('full verification mismatch and unexpected private files or links block candidate acceptance', async () => {
@@ -147,9 +159,95 @@ test('full verification mismatch and unexpected private files or links block can
 test('even a manifest-listed hidden file must be one of the known compiler proofs', async () => {
   const f = await fixture()
   try {
-    f.prepared.manifest.aromatherapy[0].files.push('.env')
-    await writeFile(path.join(f.bundle, 'library/aromatherapy/example/.env'), 'not-public')
+    await addArtifact(f, '.env', 'not-public', true)
     await assert.rejects(candidateInventory(f.bundle, f.prepared), /known compiler proof/)
+  } finally { await rm(f.root, { recursive: true, force: true }) }
+})
+
+test('transport keeps exact browser-bound metadata and generated page-relative CSS outside the runtime file list', async () => {
+  const f = await fixture()
+  try {
+    const metadata = ['template.json', 'fields.json', 'README.md', '_spec.json', '_openai_response.json', '.dailyclarity/rehabilitation.json', '.dailyclarity/design.json', '.dailyclarity/content-preset.json', '.dailyclarity/theme-preset.json', '.dailyclarity/catalog-v3.json', '.dailyclarity/quality-receipt.json', '.dailyclarity/fingerprint.json', '.dailyclarity/assets.json']
+    for (const file of metadata) await addArtifact(f, file)
+    for (const page of ['index.html', 'guides/about.html']) {
+      if (page !== 'index.html') {
+        await addArtifact(f, page, '<h1>About</h1>', true)
+        f.prepared.manifest.aromatherapy[0].pages.push(page)
+      }
+      const css = path.posix.join(path.posix.dirname(page), `.dc-inline-${hash(`${page}:0`).slice(0, 16)}.css`)
+      await addArtifact(f, css, 'h1{color:navy}', true)
+    }
+    const verified = await verifyCandidate(f.bundle, receiptHash, sha, f.prepare)
+    const inventory = await candidateInventory(f.bundle, verified.prepared)
+    assert.equal(inventory.length, f.prepared.artifactFiles.length + 3)
+    for (const file of metadata) {
+      assert(inventory.some((record) => record.path === `library/aromatherapy/example/${file}`))
+      assert(!f.prepared.manifest.aromatherapy[0].files.includes(file))
+    }
+  } finally { await rm(f.root, { recursive: true, force: true }) }
+})
+
+test('missing or changed certified metadata and proof snapshots fail before transport', async () => {
+  for (const file of ['template.json', '.dailyclarity/content-preset.json', '.dailyclarity/artifact-tree.json', '.dailyclarity/final-quality-receipt.json']) {
+    const f = await fixture()
+    try {
+      if (!file.endsWith('artifact-tree.json') && !file.endsWith('final-quality-receipt.json')) await addArtifact(f, file)
+      const target = path.join(f.bundle, 'library/aromatherapy/example', file)
+      await writeFile(target, '[]') // Same byte length as the approved {}, different digest.
+      await assert.rejects(candidateInventory(f.bundle, f.prepared), /differs from verified artifact bytes/)
+      await rm(target)
+      await assert.rejects(candidateInventory(f.bundle, f.prepared), /missing or unexpected files/)
+    } finally { await rm(f.root, { recursive: true, force: true }) }
+  }
+})
+
+test('receipt-bound unknown hidden files and misplaced generated stylesheet names remain forbidden', async () => {
+  for (const file of ['.dailyclarity/private.json', '.private/.dc-inline-0123456789abcdef.css', 'assets/.dc-inline-0123456789abcdef.css', '.dc-inline-0123.css']) {
+    const f = await fixture()
+    try {
+      await addArtifact(f, file, '', true)
+      await assert.rejects(candidateInventory(f.bundle, f.prepared), /known compiler proof/)
+    } finally { await rm(f.root, { recursive: true, force: true }) }
+  }
+})
+
+test('catalogue, promotion plan, and certification bytes cannot change after candidate verification', async () => {
+  for (const file of ['library/_catalog-v3.json', 'promotion-dry-run.json', 'certification.json']) {
+    const f = await fixture()
+    try {
+      const verified = await verifyCandidate(f.bundle, receiptHash, sha, f.prepare)
+      const target = path.join(f.bundle, file)
+      await writeFile(target, `${await readFile(target, 'utf8')} `)
+      await assert.rejects(candidateInventory(f.bundle, verified.prepared), /differs from verified artifact bytes/)
+    } finally { await rm(f.root, { recursive: true, force: true }) }
+  }
+})
+
+test('a full-size nested candidate reaches the exact file allowlist without exceeding the argument limit', { timeout: 180_000 }, async () => {
+  const f = await fixture()
+  try {
+    const directory = path.join(f.bundle, 'library/aromatherapy/example/assets')
+    await mkdir(directory)
+    const count = 200_000
+    const files = f.prepared.manifest.aromatherapy[0].files
+    // More files than the production catalogue must survive both the template
+    // and library directory merges. Only the last file is deliberately unlisted.
+    for (let start = 0; start < count; start += 64) {
+      await Promise.all(Array.from({ length: Math.min(64, count - start) }, async (_, offset) => {
+        const index = start + offset
+        const filename = `${String(index).padStart(6, '0')}.css`
+        await writeFile(path.join(directory, filename), '')
+        if (index < count - 1) {
+          files.push(`assets/${filename}`)
+          f.prepared.artifactFiles.push({ key: `aromatherapy/example/assets/${filename}`, bytes: 0, sha256: hash('') })
+        }
+      }))
+    }
+    await assert.rejects(candidateInventory(f.bundle, f.prepared), (error) => {
+      assert.equal(error.constructor, Error)
+      assert.equal(error.message, 'Candidate contains missing or unexpected files')
+      return true
+    })
   } finally { await rm(f.root, { recursive: true, force: true }) }
 })
 
