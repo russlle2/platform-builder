@@ -7,6 +7,7 @@ import {
   readBookingKitJson, resolveBookingKitPrice, BOOKING_KIT_PRIVATE_HEADERS,
 } from '@/lib/booking-kit-server'
 import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
+import { stripeCheckoutExperience } from '@/lib/stripe-checkout-experience'
 import { BOOKING_KIT_CHECKOUT_TYPE } from '@/lib/stripe-runtime'
 import { rateLimitByIp } from '@/lib/server-auth'
 import { getTrustedSiteOrigin } from '@/lib/site-origin'
@@ -48,6 +49,7 @@ export async function POST(req: NextRequest) {
     if (insertError) throw new Error('booking_kit_order_save_failed')
     const metadata = { checkoutType: BOOKING_KIT_CHECKOUT_TYPE, bookingKitOrderId: orderId }
     const session = await stripe.checkout.sessions.create({
+      ...stripeCheckoutExperience(),
       mode: 'payment', line_items: [{ price: priceId, quantity: 1 }], customer_email: email,
       client_reference_id: orderId, metadata, payment_intent_data: { metadata },
       integration_identifier: stripeIntegrationIdentifier('dailyclarity-booking-kit', orderId),

@@ -65,4 +65,36 @@ describe('Stripe webhook durable acknowledgement', () => {
 
     vi.unstubAllGlobals()
   })
+
+  it('rejects a live event on the test-key webhook before persisting it', async () => {
+    mocks.insert.mockClear()
+    mocks.event.livemode = true
+    try {
+      const response = await post(new Request('https://dailyclarity.org/api/stripe/webhook', {
+        method: 'POST', headers: { 'stripe-signature': 'signed-live-event' }, body: '{}',
+      }))
+      expect(response.status).toBe(400)
+      expect(mocks.insert).not.toHaveBeenCalled()
+    } finally {
+      mocks.event.livemode = false
+    }
+  })
+
+  it('rejects a production deployment configured with a test key before persisting events', async () => {
+    mocks.insert.mockClear()
+    const previousNodeEnv = process.env.NODE_ENV
+    const previousEnvironment = process.env.DAILYCLARITY_ENVIRONMENT
+    vi.stubEnv('NODE_ENV', 'production')
+    vi.stubEnv('DAILYCLARITY_ENVIRONMENT', 'production')
+    try {
+      const response = await post(new Request('https://dailyclarity.org/api/stripe/webhook', {
+        method: 'POST', headers: { 'stripe-signature': 'signed-test-event' }, body: '{}',
+      }))
+      expect(response.status).toBe(500)
+      expect(mocks.insert).not.toHaveBeenCalled()
+    } finally {
+      vi.stubEnv('NODE_ENV', previousNodeEnv)
+      vi.stubEnv('DAILYCLARITY_ENVIRONMENT', previousEnvironment)
+    }
+  })
 })

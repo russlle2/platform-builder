@@ -63,6 +63,16 @@ describe('Booking Kit checkout boundary', () => {
     expect(saved.checkout_access_hash).toBe(hashBookingKitToken(data.accessToken))
     expect(JSON.stringify(saved)).not.toContain(data.accessToken)
     const params = mocks.create.mock.calls[0][0]
+    expect(params).toMatchObject({
+      billing_address_collection: 'auto',
+      phone_number_collection: { enabled: false },
+      payment_method_options: { card: { request_three_d_secure: 'automatic' } },
+      customer_email: 'buyer@example.test',
+    })
+    expect(params).not.toHaveProperty('shipping_address_collection')
+    expect(params).not.toHaveProperty('payment_method_types')
+    expect(params).not.toHaveProperty('customer')
+    expect(params).not.toHaveProperty('customer_creation')
     expect(JSON.stringify(params)).not.toContain(data.accessToken)
     expect(params.success_url).toBe('https://kit.example.test/booking-kit/result')
     expect(params).not.toHaveProperty('subscription_data')

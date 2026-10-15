@@ -510,10 +510,11 @@ function augmentStyles(baseCss: string): string {
 /* --- image injection styles --- */
 .hero-image-wrap { position: relative; overflow: hidden; border-radius: var(--radius, 16px); }
 .hero-image-wrap img { width: 100%; height: 420px; object-fit: cover; display: block; border-radius: var(--radius, 16px); }
-.hero-bg { position: relative; overflow: hidden; }
-.hero-bg::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, color-mix(in srgb, var(--bg, #fff) 85%, transparent) 35%, transparent 100%); z-index: 1; pointer-events: none; }
-.hero-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; opacity: 0.45; }
+.hero-bg { position: relative; overflow: hidden; isolation: isolate; }
+.hero-bg::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to right, color-mix(in srgb, var(--bg, #fff) 85%, transparent) 35%, transparent 100%); z-index: -1; pointer-events: none; }
+.hero-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; opacity: 0.45; }
 .hero-bg > .container { position: relative; z-index: 2; }
+.hero .nature-blob[aria-hidden="true"] { pointer-events: none; }
 .section-img { width: 100%; height: 280px; object-fit: cover; border-radius: var(--radius, 12px); display: block; margin-bottom: 1.25rem; }
 .section-img-tall { height: 380px; }
 .img-card { overflow: hidden; border-radius: var(--radius, 12px); }

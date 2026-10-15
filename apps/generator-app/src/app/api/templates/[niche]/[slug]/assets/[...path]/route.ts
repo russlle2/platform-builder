@@ -5,6 +5,7 @@ import {
   readTemplateFileBuffer,
 } from '@/lib/templates/niche-registry'
 import { snapshotCatalogRevision } from '@/lib/catalog-revision'
+import { COMPILER_COMPATIBILITY_PATH, COMPILER_COMPATIBILITY_SCRIPT } from '@/lib/compiler-compatibility-runtime'
 import path from 'path'
 
 export async function GET(
@@ -68,7 +69,14 @@ export async function GET(
     '.html': 'text/html',
   }
 
-  const contentType = ext === '.js' ? 'text/plain; charset=utf-8' : (mimeMap[ext] || 'application/octet-stream')
+  // The compiler's exact, fixed runtime drives menus and inquiry events. All
+  // other template JavaScript remains inert, including a modified runtime at
+  // the trusted path or an unchanged runtime copied to an unrelated path.
+  const trustedRuntime = template.validation?.contractVersion === 3
+    && filePath === COMPILER_COMPATIBILITY_PATH
+    && content.equals(Buffer.from(COMPILER_COMPATIBILITY_SCRIPT, 'utf8'))
+  const inertScript = ext === '.js' && !trustedRuntime
+  const contentType = inertScript ? 'text/plain; charset=utf-8' : (mimeMap[ext] || 'application/octet-stream')
 
   // Copy into a fresh ArrayBuffer so the TS BodyInit union accepts it
   // (Node Buffer's underlying buffer could in theory be a SharedArrayBuffer).
@@ -86,7 +94,7 @@ export async function GET(
       'Content-Security-Policy': "sandbox; default-src 'none'; style-src 'unsafe-inline'",
       'Referrer-Policy': 'no-referrer',
       'X-Content-Type-Options': 'nosniff',
-      ...(ext === '.js' ? { 'Content-Disposition': 'attachment' } : {}),
+      ...(inertScript ? { 'Content-Disposition': 'attachment' } : {}),
     },
   })
 }

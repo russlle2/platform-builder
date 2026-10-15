@@ -241,28 +241,7 @@ function neutralizeFixedPriceAttribute(name: string, value: string): string {
 }
 
 /** Audited, dependency-free behavior shared by every rehabilitated template. */
-export const LEGACY_COMPATIBILITY_SCRIPT = `(() => {
-  'use strict';
-  if (window.__dailyClarityCompatibilityInstalled) return;
-  window.__dailyClarityCompatibilityInstalled = true;
-  document.addEventListener('click', (event) => {
-    const control = event.target instanceof Element ? event.target.closest('[aria-controls]') : null;
-    if (!(control instanceof HTMLElement)) return;
-    const targetId = control.getAttribute('aria-controls');
-    const target = targetId ? document.getElementById(targetId) : null;
-    if (!target) return;
-    const expanded = control.getAttribute('aria-expanded') === 'true';
-    control.setAttribute('aria-expanded', String(!expanded));
-    target.classList.toggle('is-open', !expanded);
-  });
-  document.addEventListener('submit', (event) => {
-    const form = event.target;
-    if (!(form instanceof HTMLFormElement) || !form.matches('[data-dc-standard-form]')) return;
-    if (!form.checkValidity()) return;
-    form.dispatchEvent(new CustomEvent('dc:form-submit', { bubbles: true }));
-  });
-})();
-`;
+export { COMPILER_COMPATIBILITY_SCRIPT as LEGACY_COMPATIBILITY_SCRIPT } from '../../../../apps/generator-app/src/lib/compiler-compatibility-runtime.js';
 
 function attrs(node: HtmlNode): Attr[] {
   if (!node.attrs) node.attrs = [];

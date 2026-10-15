@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { createStripeClient } from '@/lib/stripe-client'
-import { getPlan } from '@/lib/plans'
+import { describeCheckoutConfirmation, type CheckoutConfirmation } from '@/lib/checkout-confirmation'
+import { configuredStripeLivemode, isStripeModeAllowed } from '@/lib/stripe-runtime'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,45 +24,16 @@ export const metadata: Metadata = {
   },
 }
 
-type VerifiedSession = {
-  ok: boolean
-  businessName?: string
-  slug?: string
-  planName?: string
-  managed?: boolean
-  customBuild?: boolean
-  requestId?: string
-  trialStarted?: boolean
-}
-
-async function verifySession(sessionId: string | undefined): Promise<VerifiedSession> {
-  if (!sessionId) return { ok: false }
+async function verifySession(sessionId: string | undefined): Promise<CheckoutConfirmation> {
+  if (typeof sessionId !== 'string' || !/^cs_(?:test_|live_)?[A-Za-z0-9]{10,240}$/.test(sessionId)) return { ok: false }
   const secret = process.env.STRIPE_SECRET_KEY
-  if (!secret) return { ok: false }
+  if (!secret || !isStripeModeAllowed(secret)) return { ok: false }
+  const expectedLivemode = configuredStripeLivemode(secret)
+  if (expectedLivemode === null) return { ok: false }
   try {
     const stripe = createStripeClient(secret)
-    const session = await stripe.checkout.sessions.retrieve(sessionId)
-    // A completed Checkout Session means payment succeeded or a trial started.
-    if (session.status !== 'complete') return { ok: false }
-    const meta = session.metadata || {}
-    if (meta.checkoutType === 'custom_build') {
-      return {
-        ok: session.payment_status === 'paid',
-        customBuild: true,
-        requestId: meta.customBuildRequestId || undefined,
-      }
-    }
-    if (meta.checkoutType !== 'template_subscription') return { ok: false }
-    const trialStarted = session.payment_status === 'no_payment_required' && Boolean(session.subscription)
-    const paymentConfirmed = session.payment_status === 'paid'
-    const plan = getPlan(meta.planKey)
-    return {
-      ok: paymentConfirmed || trialStarted,
-      slug: meta.slug || undefined,
-      planName: plan?.name,
-      managed: plan?.managedService ?? false,
-      trialStarted,
-    }
+    const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['subscription'] })
+    return describeCheckoutConfirmation(session, expectedLivemode)
   } catch {
     return { ok: false }
   }
@@ -106,19 +78,19 @@ export default async function SuccessPage({
     return (
       <main className="min-h-screen pt-24 pb-16 container-hvac">
         <div className="glass-panel rounded-3xl p-10 md:p-14 max-w-4xl mx-auto text-center">
-          <span className="signal-chip">Payment confirmed</span>
+          <span className="signal-chip">{result.testMode ? 'Test payment confirmed — no real money charged' : 'Payment confirmed'}</span>
           <h1 className="text-4xl md:text-5xl font-bold text-bright-white mt-5 mb-4">
-            Your custom website brief is in our build queue.
+            Your custom-build checkout is complete.
           </h1>
           <p className="text-gray-300 text-lg max-w-2xl mx-auto">
-            Your one-time $500 payment was successful. DailyClarity received the appearance and
-            functionality instructions you submitted and will contact you by email with the next steps.
+            Stripe confirmed your one-time {result.testMode ? 'test payment' : 'payment'}.
+            Project review and email delivery happen separately. We&rsquo;ll email you with the next steps.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10 text-left">
             {[
-              { title: 'Brief secured', copy: 'Your full project description was saved before checkout.' },
-              { title: 'Payment verified', copy: 'Stripe confirmed the immediate one-time $500 payment.' },
+              { title: 'Project details', copy: 'Your submitted brief is used for the manual review.' },
+              { title: 'Payment verified', copy: 'Stripe confirmed this one-time checkout payment.' },
               { title: 'Manual review', copy: 'We will review the scope and contact you at your checkout email.' },
             ].map((item) => (
               <div key={item.title} className="stat-card">
@@ -148,19 +120,19 @@ export default async function SuccessPage({
     )
   }
 
-  const portalHref = result.slug ? `/portal?slug=${encodeURIComponent(result.slug)}` : '/portal'
-  const platformDomain = process.env.NEXT_PUBLIC_PLATFORM_DOMAIN || 'dailyclarity.org'
+  const dashboardHref = result.slug ? `/dashboard?site=${encodeURIComponent(result.slug)}` : '/dashboard'
 
   return (
     <main className="min-h-screen pt-24 pb-16 container-hvac">
       <div className="glass-panel rounded-3xl p-12 max-w-4xl mx-auto">
         <div className="text-center">
+          {result.testMode && <p className="signal-chip mb-5">Stripe test mode — no real money charged</p>}
           <h1 className="text-4xl md:text-5xl font-bold text-bright-white mb-4">
-            {result.trialStarted ? 'Trial started' : 'Payment confirmed'}
+            {result.trialStarted ? 'Trial started' : result.noPaymentRequired ? 'Checkout confirmed' : 'Payment confirmed'}
           </h1>
           <p className="text-gray-300 text-lg">
-            Your {result.planName ? <strong>{result.planName}</strong> : null} subscription {result.trialStarted ? 'trial' : ''} is active.
-            We&rsquo;re provisioning your website now and will email you when it&rsquo;s live.
+            Your {result.planName ? <strong>{result.planName}</strong> : null} subscription checkout is complete.
+            Website setup is a separate step. Your dashboard will show its status, and we&rsquo;ll email you after the site is published.
           </p>
 
           {/* Email notice */}
@@ -169,16 +141,16 @@ export default async function SuccessPage({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             <span>
-              <strong className="text-cyan-200">Check your email</strong> — your private portal access link will arrive shortly.
+              <strong className="text-cyan-200">Use your checkout email</strong> to sign in to your dashboard. You can also use the private portal link in your delivery email.
             </span>
           </div>
 
-          {/* Slug / site URL preview */}
+          {/* A reserved name is not evidence that its domain is published. */}
           {result.slug && (
             <p className="mt-4 text-slate-300 text-sm">
-              Your site will be at:{' '}
+              Your website reference:{' '}
               <span className="font-mono text-cyan-200">
-                {result.slug}.{platformDomain}
+                {result.slug}
               </span>
             </p>
           )}
@@ -188,16 +160,16 @@ export default async function SuccessPage({
           {[
             {
               title: 'Provisioning',
-              copy: 'Your hosted subdomain and SSL are being set up automatically.',
+              copy: 'Your website setup includes a hosted address and SSL.',
             },
             {
               title: 'Template build',
-              copy: 'Your chosen layout is being populated with your business details.',
+              copy: 'Your chosen layout will use your saved business details.',
             },
             result.managed
               ? {
                   title: 'Done-for-you setup',
-                  copy: 'Our team will begin your ads and security setup and reach out shortly.',
+                  copy: 'We will email you about the scope and timing of your ads and security work.',
                 }
               : {
                   title: 'Launch ready',
@@ -212,7 +184,7 @@ export default async function SuccessPage({
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-          <Link href={portalHref} className="cta-button">
+          <Link href={dashboardHref} className="cta-button">
             Go to My Dashboard
           </Link>
           <Link

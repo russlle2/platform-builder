@@ -218,7 +218,11 @@ describe('sandbox order creation', () => {
     })])
     expect(body.payment_source.paypal.experience_context).toMatchObject({
       return_url: `${ORIGIN}/paypal-test`, cancel_url: `${ORIGIN}/paypal-test?cancelled=1`, shipping_preference: 'NO_SHIPPING',
+      landing_page: 'GUEST_CHECKOUT', user_action: 'PAY_NOW',
     })
+    expect(body.payment_source.paypal).not.toHaveProperty('phone')
+    expect(body.purchase_units[0]).not.toHaveProperty('shipping')
+    expect(body).not.toHaveProperty('application_context')
     expect(options.redirect).toBe('error')
     expect(options.signal).toBeInstanceOf(AbortSignal)
   })

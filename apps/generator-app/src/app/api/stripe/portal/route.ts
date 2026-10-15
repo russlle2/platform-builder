@@ -3,6 +3,7 @@ import { createStripeClient } from '@/lib/stripe-client'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import { claimPortalSitesForUser } from '@/lib/portal-owner-auth'
+import { isStripeModeAllowed } from '@/lib/stripe-runtime'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -11,6 +12,9 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 export async function POST(req: Request) {
   if (!stripeSecretKey || !supabaseUrl || !supabaseServiceKey) {
     return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 })
+  }
+  if (!isStripeModeAllowed(stripeSecretKey)) {
+    return NextResponse.json({ error: 'Billing management is temporarily unavailable.' }, { status: 503 })
   }
 
   // Verify the caller is authenticated.

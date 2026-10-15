@@ -4,7 +4,7 @@ import { createHash } from 'node:crypto'
 export const STRIPE_API_VERSION: Stripe.LatestApiVersion = '2026-08-26.dahlia'
 
 export function createStripeClient(secretKey: string): Stripe {
-  return new Stripe(secretKey, { apiVersion: STRIPE_API_VERSION })
+  return new Stripe(secretKey.trim(), { apiVersion: STRIPE_API_VERSION })
 }
 
 /**

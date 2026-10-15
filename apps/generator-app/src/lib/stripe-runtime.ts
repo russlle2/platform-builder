@@ -21,6 +21,24 @@ export const TEMPLATE_FULFILLMENT_ENV_KEYS = [
 
 type RuntimeEnvironment = Partial<Record<string, string | undefined>>
 
+export function configuredStripeLivemode(secretKey: string): boolean | null {
+  if (/^(?:sk|rk)_live_.+/.test(secretKey.trim())) return true
+  if (/^(?:sk|rk)_test_.+/.test(secretKey.trim())) return false
+  return null
+}
+
+/** A real-money key must never be usable by an isolated checkout test. */
+export function isStripeModeAllowed(
+  key: string,
+  env: RuntimeEnvironment = process.env,
+): boolean {
+  const livemode = configuredStripeLivemode(key)
+  if (livemode === null) return false
+  if (env.DAILYCLARITY_ENVIRONMENT === 'staging') return !livemode
+  if (env.DAILYCLARITY_ENVIRONMENT === 'production' && env.NODE_ENV === 'production') return livemode
+  return env.NODE_ENV !== 'production' && env.DAILYCLARITY_ENVIRONMENT !== 'production' && !livemode
+}
+
 /** The scheduled recovery function should be inert until its isolated runtime is complete. */
 export function hasStripeFulfillmentRecoveryConfig(
   env: RuntimeEnvironment = process.env,
@@ -64,6 +82,9 @@ export function getTemplateFulfillmentConfigIssues(
   env: RuntimeEnvironment = process.env,
 ): string[] {
   const issues = getMissingTemplateFulfillmentConfig(env)
+  if (env.STRIPE_SECRET_KEY?.trim() && !isStripeModeAllowed(env.STRIPE_SECRET_KEY, env)) {
+    issues.push('STRIPE_ENVIRONMENT_MODE_MISMATCH')
+  }
   if (
     !issues.includes('NEXT_PUBLIC_SUPABASE_URL') &&
     !issues.includes('DAILYCLARITY_SUPABASE_PROJECT_REF') &&

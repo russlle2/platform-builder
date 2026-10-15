@@ -58,7 +58,7 @@ interface PreviewState {
   setBusinessInfo: (info: Partial<BusinessInfo>) => void
   replaceBusinessInfo: (info: BusinessInfo) => void
   setStylePreferences: (prefs: Partial<StylePreferences>) => void
-  setMatchedTemplate: (match: MatchedTemplate) => void
+  setMatchedTemplate: (match: MatchedTemplate | null) => void
   markInfoSaved: () => void
   reset: () => void
 

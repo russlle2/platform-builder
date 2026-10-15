@@ -1,6 +1,6 @@
 ﻿'use client'
 
-import { useEffect, useState, useCallback, useRef, useMemo } from 'react'
+import { useEffect, useState, useCallback, useRef, useMemo, useId } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
@@ -307,6 +307,7 @@ export default function PreviewYourBusinessClient() {
   // ---- template fetching ----
   const [templates, setTemplates] = useState<ApiTemplate[]>([])
   const [templatesLoading, setTemplatesLoading] = useState(false)
+  const [templatesError, setTemplatesError] = useState<string | null>(null)
 
   // ---- session seed for consistent browse pagination ----
   const [sessionSeed] = useState(() => Date.now() % 10000)
@@ -398,40 +399,38 @@ export default function PreviewYourBusinessClient() {
   /* ================ Fetch templates for niche ================ */
   const fetchTemplatesForNiche = useCallback(async (niche: string) => {
     setTemplatesLoading(true)
+    setTemplatesError(null)
     try {
       const res = await fetch(`/api/templates/${niche}?all=true`)
-      if (res.ok) {
-        const data = await res.json()
-        const withNiche = (data.templates || []).map((t: ApiTemplate) => ({
-          ...t,
-          nicheSlug: t.nicheSlug || niche,
-        }))
-        setTemplates(withNiche)
-        return withNiche
+      if (!res.ok) {
+        throw new Error('The template gallery is temporarily unavailable. Your business details are kept in this browser. Please try again.')
       }
-    } catch { /* ignore */ }
-    setTemplatesLoading(false)
+      const data = await res.json()
+      const withNiche = (data.templates || []).map((t: ApiTemplate) => ({
+        ...t,
+        nicheSlug: t.nicheSlug || niche,
+      }))
+      setTemplates(withNiche)
+      return withNiche
+    } catch (error) {
+      setTemplatesError(error instanceof Error ? error.message : 'Templates could not be loaded. Please try again.')
+    } finally { setTemplatesLoading(false) }
     return []
   }, [])
 
   /* ================ Match template ================ */
   const runMatching = useCallback(async () => {
     setStep('matching')
+    setMatchedTemplate(null)
+    setAlternativeTemplates([])
+    setTemplatesError(null)
     let tpls = templates.filter((template) => template.nicheSlug === businessInfo.niche)
     if (tpls.length === 0 && businessInfo.niche) {
       tpls = await fetchTemplatesForNiche(businessInfo.niche)
     }
 
     if (tpls.length === 0) {
-      // Fallback
-      setMatchedTemplate({
-        nicheSlug: businessInfo.niche || 'wellness_coach',
-        templateSlug: '',
-        templateName: 'No templates found',
-        pages: [],
-        matchScore: 0,
-        reason: 'No templates available for this niche',
-      })
+      setTemplatesError((current) => current || 'No published templates are available for this industry right now. Your business details are kept in this browser. Try again or choose another industry.')
       setTemplatesLoading(false)
       return
     }
@@ -815,10 +814,11 @@ export default function PreviewYourBusinessClient() {
 
   /* ================ Open editor for matched template ================ */
   const openEditor = useCallback(() => {
+    if (!matchedTemplate?.templateSlug || templatesLoading) return
     markInfoSaved()
     setStep('editor')
     loadPreview()
-  }, [markInfoSaved, setStep, loadPreview])
+  }, [matchedTemplate?.templateSlug, templatesLoading, markInfoSaved, setStep, loadPreview])
 
   /* ================ Open browse mode ================ */
   const openBrowse = useCallback(async () => {
@@ -915,7 +915,7 @@ export default function PreviewYourBusinessClient() {
         )}
         {/* Progress bar */}
         <div className="container-hvac mb-8">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2">
+          <div tabIndex={0} role="region" aria-label="Website preview progress" className="flex items-center gap-2 overflow-x-auto pb-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
             {(['info', 'style', 'matching', 'editor'] as PreviewStep[]).map((s) => {
               const meta = STEP_META[s]
               const isActive = s === step
@@ -969,6 +969,9 @@ export default function PreviewYourBusinessClient() {
             matched={matchedTemplate}
             alternatives={alternativeTemplates}
             loading={templatesLoading}
+            error={templatesError}
+            onRetry={runMatching}
+            onBack={() => setStep('info')}
             readiness={clientReadiness}
             onEdit={openEditor}
             onBrowse={openBrowse}
@@ -990,7 +993,14 @@ export default function PreviewYourBusinessClient() {
         )}
 
         {/* ============ STEP 4 — EDITOR ============ */}
-        {step === 'editor' && matchedTemplate && (
+        {step === 'editor' && !matchedTemplate?.templateSlug && (
+          <section className="container-hvac py-12 max-w-3xl">
+            <h1 className="text-3xl font-bold">Choose a template to continue</h1>
+            <p className="mt-3 text-slate-300">Your business details are saved in this browser. Choose an available template before customizing or purchasing a website.</p>
+            <button type="button" onClick={runMatching} className="cta-button mt-6">Find available templates</button>
+          </section>
+        )}
+        {step === 'editor' && matchedTemplate?.templateSlug && (
           <EditorStep
             matched={matchedTemplate}
             readiness={clientReadiness}
@@ -1076,6 +1086,7 @@ function InfoStep({
     if (!info.businessName.trim()) e.businessName = 'Required'
     if (!info.niche) e.niche = 'Pick your industry'
     if (!info.email.trim()) e.email = 'Required'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(info.email.trim())) e.email = 'Enter a valid email address'
     setErrors(e)
     return Object.keys(e).length === 0
   }
@@ -1153,8 +1164,9 @@ function InfoStep({
         <Field label="Tagline" value={info.tagline}
           onChange={(v) => onChange({ tagline: v })} placeholder={ex.tagline} />
         <div>
-          <label className="block text-sm font-semibold text-slate-200 mb-2">Description</label>
+          <label htmlFor="preview-business-description" className="block text-sm font-semibold text-slate-200 mb-2">Description</label>
           <textarea
+            id="preview-business-description"
             value={info.description}
             onChange={(e) => onChange({ description: e.target.value })}
             rows={3}
@@ -1376,6 +1388,9 @@ function MatchStep({
   matched,
   alternatives,
   loading,
+  error,
+  onRetry,
+  onBack,
   readiness,
   onEdit,
   onBrowse,
@@ -1384,6 +1399,9 @@ function MatchStep({
   matched: MatchedTemplate | null
   alternatives: ApiTemplate[]
   loading: boolean
+  error: string | null
+  onRetry: () => void
+  onBack: () => void
   readiness: ReturnType<typeof computeClientReadiness>
   onEdit: () => void
   onBrowse: () => void
@@ -1394,7 +1412,7 @@ function MatchStep({
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 3 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
-          {loading ? 'Finding your match...' : 'We found your template'}
+          {loading ? 'Finding your match...' : matched?.templateSlug ? 'We found your template' : 'Choose an available template'}
         </h1>
         <p className="text-lg text-slate-300">
           Based on your style preferences and business type.
@@ -1410,7 +1428,7 @@ function MatchStep({
           <div className="w-16 h-16 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
           <p className="text-slate-300 text-lg">Analyzing your preferences and matching templates...</p>
         </div>
-      ) : matched ? (
+      ) : matched?.templateSlug ? (
         <div className="glass-panel rounded-2xl p-8 space-y-6">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-3xl shadow-lg shrink-0">
@@ -1494,13 +1512,14 @@ function MatchStep({
         </div>
       ) : (
         <div className="glass-panel rounded-2xl p-8 text-center">
-          <p className="text-slate-300">No match found. Try adjusting your preferences.</p>
+          <p role="status" className="text-slate-300">{error || 'No template has been selected yet. Try matching again or choose another industry.'}</p>
           <button
-            onClick={onBrowse}
+            onClick={onRetry}
             className="mt-4 px-6 py-3 text-sm font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
           >
-            Browse All Templates
+            Try loading templates again
           </button>
+          <button type="button" onClick={onBack} className="mt-4 ml-3 px-6 py-3 text-sm font-semibold text-cyan-200 underline underline-offset-4">Edit business details</button>
         </div>
       )}
     </section>
@@ -1693,12 +1712,12 @@ function EditorStep({
           >
             ⌕ Page SEO
           </button>
-          <Link
+          {previewHtml && !previewLoading && !previewError ? <Link
             href={checkoutHref}
             className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
           >
             Purchase & Launch
-          </Link>
+          </Link> : <button type="button" disabled className="rounded-lg border border-white/20 px-4 py-2 text-sm text-slate-400 disabled:cursor-not-allowed">Preview required before purchase</button>}
         </div>
       </div>
       )}
@@ -2008,13 +2027,18 @@ function Field({
   required?: boolean
   error?: string
 }) {
+  const id = useId()
   return (
     <div>
-      <label className="block text-sm font-semibold text-slate-200 mb-2">
+      <label htmlFor={id} className="block text-sm font-semibold text-slate-200 mb-2">
         {label} {required && <span className="text-red-400">*</span>}
       </label>
       <input
+        id={id}
         type={type}
+        required={required}
+        aria-invalid={Boolean(error)}
+        aria-describedby={error ? `${id}-error` : undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -2022,7 +2046,7 @@ function Field({
           error ? 'border-red-400' : 'border-white/20'
         }`}
       />
-      {error && <p className="text-red-400 text-sm mt-1">{error}</p>}
+      {error && <p id={`${id}-error`} role="alert" className="text-red-400 text-sm mt-1">{error}</p>}
     </div>
   )
 }

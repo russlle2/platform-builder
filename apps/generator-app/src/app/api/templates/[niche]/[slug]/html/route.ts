@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { readTemplateFile, hydrateTemplate, getTemplate } from '@/lib/templates/niche-registry'
 import {
   rewriteTemplateAssetReferences,
+  sanitizeTemplatePreviewCss,
   sanitizeTemplatePreviewHtml,
 } from '@/lib/template-preview-security'
+import { selectInjectableTemplateCss } from '@/lib/template-preview-composition'
 
 /**
  * GET endpoint that returns hydrated HTML for a template page.
@@ -42,13 +44,14 @@ export async function GET(
   const assetBase = `/api/templates/${niche}/${slug}/assets`
   let output = rewriteTemplateAssetReferences(hydrated, assetBase, page)
 
-  if (cssFile) {
-    const rewrittenCss = rewriteTemplateAssetReferences(
-      cssFile,
+  const injectableCss = selectInjectableTemplateCss(html, cssFile)
+  if (injectableCss) {
+    const rewrittenCss = sanitizeTemplatePreviewCss(rewriteTemplateAssetReferences(
+      injectableCss,
       assetBase,
       'assets/css/styles.css',
-    )
-    output = output.replace('</head>', `<style>${rewrittenCss}</style></head>`)
+    ))
+    if (rewrittenCss) output = output.replace(/<\/head\s*>/i, `<style>${rewrittenCss}</style></head>`)
   }
 
   if (browse) {

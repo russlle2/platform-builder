@@ -3,7 +3,18 @@
 import Image from 'next/image'
 
 interface LivePreviewProps {
-  data: any
+  data: {
+    businessName?: string
+    backgroundImage?: string
+    logo?: string
+    tagline?: string
+    description?: string
+    accentColor: string
+    services?: string[]
+    phoneNumber?: string
+    email?: string
+    address?: string
+  }
 }
 
 export function LivePreview({ data }: LivePreviewProps) {
@@ -26,7 +37,7 @@ export function LivePreview({ data }: LivePreviewProps) {
         className="h-full overflow-y-auto"
         style={{ 
           backgroundColor: '#ffffff',
-          backgroundImage: `url(${data.backgroundImage})`,
+          backgroundImage: data.backgroundImage ? `url(${data.backgroundImage})` : undefined,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

@@ -7,9 +7,31 @@ import {
   hasStripeFulfillmentRecoveryConfig,
   isDedicatedSupabaseProjectConfigured,
   isCheckoutPaymentReady,
+  isStripeModeAllowed,
+  configuredStripeLivemode,
 } from './stripe-runtime'
 
 describe('Stripe runtime compatibility', () => {
+  it.each(['sk', 'rk'])('enforces live/test isolation for %s keys across all environments', (kind) => {
+    const test = `${kind}_test_example`
+    const live = `${kind}_live_example`
+    expect(configuredStripeLivemode(test)).toBe(false)
+    expect(configuredStripeLivemode(live)).toBe(true)
+    expect(isStripeModeAllowed(test, { NODE_ENV: 'production', DAILYCLARITY_ENVIRONMENT: 'staging' })).toBe(true)
+    expect(isStripeModeAllowed(live, { NODE_ENV: 'production', DAILYCLARITY_ENVIRONMENT: 'staging' })).toBe(false)
+    expect(isStripeModeAllowed(test, { NODE_ENV: 'production', DAILYCLARITY_ENVIRONMENT: 'production' })).toBe(false)
+    expect(isStripeModeAllowed(live, { NODE_ENV: 'production', DAILYCLARITY_ENVIRONMENT: 'production' })).toBe(true)
+    expect(isStripeModeAllowed(test, { NODE_ENV: 'production' })).toBe(false)
+    expect(isStripeModeAllowed(live, { NODE_ENV: 'production' })).toBe(false)
+    expect(isStripeModeAllowed(test, { NODE_ENV: 'development' })).toBe(true)
+    expect(isStripeModeAllowed(live, { NODE_ENV: 'development' })).toBe(false)
+    expect(isStripeModeAllowed(live, { NODE_ENV: 'development', DAILYCLARITY_ENVIRONMENT: 'production' })).toBe(false)
+  })
+
+  it.each(['', 'pk_test_example', 'unknown-key', 'sk_test_', 'rk_live_'])('rejects unsupported server key %s', (key) => {
+    expect(configuredStripeLivemode(key)).toBeNull()
+    expect(isStripeModeAllowed(key, { NODE_ENV: 'test' })).toBe(false)
+  })
   it('resolves a Dahlia invoice subscription from parent.subscription_details', () => {
     expect(getInvoiceSubscriptionId({
       parent: {
@@ -75,6 +97,16 @@ describe('Stripe runtime compatibility', () => {
     }
 
     expect(getMissingTemplateFulfillmentConfig(configured)).toEqual([])
+    expect(getTemplateFulfillmentConfigIssues({
+      ...configured,
+      NODE_ENV: 'production',
+      DAILYCLARITY_ENVIRONMENT: 'production',
+    })).toContain('STRIPE_ENVIRONMENT_MODE_MISMATCH')
+    expect(getTemplateFulfillmentConfigIssues({
+      ...configured,
+      NODE_ENV: 'production',
+      DAILYCLARITY_ENVIRONMENT: 'staging',
+    })).not.toContain('STRIPE_ENVIRONMENT_MODE_MISMATCH')
     expect(getMissingTemplateFulfillmentConfig({
       ...configured,
       NETLIFY_ACCESS_TOKEN: ' ',

@@ -7,6 +7,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { LEGACY_CLI_HELP, parseLegacyArgs, runLegacyCli } from './cli.js';
+import { LEGACY_REPAIR_RULE_VERSION } from './contracts.js';
 import { DEFAULT_LEGACY_RULE_VERSION } from './types.js';
 
 const execFileAsync = promisify(execFile);
@@ -32,6 +33,7 @@ test('CLI enforces the model and worker ceilings while accepting lower limits', 
 });
 
 test('operational entry points share the fresh Documents root and versioned runner logs', async () => {
+  assert.equal(DEFAULT_LEGACY_RULE_VERSION, LEGACY_REPAIR_RULE_VERSION);
   assert.match(LEGACY_CLI_HELP, /%USERPROFILE%\\Documents\\DailyClarity\\template-rehab/);
   assert.doesNotMatch(LEGACY_CLI_HELP, /LOCALAPPDATA/);
 

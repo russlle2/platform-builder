@@ -204,7 +204,7 @@ export default function PayPalSandbox() {
           <section aria-labelledby="test-steps" className="rounded-2xl border border-white/10 bg-slate-900/60 p-6 sm:p-7">
             <h2 id="test-steps" className="text-2xl font-semibold">Your three-minute test</h2>
             <ol className="mt-6 space-y-6 text-sm leading-relaxed text-slate-300">
-              <li><span className="mb-1 block font-semibold text-white">1. Have a sandbox buyer ready</span>Use a Personal sandbox account from your <a className="text-cyan-200 underline underline-offset-4" href="https://developer.paypal.com/dashboard/accounts" target="_blank" rel="noopener noreferrer">PayPal Developer dashboard</a>. Use that account&apos;s test email and password at checkout.</li>
+              <li><span className="mb-1 block font-semibold text-white">1. Have sandbox test details ready</span>Use a Personal sandbox account from your <a className="text-cyan-200 underline underline-offset-4" href="https://developer.paypal.com/dashboard/accounts" target="_blank" rel="noopener noreferrer">PayPal Developer dashboard</a>. If PayPal offers guest card checkout, use generated sandbox card details instead.</li>
               <li><span className="mb-1 block font-semibold text-white">2. Approve $1.00 in pretend money</span>The PayPal Sandbox balance is simulated. Your real PayPal balance, card, and bank account are never charged by this test.</li>
               <li><span className="mb-1 block font-semibold text-white">3. Return and save your receipt</span>We verify the payment with PayPal Sandbox before showing a successful result. Then download the receipt or run the test again.</li>
             </ol>
@@ -228,7 +228,7 @@ export default function PayPalSandbox() {
 
             {(stage === 'ready' || stage === 'cancelled') && <div className="space-y-4">
               <h2 ref={statusHeading} tabIndex={-1} className="text-2xl font-semibold outline-none">{stage === 'cancelled' ? 'Checkout cancelled' : 'Ready for your test purchase'}</h2>
-              <p role={stage === 'cancelled' ? 'status' : undefined} className="text-sm leading-relaxed text-slate-300">{stage === 'cancelled' ? 'You returned without completing this test checkout. You can start again whenever you are ready.' : 'This button opens PayPal’s sandbox checkout. Sign in with your sandbox buyer and approve the test order.'}</p>
+              <p role={stage === 'cancelled' ? 'status' : undefined} className="text-sm leading-relaxed text-slate-300">{stage === 'cancelled' ? 'You returned without completing this test checkout. You can start again whenever you are ready.' : 'This button opens PayPal’s sandbox checkout. Use guest card checkout if offered, or sign in with your sandbox buyer. Use test details only.'}</p>
               <button type="button" onClick={startCheckout} className={primaryButton}>Continue to PayPal Sandbox</button>
               <p className="text-xs leading-relaxed text-slate-400">One mock payment. No recurring charges. No live purchase.</p>
               <button type="button" onClick={reset} className={secondaryButton}>Start a fresh test</button>

@@ -4,8 +4,13 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(/\/$/, '')
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()
 const expectedRef = process.env.DAILYCLARITY_SUPABASE_PROJECT_REF?.trim().toLowerCase()
 
-if (!url || !serviceKey || !expectedRef) {
-  throw new Error('Supabase schema verification configuration is incomplete.')
+const missingConfiguration = [
+  ['NEXT_PUBLIC_SUPABASE_URL', url],
+  ['SUPABASE_SERVICE_ROLE_KEY', serviceKey],
+  ['DAILYCLARITY_SUPABASE_PROJECT_REF', expectedRef],
+].filter(([, value]) => !value).map(([name]) => name)
+if (missingConfiguration.length) {
+  throw new Error(`Supabase schema verification configuration is incomplete. Missing: ${missingConfiguration.join(', ')}.`)
 }
 
 let actualRef

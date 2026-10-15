@@ -278,6 +278,8 @@ export async function createPayPalSandboxOrder(
         paypal: {
           experience_context: {
             brand_name: 'DailyClarity Sandbox Test',
+            // A preference only: PayPal still determines guest-card eligibility.
+            landing_page: 'GUEST_CHECKOUT',
             shipping_preference: 'NO_SHIPPING',
             user_action: 'PAY_NOW',
             return_url: `${origin}/paypal-test`,

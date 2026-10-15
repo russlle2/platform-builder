@@ -31,13 +31,13 @@ export function truncate(text: string, length: number, suffix = '...'): string {
 /**
  * Debounce function
  */
-export function debounce<T extends (...args: any[]) => any>(
-  func: T,
+export function debounce<TArgs extends unknown[]>(
+  func: (...args: TArgs) => unknown,
   wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout | null = null
+): (...args: TArgs) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null
   
-  return function executedFunction(...args: Parameters<T>) {
+  return function executedFunction(...args: TArgs) {
     const later = () => {
       timeout = null
       func(...args)
@@ -65,7 +65,7 @@ export function deepClone<T>(obj: T): T {
 /**
  * Check if a value is empty
  */
-export function isEmpty(value: any): boolean {
+export function isEmpty(value: unknown): boolean {
   if (value == null) return true
   if (typeof value === 'string') return value.trim().length === 0
   if (Array.isArray(value)) return value.length === 0

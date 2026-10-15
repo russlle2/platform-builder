@@ -200,7 +200,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <Link href="/" className="text-sm font-bold uppercase tracking-[0.18em] text-white">
               Daily<span className="text-cyan-300">Clarity</span>
             </Link>
-            <p className="mt-2 max-w-md text-xs leading-5 text-slate-500">
+            <p className="mt-2 max-w-md text-xs leading-5 text-slate-400">
               Professional websites and practical tools for independent service businesses.
             </p>
           </div>
@@ -214,7 +214,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </ul>
           </nav>
         </div>
-        <div className="border-t border-white/5 px-4 py-4 text-center text-xs text-slate-600">
+        <div className="border-t border-white/5 px-4 py-4 text-center text-xs text-slate-400">
           &copy; {new Date().getFullYear()} DailyClarity. All rights reserved.
         </div>
       </footer>
