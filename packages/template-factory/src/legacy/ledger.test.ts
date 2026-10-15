@@ -893,6 +893,69 @@ test('inventory reconciliation preserves resume checkpoints and resets pages aft
   }
 });
 
+test('current compiler rule rejects prior release checkpoints without deleting their evidence', async () => {
+  const scratch = await mkdtemp(join(tmpdir(), 'legacy-release-rule-change-'));
+  const ledger = new LegacyLedger({ databasePath: join(scratch, 'ledger.sqlite') });
+  const previousRule = 'legacy-rehab-1.0.36';
+  assert.notEqual(DEFAULT_LEGACY_RULE_VERSION, previousRule);
+  try {
+    const sourceRoot = join(scratch, 'source');
+    const previousRun = ledger.createRun({
+      command: 'run', ruleVersion: previousRule, sourceRoot, workRoot: scratch,
+    });
+    const input = {
+      legacySlug: 'previous-passing-design', niche: 'aromatherapy',
+      sourcePath: join(sourceRoot, 'previous-passing-design'), sourceHash: 'unchanged-source',
+      pageCount: 1, stage: 'repair_pending' as const,
+    };
+    const template = ledger.upsertTemplate(previousRun.id, input, previousRule);
+    const lease = ledger.leaseTemplates({
+      stages: ['repair_pending'], claimedStage: 'repairing', owner: 'previous-release',
+      limit: 1, runId: previousRun.id,
+    })[0];
+    assert.ok(lease);
+    assert.equal(ledger.completeTemplateLease({
+      templateId: template.id, leaseToken: lease.leaseToken, stage: 'complete',
+      terminalDisposition: 'passing_design', resultHash: 'old-artifact', qualityReceipt: 'receipt_old',
+    }), true);
+    const pageId = ledger.upsertPage({
+      templateId: template.id, relativePath: 'index.html', role: 'home',
+      sourceHash: 'unchanged-page', resultHash: 'old-page', stage: 'static-passed',
+    });
+    ledger.upsertRender({
+      templateId: template.id, pageId, runId: previousRun.id, artifactHash: 'old-artifact',
+      ruleVersion: previousRule, viewport: 'desktop', width: 1440, height: 900, status: 'passed',
+    });
+    ledger.addArtifact({
+      templateId: template.id, runId: previousRun.id, kind: 'quality-receipt',
+      contentHash: 'old-receipt', relativePath: 'artifacts/receipts/old.json', byteSize: 100,
+    });
+
+    assert.equal(ledger.findResumableRun('run', sourceRoot, previousRule)?.id, previousRun.id);
+    assert.equal(ledger.findResumableRun('run', sourceRoot, DEFAULT_LEGACY_RULE_VERSION), null);
+    const currentRun = ledger.createRun({
+      command: 'pilot', ruleVersion: DEFAULT_LEGACY_RULE_VERSION, sourceRoot, workRoot: scratch,
+    });
+    const reset = ledger.upsertTemplate(currentRun.id, input, DEFAULT_LEGACY_RULE_VERSION);
+    ledger.reconcileInventoryPages(template.id, [{
+      relativePath: 'index.html', role: 'home', sourceHash: 'unchanged-page',
+    }], true);
+    assert.equal(reset.stage, 'repair_pending');
+    assert.equal(reset.terminalDisposition, null);
+    assert.equal(reset.resultHash, null);
+    assert.equal(reset.qualityReceipt, null);
+    assert.equal(reset.attempts, 0);
+    assert.equal(ledger.listPages(template.id)[0]?.stage, 'inventoried');
+    assert.equal(ledger.listRenders(template.id).length, 0);
+    assert.equal(ledger.listRenderHistory(template.id).length, 1);
+    assert.equal(ledger.listArtifacts({ templateId: template.id, kind: 'quality-receipt' }).length, 1);
+    assert.equal(ledger.getRun(previousRun.id)?.ruleVersion, previousRule);
+  } finally {
+    ledger.close();
+    await rm(scratch, { recursive: true, force: true });
+  }
+});
+
 test('moving an unchanged slug to another niche invalidates its artifact and receipt', async () => {
   const scratch = await mkdtemp(join(tmpdir(), 'legacy-inventory-niche-change-'));
   const ledger = new LegacyLedger({ databasePath: join(scratch, 'ledger.sqlite') });

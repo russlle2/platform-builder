@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/client'
 import { getPlan } from '@/lib/plans'
+import { WebsiteServices } from '@/components/portal/WebsiteServices'
 
 export interface PortalSiteData {
   slug: string
@@ -23,314 +23,410 @@ export interface PortalSiteData {
     customerValues?: Record<string, string>
   }
 }
-
 interface DashboardClientProps {
   userEmail: string
   site: PortalSiteData | null
   sites: { slug: string; name: string }[]
 }
+const card = 'rounded-2xl border border-white/10 bg-slate-900/70 p-6'
+const button =
+  'inline-flex items-center justify-center rounded-xl border border-slate-600 px-4 py-3 text-sm font-semibold text-slate-100 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300 disabled:cursor-wait disabled:opacity-50'
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; className: string }> = {
-    active: { label: 'Active', className: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
-    pending: { label: 'Pending', className: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
-    provisioning_failed: { label: 'Failed', className: 'bg-red-500/20 text-red-300 border-red-500/30' },
+export function safeDashboardSiteUrl(value: string | undefined): string | null {
+  if (!value) return null
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' && !url.username && !url.password
+      ? url.href
+      : null
+  } catch {
+    return null
   }
-  const config = map[status] ?? { label: status, className: 'bg-slate-500/20 text-slate-300 border-slate-500/30' }
-  return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${config.className}`}>
-      {config.label}
-    </span>
-  )
 }
 
-function ChecklistItem({ done, label }: { done: boolean; label: string }) {
-  return (
-    <li className="flex items-center gap-3 py-2.5 border-b border-white/5 last:border-0">
-      <span className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${done ? 'bg-emerald-500/30' : 'bg-slate-700/60'}`}>
-        {done ? (
-          <svg className="w-3 h-3 text-emerald-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-          </svg>
-        ) : (
-          <span className="w-2 h-2 rounded-full bg-slate-500" />
-        )}
-      </span>
-      <span className={`text-sm ${done ? 'text-slate-300 line-through decoration-slate-500' : 'text-slate-200'}`}>
-        {label}
-      </span>
-    </li>
-  )
+export function isStripeBillingPortalUrl(value: unknown): value is string {
+  if (typeof value !== 'string') return false
+  try {
+    const url = new URL(value)
+    return (
+      url.protocol === 'https:' &&
+      url.hostname === 'billing.stripe.com' &&
+      !url.port &&
+      !url.username &&
+      !url.password
+    )
+  } catch {
+    return false
+  }
 }
 
-export default function DashboardClient({ userEmail, site, sites }: DashboardClientProps) {
+export default function DashboardClient({
+  userEmail,
+  site,
+  sites,
+}: DashboardClientProps) {
   const [billingLoading, setBillingLoading] = useState(false)
   const [billingError, setBillingError] = useState('')
-
+  const [signingOut, setSigningOut] = useState(false)
+  const [accountError, setAccountError] = useState('')
+  const billingRequest = useRef(false)
   const plan = getPlan(site?.data.plan ?? null)
-  const siteUrl = site?.data.site_url ?? `https://${site?.slug}.dailyclarity.org`
-  const customDomain = site?.data.custom_domain ?? null
-
+  const siteUrl = safeDashboardSiteUrl(site?.data.site_url)
+  const portalHref = site
+    ? `/portal?slug=${encodeURIComponent(site.slug)}`
+    : '/portal'
+  const editorHref =
+    site?.data.niche && site.data.template
+      ? `/templates/${encodeURIComponent(site.data.niche)}/${encodeURIComponent(site.data.template)}?portalSlug=${encodeURIComponent(site.slug)}`
+      : null
+  const published = site?.status === 'active'
+  const stateLabel = published
+    ? 'Published'
+    : site?.status === 'billing_suspended'
+      ? 'Billing needs attention'
+      : site?.status === 'provisioning_failed'
+        ? 'Publishing needs attention'
+        : 'Preparing your website'
   const checklist = site
     ? [
-        { label: 'Site published', done: site.status === 'active' },
-        { label: 'Custom domain added', done: Boolean(customDomain) },
+        { label: 'Website published', done: published },
         {
-          label: 'Business details added',
+          label: 'Business name and contact email added',
           done: Boolean(
-            site.data.customerValues &&
-              Object.values(site.data.customerValues).filter(Boolean).length >= 3,
+            site.data.customerValues?.BUSINESS_NAME &&
+              site.data.customerValues?.EMAIL,
           ),
+        },
+        {
+          label: 'Services described',
+          done: Boolean(site.data.customerValues?.SERVICES?.trim()),
+        },
+        {
+          label: 'Custom domain saved (optional)',
+          done: Boolean(site.data.custom_domain),
         },
       ]
     : []
 
   async function handleManageBilling() {
+    if (!site || billingRequest.current) return
+    billingRequest.current = true
     setBillingLoading(true)
     setBillingError('')
     try {
-      const res = await fetch('/api/stripe/portal', {
+      const response = await fetch('/api/stripe/portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug: site?.slug }),
+        body: JSON.stringify({ slug: site.slug }),
       })
-      if (!res.ok) {
-        const body = (await res.json()) as { error?: string }
-        setBillingError(body.error ?? 'Unable to open billing portal')
-        return
-      }
-      const { url } = (await res.json()) as { url: string }
-      window.location.href = url
-    } catch {
-      setBillingError('Network error — please try again.')
+      const result = await response.json().catch(() => ({}))
+      if (!response.ok)
+        throw new Error(
+          typeof result.error === 'string'
+            ? result.error
+            : 'Billing could not be opened. Please try again.',
+        )
+      if (!isStripeBillingPortalUrl(result.url))
+        throw new Error(
+          'The secure Stripe billing link could not be verified. Please try again.',
+        )
+      window.location.assign(result.url)
+    } catch (problem) {
+      setBillingError(
+        problem instanceof Error
+          ? problem.message
+          : 'Billing could not be opened. Please try again.',
+      )
     } finally {
+      billingRequest.current = false
       setBillingLoading(false)
     }
   }
 
   async function handleSignOut() {
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = '/'
+    if (signingOut) return
+    setSigningOut(true)
+    setAccountError('')
+    try {
+      const { error } = await createClient().auth.signOut()
+      if (error) throw error
+      window.location.assign('/')
+    } catch {
+      setAccountError('Sign out could not be completed. Please try again.')
+      setSigningOut(false)
+    }
   }
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <Image src="/logo.png" alt="DailyClarity" width={36} height={36} className="h-8 w-8" />
-            <span className="text-xl font-bold text-white tracking-[0.12em] uppercase hidden sm:block">
-              Daily<span className="text-cyan-300">Clarity</span>
-            </span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-slate-400 hidden sm:block">{userEmail}</span>
+    <main className="min-h-screen px-4 pb-20 pt-28 sm:px-6">
+      <div className="mx-auto max-w-6xl space-y-7">
+        <header className="flex flex-wrap items-start justify-between gap-5">
+          <div className="space-y-3">
+            <span className="signal-chip">Your DailyClarity account</span>
+            <h1 className="text-4xl font-bold sm:text-5xl">My websites</h1>
+            <p className="max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
+              Your website, content, enquiries, and subscription. Choose what
+              you want to work on.
+            </p>
+          </div>
+          <div className="max-w-full space-y-2 text-right">
+            <p className="break-all text-xs text-slate-400">{userEmail}</p>
             <button
+              type="button"
               onClick={handleSignOut}
-              className="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-[0.15em] text-slate-300 hover:text-white hover:bg-white/10 border border-white/10 transition-all"
+              disabled={signingOut}
+              className={button}
             >
-              Sign out
+              {signingOut ? 'Signing out…' : 'Sign out'}
             </button>
           </div>
-        </div>
-      </nav>
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white">My Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">Manage your DailyClarity website, billing, and settings.</p>
-          {sites.length > 1 && (
-            <nav aria-label="Your websites" className="mt-5 flex flex-wrap gap-2">
-              {sites.map((candidate) => (
-                <Link
-                  key={candidate.slug}
-                  href={`/dashboard?site=${encodeURIComponent(candidate.slug)}`}
-                  aria-current={candidate.slug === site?.slug ? 'page' : undefined}
-                  className={`rounded-lg border px-3 py-2 text-sm transition-colors ${
-                    candidate.slug === site?.slug
-                      ? 'border-cyan-400/60 bg-cyan-500/15 text-cyan-100'
-                      : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10'
-                  }`}
-                >
-                  {candidate.name}
-                </Link>
-              ))}
-            </nav>
-          )}
-        </div>
+        </header>
+        {accountError && (
+          <p
+            role="alert"
+            className="rounded-xl border border-amber-300/30 bg-amber-300/10 p-4 text-sm text-amber-100"
+          >
+            {accountError}
+          </p>
+        )}
+        {sites.length > 1 && (
+          <nav aria-label="Your websites" className="flex flex-wrap gap-2">
+            {sites.map((candidate) => (
+              <Link
+                key={candidate.slug}
+                href={`/dashboard?site=${encodeURIComponent(candidate.slug)}`}
+                aria-current={
+                  candidate.slug === site?.slug ? 'page' : undefined
+                }
+                className={`max-w-full break-words rounded-xl border px-4 py-3 text-sm font-semibold ${candidate.slug === site?.slug ? 'border-cyan-300/50 bg-cyan-300/10 text-cyan-100' : 'border-white/10 text-slate-300 hover:bg-white/10'}`}
+              >
+                {candidate.name}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {!site ? (
-          /* ── Empty state ── */
-          <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-12 text-center">
-            <div className="w-16 h-16 bg-cyan-500/10 rounded-full flex items-center justify-center mx-auto mb-5">
-              <svg className="w-8 h-8 text-cyan-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">You don&apos;t have a site yet</h2>
-            <p className="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-              Start a guided, editable wellness website preview with no blank-canvas setup.
+          <section className={`${card} py-12 text-center`}>
+            <h2 className="text-3xl font-bold">
+              Your next website starts here.
+            </h2>
+            <p className="mx-auto mt-4 max-w-md text-sm leading-relaxed text-slate-300">
+              No websites are linked to this account yet. Build a free preview,
+              or sign in with the email you used at checkout to find a purchased
+              site.
             </p>
-            <Link
-              href="/preview-your-business"
-              className="inline-flex items-center gap-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-6 py-3 rounded-xl text-sm uppercase tracking-[0.15em] transition-all"
-            >
-              Preview your business
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            {/* ── Site status card ── */}
-            <div className="lg:col-span-2 bg-slate-900/60 border border-white/10 rounded-2xl p-6">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h2 className="text-lg font-bold text-white">{site.data.customerValues?.BUSINESS_NAME ?? site.slug}</h2>
-                  <a
-                    href={siteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-cyan-400 hover:text-cyan-300 text-sm flex items-center gap-1 mt-0.5 transition-colors"
-                  >
-                    {siteUrl}
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
-                <StatusBadge status={site.status} />
-              </div>
-
-              <div className="flex flex-wrap gap-3 mt-5">
-                {site.data.niche && site.data.template && (
-                  <Link
-                    href={`/templates/${site.data.niche}/${site.data.template}?portalSlug=${site.slug}`}
-                    className="inline-flex items-center gap-1.5 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 rounded-lg border border-cyan-500/30 transition-all"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                    </svg>
-                    Edit your site
-                  </Link>
-                )}
-                <Link
-                  href={`/portal?slug=${encodeURIComponent(site.slug)}`}
-                  className="inline-flex items-center gap-1.5 bg-white/5 hover:bg-white/10 text-slate-300 text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2 rounded-lg border border-white/10 transition-all"
-                >
-                  Open portal
-                </Link>
-              </div>
-            </div>
-
-            {/* ── Launch checklist ── */}
-            <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-6">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-400 mb-3">Launch checklist</h2>
-              <ul>
-                {checklist.map((item) => (
-                  <ChecklistItem key={item.label} done={item.done} label={item.label} />
-                ))}
-              </ul>
-              <p className="text-xs text-slate-500 mt-3">
-                {checklist.filter((i) => i.done).length}/{checklist.length} complete
-              </p>
-            </div>
-
-            {/* ── Billing card ── */}
-            <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-6">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-400 mb-4">Billing</h2>
-              {plan ? (
-                <>
-                  <div className="flex items-baseline gap-1 mb-1">
-                    <span className="text-2xl font-bold text-white">${plan.price}</span>
-                    <span className="text-slate-400 text-sm">/mo</span>
-                  </div>
-                  <p className="text-slate-300 text-sm mb-4 font-medium">{plan.name} plan</p>
-                  {billingError && (
-                    <p className="text-red-300 text-xs mb-3">{billingError}</p>
-                  )}
-                  <button
-                    onClick={handleManageBilling}
-                    disabled={billingLoading}
-                    className="w-full bg-white/10 hover:bg-white/15 disabled:opacity-50 text-white text-xs font-semibold uppercase tracking-[0.12em] px-4 py-2.5 rounded-lg border border-white/10 transition-all flex items-center justify-center gap-2"
-                  >
-                    {billingLoading ? (
-                      <svg className="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                      </svg>
-                    ) : null}
-                    Manage billing
-                  </button>
-                </>
-              ) : (
-                <p className="text-slate-400 text-sm">Contact <a href="mailto:support@dailyclarity.org" className="text-cyan-400">support</a> to manage billing.</p>
-              )}
-            </div>
-
-            {/* ── Custom domain card ── */}
-            <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-6">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-400 mb-4">Custom domain</h2>
-              {customDomain ? (
-                <div>
-                  <p className="text-white font-medium text-sm mb-1">{customDomain}</p>
-                  <p className="text-slate-400 text-xs mb-4">
-                    This domain is saved for your site. Check DNS status in the portal before announcing it.
-                  </p>
-                </div>
-              ) : (
-                <div>
-                  <p className="text-slate-400 text-sm mb-4">No custom domain yet. Point your own domain to your DailyClarity site.</p>
-                  <Link
-                    href={`/portal?slug=${encodeURIComponent(site.slug)}#domain`}
-                    className="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-xs font-semibold uppercase tracking-[0.12em] transition-colors"
-                  >
-                    Connect domain
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                </div>
-              )}
-            </div>
-
-            {/* ── Image library card ── */}
-            <div className="bg-slate-900/60 border border-white/10 rounded-2xl p-6">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-400 mb-4">Image library</h2>
-              <p className="text-slate-400 text-sm mb-4">View and manage the photos on your website.</p>
-              <Link
-                href={`/portal?slug=${encodeURIComponent(site.slug)}`}
-                className="inline-flex items-center gap-1.5 text-cyan-400 hover:text-cyan-300 text-xs font-semibold uppercase tracking-[0.12em] transition-colors"
-              >
-                View &amp; manage images
-                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Link href="/preview-your-business" className="cta-button">
+                Create a free preview
+              </Link>
+              <Link href="/portal" className={button}>
+                Open a welcome-email link
               </Link>
             </div>
-
-            {/* ── Account settings ── */}
-            <div className="lg:col-span-3 bg-slate-900/60 border border-white/10 rounded-2xl p-6">
-              <h2 className="text-sm font-bold uppercase tracking-[0.15em] text-slate-400 mb-4">Account</h2>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-slate-300">Signed in as</p>
-                  <p className="text-white font-medium">{userEmail}</p>
+          </section>
+        ) : (
+          <>
+            <section
+              aria-label="Selected website"
+              className="rounded-2xl border border-cyan-300/20 bg-gradient-to-br from-cyan-950/50 to-slate-900 p-6 sm:p-8"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <p className="text-xs uppercase tracking-widest text-slate-400">
+                    Your website
+                  </p>
+                  <h2 className="mt-2 break-words text-3xl font-bold">
+                    {site.data.customerValues?.BUSINESS_NAME || site.slug}
+                  </h2>
+                  {siteUrl ? (
+                    <a
+                      href={siteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-block break-all text-sm text-cyan-200 underline underline-offset-4"
+                    >
+                      {siteUrl} ↗
+                    </a>
+                  ) : (
+                    <p className="mt-3 text-sm text-slate-400">
+                      Your website address will appear after deployment is
+                      confirmed.
+                    </p>
+                  )}
                 </div>
-                <button
-                  onClick={handleSignOut}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.15em] text-slate-300 hover:text-white hover:bg-white/10 border border-white/10 transition-all"
+                <span
+                  className={`rounded-full border px-3 py-1.5 text-xs font-semibold ${published ? 'border-emerald-300/30 bg-emerald-300/10 text-emerald-200' : 'border-amber-300/30 bg-amber-300/10 text-amber-100'}`}
                 >
-                  Sign out
-                </button>
+                  {stateLabel}
+                </span>
               </div>
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300">
+                {site.status === 'billing_suspended'
+                  ? 'Publishing is paused while billing needs attention. Review your payment method and invoices below.'
+                  : published
+                    ? 'Keep your content current, review new enquiries, and check changes on your live website.'
+                    : 'Prepare your website content while publishing is completed. Contact support if setup needs attention.'}
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link href={portalHref} className="cta-button">
+                  Manage website
+                </Link>
+                {editorHref && (
+                  <Link href={editorHref} className={button}>
+                    Open visual editor
+                  </Link>
+                )}
+              </div>
+            </section>
+
+            <section
+              aria-label="Website tools"
+              className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {[
+                {
+                  title: 'Business & services',
+                  body: 'Update your public contact details, service descriptions, and website copy.',
+                  anchor: 'details',
+                  action: 'Edit website content',
+                },
+                {
+                  title: 'Website enquiries',
+                  body: 'Read saved contact-form messages, even when an email notification was not sent.',
+                  anchor: 'inbox',
+                  action: 'Open enquiries',
+                },
+                {
+                  title: 'Images & design',
+                  body: 'Upload your photos and place them in supported slots using the visual editor.',
+                  anchor: 'images',
+                  action: 'Manage website images',
+                },
+              ].map((item) => (
+                <Link
+                  key={item.anchor}
+                  href={`${portalHref}#${item.anchor}`}
+                  className={`${card} group transition hover:border-cyan-300/40 hover:bg-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300`}
+                >
+                  <h2 className="text-xl font-bold group-hover:text-cyan-200">
+                    {item.title}
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                    {item.body}
+                  </p>
+                  <span className="mt-5 inline-block text-sm font-semibold text-cyan-200">
+                    {item.action} →
+                  </span>
+                </Link>
+              ))}
+            </section>
+
+            <WebsiteServices site={site} context="dashboard" />
+
+            <div className="grid gap-5 md:grid-cols-3">
+              <section id="billing" className={`${card} scroll-mt-24`}>
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                  Plan & billing
+                </p>
+                <h2 className="mt-3 text-2xl font-bold">
+                  {plan?.name || 'Website subscription'}
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                  Check current charges, trial terms, invoices, and your payment
+                  method in Stripe.
+                </p>
+                {billingError && (
+                  <p role="alert" className="mt-4 text-sm text-amber-200">
+                    {billingError}
+                  </p>
+                )}
+                {site.data.stripe_customer_id ? (
+                  <button
+                    type="button"
+                    onClick={handleManageBilling}
+                    disabled={billingLoading}
+                    className={`${button} mt-5 w-full`}
+                  >
+                    {billingLoading
+                      ? 'Opening secure billing…'
+                      : 'Manage billing'}
+                  </button>
+                ) : (
+                  <p className="mt-4 text-sm text-slate-400">
+                    Billing is not linked yet.{' '}
+                    <Link href="/contact" className="text-cyan-200 underline">
+                      Contact support
+                    </Link>{' '}
+                    for account help.
+                  </p>
+                )}
+                {plan?.managedService && (
+                  <p className="mt-4 text-xs leading-relaxed text-slate-400">
+                    Managed ads and security work is scoped and delivered by our
+                    team; timing is confirmed by email.
+                  </p>
+                )}
+              </section>
+              <section className={card}>
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                  Website address
+                </p>
+                <h2 className="mt-3 text-xl font-bold">Your domain</h2>
+                <p className="mt-3 break-all text-sm text-slate-200">
+                  {site.data.custom_domain ||
+                    'Use your included address or connect your own domain.'}
+                </p>
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">
+                  Saving a domain does not confirm DNS or HTTPS. Check both
+                  before sharing it.
+                </p>
+                <Link
+                  href={`${portalHref}#domain`}
+                  className={`${button} mt-5`}
+                >
+                  {site.data.custom_domain
+                    ? 'Review domain setup'
+                    : 'Connect a domain'}
+                </Link>
+              </section>
+              <section className={card}>
+                <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                  Website details
+                </p>
+                <h2 className="mt-3 text-xl font-bold">Your next steps</h2>
+                <ul className="mt-4 space-y-3">
+                  {checklist.map((item) => (
+                    <li
+                      key={item.label}
+                      className="flex items-start gap-2 text-sm leading-relaxed"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className={
+                          item.done ? 'text-emerald-300' : 'text-slate-400'
+                        }
+                      >
+                        {item.done ? '✓' : '○'}
+                      </span>
+                      <span className="text-slate-300">
+                        <span className="sr-only">
+                          {item.done ? 'Complete: ' : 'Not yet complete: '}
+                        </span>
+                        {item.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-4 text-xs leading-relaxed text-slate-400">
+                  Send a test enquiry from the live website to check message
+                  collection and email notification separately.
+                </p>
+              </section>
             </div>
-          </div>
+          </>
         )}
-      </main>
-    </div>
+      </div>
+    </main>
   )
 }

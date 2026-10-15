@@ -29,13 +29,16 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<{ site?: string }>
 }) {
+  const requestedSite = (await searchParams).site
+  const requestedSlug = typeof requestedSite === 'string' ? requestedSite.trim().toLowerCase() : undefined
+  const dashboardPath = requestedSlug ? `/dashboard?site=${encodeURIComponent(requestedSlug)}` : '/dashboard'
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login?next=/dashboard')
+    redirect(`/login?next=${encodeURIComponent(dashboardPath)}`)
   }
 
   // Use service role to read portal_sites (bypasses RLS for server-side render).
@@ -55,7 +58,6 @@ export default async function DashboardPage({
     .eq('owner_id', user.id)
     .order('slug', { ascending: true })
 
-  const requestedSlug = (await searchParams).site?.trim().toLowerCase()
   const sites = (ownedSites || []) as PortalSiteData[]
   const site = sites.find((candidate) => candidate.slug === requestedSlug) || sites[0] || null
 

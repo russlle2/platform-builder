@@ -70,5 +70,7 @@ test('deployment schema gate fails closed without a configured credential', () =
   const result = verify({ env: { SUPABASE_SERVICE_ROLE_KEY: '' } })
   assert.equal(result.status, 1)
   assert.match(result.stderr, /configuration is incomplete/)
+  assert.match(result.stderr, /Missing: SUPABASE_SERVICE_ROLE_KEY\./)
+  assert.doesNotMatch(result.stderr, /fixture-secret|stagingref\.supabase\.co/)
   assert.deepEqual(result.calls, [])
 })

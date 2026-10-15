@@ -16,14 +16,17 @@ export async function getAuthenticatedPortalUser(): Promise<User | null> {
 }
 
 /**
- * Bind legacy/unclaimed portal rows to a verified account once, then authorize
+ * Bind legacy/unclaimed portal rows to a confirmed email once, then authorize
  * strictly by the immutable Auth user ID. An email change or later email reuse
  * can no longer transfer a claimed site or its Stripe customer access.
  */
 export async function claimPortalSitesForUser(
   serviceClient: SupabaseClient,
-  user: Pick<User, 'id' | 'email'>,
+  user: Pick<User, 'id' | 'email' | 'email_confirmed_at'>,
 ): Promise<void> {
+  // A valid Auth session alone does not prove possession of its email address.
+  // Use the server-verified Auth field, never user-editable user_metadata.
+  if (!user.email_confirmed_at) return
   const email = user.email?.trim().toLowerCase()
   if (!email) return
   const { error } = await serviceClient
@@ -39,7 +42,7 @@ export async function isAuthenticatedPortalOwnerForSlug(
   slug: string,
 ): Promise<boolean> {
   const user = await getAuthenticatedPortalUser()
-  if (!user?.email) return false
+  if (!user?.id) return false
   await claimPortalSitesForUser(serviceClient, user)
   const { data, error } = await serviceClient
     .from('portal_sites')

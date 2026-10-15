@@ -18,7 +18,7 @@ test('every committed migration replays in order on an empty application databas
       create role service_role bypassrls;
       create schema auth;
       create function auth.uid() returns uuid language sql stable as $$ select null::uuid $$;
-      create table auth.users (id uuid primary key, email text);
+      create table auth.users (id uuid primary key, email text, email_confirmed_at timestamptz);
       create schema storage;
       create table storage.buckets (
         id text primary key, name text, public boolean,
@@ -45,6 +45,29 @@ test('every committed migration replays in order on an empty application databas
     assert.deepEqual(orderPermissions, { broad_update: false, measured_update: true, financial_update: false })
     const result = await db.query('select public.launch_schema_readiness() as readiness')
     assert.deepEqual(result.rows[0].readiness, { ready: true, schemaVersion: '20260903.4' })
+    // A trusted Auth user can still have an unconfirmed email. Initial portal
+    // ownership must wait for confirmation, including when it arrives later.
+    const ownerId = '11111111-1111-4111-8111-111111111111'
+    await db.exec(`
+      insert into public.portal_sites(slug,owner_email) values ('confirmation-fixture','owner@example.test');
+      insert into auth.users(id,email) values ('${ownerId}','owner@example.test');
+    `)
+    assert.equal((await db.query("select owner_id from public.portal_sites where slug='confirmation-fixture'")).rows[0].owner_id, null)
+    assert.equal((await db.query(`select email from public.accounts where id='${ownerId}'`)).rows[0].email, 'owner@example.test', 'account synchronization remains intact before confirmation')
+    await db.exec(`update auth.users set email_confirmed_at=now() where id='${ownerId}'`)
+    assert.equal((await db.query("select owner_id from public.portal_sites where slug='confirmation-fixture'")).rows[0].owner_id, ownerId)
+    await db.exec(`
+      insert into public.portal_sites(slug,owner_email) values ('changed-email-fixture','changed@example.test');
+      update auth.users set email='changed@example.test',email_confirmed_at=null where id='${ownerId}';
+    `)
+    assert.equal((await db.query("select owner_id from public.portal_sites where slug='changed-email-fixture'")).rows[0].owner_id, null)
+    assert.equal((await db.query("select owner_id from public.portal_sites where slug='confirmation-fixture'")).rows[0].owner_id, ownerId, 'email changes cannot transfer previously assigned ownership')
+    await db.exec(await readFile(`${directory}/20261015004242_require_confirmed_email_for_portal_claims.sql`, 'utf8'))
+    await db.exec(`update auth.users set email_confirmed_at=now() where id='${ownerId}'`)
+    assert.equal((await db.query("select owner_id from public.portal_sites where slug='changed-email-fixture'")).rows[0].owner_id, ownerId, 'the additive fix is safe to reapply')
+    for (const role of ['anon', 'authenticated']) {
+      assert.equal((await db.query(`select has_function_privilege('${role}','public.sync_auth_user_account()','EXECUTE') as allowed`)).rows[0].allowed, false)
+    }
     const insecure = await db.query(`
       select relname from pg_class c join pg_namespace n on n.oid = c.relnamespace
       where n.nspname = 'public' and c.relkind = 'r' and not c.relrowsecurity

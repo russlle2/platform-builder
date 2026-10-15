@@ -75,6 +75,17 @@ describe('template checkout draft-image gate', () => {
     mocks.getTemplate.mockResolvedValue({ slug: 'serene' })
   })
 
+  it('pauses new paid sales before any Stripe or database action', async () => {
+    vi.stubEnv('DAILYCLARITY_SALES_PAUSED', 'true')
+    try {
+      expect((await checkoutPost(requestWithImages([]))).status).toBe(503)
+      expect(mocks.createStripeClient).not.toHaveBeenCalled()
+      expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
   it('rejects an expired upload session before any Stripe or database write', async () => {
     const response = await checkoutPost(requestWithImages([OWNER_A]))
 
@@ -85,6 +96,18 @@ describe('template checkout draft-image gate', () => {
     })
     expect(mocks.createStripeClient).not.toHaveBeenCalled()
     expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+  })
+
+  it('does not accept a managed-service purchase without an operator inbox', async () => {
+    vi.stubEnv('PLATFORM_OWNER_EMAIL', '')
+    try {
+      const response = await checkoutPost(requestWithImages([], { planKey: 'security_ads' }))
+      expect(response.status).toBe(503)
+      expect(mocks.createStripeClient).not.toHaveBeenCalled()
+      expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   it('rejects mixed draft owners before any Stripe or database write', async () => {
@@ -165,6 +188,15 @@ describe('template checkout draft-image gate', () => {
       }),
     }))
     const stripePayload = createSession.mock.calls[0]?.[0]
+    expect(stripePayload).toMatchObject({
+      billing_address_collection: 'auto',
+      phone_number_collection: { enabled: false },
+      payment_method_options: { card: { request_three_d_secure: 'automatic' } },
+      customer_email: 'owner@example.com',
+    })
+    expect(stripePayload).not.toHaveProperty('shipping_address_collection')
+    expect(stripePayload).not.toHaveProperty('payment_method_types')
+    expect(stripePayload).not.toHaveProperty('customer')
     expect(stripePayload.integration_identifier).toBe(`dc-${stripePayload.client_reference_id}`)
     expect(stripePayload.metadata.catalogRevision_n).toBe('1')
     expect(JSON.parse(stripePayload.metadata.catalogRevision_0)).toMatchObject({

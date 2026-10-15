@@ -6,10 +6,10 @@ The `/paypal-test` page creates a **$1.00 USD Sandbox order** and sends you thro
 
 You need Node 22 or 24, pnpm, and a free PayPal Developer account.
 
-The implementation is in [release PR #19](https://github.com/russlle2/platform-builder/pull/19), on `codex/legacy-catalog-rehab-20260903`. To get a separate checkout without changing an existing project:
+The implementation is on `main` (originally introduced in [release PR #19](https://github.com/russlle2/platform-builder/pull/19)). To get a separate checkout without changing an existing project:
 
 ```sh
-git clone --depth 1 --branch codex/legacy-catalog-rehab-20260903 https://github.com/russlle2/platform-builder.git dailyclarity-paypal-trial
+git clone --depth 1 --branch main https://github.com/russlle2/platform-builder.git dailyclarity-paypal-trial
 cd dailyclarity-paypal-trial
 ```
 

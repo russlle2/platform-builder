@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { createHash } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
 import { inspectLaunchCatalog } from './launch-catalog-integrity'
@@ -8,6 +9,7 @@ import {
   LAUNCH_TEMPLATE_STORE,
   REHAB_STAGING_EXPECTED_BY_NICHE,
   REHAB_STAGING_EXPECTED_TOTAL,
+  catalogManifestHash,
   loadCertifiedCatalog,
   loadRehabCatalogSnapshot,
   loadRehabStagingCatalog,
@@ -168,6 +170,7 @@ interface CatalogState {
   manifestHash?: string
   releaseSha?: string
   certificationHash?: string
+  loadFailure?: 'store-unavailable' | 'snapshot-unavailable' | 'manifest-unavailable'
 }
 
 let _catalogStatePromise: Promise<CatalogState> | null = null
@@ -189,7 +192,7 @@ function loadCatalogState(): Promise<CatalogState> {
       const store = getBlobsStore(profile.storeName)
       if (!store) {
         console.error('[niche-registry] rehabilitation staging Blob store is unavailable')
-        return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
+        return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {}, loadFailure: 'store-unavailable' }
       }
       try {
         const loaded = profile.profile === 'rehab-certified' ? await loadCertifiedCatalog(store) : await loadRehabStagingCatalog(store)
@@ -204,7 +207,7 @@ function loadCatalogState(): Promise<CatalogState> {
         }
       } catch (error) {
         console.error('[niche-registry] rehabilitation staging catalogue failed closed:', error)
-        return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
+        return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {}, loadFailure: 'snapshot-unavailable' }
       }
     }
 
@@ -236,7 +239,7 @@ function loadCatalogState(): Promise<CatalogState> {
     // 3. HTTP fallback (last resort)
     try {
       const baseUrl = templateBaseUrl()
-      if (!baseUrl) return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
+      if (!baseUrl) return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {}, loadFailure: 'manifest-unavailable' }
       const url = `${baseUrl}/_templates/${MANIFEST_RELATIVE}`
       const res = await fetch(url)
       if (res.ok) {
@@ -247,7 +250,7 @@ function loadCatalogState(): Promise<CatalogState> {
       console.error('[niche-registry] failed fetching manifest:', err)
     }
 
-    return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {} }
+    return { profile: profile.profile, storeName: profile.storeName, prefix: '', manifest: {}, loadFailure: 'manifest-unavailable' }
   })()
 
   _catalogStatePromise = request
@@ -259,7 +262,7 @@ function loadCatalogState(): Promise<CatalogState> {
     (state) => {
       if (_catalogStatePromise !== request) return
       _catalogStateExpiresAt = Date.now() + (
-        Object.keys(state.manifest).length > 0
+        Object.keys(state.manifest ?? {}).length > 0
           ? MANIFEST_CACHE_TTL_MS
           : EMPTY_MANIFEST_CACHE_TTL_MS
       )
@@ -335,7 +338,8 @@ function templateFromCatalogState(
   nicheSlug: string,
   templateSlug: string,
 ): TemplateMeta | null {
-  const value = (state.manifest[nicheSlug] || []).find((template) => template.slug === templateSlug)
+  const entries = state.manifest?.[nicheSlug]
+  const value = Array.isArray(entries) ? entries.find((template) => template?.slug === templateSlug) : undefined
   if (!isPublishableTemplateMeta(value, state.profile)) return null
   if (
     value.validation?.contractVersion === 3 &&
@@ -353,6 +357,14 @@ function templateFromCatalogState(
 interface TemplateCaches {
   all: Map<string, TemplateMeta[]>
   gallery: Map<string, TemplateMeta[]>
+  diagnostics: {
+    sourceTemplates: number
+    validatedTemplates: number
+    rejectedTemplates: number
+    malformedNiches: number
+    cause: 'ready' | 'store-unavailable' | 'snapshot-unavailable' | 'manifest-unavailable'
+      | 'manifest-malformed' | 'manifest-empty' | 'entries-unvalidated' | 'catalogue-contract-mismatch'
+  }
 }
 
 export function dedupeTemplatesForGallery(templates: readonly TemplateMeta[]): TemplateMeta[] {
@@ -366,12 +378,19 @@ export function dedupeTemplatesForGallery(templates: readonly TemplateMeta[]): T
   })
 }
 
-async function getCaches(): Promise<TemplateCaches> {
-  const state = await loadCatalogState()
-  const manifest = state.manifest
+async function getCaches(state?: CatalogState): Promise<TemplateCaches> {
+  state ??= await loadCatalogState()
+  const validRoot = state.manifest && typeof state.manifest === 'object' && !Array.isArray(state.manifest)
+  const manifest = validRoot ? state.manifest : {}
   const all = new Map<string, TemplateMeta[]>()
+  let sourceTemplates = 0
+  let validatedTemplates = 0
+  let malformedNiches = 0
   for (const nicheSlug of Object.keys(NICHE_META)) {
-    const templates = manifest[nicheSlug] || []
+    const sourceEntries = manifest[nicheSlug]
+    if (sourceEntries !== undefined && !Array.isArray(sourceEntries)) malformedNiches += 1
+    const templates = Array.isArray(sourceEntries) ? sourceEntries : []
+    sourceTemplates += templates.length
     const publishable = templates
       .filter((template) => isPublishableTemplateMeta(template, state.profile))
       .map((template) => (
@@ -379,6 +398,7 @@ async function getCaches(): Promise<TemplateCaches> {
           ? { ...template, catalogHash: state.catalogHash, manifestHash: state.manifestHash }
           : template
       ))
+    validatedTemplates += publishable.length
     if (publishable.length !== templates.length) {
       console.warn(
         `[niche-registry] quarantined ${templates.length - publishable.length} ` +
@@ -424,7 +444,22 @@ async function getCaches(): Promise<TemplateCaches> {
     // deterministic representative of each design appears in the gallery.
     gallery.set(nicheSlug, dedupeTemplatesForGallery(templates))
   }
-  return { all, gallery }
+  return {
+    all,
+    gallery,
+    diagnostics: {
+      sourceTemplates,
+      validatedTemplates,
+      rejectedTemplates: sourceTemplates - validatedTemplates,
+      malformedNiches,
+      cause: state.loadFailure
+        ?? (!validRoot || malformedNiches ? 'manifest-malformed'
+          : integrity.ready ? 'ready'
+            : sourceTemplates === 0 ? 'manifest-empty'
+              : validatedTemplates === 0 ? 'entries-unvalidated'
+                : 'catalogue-contract-mismatch'),
+    },
+  }
 }
 /**
  * Fail-closed catalog boundary. Only manifests emitted by the audited uploader
@@ -607,7 +642,8 @@ export async function getTemplateCatalogReadiness() {
   _catalogStateExpiresAt = 0
   const profile = resolveTemplateCatalogProfile(process.env)
   const state = await loadCatalogState()
-  const cache = (await getCaches()).all
+  const caches = await getCaches(state)
+  const cache = caches.all
   const niches = [...cache.entries()].map(([slug, templates]) => ({
     slug, templates: templates.map((template) => ({ slug: template.slug, artifactSha256: template.artifactSha256 || '' })),
   }))
@@ -622,8 +658,32 @@ export async function getTemplateCatalogReadiness() {
     actualTotal, expectedTotal: REHAB_STAGING_EXPECTED_TOTAL, actualByNiche,
     expectedByNiche: REHAB_STAGING_EXPECTED_BY_NICHE, issues,
   }
-  return { ...integrity, profile: profile.profile, catalogHash: state.catalogHash ?? null, manifestHash: state.manifestHash ?? null,
-    certificationHash: state.certificationHash ?? null, catalogueReleaseSha: state.releaseSha ?? null }
+  if (profile.profile === 'launch') {
+    // Readiness binds the complete loaded document, not just the entries left
+    // after filtering. Do not attest an approved subset of a malformed source.
+    const manifestKeys = state.manifest && typeof state.manifest === 'object' && !Array.isArray(state.manifest)
+      ? Object.keys(state.manifest) : []
+    if (caches.diagnostics.rejectedTemplates || caches.diagnostics.malformedNiches
+      || manifestKeys.some((niche) => !Object.prototype.hasOwnProperty.call(NICHE_META, niche))) {
+      integrity.ready = false
+      integrity.issues.push('Active launch manifest contains rejected entries or unexpected niches')
+    }
+    const identities = niches.flatMap(({ slug: niche, templates }) => templates.map(({ slug, artifactSha256 }) => ({
+      niche, slug, sha256: artifactSha256,
+    }))).sort((a, b) => `${a.niche}/${a.slug}`.localeCompare(`${b.niche}/${b.slug}`))
+    const reportHashes = new Set([...cache.values()].flat().map((template) => template.catalogReportSha256))
+    // These hashes describe this validated load. They are not snapshot locators
+    // or a full-catalogue certification and are never added to template metadata.
+    return {
+      ...integrity, diagnostics: caches.diagnostics, profile: profile.profile,
+      catalogHash: integrity.ready ? createHash('sha256').update(JSON.stringify(identities)).digest('hex') : null,
+      manifestHash: integrity.ready ? catalogManifestHash(state.manifest) : null,
+      curatedReportHash: integrity.ready && reportHashes.size === 1 ? [...reportHashes][0] ?? null : null,
+      certificationHash: null, catalogueReleaseSha: null,
+    }
+  }
+  return { ...integrity, diagnostics: caches.diagnostics, profile: profile.profile, catalogHash: state.catalogHash ?? null, manifestHash: state.manifestHash ?? null,
+    curatedReportHash: null, certificationHash: state.certificationHash ?? null, catalogueReleaseSha: state.releaseSha ?? null }
 }
 
 function safeTemplateKey(...parts: string[]): string | null {

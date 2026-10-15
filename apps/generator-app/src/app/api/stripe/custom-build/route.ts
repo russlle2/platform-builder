@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { areSalesPaused } from '@/lib/sales-pause'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import {
@@ -10,10 +11,13 @@ import {
 import { jsonTooManyRequests, rateLimitByIp } from '@/lib/server-auth'
 import { getTrustedSiteOrigin } from '@/lib/site-origin'
 import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
+import { stripeCheckoutExperience } from '@/lib/stripe-checkout-experience'
 import {
   CUSTOM_BUILD_CHECKOUT_TYPE,
   isDedicatedSupabaseProjectConfigured,
+  isStripeModeAllowed,
 } from '@/lib/stripe-runtime'
+import { readBoundedJson } from '@/lib/bounded-json'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -35,12 +39,14 @@ async function resolveCustomBuildPrice(stripe: Stripe): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
+  if (areSalesPaused()) return NextResponse.json({ error: 'Custom-build checkout is temporarily unavailable.' }, { status: 503 })
   if (!rateLimitByIp(req, 'custom-build-checkout', 5, 10 * 60 * 1000)) {
     return jsonTooManyRequests()
   }
 
   const customBuildRuntimeReady = Boolean(
     stripeSecretKey &&
+    isStripeModeAllowed(stripeSecretKey) &&
     process.env.STRIPE_WEBHOOK_SECRET &&
     (process.env.STRIPE_FULFILLMENT_WORKER_SECRET?.trim().length || 0) >= 32 &&
     process.env.STRIPE_PRICE_CUSTOM_BUILD &&
@@ -63,7 +69,14 @@ export async function POST(req: NextRequest) {
   })
 
   try {
-    const parsed = validateCustomBuildInput(await req.json())
+    const body = await readBoundedJson(req, 64_000)
+    if (!body.ok) {
+      return NextResponse.json(
+        { error: body.reason === 'too_large' ? 'Your project brief is too large.' : 'Your project brief is invalid.' },
+        { status: body.reason === 'too_large' ? 413 : 400 },
+      )
+    }
+    const parsed = validateCustomBuildInput(body.value)
     if (!parsed.ok) {
       return NextResponse.json({ error: parsed.error }, { status: 400 })
     }
@@ -101,6 +114,7 @@ export async function POST(req: NextRequest) {
     if (!origin) throw new Error('checkout_redirect_not_configured')
 
     const session = await stripe.checkout.sessions.create({
+      ...stripeCheckoutExperience(),
       mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
       customer_email: parsed.data.email,

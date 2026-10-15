@@ -52,8 +52,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: '/og-image.png',
-        width: 1200,
-        height: 630,
+        width: 1536,
+        height: 1024,
         alt: 'DailyClarity — Professional Website Templates for Service Businesses',
       },
     ],
@@ -63,8 +63,8 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   icons: {
-    icon: '/icon.png',
-    apple: '/icon.png',
+    icon: [{ url: '/favicon-64.png', sizes: '64x64', type: 'image/png' }],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   robots: {
     index: allowSearchIndexing,

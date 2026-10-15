@@ -1,10 +1,11 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { areSalesPaused } from '@/lib/sales-pause'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { getStripeTrialDays } from '@/lib/platform-config'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
-import { getPlan, normalizePlanKey } from '@/lib/plans'
+import { getPlan, isManagedPlan, normalizePlanKey } from '@/lib/plans'
 import { getTrustedSiteOrigin } from '@/lib/site-origin'
 import { sanitizeImageSwapMap } from '@/lib/image-swaps'
 import { validateCheckoutImageSession } from '@/lib/checkout-image-session'
@@ -15,6 +16,7 @@ import {
 import { getTemplateAtCatalogRevision } from '@/lib/templates/niche-registry'
 import { buildCheckoutTemplateState } from '@/lib/customer-site-state'
 import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
+import { stripeCheckoutExperience } from '@/lib/stripe-checkout-experience'
 import { readBoundedJson } from '@/lib/bounded-json'
 import {
   TEMPLATE_CHECKOUT_TYPE,
@@ -54,6 +56,7 @@ function randomSuffix(): string {
 }
 
 export async function POST(req: NextRequest) {
+  if (areSalesPaused()) return NextResponse.json({ error: 'Checkout is temporarily unavailable.' }, { status: 503 })
   const allowed = rateLimitByIp(req, 'checkout', 10, 10 * 60 * 1000)
   if (!allowed) return jsonTooManyRequests()
 
@@ -96,6 +99,9 @@ export async function POST(req: NextRequest) {
         { error: 'Invalid or unknown plan.' },
         { status: 400 }
       )
+    }
+    if (isManagedPlan(canonicalPlan) && !process.env.PLATFORM_OWNER_EMAIL?.trim()) {
+      return NextResponse.json({ error: 'Managed-service checkout is temporarily unavailable.' }, { status: 503 })
     }
 
     // Validate required profile fields
@@ -281,6 +287,7 @@ export async function POST(req: NextRequest) {
     }
 
     const session = await stripe.checkout.sessions.create({
+      ...stripeCheckoutExperience(),
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,

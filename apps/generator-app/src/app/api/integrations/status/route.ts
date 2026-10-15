@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPlatformDomain } from '@/lib/platform-config'
 import { requireInternalAdminOrThrow } from '@/lib/server-auth'
+import { areSalesPaused } from '@/lib/sales-pause'
 import {
   getTemplateFulfillmentConfigIssues,
   isDedicatedSupabaseProjectConfigured,
@@ -71,7 +72,7 @@ export async function GET(req: NextRequest) {
   const netlifyReady = hasNetlifyToken && hasPlatformDomain
   const portalSigningReady = !!process.env.PORTAL_TOKEN_SECRET
 
-  let catalogIntegrity: LaunchCatalogIntegrity & { profile?: string; catalogHash?: string | null; manifestHash?: string | null; certificationHash?: string | null; catalogueReleaseSha?: string | null } = inspectLaunchCatalog([])
+  let catalogIntegrity: LaunchCatalogIntegrity & { profile?: string; catalogHash?: string | null; manifestHash?: string | null; curatedReportHash?: string | null; certificationHash?: string | null; catalogueReleaseSha?: string | null } = inspectLaunchCatalog([])
   try {
     catalogIntegrity = await getTemplateCatalogReadiness()
   } catch (error) {
@@ -81,6 +82,7 @@ export async function GET(req: NextRequest) {
   const templateCatalogReady = catalogIntegrity.ready
 
   const missingRequirements = [
+    ...(areSalesPaused() ? ['paid_sales_paused'] : []),
     ...getTemplateFulfillmentConfigIssues(),
     ...(!hasStripePriceBasic ? ['STRIPE_PRICE_BASIC'] : []),
     ...(!hasStripePriceGrowth ? ['STRIPE_PRICE_GROWTH'] : []),
@@ -88,7 +90,9 @@ export async function GET(req: NextRequest) {
     ...(!templateCatalogReady ? ['validated_template_catalog'] : []),
   ]
   const checkoutReady = missingRequirements.length === 0
+  const fulfillmentReady = missingRequirements.every((requirement) => requirement === 'paid_sales_paused')
   const customBuildCheckoutReady =
+    !areSalesPaused() &&
     hasStripeSecret &&
     hasStripeWebhook &&
     stripeWorkerReady &&
@@ -173,12 +177,13 @@ export async function GET(req: NextRequest) {
     checkoutReady,
     templateCheckoutReady: checkoutReady,
     customBuildCheckoutReady,
-    fulfillmentReady: checkoutReady,
+    fulfillmentReady,
     emailReady: postmarkReady,
     platformDomain: getPlatformDomain(),
     deploymentSiteId: process.env.SITE_ID || null,
     deploymentReleaseSha: process.env.NEXT_PUBLIC_RELEASE_SHA || null,
-    bookingKitSalesEnabled: process.env.BOOKING_KIT_ENABLED === 'true',
+    bookingKitSalesEnabled: !areSalesPaused() && process.env.BOOKING_KIT_ENABLED === 'true',
+    salesPaused: areSalesPaused(),
     supabaseProjectRef,
     supabaseSchemaVersion: launchSchema.schemaVersion,
     bookingKitSchemaVersion: launchSchema.kitSchemaVersion,
@@ -188,6 +193,7 @@ export async function GET(req: NextRequest) {
     templateCatalogProfile: catalogIntegrity.profile ?? null,
     templateCatalogHash: catalogIntegrity.catalogHash ?? null,
     templateManifestHash: catalogIntegrity.manifestHash ?? null,
+    templateCuratedReportHash: catalogIntegrity.curatedReportHash ?? null,
     templateCertificationHash: catalogIntegrity.certificationHash ?? null,
     templateCatalogueReleaseSha: catalogIntegrity.catalogueReleaseSha ?? null,
     expectedTemplateCount: catalogIntegrity.expectedTotal,

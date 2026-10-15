@@ -3,9 +3,10 @@ import { isIP } from 'node:net'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import type Stripe from 'stripe'
 import { BOOKING_KIT_ACCESS_DAYS, BOOKING_KIT_PRICE_CENTS, type BookingKitArtifact } from './booking-kit-content'
-import { isDedicatedSupabaseProjectConfigured } from './stripe-runtime'
+import { isDedicatedSupabaseProjectConfigured, isStripeModeAllowed } from './stripe-runtime'
 import { getTrustedSiteOrigin } from './site-origin'
 import { sendEmail } from './email'
+import { areSalesPaused } from './sales-pause'
 
 export const BOOKING_KIT_LINK_MS = 60 * 60 * 1000
 export const BOOKING_KIT_CURRENCY = 'usd'
@@ -33,15 +34,11 @@ export interface BookingKitOrder {
 }
 
 export function bookingKitSalesEnabled(): boolean {
-  return process.env.BOOKING_KIT_ENABLED === 'true'
+  return !areSalesPaused() && process.env.BOOKING_KIT_ENABLED === 'true'
 }
 
 export function bookingKitStripeModeAllowed(key: string, env: NodeJS.ProcessEnv = process.env): boolean {
-  const mode = /^(?:sk|rk)_(test|live)_/.exec(key)?.[1]
-  if (!mode) return false
-  if (env.DAILYCLARITY_ENVIRONMENT === 'staging') return mode === 'test'
-  if (env.DAILYCLARITY_ENVIRONMENT === 'production' && env.NODE_ENV === 'production') return mode === 'live'
-  return env.NODE_ENV !== 'production' && env.DAILYCLARITY_ENVIRONMENT !== 'production' && mode === 'test'
+  return isStripeModeAllowed(key, env)
 }
 
 export function bookingKitDatabase(): SupabaseClient {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import Image from 'next/image'
 import { getOrCreateImageOwnerId, uploadCustomerImageFile } from '@/lib/image-swaps'
 
@@ -10,11 +10,11 @@ interface ImageUploadProps {
 }
 
 export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadProps) {
-  const [optimizeEnabled, setOptimizeEnabled] = useState(true)
   const [uploading, setUploading] = useState(false)
   const [preview, setPreview] = useState<string>(currentImage || '')
   const [error, setError] = useState<string | null>(null)
   const inputId = useId()
+  const uploadInFlight = useRef(false)
 
   useEffect(() => {
     setPreview(currentImage || '')
@@ -29,23 +29,31 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
     })
   }
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+  const uploadImage = async (file: File) => {
+    if (uploadInFlight.current) return
+    if (!['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/avif'].includes(file.type)) {
+      setError('Choose a PNG, JPG, GIF, WebP, or AVIF image.')
+      return
+    }
+    if (file.size === 0 || file.size > 4 * 1024 * 1024) {
+      setError('Choose an image smaller than 4 MB that is not empty.')
+      return
+    }
 
-    const localPreviewUrl = await toDataUrl(file)
-    setPreview(localPreviewUrl)
-
+    uploadInFlight.current = true
     setUploading(true)
     setError(null)
 
     try {
+      setPreview(await toDataUrl(file))
       const uploaded = await uploadCustomerImageFile(file, getOrCreateImageOwnerId())
       onUpload(uploaded.url)
       setPreview(uploaded.url)
-    } catch (err) {
-      setError('Image upload failed. Please check your Supabase configuration.')
+    } catch {
+      setPreview(currentImage || '')
+      setError('We could not save this image. Your previous image is unchanged. Please try again.')
     } finally {
+      uploadInFlight.current = false
       setUploading(false)
     }
   }
@@ -53,14 +61,7 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     const file = e.dataTransfer.files?.[0]
-    if (file) {
-      const input = document.createElement('input')
-      input.type = 'file'
-      const dataTransfer = new DataTransfer()
-      dataTransfer.items.add(file)
-      input.files = dataTransfer.files
-      handleFileChange({ target: input } as any)
-    }
+    if (file) void uploadImage(file)
   }
 
   return (
@@ -73,8 +74,12 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
       >
         <input
           type="file"
-          accept="image/*"
-          onChange={handleFileChange}
+          accept="image/jpeg,image/png,image/gif,image/webp,image/avif"
+          onChange={(event) => {
+            const file = event.target.files?.[0]
+            event.target.value = ''
+            if (file) void uploadImage(file)
+          }}
           disabled={uploading}
           className="hidden"
           id={inputId}
@@ -120,20 +125,12 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
         </label>
       </div>
 
-      {/* Optimize Toggle */}
+      {/* The server always optimizes accepted uploads. */}
       <div className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
         <div>
-          <label className="text-white font-medium flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={optimizeEnabled}
-              onChange={(e) => setOptimizeEnabled(e.target.checked)}
-              className="w-4 h-4"
-            />
-            Optimize Image
-          </label>
-          <p className="text-sm text-gray-400 mt-1 ml-6">
-            Automatically compress and resize for fast loading
+          <p className="text-white font-medium">Automatic image optimization</p>
+          <p className="text-sm text-gray-400 mt-1">
+            Uploaded images are compressed and resized for fast loading.
           </p>
         </div>
         <div className="text-sm text-gray-400">
@@ -155,13 +152,13 @@ export function ImageUploadWithOptimize({ onUpload, currentImage }: ImageUploadP
 
       {/* Upload Status */}
       {uploading && (
-        <div className="text-sm text-blue-400 text-center">
+        <div role="status" className="text-sm text-blue-400 text-center">
           Uploading...
         </div>
       )}
 
       {error && (
-        <div className="text-sm text-red-400 text-center">
+        <div role="alert" className="text-sm text-red-400 text-center">
           {error}
         </div>
       )}

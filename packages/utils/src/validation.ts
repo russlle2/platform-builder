@@ -29,7 +29,7 @@ export function isValidPhone(phone: string): boolean {
 /**
  * Validate required field
  */
-export function isRequired(value: any): boolean {
+export function isRequired(value: unknown): boolean {
   if (typeof value === 'string') return value.trim().length > 0
   if (Array.isArray(value)) return value.length > 0
   return value != null

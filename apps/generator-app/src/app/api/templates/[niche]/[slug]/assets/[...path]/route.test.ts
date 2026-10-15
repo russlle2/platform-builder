@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
+import { COMPILER_COMPATIBILITY_PATH, COMPILER_COMPATIBILITY_SCRIPT } from '@/lib/compiler-compatibility-runtime'
 
 const mocks = vi.hoisted(() => ({
   getTemplate: vi.fn(),
@@ -66,5 +67,46 @@ describe('hash-bound historical template assets', () => {
     })
     expect(response.status).toBe(400)
     expect(mocks.getTemplateAtCatalogSnapshot).not.toHaveBeenCalled()
+  })
+})
+
+describe('compiler compatibility runtime serving', () => {
+  beforeEach(() => vi.clearAllMocks())
+
+  it.each([false, true])('executes the exact compiler-owned v3 runtime (historical=%s)', async (historical) => {
+    const template = { ...historicalTemplate, files: ['index.html', COMPILER_COMPATIBILITY_PATH] }
+    mocks.getTemplate.mockResolvedValue(template)
+    mocks.getTemplateAtCatalogSnapshot.mockResolvedValue(template)
+    mocks.readTemplateFileBuffer.mockResolvedValue(Buffer.from(COMPILER_COMPATIBILITY_SCRIPT))
+    const response = await GET(new NextRequest('https://dailyclarity.org/asset'), {
+      params: Promise.resolve({
+        niche: 'wellness_coach', slug: 'legacy-template',
+        path: [...(historical ? ['__catalog', catalogHash, manifestHash] : []), ...COMPILER_COMPATIBILITY_PATH.split('/')],
+      }),
+    })
+    expect(response.status).toBe(200)
+    expect(response.headers.get('content-type')).toBe('application/javascript')
+    expect(response.headers.get('content-disposition')).toBeNull()
+    expect(response.headers.get('x-content-type-options')).toBe('nosniff')
+    expect(await response.text()).toBe(COMPILER_COMPATIBILITY_SCRIPT)
+  })
+
+  it.each([
+    { path: COMPILER_COMPATIBILITY_PATH, version: 3, content: `${COMPILER_COMPATIBILITY_SCRIPT}alert(1)` },
+    { path: 'assets/js/other.js', version: 3, content: COMPILER_COMPATIBILITY_SCRIPT },
+    { path: COMPILER_COMPATIBILITY_PATH, version: 2, content: COMPILER_COMPATIBILITY_SCRIPT },
+  ])('keeps untrusted JavaScript inert: $path / v$version', async ({ path, version, content }) => {
+    mocks.getTemplate.mockResolvedValue({
+      ...historicalTemplate,
+      files: [path],
+      validation: { ...historicalTemplate.validation, contractVersion: version },
+    })
+    mocks.readTemplateFileBuffer.mockResolvedValue(Buffer.from(content))
+    const response = await GET(new NextRequest('https://dailyclarity.org/asset'), {
+      params: Promise.resolve({ niche: 'wellness_coach', slug: 'legacy-template', path: path.split('/') }),
+    })
+    expect(response.headers.get('content-type')).toBe('text/plain; charset=utf-8')
+    expect(response.headers.get('content-disposition')).toBe('attachment')
+    expect(response.headers.get('x-content-type-options')).toBe('nosniff')
   })
 })

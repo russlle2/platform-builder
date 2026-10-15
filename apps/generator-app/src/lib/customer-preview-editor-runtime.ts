@@ -74,6 +74,26 @@ export function getCustomerPreviewEditorScript(page: string): string {
       }
     }
     if (!owner) owner = clickTarget.closest('[data-dc-image-id],[data-pb-image-id]');
+    // Curated v2 heroes keep a real IMG behind their authored content. Route
+    // a safe blank-surface click to that one direct child without moving the
+    // image above the text or stealing any nested control's interaction.
+    var backgroundImage = null;
+    if (!owner) {
+      for (var heroIndex = 0; heroIndex < path.length; heroIndex++) {
+        var hero = path[heroIndex];
+        if (!(hero instanceof Element) || !hero.matches('.hero-bg')) continue;
+        var heroImages = [];
+        for (var childIndex = 0; childIndex < hero.children.length; childIndex++) {
+          var child = hero.children[childIndex];
+          if (child.matches('img.hero-bg-img') && imageIdFor(child)) heroImages.push(child);
+        }
+        if (heroImages.length === 1) {
+          owner = hero;
+          backgroundImage = heroImages[0];
+        }
+        break;
+      }
+    }
     if (!owner || owner.tagName === 'IMG' || owner.tagName === 'SOURCE') return null;
     if (owner.matches(protectedBackgroundSelector)) return null;
     var reachedOwner = false;
@@ -84,12 +104,20 @@ export function getCustomerPreviewEditorScript(page: string): string {
         break;
       }
       if (!(item instanceof Element)) continue;
+      // Legacy annotation includes structural wrappers, although startEditing
+      // deliberately refuses their mixed content. Their blank surface can
+      // select a curated background; real text leaves and controls cannot.
+      if (backgroundImage && /^dc-edit-/.test(editIdFor(item)) && item.children.length > 0
+          && !item.hasAttribute('data-dc-edit-attribute') && !item.hasAttribute('data-pb-edit-attribute')) {
+        if (item.matches(protectedBackgroundSelector)) return null;
+        continue;
+      }
       // A covered page/hero background is selectable from safe blank layout
       // descendants, but never by stealing a link, form, text edit, or nearer
       // image action from the customer.
       if (item.matches(protectedBackgroundSelector) || editIdFor(item) || imageIdFor(item)) return null;
     }
-    return reachedOwner ? owner : null;
+    return reachedOwner ? (backgroundImage || owner) : null;
   }
 
   function isSafeReplacementImageUrl(value) {

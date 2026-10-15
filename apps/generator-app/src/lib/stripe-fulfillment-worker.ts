@@ -4,7 +4,6 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import {
   sendOrderConfirmationEmail,
   sendWebsiteLiveEmail,
-  sendManualServiceAlert,
   sendCustomBuildCustomerConfirmation,
   sendCustomBuildOwnerAlert,
 } from '@/lib/email'
@@ -38,7 +37,11 @@ import {
   getInvoiceSubscriptionId,
   getSupportedCheckoutType,
   isCheckoutPaymentReady,
+  configuredStripeLivemode,
+  isStripeModeAllowed,
 } from '@/lib/stripe-runtime'
+import { ensureManualServiceTask, notifyManualServiceOwner } from '@/lib/stripe-manual-service'
+import { preparePortalCustomizationUpdate } from '@/lib/customer-site-state'
 import {
   STRIPE_FULFILLMENT_LEASE_MS,
   STRIPE_FULFILLMENT_MAX_ATTEMPTS,
@@ -90,6 +93,9 @@ async function reserveSlug(supabase: SupabaseClient, slug: string, reservationId
   if (existing.reserved_for !== reservationId) {
     throw new Error(`Slug "${normalized}" belongs to another checkout.`)
   }
+  // Delivery retries may reuse an already-published site without deploying it
+  // again. Keep its public-form eligibility while repairing email or billing.
+  if (existing.status === 'provisioned') return
   const { error } = await supabase.from('site_slugs').update({
     status: 'reserved',
     reservation_expires_at: null,
@@ -316,6 +322,64 @@ export async function handleCheckoutCompleted(
   if (!portalCredentials) throw new Error('Portal token signing is not configured.')
   const portalAccessToken = portalCredentials.token
 
+  // Load durable progress before repeating any external work.
+  const { data: priorPortal, error: priorPortalError } = await supabase
+    .from('portal_sites')
+    .select('data')
+    .eq('slug', normalizedSlug)
+    .maybeSingle()
+  if (priorPortalError) throw new Error(`portal_lookup:${priorPortalError.message}`)
+  const priorData = (priorPortal?.data || {}) as Record<string, unknown>
+  const staging = process.env.DAILYCLARITY_ENVIRONMENT === 'staging'
+  const canReusePriorSite =
+    priorData.checkout_intent_id === checkoutIntentId ||
+    priorData.stripe_session_id === session.id
+  const platformDomain = process.env.PLATFORM_DOMAIN?.trim().toLowerCase()
+  const brandedSiteUrl = !staging && platformDomain ? `https://${normalizedSlug}.${platformDomain}` : undefined
+  let netlifySiteId = canReusePriorSite && typeof priorData.netlify_site_id === 'string'
+    ? priorData.netlify_site_id
+    : undefined
+  let netlifySiteUrl = canReusePriorSite
+    ? (staging && typeof priorData.netlify_default_domain === 'string'
+        ? `https://${priorData.netlify_default_domain}`
+        : brandedSiteUrl || (typeof priorData.site_url === 'string' ? priorData.site_url : undefined))
+    : undefined
+  let netlifyDefaultDomain = canReusePriorSite && typeof priorData.netlify_default_domain === 'string'
+    ? priorData.netlify_default_domain
+    : undefined
+  let provisioningError: string | undefined
+  const previouslyProvisioned = Boolean(
+    canReusePriorSite && netlifySiteId && netlifySiteUrl && priorData.provisioning_succeeded === true
+    && !priorData.provisioning_error,
+  )
+  let provisioningSucceeded = previouslyProvisioned
+
+  if (staging && canReusePriorSite && netlifySiteId) {
+    // A pre-existing branded deployment is not a valid staging recovery target.
+    const expectedDomain = `platform-${normalizedSlug}.netlify.app`
+    if (netlifyDefaultDomain !== expectedDomain || netlifySiteUrl !== `https://${expectedDomain}`) {
+      throw new Error('Staging fulfillment requires its isolated Netlify default domain.')
+    }
+  }
+
+  if (canReusePriorSite && !previouslyProvisioned) {
+    // A customer can save edits while a failed deployment is recovering. Use
+    // that durable customization when rebuilding, while keeping the verified
+    // checkout's template, catalogue revision, and purchase ownership fixed.
+    const saved = preparePortalCustomizationUpdate(priorData, normalizedSlug)
+    if (!saved.ok) throw new Error('Saved customer customization is invalid.')
+    customerValues = { ...customerValues, ...saved.customerValues }
+    inlineEdits = saved.dataPatch.inlineEdits ?? inlineEdits
+    if (saved.dataPatch.imageSwaps !== undefined) {
+      imageSwaps = saved.dataPatch.imageSwaps
+      imageOwner = typeof priorData.imageOwner === 'string' ? priorData.imageOwner : normalizedSlug
+    }
+    colorScheme = saved.dataPatch.colorScheme ?? colorScheme
+    fontVariation = saved.dataPatch.fontVariation ?? fontVariation
+    structureVariation = saved.dataPatch.structureVariation ?? structureVariation
+    if (saved.dataPatch.customTheme !== undefined) customTheme = saved.dataPatch.customTheme
+  }
+
   // ── Step 2: Image migration ───────────────────────────────────────────────
   const imageSession = validateCheckoutImageSession(
     imageSwaps,
@@ -325,7 +389,7 @@ export async function handleCheckoutCompleted(
     throw new Error(`image_migration:${imageSession.code}:${imageSession.error}`)
   }
   const { draftImageUrls } = imageSession
-  if (draftImageUrls.length > 0 && normalizedSlug) {
+  if (!previouslyProvisioned && draftImageUrls.length > 0 && normalizedSlug) {
     const verifiedDraftOwner = imageSession.imageOwner
     try {
       const migratedImageCount = await migrateImagesToSiteSlug(
@@ -345,34 +409,10 @@ export async function handleCheckoutCompleted(
   }
 
   // ── Step 3: Netlify provisioning ──────────────────────────────────────────
-  const { data: priorPortal, error: priorPortalError } = await supabase
-    .from('portal_sites')
-    .select('data')
-    .eq('slug', normalizedSlug)
-    .maybeSingle()
-  if (priorPortalError) throw new Error(`portal_lookup:${priorPortalError.message}`)
-  const priorData = (priorPortal?.data || {}) as Record<string, unknown>
-  const canReusePriorSite =
-    priorData.checkout_intent_id === checkoutIntentId ||
-    priorData.stripe_session_id === session.id
-  const platformDomain = process.env.PLATFORM_DOMAIN?.trim().toLowerCase()
-  const brandedSiteUrl = platformDomain ? `https://${normalizedSlug}.${platformDomain}` : undefined
-  let netlifySiteId = canReusePriorSite && typeof priorData.netlify_site_id === 'string'
-    ? priorData.netlify_site_id
-    : undefined
-  let netlifySiteUrl = canReusePriorSite
-    ? (brandedSiteUrl || (typeof priorData.site_url === 'string' ? priorData.site_url : undefined))
-    : undefined
-  let netlifyDefaultDomain = canReusePriorSite && typeof priorData.netlify_default_domain === 'string'
-    ? priorData.netlify_default_domain
-    : undefined
-  let provisioningError: string | undefined
-  let provisioningSucceeded = false
-
-  if (process.env.NETLIFY_ACCESS_TOKEN) {
+  if (!provisioningSucceeded && process.env.NETLIFY_ACCESS_TOKEN) {
     try {
       if (!netlifySiteId) {
-        const site = await provisionSite(normalizedSlug)
+        const site = await provisionSite(normalizedSlug, { useNetlifyDefaultDomain: staging })
         netlifySiteId = site.siteId
         netlifySiteUrl = site.siteUrl
         netlifyDefaultDomain = site.defaultDomain
@@ -391,6 +431,7 @@ export async function handleCheckoutCompleted(
             netlify_default_domain: netlifyDefaultDomain,
             stripe_session_id: session.id,
             checkout_intent_id: checkoutIntentId || null,
+            ...(staging ? { allowSearchIndexing: false } : {}),
             ...(catalogRevision ? { catalogRevision } : {}),
           },
         })
@@ -415,6 +456,7 @@ export async function handleCheckoutCompleted(
         imageSwaps,
         slug,
         siteUrl: netlifySiteUrl,
+        allowSearchIndexing: !staging,
       })
       if (!deployFiles || Object.keys(deployFiles).length === 0) {
         throw new Error('Template build produced no deployable files.')
@@ -443,7 +485,7 @@ export async function handleCheckoutCompleted(
       console.error('[webhook] site provisioning failed:', err)
       partialFailures.push(`provisioning: ${provisioningError}`)
     }
-  } else {
+  } else if (!provisioningSucceeded) {
     provisioningError = 'Netlify is not configured.'
     partialFailures.push('provisioning: Netlify is not configured.')
   }
@@ -461,29 +503,33 @@ export async function handleCheckoutCompleted(
 
   const portalData: Record<string, unknown> = {
     ...priorData,
-    niche,
-    template: templateSlug,
-    colorScheme,
-    fontVariation,
-    structureVariation,
-    customTheme,
-    ...(catalogRevision ? { catalogRevision } : {}),
-    customerValues,
-    inlineEdits,
-    imageSwaps,
-    imageOwner: normalizedSlug || imageOwner,
+    // Email retries must not overwrite edits a delivered customer has made.
+    ...(previouslyProvisioned ? {} : {
+      niche,
+      template: templateSlug,
+      colorScheme,
+      fontVariation,
+      structureVariation,
+      customTheme,
+      ...(catalogRevision ? { catalogRevision } : {}),
+      customerValues,
+      inlineEdits,
+      imageSwaps,
+      imageOwner: normalizedSlug || imageOwner,
+    }),
     email: customerEmail,
     netlify_site_id: netlifySiteId,
     site_url: netlifySiteUrl,
     netlify_default_domain: netlifyDefaultDomain,
     plan: planKey,
     managed_service: isManagedPlan(planKey),
-    provisioning_error: provisioningError,
+    provisioning_error: provisioningError || null,
     provisioning_succeeded: provisioningSucceeded,
     stripe_customer_id: stripeCustomerId,
     stripe_subscription_id: stripeSubscriptionId,
     stripe_session_id: session.id,
     checkout_intent_id: checkoutIntentId || null,
+    ...(staging ? { allowSearchIndexing: false } : {}),
     billing_status: session.payment_status === 'paid' ? 'paid' : 'trial_or_pending',
     partial_failures: partialFailures,
   }
@@ -536,34 +582,12 @@ export async function handleCheckoutCompleted(
   }
 
   // ── Step 5: Manual premium service (Security + Ads) ──────────────────────
-  if (shouldCreateManagedServiceTask(planKey, session.payment_status)) {
-    const { data: createdTask, error: taskError } = await supabase
-      .from('manual_service_tasks')
-      .upsert({
-        slug: normalizedSlug,
-        plan: planKey,
-        email: customerEmail,
-        business_name: businessName,
-        task_type: 'security_ads',
-        status: 'open',
-        stripe_session_id: session.id,
-        details: { stripe_session: session.id, site_url: netlifySiteUrl },
-      }, { onConflict: 'stripe_session_id,task_type', ignoreDuplicates: true })
-      .select('id')
-      .maybeSingle()
-    if (taskError) throw new Error(`manual_service_task:${taskError.message}`)
-
-    const ownerEmail = process.env.PLATFORM_OWNER_EMAIL
-    if (ownerEmail && createdTask) {
-      await sendManualServiceAlert({
-        ownerEmail,
-        businessName,
-        slug: normalizedSlug,
-        customerEmail,
-        plan: planKey,
-      }).catch((err) => console.error('[webhook] manual service alert failed:', err))
-    }
-  }
+  const manualService = shouldCreateManagedServiceTask(planKey, session.payment_status)
+    ? await ensureManualServiceTask(supabase, {
+        sessionId: session.id, slug: normalizedSlug, plan: planKey,
+        customerEmail, businessName, siteUrl: netlifySiteUrl,
+      })
+    : null
 
   // ── Step 6: Transactional emails ─────────────────────────────────────────
   // Persist each delivery marker immediately. If the second send fails, the
@@ -592,6 +616,13 @@ export async function handleCheckoutCompleted(
       if (error) throw new Error(`website_live_marker:${error.message}`)
     }
   }
+  // Customer delivery and its markers finish first. An operations-email
+  // outage retries through the durable queue without hiding the paid task.
+  if (manualService) {
+    await notifyManualServiceOwner(supabase, manualService, {
+      businessName, slug: normalizedSlug, customerEmail, plan: planKey,
+    })
+  }
 }
 
 type EventQueueState = 'queued' | 'already_queued' | 'already_succeeded' | 'dead_letter'
@@ -610,12 +641,6 @@ interface StripeWebhookQueueRow {
   lease_token: string | null
   lease_expires_at: string | null
   updated_at: string
-}
-
-function configuredStripeLivemode(secretKey: string): boolean | null {
-  if (/^(?:sk|rk)_live_/.test(secretKey)) return true
-  if (/^(?:sk|rk)_test_/.test(secretKey)) return false
-  return null
 }
 
 async function enqueueStripeEvent(
@@ -1012,7 +1037,7 @@ export async function processStripeEvent(
 export async function processQueuedStripeEvent(
   eventId: string,
 ): Promise<'succeeded' | 'already_succeeded' | 'busy' | 'deferred' | 'dead_letter'> {
-  if (!supabaseUrl || !supabaseServiceKey || !stripeSecretKey) {
+  if (!supabaseUrl || !supabaseServiceKey || !stripeSecretKey || !isStripeModeAllowed(stripeSecretKey)) {
     throw new Error('Supabase fulfillment configuration is incomplete.')
   }
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
@@ -1042,6 +1067,7 @@ export async function processQueuedStripeEvent(
 export async function POST(req: Request) {
   if (
     !stripeSecretKey ||
+    !isStripeModeAllowed(stripeSecretKey) ||
     !webhookSecret ||
     !supabaseUrl ||
     !supabaseServiceKey ||

@@ -64,7 +64,7 @@ Passing aliases do not erase content. Each legacy slug retains its own content/t
 
 The rule-version 1.0.4+ foundation census repaired all 4,937 foundation-marked sources and formed 1,202 safe canonical clusters plus 3,735 compatible aliases. All 4,937 passed self/canonical composition checks. It rebuilt 13,159 role-adapted pages and reduced the 8,224 raw byte-redundant inner pages to zero duplicate-role outputs. These counts are verification evidence for this source snapshot, not hard-coded targets for a future changed catalogue.
 
-The safeguards described below are implemented for rule version **`legacy-rehab-1.0.36`**. Preserved older pilots remain failed historical evidence rather than launch authorization: 1.0.21 exposed a customer-editor click-arbitration defect; 1.0.22 exposed repair/contract alignment gaps during its all-catalogue observer; 1.0.23 exposed textual SVG re-attestation and off-screen skip-link editability defects; 1.0.24 exposed zero-image compiler-page misclassification, structural landmark-label targeting, and decorative pointer overlays; 1.0.25 exposed content-heavy inline-flex rows collapsing into unreadable one-character columns on mobile; 1.0.26 exposed orphaned responsive navigation, presentation images that intercepted edits, and false audit failures caused by authored smooth scrolling; 1.0.27 exposed fixed-track mobile grids, nested-summary and formatting-whitespace verifier false negatives, mixed deterministic/browser findings that skipped deterministic remediation, and compiler-v3 preview/deployment injecting an unrelated global stylesheet into pages that did not author it; 1.0.28 exposed punctuation-only layout separators being advertised as tiny customer-editable targets on mobile; 1.0.29 exposed content flex rows whose fixed-width siblings collapsed editable copy, anonymous inline fixed-track grids without breakpoints, and fixed utility panels covering unrelated footer edit targets; and 1.0.30 exposed horizontal child sizing being applied to explicitly vertical flex cards, which made their CTA slots physically unreachable on mobile. The fresh 1.0.33 pilot passed on 2026-09-25 as recorded below. Full catalogue certification remains incomplete until every source slug passes its final gates.
+The current processing identity is **`legacy-rehab-1.0.37`**. Preserved older pilots remain historical evidence rather than authorization for the current compiler: 1.0.21 exposed a customer-editor click-arbitration defect; 1.0.22 exposed repair/contract alignment gaps during its all-catalogue observer; 1.0.23 exposed textual SVG re-attestation and off-screen skip-link editability defects; 1.0.24 exposed zero-image compiler-page misclassification, structural landmark-label targeting, and decorative pointer overlays; 1.0.25 exposed content-heavy inline-flex rows collapsing into unreadable one-character columns on mobile; 1.0.26 exposed orphaned responsive navigation, presentation images that intercepted edits, and false audit failures caused by authored smooth scrolling; 1.0.27 exposed fixed-track mobile grids, nested-summary and formatting-whitespace verifier false negatives, mixed deterministic/browser findings that skipped deterministic remediation, and compiler-v3 preview/deployment injecting an unrelated global stylesheet into pages that did not author it; 1.0.28 exposed punctuation-only layout separators being advertised as tiny customer-editable targets on mobile; 1.0.29 exposed content flex rows whose fixed-width siblings collapsed editable copy, anonymous inline fixed-track grids without breakpoints, and fixed utility panels covering unrelated footer edit targets; and 1.0.30 exposed horizontal child sizing being applied to explicitly vertical flex cards, which made their CTA slots physically unreachable on mobile. The fresh 1.0.33 pilot passed on 2026-09-25 as recorded below. Full catalogue certification remains incomplete until every source slug passes its final gates.
 
 The 2026-09-25 recovery resumed the orphaned 1.0.31 pilot against the unchanged source catalogue hash `c4f5f6b9dce67820de41d5b907e0973fb9db7873f3b2edfe3aa65f9af0c0dcfe`. Its ledger passed `PRAGMA quick_check`; 67 templates reached browser verification before a reproducible synchronous repair loop required interrupting that compiler process. That count includes neutral fallbacks and is **not** passing catalogue evidence. The report, contact sheet, inventory, and fixed 100-template source/artifact regression manifest are preserved beneath `reports/history/2026-09-25-legacy-rehab-1.0.31/`; all previous candidate trees and render rows remain in the ledger.
 
@@ -98,18 +98,23 @@ Before restarting, an in-memory deterministic census recompiled all 5,486 immuta
 
 ## Commands
 
-Run commands from the repository root. Always pass an explicit source and work root when invoking the CLI directly:
+Rule 1.0.37 invalidates prior candidate and browser checkpoints for the October compiler repair and customer editor/runtime changes. The recovered rule-36 ledger records a passing 100-template pilot and an interrupted full run, not full certification. Inventory under the new rule clears current candidate/receipt pointers and schedules fresh repair while retaining historical artifacts, renders, and run records. Do not edit or delete the old ledger to force reuse.
+
+The cache identity includes the source hash, niche, and rule version; it does **not** automatically fingerprint compiler or application composer code. Freeze a tested, clean Git commit in an isolated checkout before running the new pilot, and use that unchanged checkout through full processing and dry-run promotion. Record its exact SHA outside the checkout. Any compiler, contract, or composer changes after the pilot require another rule increment and fresh pilot. An unchanged current-rule run can safely resume its own checkpoints.
+
+Run commands from that isolated repository root. Always pass an explicit source, work root, and rule version when invoking the CLI directly:
 
 ```powershell
 $source = 'C:\Users\chris\platform-builder\platform-builder'
 $work = 'C:\Users\chris\Documents\DailyClarity\template-rehab'
+$rule = 'legacy-rehab-1.0.37'
 
-pnpm templates:legacy inventory --source $source --work-root $work
-pnpm templates:legacy pilot --resume --source $source --work-root $work --pilot-size 100
-pnpm templates:legacy run --resume --source $source --work-root $work
-pnpm templates:legacy status --source $source --work-root $work
-pnpm templates:legacy report --source $source --work-root $work
-pnpm templates:legacy promote --dry-run --source $source --work-root $work
+pnpm templates:legacy inventory --source $source --work-root $work --rule-version $rule
+pnpm templates:legacy pilot --resume --source $source --work-root $work --rule-version $rule --pilot-size 100
+pnpm templates:legacy run --resume --source $source --work-root $work --rule-version $rule
+pnpm templates:legacy status --source $source --work-root $work --rule-version $rule
+pnpm templates:legacy report --source $source --work-root $work --rule-version $rule
+pnpm templates:legacy promote --dry-run --source $source --work-root $work --rule-version $rule
 ```
 
 The PowerShell runner supplies those paths on every invocation, validates the exact pnpm version pinned by the repository, prevents automatic system sleep while work is active, writes an operator log, and retries a failed full run three times by default. A retry always includes `--resume`. It prefers `pnpm` on `PATH` and otherwise runs the pinned version through Corepack.
@@ -127,6 +132,10 @@ The PowerShell runner supplies those paths on every invocation, validates the ex
 The last command is a non-mutating scheduler preflight. It reconstructs the persisted User + Machine `PATH`, validates pnpm, loads the compiler CLI, and confirms the configured Playwright Chromium binary exists without creating or changing rehabilitation work-root files.
 
 `promote` is automatically constrained to `--dry-run`; neither the runner nor compiler has a live-publish command. Use the same `-RuleVersion`, source, and work root for inventory, pilot, run, report, and dry-run promotion. Changing the rule version intentionally creates a new processing identity and requires a new pilot.
+
+Before the first new-rule writer, preserve the existing reports and a consistent SQLite backup under `reports/history/`; use SQLite's backup API while no compiler is active, rather than copying only `ledger.sqlite` and omitting its WAL. Let the CLI reclaim a proven stale compiler lock and recover interrupted leases. Keep the original source checkout and its untracked files intact. The recovered original source hash is `c4f5f6b9dce67820de41d5b907e0973fb9db7873f3b2edfe3aa65f9af0c0dcfe`.
+
+After full processing and `promote --dry-run` pass, use the plan's `stagingRoot` as `--root` for [certification preparation](CERTIFIED_CATALOGUE_RELEASE.md). Preparation binds the release to the actual clean Git HEAD, the full-gate bytes, all 5,486 final browser receipts, and all deployable bytes. Store the certification outside the checkout. A later Git commit changes the release identity and requires a newly reviewed certification and matching connected staging evidence; it must never be relabeled as the earlier SHA's approval.
 
 Prerequisites are Node.js 22–24, the repository's pinned pnpm version, installed dependencies, and Playwright Chromium. Install the browser once if it is absent:
 

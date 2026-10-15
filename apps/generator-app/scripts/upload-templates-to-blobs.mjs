@@ -3088,7 +3088,8 @@ export async function main(argv = process.argv.slice(2), env = process.env, depe
   if (options.dryRun) {
     console.log('[upload-templates] Dry run complete. No credentials loaded and no writes performed.')
     return { dryRun: true, files: files.length, bytes: totalBytes, totalTemplates,
-      ...(dependencies.includePlan && options.rehabV3Staging ? { manifest, fileRecords: files, catalogBytes: await fsp.readFile(path.join(PLATFORM_BUILDER_ROOT, '_catalog-v3.json')) } : {}) }
+      ...(dependencies.includePlan ? { manifest, fileRecords: files,
+        ...(options.rehabV3Staging ? { catalogBytes: await fsp.readFile(path.join(PLATFORM_BUILDER_ROOT, '_catalog-v3.json')) } : {}) } : {}) }
   }
 
   if (options.rehabV3Staging) assertRehabStagingUploadEnvironment(env)
