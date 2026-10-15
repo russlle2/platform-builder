@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { canonicalDigest, PRODUCTION_NETLIFY_SITE_ID } from '../src/lib/templates/certified-catalog-contract.mjs'
-import { LEGACY_COUNTS, prepareRecovery, hashBytes, captureRecovery, stageRecovery, bindRecoveryDeployment, activateRecovery, rollbackRecovery, recoveryDeploymentProofBytes, validateRecoveryJournal } from './baseline-recovery.mjs'
+import { LEGACY_COUNTS, prepareRecovery, hashBytes, captureRecovery, stageRecovery, bindRecoveryDeployment, activateRecovery, rollbackRecovery, recoveryDeploymentProofBytes, validateRecoveryJournal, describePreviousRuntime } from './baseline-recovery.mjs'
 
 const oldSha = 'a'.repeat(40), newSha = 'b'.repeat(40)
 const target = { expectedAccountSlug: 'reviewed-account', expectedHostname: 'dailyclarity.org', expectedSupabaseProjectRef: 'reviewedproject' }
@@ -55,6 +55,87 @@ async function bind(fixture) {
   Object.assign(fixture.runtime, { deploymentReleaseSha: newSha, salesPaused: true, checkoutReady: false, customBuildCheckoutReady: false })
   await bindRecoveryDeployment({ ...fixture, deploy: { id: 'new-deploy', site_id: fixture.site.id, state: 'ready', commit_ref: newSha }, file: { path: '/__dailyclarity_release.json', sha: createHash('sha1').update(recoveryDeploymentProofBytes(fixture.journal)).digest('hex') } })
 }
+
+function missingRefState() {
+  const fixture = state()
+  Object.assign(fixture.runtime, { supabaseSchemaReady: false, supabaseSchemaVersion: null, bookingKitSchemaVersion: null,
+    customBuildCheckoutReady: false, missingRequirements: ['DAILYCLARITY_SUPABASE_PROJECT_REF', 'supabase_schema_20260903.4_kit_20260925.2'] })
+  return fixture
+}
+
+test('missing-ref old deployment can be captured and restored while the new application must prove the live schemas', async () => {
+  const f = await capture(missingRefState())
+  const originalRuntime = structuredClone(f.runtime)
+  assert.equal(f.journal.previousRuntime.schemaProbeFailure, 'missing-project-ref')
+  assert.equal(f.journal.previousRuntime.supabaseSchemaReady, false)
+  assert.equal(f.journal.previousRuntime.supabaseSchemaVersion, null)
+  assert.equal(f.journal.previousRuntime.bookingKitSchemaVersion, null)
+  assert.equal(Object.hasOwn(f.journal.previousRuntime, 'missingRequirements'), false)
+  await stageRecovery({ ...f, prepared })
+  await bind(f)
+  await assert.rejects(activateRecovery(f), /live database schema/)
+  assert.equal(f.launchStore.writes.includes('_manifest.json'), false)
+  Object.assign(f.runtime, { supabaseSchemaReady: true, supabaseSchemaVersion: '20260903.4', bookingKitSchemaVersion: '20260925.2', missingRequirements: [] })
+  const inspect = async () => {
+    const active = hashBytes(await f.launchStore.get('_manifest.json')) === prepared.receipt.manifestRawHash
+    return { site: structuredClone(f.site), runtime: { ...f.runtime, publishedTemplateCount: active ? 60 : 0, templateCatalogReady: active } }
+  }
+  await activateRecovery({ ...f, inspect })
+  await rollbackRecovery({ ...f, inspectSite: async () => f.site, restoreDeployment: async () => {
+    f.site.published_deploy = { id: 'old-deploy', state: 'ready', commit_ref: oldSha }
+    Object.assign(f.runtime, originalRuntime)
+  } })
+  assert.deepEqual(await f.launchStore.get('_manifest.json'), f.raw)
+  assert.equal(f.runtime.supabaseSchemaReady, false, 'rollback restores the recorded unavailable probe; it does not claim schema readiness')
+})
+
+test('the old-runtime exception rejects unrelated schema failures, missing credentials, spoofed reasons and wrong databases', async () => {
+  const mutations = [
+    (f) => { f.runtime.missingRequirements = [] },
+    (f) => { f.runtime.missingRequirements.push('SUPABASE_SERVICE_ROLE_KEY') },
+    (f) => { f.runtime.missingRequirements.push('NEXT_PUBLIC_SUPABASE_URL') },
+    (f) => { f.runtime.missingRequirements.push('SUPABASE_PROJECT_REF_MISMATCH') },
+    (f) => { f.runtime.supabaseSchemaVersion = '20260903.3' },
+    (f) => { f.runtime.bookingKitSchemaVersion = '20260925.2' },
+    (f) => { f.runtime.supabaseSchemaReady = true },
+    (f) => { f.runtime.supabaseProjectRef = 'wrongproject' },
+    (f) => { f.runtime.missingRequirements = []; f.runtime.schemaProbeFailure = 'missing-project-ref' },
+  ]
+  for (const mutate of mutations) {
+    const f = missingRefState(); mutate(f)
+    await assert.rejects(capture(f))
+    assert.deepEqual(f.auditStore.writes, [])
+    assert.deepEqual(f.launchStore.writes, [])
+  }
+})
+
+test('read-only old runtime evidence permits only known scalar fields and one fixed missing-ref diagnostic', () => {
+  const f = missingRefState()
+  f.runtime.missingRequirements.push('PRIVATE-UNEXPECTED-DETAIL')
+  f.runtime.integrations = [{ detail: 'PRIVATE-UNEXPECTED-DETAIL' }]
+  const snapshot = describePreviousRuntime(f.runtime, target, oldSha)
+  assert.equal(snapshot.schemaProbeFailure, 'missing-project-ref')
+  assert.equal(JSON.stringify(snapshot).includes('PRIVATE'), false)
+  assert.equal(JSON.stringify(snapshot).includes('FUTURE_SECRET'), false)
+  f.runtime.checkoutReady = 'PRIVATE-UNEXPECTED-DETAIL'
+  assert.throws(() => describePreviousRuntime(f.runtime, target), /sales capability/)
+})
+
+test('staging and rollback must observe exactly the schema state captured from the old deployment', async () => {
+  const f = await capture(missingRefState())
+  Object.assign(f.runtime, { supabaseSchemaReady: true, supabaseSchemaVersion: '20260903.4', bookingKitSchemaVersion: '20260925.2', missingRequirements: [] })
+  await assert.rejects(stageRecovery({ ...f, prepared }), /schema state changed/)
+  assert.deepEqual(f.launchStore.writes, [])
+  await bind(f)
+  await assert.rejects(rollbackRecovery({ ...f, inspectSite: async () => f.site, restoreDeployment: async () => {
+    f.site.published_deploy = { id: 'old-deploy', state: 'ready', commit_ref: oldSha }
+    f.runtime.deploymentReleaseSha = oldSha
+  } }), /schema state changed/)
+  assert.equal(f.auditStore.values.has(`${f.journal.backupPrefix}/rolled-back.json`), false)
+  const changed = structuredClone(f.journal)
+  changed.previousRuntime.schemaProbeFailure = 'arbitrary-unavailable'
+  assert.throws(() => validateRecoveryJournal(changed, canonicalDigest(changed)), /schema state/)
+})
 
 test('full recovery stages the actual approved export and restores exact raw legacy bytes on rollback', async () => {
   const f = await capture(state())

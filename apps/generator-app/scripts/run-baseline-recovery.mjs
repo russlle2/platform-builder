@@ -147,7 +147,8 @@ export async function runBaselineRecovery(env = process.env) {
       const raw = await launchStore.get('_manifest.json', { type: 'arrayBuffer' })
       if (raw === null || current.runtime.templateCatalogReady !== false || current.runtime.publishedTemplateCount !== 0) throw new Error('Read-only verification does not identify the expected broken baseline')
       core.validateLegacyManifest(raw)
-      return { previousDeploymentId: current.site.published_deploy.id, previousReleaseSha: current.runtime.deploymentReleaseSha, legacyManifestHash: core.hashBytes(Buffer.from(raw)) }
+      return { previousDeploymentId: current.site.published_deploy.id, previousReleaseSha: current.runtime.deploymentReleaseSha,
+        legacyManifestHash: core.hashBytes(Buffer.from(raw)), previousRuntime: core.describePreviousRuntime(current.runtime, config.target) }
     },
     saveReceipt: receipt => writeFile(config.receiptPath, `${JSON.stringify(receipt, null, 2)}\n`, { flag: 'wx', mode: 0o600 }),
     saveJournal: journal => writeFile(config.journalPath, `${JSON.stringify(journal, null, 2)}\n`, { flag: 'wx', mode: 0o600 }),

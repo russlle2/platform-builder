@@ -2,6 +2,22 @@
 
 **Verified snapshot: 2026-10-15 01:12 UTC / 2026-10-14 21:12 America/New_York.** This report records the reviewed checkpoint and provider work in progress. It is not a production-readiness attestation. Update the pending results below against the final commit and deployed release before publication.
 
+## Connected release progress — 2026-10-15 01:39 UTC
+
+PR [20](https://github.com/russlle2/platform-builder/pull/20) is merged as `a5ccf8eabfb175b28ec7f07333e90487c192c9aa`. Its exact main push passed [CI run 38665716130](https://github.com/russlle2/platform-builder/actions/runs/38665716130), including dependency audit, lint, TypeScript, unit/browser checks, and build. The integrated application suite has 605 passing tests; the factory has 417 passing tests and three platform skips; release/database scripts have 103 passing checks.
+
+The approved 60-template staging catalogue was actually published by [run 38665802380](https://github.com/russlle2/platform-builder/actions/runs/38665802380): 600 objects uploaded, no upload errors, complete strong readback, and active canonical manifest digest `591df488cd7ce8c0ab5769469c68ce804e637682499905af874ae3e091069611`. It uses the approved report and identity digests below. Staging application deployment [38666625746](https://github.com/russlle2/platform-builder/actions/runs/38666625746) is in progress; publication and runtime success are not yet claimed.
+
+Read-only production recovery verification [38666423992](https://github.com/russlle2/platform-builder/actions/runs/38666423992) passed independent schema, exact-main CI, provider identity, future configuration, and legacy-manifest checks without provider writes. Production remains deployment `6acff8aa3d113b45b29f2fdd` / commit `0ce82f2633691a61c803a3dd6a4555f5e7016630`, with zero accepted templates. Its exact raw legacy-manifest digest is `e7ca5ee6cf0366540b22e3dfcf549fb53a2548ff5328d79b7ca5bd50a7260c8f`. A narrow recovery bootstrap correction now distinguishes the old app's missing-project-ref schema-probe failure from the strict schema readiness required of the new deployment. Verification must be repeated on the final merged correction; the earlier receipt cannot authorize a different release SHA.
+
+Supported Supabase CLI checks confirmed SMTP and send-email hooks disabled in both projects. Staging Auth's localhost URL was corrected to `https://dailyclarity-staging.netlify.app`, with its callback/query redirect allowlist and email confirmation preserved. A reviewed hidden-token Postmark setup prompt is open on the laptop; no SMTP update or real customer login has yet been verified. Production shared Auth settings remain unchanged. Public customer email login is therefore still a launch blocker.
+
+The live Stripe Clover/Dahlia assessment found no incompatibility in all 32 consumed event properties; exact-version schema review, signed local payload verification, and 64 focused checks passed. This does not prove actual live event delivery. The live portal and three plan prices are bound to the intended production hosting configuration. No real-money charge or connected test purchase has been performed.
+
+The full original-library run has completed static repair for all 5,486 source templates and is now rendering browser checks. Intermediate failed attempts remain subject to bounded remediation; full certification has not passed. A separately locked completion watcher compares the frozen compiler/runtime/gate inputs and can prepare a final-main derivative certificate only after the full gate succeeds. It performs no provider publication. Any later final-main correction requires a fresh input comparison and SHA binding.
+
+The sections below retain the earlier checkpoint evidence and should be read with this later progress record. This is still **not launch-ready** or a completed customer purchase attestation.
+
 ## Changes completed in the working tree
 
 - Hardened Stripe environment checks: staging requires test mode, production requires live mode, and malformed/mismatched configuration fails closed. Added billing-portal/custom-build guards, bounded custom-build input, and operator-email readiness checks.

@@ -58,9 +58,12 @@ test('target and checkout identity cannot drift to staging or another repository
 
 test('verify produces a receipt and source identity without any mutation operation', async () => {
   const h = harness('verify')
+  const previousRuntime = { supabaseSchemaReady: false, supabaseSchemaVersion: null, bookingKitSchemaVersion: null, schemaProbeFailure: 'missing-project-ref' }
+  h.deps.describeBaseline = async () => { h.events.push('describe-baseline'); return { previousDeploymentId: 'original', previousRuntime } }
   const result = await orchestrateRecovery(h.config, h.deps)
   assert.equal(result.providerWrites, false)
   assert.equal(result.receiptHash, canonicalDigest(h.receipt))
+  assert.deepEqual(result.previousRuntime, previousRuntime)
   assert.deepEqual(h.events, ['check-release', 'check-future', 'prepare', 'save-receipt', 'describe-baseline'])
 })
 
