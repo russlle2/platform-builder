@@ -96,12 +96,21 @@ export function requirePayPalSandbox(request: Request, mutation = false): string
   if (!config.configured || !origin) {
     throw new PayPalSandboxError('sandbox_not_configured', 'PayPal Sandbox testing needs server configuration.', 503)
   }
-  if (mutation && (
-    request.headers.get('origin') !== origin
-    || new URL(request.url).origin !== origin
-    || request.headers.get('sec-fetch-site') === 'cross-site'
-  )) {
-    throw new PayPalSandboxError('origin_mismatch', 'Open the sandbox test on its configured website and try again.', 403)
+  if (mutation) {
+    const requestUrl = new URL(request.url)
+    const configuredUrl = new URL(origin)
+    const host = request.headers.get('host')
+    // Netlify's cached Next server can reconstruct request.url with the first
+    // request's hostname. Validate the current Host instead; never trust a
+    // forwarded-host override. Without Host, require the exact URL origin.
+    const targetMatches = host === null
+      ? requestUrl.origin === origin
+      : host === configuredUrl.host && requestUrl.protocol === configuredUrl.protocol
+    if (request.headers.get('origin') !== origin
+      || !targetMatches
+      || request.headers.get('sec-fetch-site') === 'cross-site') {
+      throw new PayPalSandboxError('origin_mismatch', 'Open the sandbox test on its configured website and try again.', 403)
+    }
   }
   return origin
 }
