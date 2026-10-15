@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { lstat, readFile, readdir, realpath } from 'node:fs/promises'
 import { isAbsolute, relative, resolve, sep } from 'node:path'
 import { parse } from 'parse5'
+import { buildValidatedRehabManifest } from '../../scripts/upload-templates-to-blobs.mjs'
 import {
   buildCheckoutTemplateState,
   mergePortalSiteData,
@@ -144,6 +145,8 @@ export interface RehabCustomizationDiagnostic {
 export interface RehabCustomizationVerification {
   pass: boolean
   root: string
+  catalogHash: string
+  manifestHash: string
   catalogTemplates: number
   scannedTemplates: number
   pages: number
@@ -398,6 +401,7 @@ async function verifyTemplate(
   catalogEntry: CatalogTemplateEntry,
   localDiagnosticLimit: number,
   catalogLocator: CatalogSnapshotLocator,
+  runtimeEntry: CatalogTemplateEntry | undefined,
 ): Promise<TemplateVerification> {
   const key = `${catalogEntry.niche}/${catalogEntry.legacySlug}`
   const templateRoot = resolve(stagingRoot, catalogEntry.niche, catalogEntry.legacySlug)
@@ -430,8 +434,13 @@ async function verifyTemplate(
     if (manifest.legacySlug !== catalogEntry.legacySlug || manifest.niche !== catalogEntry.niche) {
       add('manifest_lineage_mismatch', 'template.json niche/legacySlug differs from _catalog-v3.json')
     }
-    for (const field of ['designId', 'contentPresetId', 'themePresetId', 'qualityReceipt'] as const) {
+    // Local template.json binds deterministic static preflight. The uploader
+    // validates the browser-final receipt and reconciles post-dedupe design IDs.
+    for (const field of ['contentPresetId', 'themePresetId'] as const) {
       if (manifest[field] !== catalogEntry[field]) add('manifest_revision_mismatch', `${field} differs from _catalog-v3.json`)
+    }
+    for (const field of ['designId', 'contentPresetId', 'themePresetId', 'qualityReceipt'] as const) {
+      if (runtimeEntry?.[field] !== catalogEntry[field]) add('manifest_revision_mismatch', `Validated runtime ${field} differs from _catalog-v3.json`)
     }
     if (contentPreset.id !== catalogEntry.contentPresetId || contentPreset.legacySlug !== catalogEntry.legacySlug) {
       add('content_preset_lineage_mismatch', 'Content preset identity does not match the catalogue entry')
@@ -851,10 +860,14 @@ export async function verifyRehabCustomizationStaging(
     throw new Error('Staging root must be a real directory, not a symbolic link')
   }
   const root = await realpath(requestedRoot)
-  const [catalogText, runtimeManifest] = await Promise.all([
-    readSafeFile(root, '_catalog-v3.json'),
-    readSafeJson<unknown>(root, '_manifest.json'),
-  ])
+  const catalogText = await readSafeFile(root, '_catalog-v3.json')
+  const manifestDetails = await lstat(resolve(root, '_manifest.json')).catch((error: NodeJS.ErrnoException) => {
+    if (error.code === 'ENOENT') return null
+    throw error
+  })
+  // A materialized compiler library has no root runtime manifest. A supplied
+  // manifest remains untrusted and must match the same validated derivation.
+  const suppliedManifest = manifestDetails ? await readSafeJson<unknown>(root, '_manifest.json') : undefined
   let catalog: CatalogDocument
   try {
     catalog = JSON.parse(catalogText) as CatalogDocument
@@ -864,10 +877,20 @@ export async function verifyRehabCustomizationStaging(
   if (catalog.contractVersion !== 3 || !Array.isArray(catalog.templates)) {
     throw new Error('_catalog-v3.json is not a catalogue v3 document')
   }
+  const runtimeManifest = buildValidatedRehabManifest(root) as Record<string, CatalogTemplateEntry[]>
+  if (suppliedManifest !== undefined && catalogManifestHash(suppliedManifest) !== catalogManifestHash(runtimeManifest)) {
+    throw new Error('_manifest.json differs from the validated compiler library')
+  }
+  if (await readSafeFile(root, '_catalog-v3.json') !== catalogText) {
+    throw new Error('_catalog-v3.json changed during runtime manifest validation')
+  }
   const catalogLocator: CatalogSnapshotLocator = {
     catalogHash: catalogDocumentHash(catalogText),
     manifestHash: catalogManifestHash(runtimeManifest),
   }
+  const runtimeByKey = new Map(Object.entries(runtimeManifest).flatMap(([niche, templates]) => (
+    templates.map((entry) => [`${niche}/${entry.legacySlug}`, entry] as const)
+  )))
 
   const globalDiagnostics: RehabCustomizationDiagnostic[] = []
   let globalDiagnosticCount = 0
@@ -905,7 +928,7 @@ export async function verifyRehabCustomizationStaging(
   }
 
   const results = await mapConcurrent(entries, workers, (entry) => (
-    verifyTemplate(root, entry, maxDiagnostics, catalogLocator)
+    verifyTemplate(root, entry, maxDiagnostics, catalogLocator, runtimeByKey.get(`${entry.niche}/${entry.legacySlug}`))
   ))
   for (const result of results) {
     globalDiagnosticCount += result.diagnosticCount
@@ -924,6 +947,8 @@ export async function verifyRehabCustomizationStaging(
   return {
     pass: globalDiagnosticCount === 0,
     root,
+    catalogHash: catalogLocator.catalogHash,
+    manifestHash: catalogLocator.manifestHash,
     catalogTemplates: catalog.templates.length,
     scannedTemplates: results.length,
     ...totals,

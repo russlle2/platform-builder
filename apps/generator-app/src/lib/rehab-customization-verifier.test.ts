@@ -1,14 +1,17 @@
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as uploader from '../../scripts/upload-templates-to-blobs.mjs'
 import {
   parseVerifyRehabCustomizationArgs,
   runVerifyRehabCustomizationCli,
 } from '../../scripts/verify-rehab-customization'
 import { verifyRehabCustomizationStaging } from './rehab-customization-verifier'
+import { catalogDocumentHash, catalogManifestHash } from './templates/catalog-profile'
 
 const temporaryRoots: string[] = []
+const validatedManifests = new Map<string, Record<string, unknown[]>>()
 
 const catalogueEntry = {
   legacySlug: 'good-template',
@@ -41,13 +44,15 @@ async function createStaging(overrides?: {
     sourceTemplates: 1,
     templates: [catalogueEntry],
   })
-  await writeJson(join(root, '_manifest.json'), {
+  const runtimeManifest = {
     [catalogueEntry.niche]: [{
       ...catalogueEntry,
       slug: catalogueEntry.legacySlug,
       nicheSlug: catalogueEntry.niche,
     }],
-  })
+  }
+  validatedManifests.set(root, runtimeManifest)
+  await writeJson(join(root, '_manifest.json'), runtimeManifest)
   await writeJson(join(templateRoot, 'template.json'), {
     contractVersion: 3,
     legacySlug: catalogueEntry.legacySlug,
@@ -130,11 +135,81 @@ async function createStaging(overrides?: {
   return root
 }
 
+// The small customization fixtures isolate rendering/persistence checks from
+// the uploader's separately tested full-5486 inventory and receipt validation.
+beforeEach(() => {
+  vi.spyOn(uploader, 'buildValidatedRehabManifest').mockImplementation((root: string) => {
+    const manifest = validatedManifests.get(root)
+    if (!manifest) throw new Error('No validated fixture manifest')
+    return manifest
+  })
+})
+
 afterEach(async () => {
+  vi.restoreAllMocks()
+  validatedManifests.clear()
   await Promise.all(temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })))
 })
 
 describe('verifyRehabCustomizationStaging', () => {
+  it('accepts the compiler layout without a root manifest and keeps exact validated catalogue identity', async () => {
+    const root = await createStaging()
+    const runtimeManifest = validatedManifests.get(root)!
+    const localPath = join(root, catalogueEntry.niche, catalogueEntry.legacySlug, 'template.json')
+    const local = JSON.parse(await readFile(localPath, 'utf8'))
+    // Static preflight IDs legitimately predate browser-final receipts and
+    // canonical design selection; immutable source files are not relabelled.
+    local.qualityReceipt = 'receipt_static_preflight'
+    local.designId = 'design_before_visual_dedupe'
+    await writeJson(localPath, local)
+    await rm(join(root, '_manifest.json'))
+    const before = await readFile(localPath)
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(true)
+    expect(result.manifestHash).toBe(catalogManifestHash(runtimeManifest))
+    expect(result.catalogHash).toBe(catalogDocumentHash(await readFile(join(root, '_catalog-v3.json'))))
+    expect(await readFile(localPath)).toEqual(before)
+    await expect(readFile(join(root, '_manifest.json'))).rejects.toMatchObject({ code: 'ENOENT' })
+    expect(uploader.buildValidatedRehabManifest).toHaveBeenCalledWith(root)
+  })
+
+  it('rejects supplied manifests that disagree with the actual validated runtime identity', async () => {
+    const root = await createStaging()
+    const altered = structuredClone(validatedManifests.get(root)!)
+    ;(altered[catalogueEntry.niche]![0] as Record<string, unknown>).qualityReceipt = 'receipt_forged'
+    await writeJson(join(root, '_manifest.json'), altered)
+    await expect(verifyRehabCustomizationStaging({ root })).rejects.toThrow('_manifest.json differs')
+  })
+
+  it('does not fall back around malformed or symlinked supplied manifests', async () => {
+    const root = await createStaging()
+    await writeFile(join(root, '_manifest.json'), '{broken')
+    await expect(verifyRehabCustomizationStaging({ root })).rejects.toThrow()
+    expect(uploader.buildValidatedRehabManifest).not.toHaveBeenCalled()
+    await rm(join(root, '_manifest.json'))
+    await symlink(join(root, '_catalog-v3.json'), join(root, '_manifest.json'))
+    await expect(verifyRehabCustomizationStaging({ root })).rejects.toThrow('not a regular file')
+    expect(uploader.buildValidatedRehabManifest).not.toHaveBeenCalled()
+  })
+
+  it('retains local preset and validated final revision mismatch checks', async () => {
+    const root = await createStaging()
+    await rm(join(root, '_manifest.json'))
+    const localPath = join(root, catalogueEntry.niche, catalogueEntry.legacySlug, 'template.json')
+    const local = JSON.parse(await readFile(localPath, 'utf8'))
+    local.contentPresetId = 'content_forged'
+    await writeJson(localPath, local)
+    const runtime = validatedManifests.get(root)![catalogueEntry.niche]![0] as Record<string, unknown>
+    runtime.qualityReceipt = 'receipt_other'
+    runtime.designId = 'design_other'
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    const details = result.diagnostics.filter((item) => item.code === 'manifest_revision_mismatch').map((item) => item.detail)
+    expect(details).toContain('contentPresetId differs from _catalog-v3.json')
+    expect(details).toContain('Validated runtime qualityReceipt differs from _catalog-v3.json')
+    expect(details).toContain('Validated runtime designId differs from _catalog-v3.json')
+  })
+
   it('proves ID-first text, attribute, image, persistence, deploy, and theme paths', async () => {
     const root = await createStaging()
     const result = await verifyRehabCustomizationStaging({ root, workers: 2 })
@@ -342,6 +417,7 @@ describe('verify-rehab-customization CLI', () => {
 
   it('returns zero for a clean catalogue and one for a bounded gate failure', async () => {
     const cleanRoot = await createStaging()
+    await rm(join(cleanRoot, '_manifest.json'))
     const failingRoot = await createStaging({
       html: '<html><body></body></html>',
       entries: [{ nodeId: 'missing', page: 'index.html', html: 'Missing', text: 'Missing' }],
@@ -358,6 +434,7 @@ describe('verify-rehab-customization CLI', () => {
       { stdout: (value) => failingOutput.push(value), stderr: (value) => failingOutput.push(value) },
     )).resolves.toBe(1)
 
+    expect(cleanOutput).toHaveLength(1)
     expect(JSON.parse(cleanOutput[0]!).pass).toBe(true)
     const failed = JSON.parse(failingOutput[0]!) as { pass: boolean; diagnostics: unknown[]; diagnosticsTruncated: number }
     expect(failed.pass).toBe(false)
