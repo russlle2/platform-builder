@@ -533,7 +533,7 @@ function PricingCard({
     >
       {/* Badge */}
       {tier.badge && (
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-cyan-500 text-slate-900 text-sm font-bold rounded-full">
+        <div className="mx-auto mb-4 w-fit max-w-full px-4 py-1 bg-cyan-500 text-slate-900 text-sm font-bold rounded-full text-center">
           {tier.badge}
         </div>
       )}
