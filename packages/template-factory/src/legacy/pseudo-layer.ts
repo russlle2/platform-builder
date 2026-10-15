@@ -11,6 +11,34 @@ function effectiveDeclarations(rule: postcss.Rule): Map<string, postcss.Declarat
   return declarations;
 }
 
+/** Resolve physical inset shorthand/longhands in declaration and importance order. */
+function effectiveInsets(rule: postcss.Rule): Map<string, string> | null {
+  const sides = ['top', 'right', 'bottom', 'left'];
+  const resolved = new Map<string, { value: string; important: boolean }>();
+  const assign = (side: string, value: string, important: boolean): void => {
+    if (!resolved.get(side)?.important || important) resolved.set(side, { value, important });
+  };
+  for (const node of rule.nodes ?? []) {
+    if (node.type !== 'decl') continue;
+    const property = node.prop.toLowerCase();
+    // Logical insets depend on writing mode; all also resets the other proof
+    // properties. Do not infer physical geometry from either declaration.
+    if (property === 'all' || /^inset-(?:block|inline)(?:-|$)/.test(property)) return null;
+    if (sides.includes(property)) assign(property, node.value.trim(), Boolean(node.important));
+    if (property !== 'inset') continue;
+    const values = postcss.list.space(node.value.trim());
+    // A variable can expand to several components. Unknown/invalid shorthand
+    // must shadow earlier offsets rather than accidentally reusing them.
+    const concrete = values.length >= 1 && values.length <= 4 && values.every(value =>
+      /^(?:auto|0|-?(?:\d+(?:\.\d+)?|\.\d+)(?:px|em|rem|vw|vh|vmin|vmax|%))$/i.test(value));
+    const expanded = concrete
+      ? [values[0]!, values[1] ?? values[0]!, values[2] ?? values[0]!, values[3] ?? values[1] ?? values[0]!]
+      : ['', '', '', ''];
+    sides.forEach((side, index) => assign(side, expanded[index]!, Boolean(node.important)));
+  }
+  return new Map([...resolved].map(([side, declaration]) => [side, declaration.value]));
+}
+
 function normalizedPseudoSelector(selector: string): string {
   return selector.trim().replace(/::?(before|after)\s*$/i, (_, name: string) => `::${name.toLowerCase()}`);
 }
@@ -58,9 +86,10 @@ export function makeDecorativePseudoLayersPointerTransparent(root: postcss.Root)
     if (!/^(?:absolute|fixed)$/i.test(declarations.get('position')?.value.trim() ?? '')) continue;
     // Explicit pointer rules may describe an intentional interaction surface.
     if (declarations.has('pointer-events') || /^pointer$/i.test(declarations.get('cursor')?.value.trim() ?? '')) continue;
-    const zero = (value: string | undefined) => /^(?:0(?:px|em|rem|%)?)(?:\s+0(?:px|em|rem|%)?){0,3}$/i.test(value?.trim() ?? '');
-    const fullInset = zero(declarations.get('inset')?.value)
-      || ['top', 'right', 'bottom', 'left'].every((property) => zero(declarations.get(property)?.value));
+    const insets = effectiveInsets(rule);
+    if (!insets) continue;
+    const zero = (value: string | undefined) => /^0(?:px|em|rem|%)?$/i.test(value?.trim() ?? '');
+    const fullInset = ['top', 'right', 'bottom', 'left'].every((property) => zero(insets.get(property)));
     // Some authored corner/diagonal decorations have explicit dimensions and
     // offsets rather than covering all four edges. Opposing zero vertical
     // insets also establish a definite height when no height is authored.
@@ -72,10 +101,10 @@ export function makeDecorativePseudoLayersPointerTransparent(root: postcss.Root)
       return concreteLength(value) && Number.parseFloat(value ?? '') > 0;
     };
     const stretchedHeight = !declarations.has('height')
-      && ['top', 'bottom'].every(property => /^0(?:px|em|rem|%)?$/i.test(declarations.get(property)?.value.trim() ?? ''));
+      && ['top', 'bottom'].every(property => zero(insets.get(property)));
     const positionedSize = positiveSize('width') && (positiveSize('height') || stretchedHeight)
-      && ['left', 'right'].some((property) => concreteLength(declarations.get(property)?.value))
-      && ['top', 'bottom'].some((property) => concreteLength(declarations.get(property)?.value));
+      && ['left', 'right'].some((property) => concreteLength(insets.get(property)))
+      && ['top', 'bottom'].some((property) => concreteLength(insets.get(property)));
     if (!fullInset && !positionedSize) continue;
     const painted = ['background', 'background-image', 'background-color', 'box-shadow', 'border', 'border-image'].some((property) => {
       const value = declarations.get(property)?.value.trim();

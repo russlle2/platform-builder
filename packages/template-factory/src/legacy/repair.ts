@@ -1064,7 +1064,13 @@ const INTERACTIVE_DESCENDANT_TAGS = new Set(['a', 'button', 'details', 'input', 
  */
 function markDecorativeHitLayers(document: HtmlNode): number {
   let count = 0;
-  walk(document, (node) => {
+  const nodes: HtmlNode[] = [];
+  walk(document, (node) => { nodes.push(node); });
+  // Classify descendants first so a background wrapper can see the decorative
+  // status established for its child image during this same repair pass.
+  // A meaningful image or interactive descendant still prevents the wrapper
+  // from becoming pointer-transparent.
+  nodes.reverse().forEach((node) => {
     if (!node.tagName || !['aside', 'div', 'img', 'section', 'span', 'svg'].includes(node.tagName)) return;
     if (node.tagName === 'svg') {
       let interactive = false;

@@ -3,8 +3,106 @@ import test from 'node:test';
 import postcss from 'postcss';
 import { chromium } from '@playwright/test';
 import { makeDecorativePseudoLayersPointerTransparent } from './pseudo-layer.js';
+import { loadCustomerPreviewComposers } from './customer-preview-adapter.js';
 
 const paint = 'content:"";position:fixed;inset:0;background:linear-gradient(45deg,rgba(90,100,120,.12),transparent);opacity:.12;mix-blend-mode:screen';
+const insetDiagonal = '.diag::before{content:"";position:absolute;inset:auto 0 0 -40px;transform:skewX(-12deg);height:120%;width:120%;background:linear-gradient(135deg,#eef4f1,#dbe8e2);z-index:0}';
+
+test('physical inset shorthand establishes decorative geometry without altering authored paint', () => {
+  for (const inset of ['0', '0 -40px', 'auto 0 0', 'auto 0 0 -40px']) {
+    const source = insetDiagonal.replace('inset:auto 0 0 -40px', `inset:${inset}`);
+    const root = postcss.parse(source);
+    assert.equal(makeDecorativePseudoLayersPointerTransparent(root), 1, source);
+    assert.equal(root.first?.toString(), source);
+    assert.equal(makeDecorativePseudoLayersPointerTransparent(root), 0);
+  }
+  const stretched = postcss.parse(insetDiagonal.replace('inset:auto 0 0 -40px', 'inset:0 -40px').replace('height:120%;', ''));
+  assert.equal(makeDecorativePseudoLayersPointerTransparent(stretched), 1);
+});
+
+test('inset shorthand and longhands respect declaration order and important precedence', () => {
+  const fixtures: Array<[string, number]> = [
+    ['inset:auto;inset:0', 1],
+    ['inset:0;inset:auto', 0],
+    ['inset:0;top:auto;bottom:auto', 0],
+    ['top:auto;bottom:auto;inset:0', 1],
+    ['inset:auto!important;inset:0', 0],
+    ['inset:auto!important;inset:0!important', 1],
+    ['inset:0!important;top:auto;bottom:auto', 1],
+    ['inset:0!important;top:auto!important;bottom:auto!important', 0],
+    ['left:auto!important;right:auto!important;inset:0', 0],
+    ['left:auto!important;right:auto!important;inset:0!important', 1],
+    ['inset:var(--edges);right:0;bottom:0', 1],
+    ['right:0;bottom:0;inset:var(--edges)', 0],
+  ];
+  for (const [declarations, expected] of fixtures) {
+    const source = insetDiagonal.replace('inset:auto 0 0 -40px', declarations);
+    const root = postcss.parse(source);
+    assert.equal(makeDecorativePseudoLayersPointerTransparent(root), expected, source);
+    assert.equal(root.first?.toString(), source);
+  }
+});
+
+test('ambiguous inset shorthand and authored interaction surfaces remain unchanged', () => {
+  for (const source of [
+    ...['var(--edges)', 'auto', 'auto auto 0 auto', 'auto 0 auto 0', '0 var(--edges)', '0 0 0 0 0', 'inherit', 'revert-layer']
+      .map(value => insetDiagonal.replace('inset:auto 0 0 -40px', `inset:${value}`)),
+    insetDiagonal.replace('z-index:0', 'z-index:0;inset-inline:0'),
+    insetDiagonal.replace('z-index:0', 'z-index:0;all:unset'),
+    insetDiagonal.replace('z-index:0', 'z-index:0;cursor:pointer'),
+    insetDiagonal.replace('z-index:0', 'z-index:0;pointer-events:auto!important'),
+    insetDiagonal.replace('content:""', 'content:"Customer instructions"'),
+    insetDiagonal.replace('.diag', 'button.diag'),
+    insetDiagonal.replace('.diag', '.diag[role="button"]'),
+  ]) {
+    const root = postcss.parse(source);
+    assert.equal(makeDecorativePseudoLayersPointerTransparent(root), 0, source);
+    assert.equal(root.toString(), source);
+  }
+});
+
+test('inset diagonal restores all five customer text paths without changing pixels', async () => {
+  const { getCustomerPreviewEditorScript } = await loadCustomerPreviewComposers();
+  const browser = await chromium.launch({ headless: true });
+  const text = ['Connect details', 'Build tools for real life.', 'Concentrated strategy', 'Simple habits', 'Daily momentum'];
+  try {
+    for (const viewport of [{ width: 1440, height: 900 }, { width: 390, height: 844 }]) {
+      const page = await browser.newPage({ viewport });
+      try {
+        const root = postcss.parse(insetDiagonal);
+        assert.equal(makeDecorativePseudoLayersPointerTransparent(root), 1);
+        await page.setContent(`<style>body{margin:0;background:#fff;font-family:Arial}.diag{position:relative;margin:80px 50px;width:min(440px,calc(100vw - 100px));height:320px;padding:18px;box-sizing:border-box}${insetDiagonal}</style><main class="diag">${text.map((value, index) => `<p data-dc-edit-id="text-${index}">${value}</p>`).join('')}</main><button id="blur">Done</button>${getCustomerPreviewEditorScript('contact.html')}`);
+        const hits = () => page.locator('[data-dc-edit-id]').evaluateAll(elements => elements.map(element => {
+          const box = element.getBoundingClientRect();
+          return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2) === element;
+        }));
+        assert.deepEqual(await hits(), Array(5).fill(false));
+        const before = await page.screenshot();
+        await page.addStyleTag({ content: root.toString() });
+        assert.deepEqual(await hits(), Array(5).fill(true));
+        assert.deepEqual(await page.screenshot(), before);
+        await page.evaluate(() => {
+          window.addEventListener('message', event => {
+            if (event.data?.type === 'textEdited') document.body.dataset.lastEdit = JSON.stringify(event.data);
+          });
+        });
+        for (let index = 0; index < text.length; index += 1) {
+          const id = `text-${index}`, value = `Customer update ${index}`;
+          const slot = page.locator(`[data-dc-edit-id="${id}"]`);
+          await slot.dblclick({ timeout: 1000 });
+          assert.equal(await slot.getAttribute('contenteditable'), 'true');
+          await slot.fill(value);
+          await page.locator('#blur').click();
+          await page.waitForFunction(({ id, value }) => {
+            const edit = JSON.parse(document.body.dataset.lastEdit || '{}');
+            return edit.nodeId === id && edit.text === value;
+          }, { id, value }, { timeout: 1000 });
+          assert.equal(await slot.textContent(), value);
+        }
+      } finally { await page.close(); }
+    }
+  } finally { await browser.close(); }
+});
 
 test('decorative body/hero before and after layers retain every visual declaration', () => {
   for (const selector of ['body::before', 'body::after', '.hero:before', '.hero:after']) {
