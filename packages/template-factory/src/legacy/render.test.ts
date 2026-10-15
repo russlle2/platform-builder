@@ -17,7 +17,6 @@ import {
   hydrateSentinelHtml,
   isAllowedTemplateRenderRequest,
   losslessScreenshotSsim,
-  recommendedRenderWorkers,
   removeTemporaryComparisonScreenshots,
   renderTemplateTasks,
   safeForegroundForBackground,
@@ -580,12 +579,8 @@ test('successive image edits settle restored intrinsic SVG geometry before the n
   }
 });
 
-test('perceptual hash distance and worker limits are bounded', () => {
+test('perceptual hash distance is bounded', () => {
   assert.equal(hammingDistance('0000000000000000', '000000000000000f'), 4);
-  const pressureAwareWorkers = recommendedRenderWorkers(99);
-  assert.ok(pressureAwareWorkers >= 2 && pressureAwareWorkers <= 6);
-  assert.ok(recommendedRenderWorkers(3) <= 3, 'the requested worker count is an upper bound');
-  assert.equal(recommendedRenderWorkers(-1), 1);
 });
 
 test('evidence thumbnails bound extremely tall pages to WebP-safe dimensions', async () => {

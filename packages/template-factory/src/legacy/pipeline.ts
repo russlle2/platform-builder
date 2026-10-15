@@ -2648,7 +2648,8 @@ export async function renderPendingBatch(
 ): Promise<RenderSummary & { leasedTemplates: number }> {
   checkCancellation(context);
   const allowed = allowedSlugs ? [...new Set(allowedSlugs)] : undefined;
-  const batchSize = Math.max(1, context.config.chromiumWorkers * 8);
+  // Keep the existing default's lease/preload bound when a higher browser ceiling is requested.
+  const batchSize = Math.max(1, Math.min(32, context.config.chromiumWorkers * 8));
   const leases = context.ledger.leaseTemplates({
     stages: ['render_pending'],
     ...(allowed ? { legacySlugs: allowed } : {}),
