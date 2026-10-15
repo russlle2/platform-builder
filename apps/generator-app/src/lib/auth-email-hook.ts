@@ -158,7 +158,9 @@ export function buildAuthEmails(body: Uint8Array, config: AuthEmailHookConfig): 
   const user = object(payload.user)
   const data = object(payload.email_data)
   const action = data.email_action_type
-  const currentEmail = email(user.email)
+  // A phone-only account may be adding its first email address. Validate a
+  // current address only when this action actually sends a message to it.
+  const currentEmail = () => email(user.email)
   const message = (to: string, subject: string, instruction: string, url?: string, code?: string, notification = false): AuthEmailMessage => ({
     to, subject, disableTracking: true,
     htmlBody: `<!doctype html><html lang="en"><body><h1>${escapeHtml(subject)}</h1><p>${escapeHtml(instruction)}</p>${url ? `<p><a href="${escapeHtml(url)}">Continue securely</a></p>` : code ? `<p><strong>${escapeHtml(code)}</strong></p>` : ''}<p>${notification ? 'If you did not make this change, contact support immediately.' : 'If you did not request this email, you can ignore it.'}</p></body></html>`,
@@ -175,12 +177,12 @@ export function buildAuthEmails(body: Uint8Array, config: AuthEmailHookConfig): 
   }
   if (typeof action === 'string' && Object.prototype.hasOwnProperty.call(notifications, action)) {
     // Match Supabase's own mailer: notify the old address after an email change.
-    const recipient = action === 'email_changed_notification' ? email(data.old_email) : currentEmail
+    const recipient = action === 'email_changed_notification' ? email(data.old_email) : currentEmail()
     return [message(recipient, 'Your account security settings changed', notifications[action], undefined, undefined, true)]
   }
   if (action === 'reauthentication') {
     if (typeof data.token !== 'string' || !/^\d{4,12}$/.test(data.token)) throw invalid()
-    return [message(currentEmail, 'Confirm your DailyClarity request', 'Enter this verification code in the page where you requested it.', undefined, data.token)]
+    return [message(currentEmail(), 'Confirm your DailyClarity request', 'Enter this verification code in the page where you requested it.', undefined, data.token)]
   }
   const subjects: Record<string, string> = {
     signup: 'Confirm your DailyClarity account', invite: 'Accept your DailyClarity invitation',
@@ -203,8 +205,9 @@ export function buildAuthEmails(body: Uint8Array, config: AuthEmailHookConfig): 
     // Supabase's secure-change mapping is deliberately asymmetric:
     // current address gets token_hash_new; new address gets token_hash.
     const messages = [message(newEmail, subjects[action], 'Confirm that you want to use this email address for DailyClarity.', link(data.token_hash))]
-    if (data.token_hash_new) messages.unshift(message(currentEmail, subjects[action], 'Confirm your request to change your DailyClarity email address.', link(data.token_hash_new)))
+    const hasCurrentProof = data.token_hash_new !== undefined && data.token_hash_new !== null && data.token_hash_new !== ''
+    if (hasCurrentProof) messages.unshift(message(currentEmail(), subjects[action], 'Confirm your request to change your DailyClarity email address.', link(data.token_hash_new)))
     return messages
   }
-  return [message(currentEmail, subjects[action], 'Use this secure link to continue your DailyClarity request.', link(data.token_hash))]
+  return [message(currentEmail(), subjects[action], 'Use this secure link to continue your DailyClarity request.', link(data.token_hash))]
 }

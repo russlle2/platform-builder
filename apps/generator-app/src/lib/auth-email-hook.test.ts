@@ -114,6 +114,21 @@ describe('credential email composition', () => {
     expect(messages[0].to).toBe('new@example.com')
     expect(linkFrom(messages[0]).searchParams.get('token')).toBe('a'.repeat(56))
   })
+  it.each(['', undefined])('allows a phone-only account to verify its first email without inventing an old recipient', (currentEmail) => {
+    const messages = buildAuthEmails(payload('email_change', { token_hash_new: '', token_hash: `pkce_${'a'.repeat(56)}` }, { email: currentEmail, new_email: 'first@example.com' }), config)
+    expect(messages).toHaveLength(1)
+    expect(messages[0].to).toBe('first@example.com')
+    expect(linkFrom(messages[0]).searchParams.get('token')).toBe(`pkce_${'a'.repeat(56)}`)
+    expect(linkFrom(messages[0]).searchParams.get('type')).toBe('email_change')
+  })
+  it.each(['', undefined, 'bad@example.com,other@example.com'])('rejects secure-change proof without a valid current recipient', (currentEmail) => {
+    expect(() => buildAuthEmails(payload('email_change', { token_hash_new: 'b'.repeat(56) }, { email: currentEmail, new_email: 'new@example.com' }), config)).toThrow(AuthEmailHookError)
+  })
+  it('rejects a malformed current proof and retains notification recipient validation', () => {
+    expect(() => buildAuthEmails(payload('email_change', { token_hash_new: false }, { email: '', new_email: 'new@example.com' }), config)).toThrow(AuthEmailHookError)
+    expect(() => buildAuthEmails(payload('password_changed_notification', {}, { email: '' }), config)).toThrow(AuthEmailHookError)
+    expect(() => buildAuthEmails(payload('email_changed_notification', { old_email: 'bad@example.com,other@example.com' }), config)).toThrow(AuthEmailHookError)
+  })
   it('delivers reauthentication as an OTP without inventing a link', () => {
     const [message] = buildAuthEmails(payload('reauthentication'), config)
     expect(message.textBody).toContain('123456')
