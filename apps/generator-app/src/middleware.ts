@@ -37,6 +37,19 @@ function templateCatalogRedirect(req: NextRequest): NextResponse | null {
 }
 
 export default async function middleware(req: NextRequest) {
+  // The callback exchanges the PKCE code and writes its own session cookies.
+  // Netlify applies middleware headers after the route response, so keep this
+  // credential-bearing, script-free completion document private at both layers.
+  if (req.nextUrl.pathname === '/auth/callback') {
+    const response = NextResponse.next()
+    response.headers.set('Cache-Control', 'private, no-store, max-age=0')
+    response.headers.set('Referrer-Policy', 'no-referrer')
+    response.headers.set('X-Robots-Tag', 'noindex, nofollow')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('Content-Security-Policy', "default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+    return response
+  }
   // This server-to-server hook authenticates its raw body with Standard Webhooks.
   // Refreshing a browser session here adds a needless Auth round trip to its 5s budget.
   if (req.nextUrl.pathname === '/api/auth/send-email') {
@@ -73,9 +86,9 @@ export default async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith('/dashboard') && !user) {
     const next = getAuthReturnPath(`${req.nextUrl.pathname}${req.nextUrl.search}`)
     const response = createAuthRedirect(`/login?next=${encodeURIComponent(next)}`)
-    // Netlify's middleware adapter requires an absolute Location. Route-handler
-    // callbacks can remain relative; middleware must use the configured public
-    // origin so cookies stay on that host even behind an immutable deploy URL.
+    // Netlify's middleware adapter requires an absolute Location. Use the
+    // configured public origin so cookies stay on that host even behind an
+    // immutable deployment URL.
     const origin = getTrustedSiteOrigin(req.url)
     if (!origin) {
       return new NextResponse('Authentication is temporarily unavailable.', {

@@ -19,9 +19,9 @@ export function getAuthReturnPath(value: string | null | undefined, depth = 0): 
 }
 
 /**
- * A relative Location keeps the browser's public origin and its session cookies.
- * Hosting adapters can expose an internal deployment origin in request.url;
- * neither that URL nor caller-supplied forwarding headers should choose it.
+ * Create the private redirect headers and a safe local destination. Callers
+ * resolve it against the trusted configured origin when hosting requires an
+ * absolute Location; caller-supplied forwarding headers must not choose it.
  */
 export function createAuthRedirect(path: string): NextResponse {
   return new NextResponse(null, {
