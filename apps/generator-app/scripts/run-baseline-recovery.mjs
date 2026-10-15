@@ -158,7 +158,7 @@ export async function runBaselineRecovery(env = process.env) {
     writeProof: journal => writeFile(path.join(REPO, 'apps/generator-app/public/__dailyclarity_release.json'), core.recoveryDeploymentProofBytes(journal)),
     deploy: async journal => {
       await inspectOriginal()
-      execFileSync('pnpm', ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--build', '--prod', '--context', 'production', '--site', env.NETLIFY_SITE_ID,
+      execFileSync('pnpm', ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--filter', '@platform-builder/generator-app', '--build', '--prod', '--context', 'production', '--site', env.NETLIFY_SITE_ID,
         '--message', `Baseline recovery ${head} journal ${canonicalDigest(journal)}`], { cwd: REPO, stdio: 'inherit', env: { ...env, NEXT_PUBLIC_RELEASE_SHA: head } })
     },
     bindIfChanged,
