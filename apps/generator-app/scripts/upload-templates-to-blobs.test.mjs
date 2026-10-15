@@ -52,12 +52,16 @@ async function writeV3Fixture(templateDir) {
   const treeHash = manifestDigest(records)
   const tree = { version: 1, treeHash, files: records }
   const receiptBody = {
-    version: 1,
+    version: 2,
+    renderProtocol: 'customer-preview-v1',
     legacySlug: 'sample',
     niche: 'aromatherapy',
     sourceHash: TEST_SOURCE_HASH,
     artifactHash: treeHash,
     ruleVersion: 'legacy-repair-v1',
+    repairMode: 'primary',
+    renderRemediation: null,
+    sourcePreserved: true,
     generatedAt: '2026-09-03T12:00:00.000Z',
     checks: {
       static: 'passed',
@@ -72,6 +76,8 @@ async function writeV3Fixture(templateDir) {
       passed: true,
       screenshotSha256: TEST_SCREENSHOT_HASH,
       perceptualHash: TEST_PERCEPTUAL_HASH,
+      thumbnailSha256: 'd'.repeat(64),
+      thumbnailBytes: 1234,
       editSlots: 2,
       imageSlots: 0,
       issues: [],
@@ -158,6 +164,80 @@ test('catalog v3 rejects untracked artifacts and incomplete or tampered browser 
       validateV3QualityReceipt(templateDir, meta).join('\n'),
       /receipt digest is invalid/,
     )
+  } finally {
+    await rm(templateDir, { recursive: true, force: true })
+  }
+})
+
+test('catalog v3 requires the current browser protocol and source-preserving receipt provenance', async () => {
+  const templateDir = await mkdtemp(path.join(tmpdir(), 'dc-uploader-v2-provenance-'))
+  try {
+    const { meta, receipt } = await writeV3Fixture(templateDir)
+    const { id: _id, ...body } = receipt
+    const validateChanges = async (changes) => {
+      const updated = signedReceipt({ ...body, ...changes })
+      await writeFile(path.join(templateDir, '.dailyclarity', 'final-quality-receipt.json'), JSON.stringify(updated))
+      return validateV3QualityReceipt(templateDir, { ...meta, qualityReceipt: updated.id })
+    }
+    for (const changes of [
+      { repairMode: 'cloud_fragment' },
+      { renderRemediation: 'accessibility' },
+    ]) assert.deepEqual(await validateChanges(changes), [], JSON.stringify(changes))
+
+    for (const [changes, expected] of [
+      [{ version: 1 }, /shape is invalid/],
+      [{ version: 3 }, /shape is invalid/],
+      [{ version: '2' }, /shape is invalid/],
+      [{ renderProtocol: undefined }, /browser protocol/],
+      [{ renderProtocol: 'raw-html-v1' }, /browser protocol/],
+      [{ sourcePreserved: false }, /provenance is invalid/],
+      [{ sourcePreserved: undefined }, /provenance is invalid/],
+      [{ repairMode: 'neutral_fallback' }, /provenance is invalid/],
+      [{ repairMode: 'unreviewed' }, /provenance is invalid/],
+      [{ repairMode: undefined }, /provenance is invalid/],
+      [{ renderRemediation: 'neutral' }, /provenance is invalid/],
+      [{ renderRemediation: 'unreviewed' }, /provenance is invalid/],
+      [{ renderRemediation: undefined }, /provenance is invalid/],
+    ]) {
+      const errors = (await validateChanges(changes)).join('\n')
+      assert.match(errors, expected, JSON.stringify(changes))
+      assert.doesNotMatch(errors, /digest is invalid|id does not match/, 'resigned negatives must fail semantic checks')
+    }
+    assert.deepEqual(validateV3QualityReceipt(templateDir, { contractVersion: 2 }), [], 'curated launch exports keep their separate contract')
+  } finally {
+    await rm(templateDir, { recursive: true, force: true })
+  }
+})
+
+test('catalog v3 rejects resigned incomplete thumbnail and nonpassing browser evidence', async () => {
+  const templateDir = await mkdtemp(path.join(tmpdir(), 'dc-uploader-v2-evidence-'))
+  try {
+    const { meta, receipt } = await writeV3Fixture(templateDir)
+    const { id: _id, ...body } = receipt
+    for (const [label, mutate, expected] of [
+      ['missing thumbnail hash', (r) => delete r.pages[0].thumbnailSha256, /invalid browser evidence/],
+      ['invalid thumbnail hash', (r) => r.pages[0].thumbnailSha256 = 'not-a-hash', /invalid browser evidence/],
+      ['missing thumbnail bytes', (r) => delete r.pages[0].thumbnailBytes, /invalid browser evidence/],
+      ['empty thumbnail', (r) => r.pages[0].thumbnailBytes = 0, /invalid browser evidence/],
+      ['negative thumbnail bytes', (r) => r.pages[0].thumbnailBytes = -1, /invalid browser evidence/],
+      ['fractional thumbnail bytes', (r) => r.pages[0].thumbnailBytes = 1.5, /invalid browser evidence/],
+      ['string thumbnail bytes', (r) => r.pages[0].thumbnailBytes = '1234', /invalid browser evidence/],
+      ['failed view', (r) => r.pages[0].passed = false, /invalid browser evidence/],
+      ['reported issue', (r) => r.pages[0].issues.push({ code: 'edit_smoke_failed' }), /invalid browser evidence/],
+      ['failed quality gate', (r) => r.checks.mobile = 'failed', /quality gates passed/],
+      ['serious defect', (r) => r.checks.seriousDefects = 1, /quality gates passed/],
+      ['missing view', (r) => r.pages.pop(), /missing browser evidence/],
+      ['duplicate view', (r) => r.pages.push({ ...r.pages[0] }), /repeats browser evidence/],
+      ['unexpected page', (r) => r.pages.push({ ...r.pages[0], page: 'other.html' }), /unexpected browser evidence/],
+    ]) {
+      const changed = structuredClone(body)
+      mutate(changed)
+      const updated = signedReceipt(changed)
+      await writeFile(path.join(templateDir, '.dailyclarity', 'final-quality-receipt.json'), JSON.stringify(updated))
+      const errors = validateV3QualityReceipt(templateDir, { ...meta, qualityReceipt: updated.id }).join('\n')
+      assert.match(errors, expected, label)
+      assert.doesNotMatch(errors, /digest is invalid|id does not match/, `${label} must fail despite a valid digest`)
+    }
   } finally {
     await rm(templateDir, { recursive: true, force: true })
   }
@@ -329,12 +409,16 @@ async function writeRehabStagingTemplate(root, {
   const treeHash = manifestDigest(records)
   const tree = { version: 1, treeHash, files: records }
   const receiptBody = {
-    version: 1,
+    version: 2,
+    renderProtocol: 'customer-preview-v1',
     legacySlug: slug,
     niche,
     sourceHash: createHash('sha256').update(`source:${niche}/${slug}`).digest('hex'),
     artifactHash: treeHash,
     ruleVersion: 'legacy-rehab-test',
+    repairMode: 'primary',
+    renderRemediation: null,
+    sourcePreserved: true,
     generatedAt: '2026-09-03T12:00:00.000Z',
     checks: {
       static: 'passed',
@@ -349,6 +433,8 @@ async function writeRehabStagingTemplate(root, {
       passed: true,
       screenshotSha256: createHash('sha256').update(`${slug}:${viewport}`).digest('hex'),
       perceptualHash: createHash('sha256').update(`phash:${slug}:${viewport}`).digest('hex').slice(0, 16),
+      thumbnailSha256: createHash('sha256').update(`thumbnail:${slug}:${viewport}`).digest('hex'),
+      thumbnailBytes: 1234,
       editSlots: 2,
       imageSlots: 0,
       issues: [],
