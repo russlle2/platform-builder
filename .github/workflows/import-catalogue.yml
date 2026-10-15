@@ -50,8 +50,6 @@ jobs:
       TRANSPORT_MANIFEST_ASSET_ID: ${{ inputs.manifest_asset_id }}
       TRANSPORT_MANIFEST_HASH: ${{ inputs.manifest_hash }}
       RECEIPT_HASH: ${{ inputs.receipt_hash }}
-      TRANSPORT_WORK_ROOT: ${{ runner.temp }}/catalogue-import
-      HANDOFF_REPORT: ${{ runner.temp }}/catalogue-import-report.json
       HANDOFF_OPERATION: ${{ inputs.operation }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -60,6 +58,10 @@ jobs:
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
+      - name: Set transport paths outside the clean checkout
+        run: |
+          echo "TRANSPORT_WORK_ROOT=$RUNNER_TEMP/catalogue-import" >> "$GITHUB_ENV"
+          echo "HANDOFF_REPORT=$RUNNER_TEMP/catalogue-import-report.json" >> "$GITHUB_ENV"
       - name: Install exact dependencies
         run: |
           corepack enable
