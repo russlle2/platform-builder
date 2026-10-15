@@ -1,20 +1,19 @@
-import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { getSafeRedirectPath } from '@/lib/safe-redirect'
+import { createAuthRedirect, getAuthReturnPath } from '@/lib/auth-redirect'
 
 export async function GET(request: Request) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = getSafeRedirectPath(searchParams.get('next'))
+  const next = getAuthReturnPath(searchParams.get('next'))
 
   if (code) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(new URL(next, origin))
+      return createAuthRedirect(next)
     }
   }
 
-  // Exchange failed — send to login with an error hint.
-  return NextResponse.redirect(new URL('/login?error=auth_callback_failed', origin))
+  // Exchange failed — send to login with an error hint, without the used code.
+  return createAuthRedirect('/login?error=auth_callback_failed')
 }
