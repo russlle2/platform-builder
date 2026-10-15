@@ -29,6 +29,7 @@ function fixtureBrowser(html) {
 const responses = () => [
   new Response(null, { status: 307, headers: { location: '/login?next=%2Fdashboard%3Fsite%3Drelease-check' } }),
   new Response(null, { status: 307, headers: { location: '/login?error=auth_callback_failed' } }),
+  new Response(null, { status: 307, headers: { location: '/login?error=auth_callback_failed' } }),
   new Response('<html><title>Sign In</title><div>Loading</div></html>', { headers: { 'content-type': 'text/html' } }),
 ]
 
@@ -39,7 +40,7 @@ test('a valid Suspense shell is accepted only after independent rendered-form ve
     return queue.shift()
   }, { render: async checkedOrigin => { assert.equal(checkedOrigin, origin); return { signInForm: true, blockedMutationRequests: 0, emailSent: false } } })
   assert.equal(result.signInForm, true); assert.equal(result.emailSent, false)
-  assert.deepEqual(calls, ['/dashboard', '/auth/callback', '/login'].map(pathname => ({ pathname, redirect: 'manual' })))
+  assert.deepEqual(calls, ['/dashboard', '/auth/callback', '/auth/callback', '/login'].map(pathname => ({ pathname, redirect: 'manual' })))
 })
 
 test('wrong hosting redirect or HTTP failure stops before any browser check', async () => {
@@ -47,7 +48,8 @@ test('wrong hosting redirect or HTTP failure stops before any browser check', as
     [0, new Response(null, { status: 500 })],
     [0, new Response(null, { status: 307, headers: { location: 'https://unrelated.example/login' } })],
     [1, new Response(null, { status: 307, headers: { location: '/dashboard' } })],
-    [2, new Response(null, { status: 503 })],
+    [2, new Response(null, { status: 307, headers: { location: '/login?error=auth_callback_failed&code=invalid-release-probe' } })],
+    [3, new Response(null, { status: 503 })],
   ]) {
     const queue = responses(); queue[index] = response
     await assert.rejects(verifyAuthEntrypoint(origin, async () => queue.shift(), { render: async () => assert.fail('must not render after failed redirect') }))

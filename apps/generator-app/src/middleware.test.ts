@@ -72,3 +72,24 @@ describe('signed Auth email hook middleware boundary', () => {
     expect(response.headers.get('referrer-policy')).toBe('no-referrer')
   })
 })
+
+
+describe('private callback middleware boundary', () => {
+  it('leaves code exchange and cookie writes to the callback and enforces its private response headers', async () => {
+    const response = await middleware(new NextRequest('https://dailyclarity-staging.netlify.app/auth/callback?code=unit-test-code'))
+    expect(updateSession).not.toHaveBeenCalled()
+    expect(response.headers.get('x-middleware-next')).toBe('1')
+    expect(response.headers.get('set-cookie')).toBeNull()
+    expect(response.headers.get('location')).toBeNull()
+    expect(response.headers.get('cache-control')).toContain('no-store')
+    expect(response.headers.get('referrer-policy')).toBe('no-referrer')
+    expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow')
+    expect(response.headers.get('x-frame-options')).toBe('DENY')
+    expect(response.headers.get('content-security-policy')).toBe("default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'")
+  })
+
+  it('does not bypass session refresh for similarly named routes', async () => {
+    await middleware(new NextRequest('https://dailyclarity-staging.netlify.app/auth/callback-other'))
+    expect(updateSession).toHaveBeenCalledExactlyOnceWith(expect.any(NextRequest))
+  })
+})

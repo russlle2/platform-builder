@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { chromium } from '@playwright/test'
 
 const ORIGINS = ['https://dailyclarity.org', 'https://dailyclarity-staging.netlify.app']
-const PHASES = new Set(['configuration', 'dashboard_response', 'dashboard_redirect', 'callback_response', 'callback_redirect', 'login_response', 'browser_launch', 'login_navigation', 'email_control', 'submit_control', 'login_origin'])
+const PHASES = new Set(['configuration', 'dashboard_response', 'dashboard_redirect', 'callback_response', 'callback_redirect', 'invalid_callback_response', 'invalid_callback_redirect', 'login_response', 'browser_launch', 'login_navigation', 'email_control', 'submit_control', 'login_origin'])
 const validOrigin = origin => assert(ORIGINS.includes(origin), 'Unexpected Auth probe target')
 
 /** Check the hydrated client form in a fresh, anonymous, read-only browser. */
@@ -62,6 +62,11 @@ export async function verifyAuthEntrypoint(origin, request = fetch, { render = v
   assert([302, 307].includes(callback.status), 'Empty Auth callback did not redirect')
   onPhase('callback_redirect')
   assert.equal(new URL(callback.headers.get('location'), origin).href, origin + '/login?error=auth_callback_failed', 'Empty callback left the public origin')
+  onPhase('invalid_callback_response')
+  const invalidCallback = await get('/auth/callback?code=invalid-release-probe&next=%2Fdashboard')
+  assert([302, 307].includes(invalidCallback.status), 'Invalid Auth callback did not redirect')
+  onPhase('invalid_callback_redirect')
+  assert.equal(new URL(invalidCallback.headers.get('location'), origin).href, origin + '/login?error=auth_callback_failed', 'Invalid callback carried credentials or left the expected sign-in URL')
   onPhase('login_response')
   const page = await get('/login')
   assert.equal(page.status, 200, 'Sign-in page is unavailable')
@@ -69,7 +74,7 @@ export async function verifyAuthEntrypoint(origin, request = fetch, { render = v
   // the actual hydrated controls below instead of searching initial HTML text.
   await page.body?.cancel()
   const rendered = await render(origin, { onPhase })
-  return { dashboardRedirect: true, callbackRedirect: true, signInPage: true, ...rendered }
+  return { dashboardRedirect: true, callbackRedirect: true, invalidCallbackRedirect: true, signInPage: true, ...rendered }
 }
 
 export function safeAuthProbeFailure(phase) {
