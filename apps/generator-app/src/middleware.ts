@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
+import { createAuthRedirect, getAuthReturnPath } from '@/lib/auth-redirect'
 
 /** Public template catalog routes redirect to intake; portal edit keeps ?portalSlug= */
 function templateCatalogRedirect(req: NextRequest): NextResponse | null {
@@ -69,9 +70,10 @@ export default async function middleware(req: NextRequest) {
 
   // Protect /dashboard: unauthenticated visitors are sent to /login.
   if (req.nextUrl.pathname.startsWith('/dashboard') && !user) {
-    const loginUrl = new URL('/login', req.url)
-    loginUrl.searchParams.set('next', req.nextUrl.pathname)
-    return NextResponse.redirect(loginUrl)
+    const next = getAuthReturnPath(`${req.nextUrl.pathname}${req.nextUrl.search}`)
+    const response = createAuthRedirect(`/login?next=${encodeURIComponent(next)}`)
+    for (const cookie of supabaseResponse.cookies.getAll()) response.cookies.set(cookie)
+    return response
   }
 
   // Apply security headers to the final response.
