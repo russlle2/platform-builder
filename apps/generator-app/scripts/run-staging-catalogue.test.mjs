@@ -62,8 +62,38 @@ function fixture() {
 }
 async function stage() { const f = fixture(); await orchestrateStaging(f.config, f.deps); return f }
 
+test('explicit uploaded-snapshot recovery verifies existing bytes without rewriting template payloads', async () => {
+  const f = await stage()
+  await transitionStaging(f.deps, f.journal, false)
+  f.deps.store.writes = []; f.events.length = 0
+  const result = await orchestrateStaging({ ...f.config, existingReceiptHash: canonicalDigest(prepared.receipt) }, f.deps)
+  assert.equal(result.templates, 5486)
+  assert.deepEqual(f.deps.store.writes, ['_active.json'])
+  assert.equal(f.events.includes('deploy'), true)
+})
+
+test('uploaded-snapshot recovery refuses actual missing or corrupt payloads before activation', async () => {
+  for (const corrupt of [false, true]) {
+    const f = await stage()
+    await transitionStaging(f.deps, f.journal, false)
+    const key = `catalogs/${prepared.receipt.catalogHash}/${prepared.files[0].key}`
+    if (corrupt) f.deps.store.data.set(key, Buffer.from('corrupt payload'))
+    else f.deps.store.data.delete(key)
+    f.deps.store.writes = []; f.events.length = 0
+    await assert.rejects(orchestrateStaging({ ...f.config, existingReceiptHash: canonicalDigest(prepared.receipt) }, f.deps), /missing or corrupt/)
+    assert.deepEqual(f.deps.store.writes, [])
+    assert.equal(await f.deps.store.get('_active.json'), null)
+    assert.equal(f.site.published_deploy.id, oldId)
+    assert.equal(f.events.some(event => event === 'deploy' || event.startsWith('env:')), false)
+  }
+})
+
 test('configuration defaults to verify and rejects production, unrelated main or missing explicit approval', () => {
   assert.equal(stagingConfiguration(env()).operation, 'verify')
+  const existing = canonicalDigest(prepared.receipt)
+  assert.equal(stagingConfiguration({ ...env(), OPERATION: 'stage', CONFIRMATION: 'STAGE FULL CATALOGUE', EXISTING_RECEIPT_HASH: existing }).existingReceiptHash, existing)
+  assert.throws(() => stagingConfiguration({ ...env(), EXISTING_RECEIPT_HASH: existing }), /outside staging/)
+  assert.throws(() => stagingConfiguration({ ...env(), OPERATION: 'stage', CONFIRMATION: 'STAGE FULL CATALOGUE', EXISTING_RECEIPT_HASH: 'unreviewed' }), /invalid/)
   for (const [key, value] of Object.entries({ NETLIFY_SITE_ID: '4a98d266-bb9f-44ab-bf27-30597d741705', DAILYCLARITY_ENVIRONMENT: 'production', NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: 'psxmvaushwsboogfnyqi', GITHUB_REF: 'refs/heads/other' })) assert.throws(() => stagingConfiguration({ ...env(), [key]: value }))
   for (const operation of ['stage', 'rollback', 'reapply']) assert.throws(() => stagingConfiguration({ ...env(), OPERATION: operation }), /confirmation/)
 })

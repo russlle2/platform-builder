@@ -20,6 +20,10 @@ on:
         description: 'Reviewed canonical full certification hash (verify/stage)'
         required: false
         type: string
+      existing_receipt_hash:
+        description: 'Optional exact existing certification hash: verify and reuse its identical uploaded catalogue without re-uploading'
+        required: false
+        type: string
       previous_deployment_id:
         description: 'Independently reviewed healthy launch60 staging deployment ID (stage)'
         required: false
@@ -57,6 +61,7 @@ jobs:
       CANDIDATE_RUN_ID: ${{ inputs.candidate_run_id }}
       CANDIDATE_ARTIFACT_ID: ${{ inputs.candidate_artifact_id }}
       RECEIPT_HASH: ${{ inputs.receipt_hash }}
+      EXISTING_RECEIPT_HASH: ${{ inputs.existing_receipt_hash }}
       JOURNAL_HASH: ${{ inputs.journal_hash }}
       EXPECTED_PREVIOUS_DEPLOYMENT_ID: ${{ inputs.previous_deployment_id }}
       EXPECTED_PREVIOUS_RELEASE_SHA: ${{ inputs.previous_release_sha }}

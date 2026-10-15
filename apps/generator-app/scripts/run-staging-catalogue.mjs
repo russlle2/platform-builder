@@ -11,6 +11,8 @@ import { verifyCandidate, candidateInventory, createGithub } from './catalogue-h
 import { publishRehabStagingCatalog, createRehabStagingActivePointer, validateLaunchCatalogManifest } from './upload-templates-to-blobs.mjs'
 import { assertNetlifyTarget, assertNetlifyRuntimeEnvironment } from './netlify-target-contract.mjs'
 import { createRuntimeReport, assertRuntimeReport, LAUNCH_RUNTIME_APPROVAL } from './deployed-runtime-report.mjs'
+import { createReleaseReadAccess, createReleaseDiagnostics, ReleaseHttpError } from './release-read-retry.mjs'
+import { reuseStagingSnapshot } from './reuse-staging-snapshot.mjs'
 
 export const STAGING = Object.freeze({ siteId: 'e5f283c4-d2f2-4fc9-965d-f67f9875c074', accountId: '6974219b1ab3798c7aed8c8a', accountSlug: 'christopherlake96', hostname: 'dailyclarity-staging.netlify.app', projectRef: 'yuviqftugmasjypkhrpo', store: 'templates-rehab-staging', auditStore: 'dailyclarity-staging-catalogue-journals' })
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -23,6 +25,7 @@ const must = (condition, message) => { if (!condition) throw new Error(message) 
 const same = (left, right) => canonicalDigest(left) === canonicalDigest(right)
 const recordPrefix = journal => `journals/${canonicalDigest(journal)}`
 const confirms = { stage: 'STAGE FULL CATALOGUE', rollback: 'ROLLBACK STAGING CATALOGUE', reapply: 'REAPPLY STAGING CATALOGUE' }
+const phase = (deps, name, operation, detail) => deps.diagnostics ? deps.diagnostics.run(name, operation, detail) : operation()
 
 export function stagingConfiguration(env) {
   const operation = env.OPERATION || 'verify'
@@ -33,8 +36,9 @@ export function stagingConfiguration(env) {
   for (const key of ['CANDIDATE_BUNDLE', 'STAGING_JOURNAL_OUTPUT']) must(path.isAbsolute(env[key] || '') && path.relative(ROOT, env[key]).startsWith(`..${path.sep}`), `${key} must be outside the clean checkout`)
   if (['verify', 'stage'].includes(operation)) must(HASH.test(env.RECEIPT_HASH ?? ''), 'Exact candidate certification hash is required')
   if (operation === 'stage') must(ID.test(env.EXPECTED_PREVIOUS_DEPLOYMENT_ID ?? '') && SHA.test(env.EXPECTED_PREVIOUS_RELEASE_SHA ?? ''), 'Reviewed previous staging deployment and release are required')
+  if (env.EXISTING_RECEIPT_HASH) must(operation === 'stage' && HASH.test(env.EXISTING_RECEIPT_HASH), 'Existing remote certification hash is invalid or used outside staging')
   if (['rollback', 'reapply'].includes(operation)) must(HASH.test(env.JOURNAL_HASH ?? ''), 'Exact saved staging journal hash is required')
-  return { operation, bundle: env.CANDIDATE_BUNDLE, output: env.STAGING_JOURNAL_OUTPUT, receiptHash: env.RECEIPT_HASH, journalHash: env.JOURNAL_HASH, previousDeploymentId: env.EXPECTED_PREVIOUS_DEPLOYMENT_ID, previousReleaseSha: env.EXPECTED_PREVIOUS_RELEASE_SHA, head: env.GITHUB_SHA }
+  return { operation, bundle: env.CANDIDATE_BUNDLE, output: env.STAGING_JOURNAL_OUTPUT, receiptHash: env.RECEIPT_HASH, existingReceiptHash: env.EXISTING_RECEIPT_HASH || null, journalHash: env.JOURNAL_HASH, previousDeploymentId: env.EXPECTED_PREVIOUS_DEPLOYMENT_ID, previousReleaseSha: env.EXPECTED_PREVIOUS_RELEASE_SHA, head: env.GITHUB_SHA }
 }
 
 export function assertStagingSite(site) {
@@ -202,8 +206,9 @@ async function attest(deps, journal, binding, next) {
   return { journalHash: canonicalDigest(journal), receiptHash: journal.receiptHash, deploymentId: state.site.published_deploy.id, profile: report.templateCatalogProfile, templates: report.publishedTemplateCount, releaseSha: report.deploymentReleaseSha, fullCatalogueProductionApproval: false }
 }
 export async function transitionStaging(deps, journal, next) {
-  const binding = await bindStagingDeployment(deps, journal)
-  if (next) { must(binding, 'Candidate deployment has not been bound; use rollback after an interrupted build'); await verifySnapshot(deps.store, createCertifiedPointer(journal.receipt)) }
+  const binding = await phase(deps, 'bind-deployment', () => bindStagingDeployment(deps, journal))
+  if (next) { must(binding, 'Candidate deployment has not been bound; use rollback after an interrupted build'); await phase(deps, 'verify-snapshot', () => verifySnapshot(deps.store, createCertifiedPointer(journal.receipt)), { expectedFiles: journal.receipt.files }) }
+  deps.diagnostics?.phase('restore-transition')
   await guardedState(deps, journal, binding)
   await immutableJson(deps.audit, `${recordPrefix(journal)}/${next ? 'reapply' : 'rollback'}-intent.json`, { journalHash: canonicalDigest(journal), destination: next ? 'candidate' : 'original' })
   await writePointer(deps, journal, binding, next)
@@ -212,21 +217,21 @@ export async function transitionStaging(deps, journal, next) {
   const current = await guardedState(deps, journal, binding)
   const desired = next ? binding.deploymentId : journal.previousDeploymentId
   if (current.site.published_deploy.id !== desired) await deps.restore(desired)
-  const result = await attest(deps, journal, binding, next)
-  await immutableJson(deps.audit, `${recordPrefix(journal)}/${next ? 'reapply' : 'rollback'}-attested.json`, result)
+  const result = await phase(deps, 'attest-runtime', () => attest(deps, journal, binding, next))
+  await phase(deps, 'preserve-attestation', () => immutableJson(deps.audit, `${recordPrefix(journal)}/${next ? 'reapply' : 'rollback'}-attested.json`, result))
   return result
 }
 
 export async function orchestrateStaging(config, deps) {
   if (['rollback', 'reapply'].includes(config.operation)) {
-    const journal = validateStagingJournal(await deps.loadJournal(), config.journalHash)
+    const journal = await phase(deps, 'load-journal', async () => validateStagingJournal(await deps.loadJournal(), config.journalHash))
     must(config.operation === 'rollback' || journal.receipt.releaseSha === config.head, 'Reapply requires the original candidate release commit')
-    await preserveJournal(deps, journal)
-    if (config.operation === 'reapply') await deps.checkRelease()
+    await phase(deps, 'preserve-journal', () => preserveJournal(deps, journal))
+    if (config.operation === 'reapply') await phase(deps, 'check-release', () => deps.checkRelease())
     return transitionStaging(deps, journal, config.operation === 'reapply')
   }
-  await deps.checkRelease()
-  const { prepared } = await deps.verifyCandidate()
+  await phase(deps, 'check-release', () => deps.checkRelease())
+  const { prepared } = await phase(deps, 'verify-candidate', () => deps.verifyCandidate())
   must(canonicalDigest(prepared.receipt) === config.receiptHash && prepared.receipt.releaseSha === config.head, 'Candidate verification does not match approved receipt and commit')
   if (config.operation === 'verify') {
     const site = await deps.site(); assertStagingSite(site)
@@ -234,31 +239,39 @@ export async function orchestrateStaging(config, deps) {
     must(SHA.test(runtime.deploymentReleaseSha ?? ''), 'Staging runtime release is unavailable')
     return { receiptHash: config.receiptHash, previousDeploymentId: site.published_deploy.id, previousReleaseSha: runtime.deploymentReleaseSha, providerWrites: false }
   }
-  const journal = await captureStagingJournal(deps, prepared, config)
-  await guardedState(deps, journal, null)
-  await publishRehabStagingCatalog({ store: deps.store, ...prepared, activate: false, activatedAt: journal.createdAt })
-  await immutableJson(deps.store, `certifications/${journal.receiptHash}.json`, journal.receipt)
-  await verifySnapshot(deps.store, createCertifiedPointer(journal.receipt))
-  await writePointer(deps, journal, null, true)
-  await writeProfile(deps, journal, null, true)
-  await deps.writeProof(journal)
+  const journal = await phase(deps, 'capture-baseline', () => captureStagingJournal(deps, prepared, config))
+  await phase(deps, 'guard-before-upload', () => guardedState(deps, journal, null))
+  if (config.existingReceiptHash) {
+    await phase(deps, 'reuse-snapshot', () => reuseStagingSnapshot({ store: deps.store, receipt: journal.receipt, existingReceiptHash: config.existingReceiptHash }), { expectedFiles: journal.receipt.files })
+  } else {
+    await phase(deps, 'upload-snapshot', () => publishRehabStagingCatalog({ store: deps.store, ...prepared, activate: false, activatedAt: journal.createdAt }), { expectedFiles: journal.receipt.files })
+    await phase(deps, 'write-certification', () => immutableJson(deps.store, `certifications/${journal.receiptHash}.json`, journal.receipt))
+    await phase(deps, 'verify-snapshot', () => verifySnapshot(deps.store, createCertifiedPointer(journal.receipt)), { expectedFiles: journal.receipt.files })
+  }
+  await phase(deps, 'activate-pointer', () => writePointer(deps, journal, null, true))
+  await phase(deps, 'activate-profile', () => writeProfile(deps, journal, null, true))
+  await phase(deps, 'write-deployment-proof', () => deps.writeProof(journal))
   try {
-    await guardedState(deps, journal, null)
-    await deps.deploy(journal)
-  } finally { await bindStagingDeployment(deps, journal) }
-  const result = await attest(deps, journal, await bindingFor(deps, journal), true)
-  await immutableJson(deps.audit, `${recordPrefix(journal)}/stage-attested.json`, result)
+    await phase(deps, 'guard-before-deploy', () => guardedState(deps, journal, null))
+    await phase(deps, 'deploy-application', () => deps.deploy(journal))
+  } finally { await phase(deps, 'bind-deployment', () => bindStagingDeployment(deps, journal)) }
+  const result = await phase(deps, 'attest-runtime', async () => attest(deps, journal, await bindingFor(deps, journal), true))
+  await phase(deps, 'preserve-attestation', () => immutableJson(deps.audit, `${recordPrefix(journal)}/stage-attested.json`, result))
   return result
 }
 
-export async function runStagingCatalogue(env = process.env) {
+export async function runStagingCatalogue(env = process.env, diagnostics = createReleaseDiagnostics('staging-catalogue')) {
   const config = stagingConfiguration(env)
   must(env.NETLIFY_AUTH_TOKEN && env.INTERNAL_ADMIN_TOKEN, 'Protected staging provider credentials are incomplete')
   const head = reviewedHead(); must(head === config.head, 'Workflow checkout differs from its exact main commit')
+  const reads = createReleaseReadAccess({ onRead: diagnostics.read, onRetry: diagnostics.retry })
   const api = async (resource, method = 'GET', body) => {
-    const response = await fetch(`https://api.netlify.com/api/v1/${resource}`, { method, headers: { authorization: `Bearer ${env.NETLIFY_AUTH_TOKEN}`, accept: 'application/json', ...(body ? { 'content-type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined, redirect: 'error', signal: AbortSignal.timeout(30_000) })
-    must(response.ok, `Staging provider request failed (${response.status})`)
-    return response.status === 204 ? null : response.json()
+    const request = async () => {
+      const response = await reads.fetch(`https://api.netlify.com/api/v1/${resource}`, { method, headers: { authorization: `Bearer ${env.NETLIFY_AUTH_TOKEN}`, accept: 'application/json', ...(body ? { 'content-type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined, redirect: 'error', signal: AbortSignal.timeout(30_000) })
+      if (!response.ok) throw new ReleaseHttpError(response.status)
+      return response.status === 204 ? null : response.json()
+    }
+    return method === 'GET' ? reads.read(request) : request()
   }
   const accountPath = `accounts/${STAGING.accountId}/env`
   const envPath = `${accountPath}?site_id=${STAGING.siteId}`
@@ -268,14 +281,16 @@ export async function runStagingCatalogue(env = process.env) {
     must(activeValue(variables.find(item => item.key === 'BOOKING_KIT_ENABLED')) !== 'true', 'Booking Kit must remain disabled during catalogue transition')
     return variables
   }
-  const store = name => getStore({ name, consistency: 'strong', siteID: STAGING.siteId, token: env.NETLIFY_AUTH_TOKEN })
+  const store = name => reads.store(getStore({ name, consistency: 'strong', siteID: STAGING.siteId, token: env.NETLIFY_AUTH_TOKEN, fetch: reads.fetch }))
   const deps = {
+    diagnostics,
     store: store(STAGING.store), launch: store('templates'), audit: store(STAGING.auditStore),
     site: () => api(`sites/${STAGING.siteId}`), environment,
-    runtime: async () => {
-      const response = await fetch(`https://${STAGING.hostname}/api/integrations/status`, { headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}` }, redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(25_000) })
-      must(response.ok, 'Staging runtime status is unavailable'); return response.json()
-    },
+    runtime: () => reads.read(async () => {
+      const response = await reads.fetch(`https://${STAGING.hostname}/api/integrations/status`, { headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}` }, redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(25_000) })
+      if (!response.ok) throw new ReleaseHttpError(response.status)
+      return response.json()
+    }),
     deployment: id => api(`deploys/${id}`), deploymentFile: () => api(`sites/${STAGING.siteId}/files/__dailyclarity_release.json`),
     restore: id => api(`sites/${STAGING.siteId}/deploys/${id}/restore`, 'POST'),
     setProfile: async (key, desired) => {
@@ -297,6 +312,7 @@ export async function runStagingCatalogue(env = process.env) {
     deploy: async journal => execFileSync('pnpm', ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--filter', '@platform-builder/generator-app', '--build', '--prod', '--context', 'production', '--site', STAGING.siteId, '--message', stagingDeploymentTitle(journal)], { cwd: ROOT, stdio: 'inherit', env: { ...env, NEXT_PUBLIC_RELEASE_SHA: head } }),
   }
   const result = await orchestrateStaging(config, deps)
+  diagnostics.phase('completed')
   console.log(JSON.stringify({ operation: config.operation, ...result }))
   return result
 }
@@ -319,6 +335,7 @@ async function checkJournalSource(env) {
   console.log(JSON.stringify(assertJournalArtifactSource(run, artifact, env.CANDIDATE_RUN_ID, env.CANDIDATE_ARTIFACT_ID)))
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const task = process.argv[2] === 'check-journal-source' ? checkJournalSource(process.env) : runStagingCatalogue()
-  task.catch(() => { console.error('Staging catalogue operation failed; retain its journal and verify the current deployment, pointer and profile before retrying. Provider details suppressed.'); process.exitCode = 1 })
+  const diagnostics = createReleaseDiagnostics('staging-catalogue')
+  const task = process.argv[2] === 'check-journal-source' ? diagnostics.run('check-journal-source', () => checkJournalSource(process.env)) : runStagingCatalogue(process.env, diagnostics)
+  task.catch(error => { diagnostics.failure(error); console.error('Staging catalogue operation failed; retain its journal and verify the current deployment, pointer and profile before retrying. Provider details suppressed.'); process.exitCode = 1 })
 }

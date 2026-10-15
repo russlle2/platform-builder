@@ -121,6 +121,34 @@ test('rollback target check does not call unhealthy application or need its admi
     assert.equal(calls.length, 1)
   } finally { globalThis.fetch = priorFetch }
 })
+test('production target retries transient API GET and SDK signing reads while terminal authorization fails once', async () => {
+  const priorFetch = globalThis.fetch
+  const env = { DAILYCLARITY_ENVIRONMENT: 'production', NETLIFY_SITE_ID: PRODUCTION_NETLIFY_SITE_ID, NETLIFY_EXPECTED_SITE_ID: PRODUCTION_NETLIFY_SITE_ID, NETLIFY_EXPECTED_ACCOUNT_SLUG: 'account', NETLIFY_EXPECTED_SITE_HOSTNAME: 'dailyclarity.org', NETLIFY_AUTH_TOKEN: 'test-only' }
+  const counts = { site: 0, signing: 0, payload: 0 }
+  globalThis.fetch = async url => {
+    const u = new URL(url)
+    if (u.pathname === `/api/v1/sites/${PRODUCTION_NETLIFY_SITE_ID}`) {
+      counts.site++
+      if (counts.site === 1) return new Response('', { status: 503 })
+      return Response.json({ id: PRODUCTION_NETLIFY_SITE_ID, account_slug: 'account', ssl_url: 'https://dailyclarity.org', published_deploy: { id: 'old' } })
+    }
+    if (u.host === 'api.netlify.com') {
+      counts.signing++
+      if (counts.signing === 1) return new Response('', { status: 503, headers: { 'x-nf-error': 'PRIVATE-PROVIDER-BODY' } })
+      return Response.json({ url: 'https://example.invalid/payload' })
+    }
+    counts.payload++; return new Response('verified payload')
+  }
+  try {
+    const target = await connectedTarget(env, { readRuntime: false })
+    assert.equal(await target.store.get('fixture'), 'verified payload')
+    assert.deepEqual(counts, { site: 2, signing: 2, payload: 1 })
+    let deniedCalls = 0
+    globalThis.fetch = async () => { deniedCalls++; return new Response('PRIVATE-PROVIDER-BODY', { status: 401 }) }
+    await assert.rejects(connectedTarget(env, { readRuntime: false }), error => error.status === 401 && !error.message.includes('PRIVATE'))
+    assert.equal(deniedCalls, 1)
+  } finally { globalThis.fetch = priorFetch }
+})
 test('certification binds actual clean Git HEAD and rejects uncommitted source', async () => {
   const dir = await mkdtemp(path.join(tmpdir(), 'cert-head-'))
   const git = (args) => execFileSync('git', args, { cwd: dir, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim()

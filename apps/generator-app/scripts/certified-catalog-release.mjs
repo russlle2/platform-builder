@@ -8,6 +8,7 @@ import { getStore } from '@netlify/blobs'
 import { CERTIFIED_STORE, CERTIFIED_TOTAL, canonicalDigest, createCertifiedPointer, validateCertification, validateCertifiedPointer, assertCatalogDeployment, forEachBounded } from '../src/lib/templates/certified-catalog-contract.mjs'
 import { main as validateUpload, manifestDigest, publishRehabStagingCatalog, validateRehabV3StagingCatalogManifest, validateV3QualityReceipt, validateLaunchCatalogManifest } from './upload-templates-to-blobs.mjs'
 import { assertNetlifyTarget } from './netlify-target-contract.mjs'
+import { createReleaseReadAccess, createReleaseDiagnostics, ReleaseHttpError, safeReleaseError } from './release-read-retry.mjs'
 
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex')
 const json = async (file) => JSON.parse(await readFile(file, 'utf8'))
@@ -238,9 +239,13 @@ export async function rollbackCertifiedCatalog({ store, launchStore, record, sit
 }
 
 async function api(resource, env, method = 'GET') {
-  const response = await fetch(`https://api.netlify.com/api/v1/${resource}`, { method, headers: { authorization: `Bearer ${env.NETLIFY_AUTH_TOKEN}` }, signal: AbortSignal.timeout(30_000) })
-  if (!response.ok) throw new Error(`Netlify release API failed (${response.status})`)
-  return response.json()
+  const reads = createReleaseReadAccess()
+  const request = async () => {
+    const response = await reads.fetch(`https://api.netlify.com/api/v1/${resource}`, { method, headers: { authorization: `Bearer ${env.NETLIFY_AUTH_TOKEN}` }, signal: AbortSignal.timeout(30_000) })
+    if (!response.ok) throw new ReleaseHttpError(response.status)
+    return response.json()
+  }
+  return method === 'GET' ? reads.read(request) : request()
 }
 
 export async function connectedTarget(env, { readRuntime = true } = {}) {
@@ -248,11 +253,17 @@ export async function connectedTarget(env, { readRuntime = true } = {}) {
   if (!env.NETLIFY_AUTH_TOKEN || (readRuntime && !env.INTERNAL_ADMIN_TOKEN)) throw new Error('Release credentials are incomplete')
   const site = await api(`sites/${encodeURIComponent(env.NETLIFY_SITE_ID)}`, env)
   assertNetlifyTarget(site, { environment: 'production', configuredSiteId: env.NETLIFY_SITE_ID, expectedSiteId: env.NETLIFY_EXPECTED_SITE_ID, expectedHostname: env.NETLIFY_EXPECTED_SITE_HOSTNAME, expectedAccountSlug: env.NETLIFY_EXPECTED_ACCOUNT_SLUG })
-  const stores = { site, store: getStore({ name: CERTIFIED_STORE, consistency: 'strong', siteID: site.id, token: env.NETLIFY_AUTH_TOKEN }), launchStore: getStore({ name: 'templates', consistency: 'strong', siteID: site.id, token: env.NETLIFY_AUTH_TOKEN }) }
+  const diagnostics = createReleaseDiagnostics('certified-release')
+  diagnostics.phase('connected-target')
+  const reads = createReleaseReadAccess({ onRead: diagnostics.read, onRetry: diagnostics.retry })
+  const store = name => reads.store(getStore({ name, consistency: 'strong', siteID: site.id, token: env.NETLIFY_AUTH_TOKEN, fetch: reads.fetch }))
+  const stores = { site, store: store(CERTIFIED_STORE), launchStore: store('templates') }
   if (!readRuntime) return stores
-  const response = await fetch(`https://${env.NETLIFY_EXPECTED_SITE_HOSTNAME}/api/integrations/status`, { headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}` }, cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(20_000) })
-  if (!response.ok) throw new Error('Cannot attest the current deployment before catalogue mutation')
-  const runtime = await response.json()
+  const runtime = await reads.read(async () => {
+    const response = await reads.fetch(`https://${env.NETLIFY_EXPECTED_SITE_HOSTNAME}/api/integrations/status`, { headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}` }, cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(20_000) })
+    if (!response.ok) throw new ReleaseHttpError(response.status)
+    return response.json()
+  })
   if (runtime.deploymentSiteId !== site.id || !/^[a-f0-9]{40}$/.test(runtime.deploymentReleaseSha ?? '')) throw new Error('Current deployment identity is unavailable')
   return { ...stores, runtime }
 }
@@ -346,4 +357,4 @@ export async function main(args = process.argv.slice(2), env = process.env) {
   console.log(`Activated certification ${receiptHash}; rollback record hash ${canonicalDigest(journal)}`)
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((error) => { console.error(error.message); process.exitCode = 1 })
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main().catch((error) => { console.error(JSON.stringify({ kind: 'certified-release-failure', ...safeReleaseError(error) })); process.exitCode = 1 })
