@@ -98,6 +98,21 @@ test('cleans empty unstyled anchors and exposes explicitly hidden decorative wra
   assert.ok(!css.includes('.cta>*'));
 });
 
+test('classifies decorative image children before their background wrappers in one pass', () => {
+  const repaired = repairPage('<div class="page-bg"><img class="bg-pattern" src="assets/pattern.svg" alt="Subtle background pattern"></div><div class="meaningful-bg"><img src="assets/portrait.jpg" alt="Practitioner portrait"></div><div class="interactive-bg"><img class="bg-pattern" src="assets/pattern.svg" alt="Subtle background pattern"><button>Open details</button></div><main><h1>{{BUSINESS_NAME}}</h1><p>Customer copy</p><a href="mailto:{{EMAIL}}">Email</a></main>', options);
+  const nodes = elements(repaired.html);
+  const background = nodes.find(n => attr(n, 'class') === 'page-bg')!;
+  assert.equal(attr(background, 'data-dc-decoration'), 'pointer-layer');
+  assert.equal(attr(background, 'aria-hidden'), 'true');
+  for (const className of ['meaningful-bg', 'interactive-bg']) {
+    const preserved = nodes.find(n => attr(n, 'class') === className)!;
+    assert.equal(attr(preserved, 'data-dc-decoration'), undefined);
+    assert.equal(attr(preserved, 'aria-hidden'), undefined);
+  }
+  assert.ok(attr(nodes.find(n => n.tagName === 'p')!, 'data-dc-edit-id'));
+  assert.equal(repairPage(repaired.html, options).html, repaired.html);
+});
+
 test('preserves monogram intent from initial expressions and already materialized compiler defaults', () => {
   const repaired = repairPage('<main><h1>{{BUSINESS_NAME}}</h1><div class="logo">{{PRACTITIONER_NAME|slice:0,1}}</div><div class="avatar">Contact the practice for current details.</div><p>Contact the practice for current details.</p><a href="mailto:{{EMAIL}}">Email</a></main>', options);
   const nodes = elements(repaired.html);
