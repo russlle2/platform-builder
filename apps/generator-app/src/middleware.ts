@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 import { createAuthRedirect, getAuthReturnPath } from '@/lib/auth-redirect'
+import { getTrustedSiteOrigin } from '@/lib/site-origin'
 
 /** Public template catalog routes redirect to intake; portal edit keeps ?portalSlug= */
 function templateCatalogRedirect(req: NextRequest): NextResponse | null {
@@ -72,6 +73,17 @@ export default async function middleware(req: NextRequest) {
   if (req.nextUrl.pathname.startsWith('/dashboard') && !user) {
     const next = getAuthReturnPath(`${req.nextUrl.pathname}${req.nextUrl.search}`)
     const response = createAuthRedirect(`/login?next=${encodeURIComponent(next)}`)
+    // Netlify's middleware adapter requires an absolute Location. Route-handler
+    // callbacks can remain relative; middleware must use the configured public
+    // origin so cookies stay on that host even behind an immutable deploy URL.
+    const origin = getTrustedSiteOrigin(req.url)
+    if (!origin) {
+      return new NextResponse('Authentication is temporarily unavailable.', {
+        status: 503,
+        headers: { 'Cache-Control': 'private, no-store, max-age=0' },
+      })
+    }
+    response.headers.set('Location', new URL(response.headers.get('Location')!, origin).href)
     for (const cookie of supabaseResponse.cookies.getAll()) response.cookies.set(cookie)
     return response
   }
