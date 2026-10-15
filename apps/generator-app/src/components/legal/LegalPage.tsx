@@ -29,14 +29,7 @@ export function LegalPage({
         </div>
 
         <footer className="border-t border-white/10 bg-slate-950/40 px-6 py-6 text-sm text-slate-400 sm:px-10">
-          Questions about this policy? Email{' '}
-          <a
-            href="mailto:support@dailyclarity.org"
-            className="font-medium text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200"
-          >
-            support@dailyclarity.org
-          </a>{' '}
-          or use our{' '}
+          Questions about this policy? Use our{' '}
           <Link
             href="/contact"
             className="font-medium text-cyan-300 underline decoration-cyan-400/40 underline-offset-4 hover:text-cyan-200"

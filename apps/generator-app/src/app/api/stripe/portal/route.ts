@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error:
-          'No Stripe customer record found. Contact support@dailyclarity.org for billing assistance.',
+          'Billing is not linked to this website yet. Use the contact form at /contact for help.',
       },
       { status: 400 },
     )

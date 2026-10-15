@@ -11,6 +11,17 @@
 
 const POSTMARK_API = 'https://api.postmarkapp.com/email'
 
+/** Accept a single plain mailbox, never a masked value or header/list syntax. */
+function configuredReplyAddress(value: string | undefined): string | undefined {
+  const address = value?.trim()
+  if (!address || address.length > 254 || address.split('@')[0].length > 64
+    || !/^[A-Za-z0-9.!#$%&'+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)+$/.test(address)) return undefined
+  const [local, domain] = address.split('@')
+  if (local.startsWith('.') || local.endsWith('.') || local.includes('..')
+    || domain.split('.').some((label) => label.length > 63)) return undefined
+  return address
+}
+
 interface SendEmailOptions {
   to: string
   subject: string
@@ -24,6 +35,8 @@ interface SendEmailOptions {
   messageStream?: string
   /** Disable provider tracking for private credential delivery. */
   disableTracking?: boolean
+  /** Shorter deadline for synchronous Auth hooks; existing mail uses 10s. */
+  timeoutMs?: number
 }
 
 interface PostmarkResponse {
@@ -42,6 +55,10 @@ interface PostmarkResponse {
 export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResponse> {
   const token = process.env.POSTMARK_SERVER_TOKEN
   const defaultFrom = process.env.EMAIL_FROM_ADDRESS
+  const timeoutMs = options.timeoutMs ?? 10_000
+  if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 10_000) {
+    throw new Error('Email timeout must be between 1 and 10000 milliseconds.')
+  }
 
   if (!token) {
     throw new Error('POSTMARK_SERVER_TOKEN is not configured.')
@@ -56,29 +73,37 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
     Subject: options.subject,
     HtmlBody: options.htmlBody,
     TextBody: options.textBody || stripHtml(options.htmlBody),
-    ReplyTo: options.replyTo || undefined,
+    ReplyTo: options.replyTo || configuredReplyAddress(process.env.EMAIL_REPLY_TO_ADDRESS)
+      || configuredReplyAddress(process.env.PLATFORM_OWNER_EMAIL),
     MessageStream: options.messageStream || 'outbound',
     ...(options.disableTracking ? { TrackOpens: false, TrackLinks: 'None' } : {}),
   }
 
-  const response = await fetch(POSTMARK_API, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      'X-Postmark-Server-Token': token,
-    },
-    body: JSON.stringify(body),
-    signal: AbortSignal.timeout(10_000),
-  })
+  try {
+    const response = await fetch(POSTMARK_API, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'X-Postmark-Server-Token': token,
+      },
+      body: JSON.stringify(body),
+      redirect: 'error',
+      signal: AbortSignal.timeout(timeoutMs),
+    })
 
-  const data: PostmarkResponse = await response.json()
+    if (!response.ok) throw new Error('Email provider rejected the request.')
+    const data: PostmarkResponse = await response.json()
 
-  if (!response.ok || data.ErrorCode !== 0) {
-    throw new Error(`Postmark error ${data.ErrorCode}: ${data.Message}`)
+    if (!data || data.ErrorCode !== 0) {
+      throw new Error('Email provider rejected the request.')
+    }
+
+    return data
+  } catch {
+    // Provider/transport messages may repeat recipient addresses or credential links.
+    throw new Error('Email delivery request failed.')
   }
-
-  return data
 }
 
 /**
@@ -477,14 +502,16 @@ export async function sendContactConfirmation(options: {
   visitorEmail: string
   visitorName: string
   siteName: string
+  replyTo?: string
 }) {
   return sendEmail({
     to: options.visitorEmail,
+    replyTo: options.replyTo,
     subject: `We received your message — ${options.siteName}`,
     htmlBody: `
       <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #1e293b;">Thanks for reaching out, ${escapeHtml(options.visitorName)}!</h2>
-        <p>We received your message and will get back to you as soon as possible — typically within one business day.</p>
+        <p>Your message has been received. The team will review it.</p>
         <p style="color: #64748b; font-size: 0.875rem;">— The ${escapeHtml(options.siteName)} team</p>
       </div>
     `,

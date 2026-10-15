@@ -65,6 +65,7 @@ jobs:
           EXPECTED_MANIFEST_HASH: ${{ inputs.expected_manifest_hash }}
 
       - name: Read the actual deployed runtime without exporting credentials
+        id: runtime-probe
         run: node apps/generator-app/scripts/verify-deployed-runtime.mjs
         env:
           DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
@@ -79,10 +80,37 @@ jobs:
           NETLIFY_EXPECTED_CURATED_REPORT_HASH: ${{ inputs.expected_curated_report_hash }}
           RUNTIME_PROBE_REPORT_PATH: ${{ runner.temp }}/staging-runtime-report.json
 
+      - name: Verify the existing email server connection without sending email
+        id: email-health
+        run: node apps/generator-app/scripts/verify-email-health.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_RELEASE_SHA: ${{ inputs.expected_release_sha }}
+          NETLIFY_EXPECTED_CATALOG_PROFILE: ${{ inputs.expected_catalog_profile }}
+          NETLIFY_EXPECTED_CATALOG_HASH: ${{ inputs.expected_catalog_hash }}
+          NETLIFY_EXPECTED_MANIFEST_HASH: ${{ inputs.expected_manifest_hash }}
+          NETLIFY_EXPECTED_CURATED_REPORT_HASH: ${{ inputs.expected_curated_report_hash }}
+          RUNTIME_PROBE_REPORT_PATH: ${{ runner.temp }}/staging-runtime-report.json
+          EMAIL_HEALTH_REPORT_PATH: ${{ runner.temp }}/sanitized-email-health-report.json
+
       - name: Retain only the sanitized runtime evidence
+        if: ${{ always() && steps.runtime-probe.outcome == 'success' }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: staging-runtime-probe-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/staging-runtime-report.json
           if-no-files-found: error
+          retention-days: 1
+
+      - name: Retain only the sanitized email connection evidence
+        if: ${{ always() && steps.email-health.outcome != 'skipped' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: staging-email-health-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/sanitized-email-health-report.json
+          if-no-files-found: warn
           retention-days: 1

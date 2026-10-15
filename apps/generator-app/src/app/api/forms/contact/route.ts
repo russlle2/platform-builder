@@ -5,7 +5,13 @@ import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const EMAIL_PATTERN = /^[^\s@<>,;]+@[^\s@<>,;]+\.[^\s@<>,;]+$/
+
+function notificationRecipient(value: unknown): string | null {
+  if (typeof value !== 'string') return null
+  const email = value.trim()
+  return email.length <= 320 && EMAIL_PATTERN.test(email) ? email : null
+}
 
 function normalizeSlug(value: unknown): string {
   return (typeof value === 'string' ? value : '')
@@ -119,14 +125,14 @@ export async function POST(req: NextRequest) {
     if (!supabaseUrl || !supabaseServiceKey) {
       console.error('[contact] Supabase is not configured')
       return json(
-        { error: 'Contact submissions are temporarily unavailable. Please email support@dailyclarity.org.' },
+        { error: 'Contact submissions are temporarily unavailable. Please try again later.' },
         503,
       )
     }
 
     let ownerEmail: string | null = normalizedSlug
       ? null
-      : process.env.CONTACT_EMAIL_ADDRESS || 'support@dailyclarity.org'
+      : notificationRecipient(process.env.CONTACT_EMAIL_ADDRESS) || notificationRecipient(process.env.PLATFORM_OWNER_EMAIL)
     let siteName = normalizedSlug ? 'Your business' : 'DailyClarity'
 
     // ---- Persist to Supabase ----
@@ -187,11 +193,9 @@ export async function POST(req: NextRequest) {
         const customerValues = siteData.customerValues && typeof siteData.customerValues === 'object'
           ? siteData.customerValues as Record<string, unknown>
           : {}
-        ownerEmail = typeof siteData.email === 'string'
+        ownerEmail = notificationRecipient(typeof siteData.email === 'string'
           ? siteData.email
-          : typeof customerValues.EMAIL === 'string'
-            ? customerValues.EMAIL
-            : null
+          : customerValues.EMAIL)
         siteName = typeof siteData.businessName === 'string'
           ? siteData.businessName
           : typeof customerValues.BUSINESS_NAME === 'string'
@@ -225,6 +229,7 @@ export async function POST(req: NextRequest) {
           visitorEmail: email,
           visitorName: name,
           siteName,
+          replyTo: ownerEmail || undefined,
         }),
       ])
 
