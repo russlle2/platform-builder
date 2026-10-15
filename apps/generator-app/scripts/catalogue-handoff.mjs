@@ -15,7 +15,6 @@ export const TRANSPORT_CANARY = Buffer.from('DailyClarity catalogue transfer can
 const HASH = /^[a-f0-9]{64}$/, SHA = /^[a-f0-9]{40}$/, ID = /^[1-9][0-9]{0,15}$/
 const SCRIPT = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(SCRIPT, '../../..')
-const PROOF_FILES = ['.dailyclarity/artifact-tree.json', '.dailyclarity/final-quality-receipt.json']
 const HIDDEN_PROOFS = new Set(['artifact-tree.json', 'final-quality-receipt.json', 'rehabilitation.json', 'quality-receipt.json', 'catalog-v3.json', 'design.json', 'content-preset.json', 'theme-preset.json', 'fingerprint.json', 'assets.json', 'fallback-reason.json'])
 const TOP_FILES = ['promotion-dry-run.json', 'certification.json']
 const gates = ['stripe', 'email', 'provisioning', 'previewEditing', 'refundRecovery', 'rollback']
@@ -55,7 +54,9 @@ async function walk(root, relative = '') {
     safeBundlePath(key)
     const item = await lstat(path.join(root, ...key.split('/')))
     requireThat(!item.isSymbolicLink(), 'Bundle links are forbidden')
-    if (item.isDirectory()) result.push(...await walk(root, key))
+    if (item.isDirectory()) {
+      for (const file of await walk(root, key)) result.push(file)
+    }
     else { requireThat(item.isFile() && item.nlink === 1, 'Bundle special or linked files are forbidden'); result.push(key) }
   }
   return result
@@ -63,25 +64,44 @@ async function walk(root, relative = '') {
 
 export async function verifyCandidate(bundle, expectedReceiptHash, expectedReleaseSha, prepare = prepareCertification) {
   requireThat(HASH.test(expectedReceiptHash ?? '') && SHA.test(expectedReleaseSha ?? ''), 'Explicit certification identity is required')
-  const receipt = validateCertification(await json(path.join(bundle, 'certification.json')), { releaseSha: expectedReleaseSha })
+  const certificationBytes = await readFile(path.join(bundle, 'certification.json'))
+  const receipt = validateCertification(JSON.parse(certificationBytes.toString('utf8')), { releaseSha: expectedReleaseSha })
   requireThat(canonicalDigest(receipt) === expectedReceiptHash, 'Certification digest differs from approval')
   const prepared = await prepare(path.join(bundle, 'library'), path.join(bundle, 'promotion-dry-run.json'), expectedReleaseSha)
   requireThat(canonicalDigest(prepared.receipt) === expectedReceiptHash, 'Full library differs from certified evidence')
-  return { receipt, receiptHash: expectedReceiptHash, prepared }
+  return { receipt, receiptHash: expectedReceiptHash, prepared: { ...prepared, certificationBytes } }
 }
 
 export async function candidateInventory(bundle, prepared) {
-  const expected = new Set(['library/_catalog-v3.json', ...TOP_FILES])
-  for (const entry of Object.values(prepared.manifest).flat()) {
-    for (const file of [...entry.files, ...PROOF_FILES]) expected.add(`library/${entry.dir}/${file}`)
+  requireThat(Array.isArray(prepared.artifactFiles) && prepared.artifactFiles.length > 0 && Buffer.isBuffer(prepared.catalogBytes) && Buffer.isBuffer(prepared.certificationBytes), 'Verified candidate byte snapshots are required')
+  const expected = new Map([
+    ['library/_catalog-v3.json', { bytes: prepared.catalogBytes.length, sha256: hash(prepared.catalogBytes) }],
+    ['promotion-dry-run.json', { sha256: prepared.receipt.fullGateHash }],
+    ['certification.json', { bytes: prepared.certificationBytes.length, sha256: hash(prepared.certificationBytes) }],
+  ])
+  const templates = new Map(Object.values(prepared.manifest).flat().map((entry) => [entry.dir, entry]))
+  for (const record of prepared.artifactFiles) {
+    const relative = `library/${record.key}`
+    safeBundlePath(relative)
+    const pieces = record.key.split('/')
+    requireThat(templates.has(pieces.slice(0, 2).join('/')) && !expected.has(relative) && Number.isSafeInteger(record.bytes) && record.bytes >= 0 && HASH.test(record.sha256 ?? ''), 'Invalid verified artifact snapshot')
+    expected.set(relative, record)
   }
   const actual = await walk(bundle)
   requireThat(actual.length === expected.size && actual.every((key) => expected.has(key)), 'Candidate contains missing or unexpected files')
   const records = []
   for (const relative of actual) {
     const segments = relative.split('/')
-    if (segments.some((segment) => segment.startsWith('.'))) requireThat(segments.length === 5 && segments[0] === 'library' && segments[3] === '.dailyclarity' && HIDDEN_PROOFS.has(segments[4]), 'Only the known compiler proof files may be hidden in an uploaded candidate')
-    records.push(await fileRecord(bundle, relative))
+    if (segments.some((segment) => segment.startsWith('.'))) {
+      const proof = segments.length === 5 && segments[0] === 'library' && segments[3] === '.dailyclarity' && HIDDEN_PROOFS.has(segments[4])
+      const template = templates.get(segments.slice(1, 3).join('/'))
+      const file = segments.slice(3).join('/')
+      const inlineCss = segments.slice(0, -1).every((segment) => !segment.startsWith('.')) && /^\.dc-inline-[a-f0-9]{16}\.css$/.test(segments.at(-1)) && template?.files.includes(file) && template.pages?.some((page) => path.posix.dirname(page) === path.posix.dirname(file))
+      requireThat(proof || inlineCss, 'Only the known compiler proof files and page-relative generated stylesheets may be hidden in an uploaded candidate')
+    }
+    const record = await fileRecord(bundle, relative), verified = expected.get(relative)
+    requireThat(record.sha256 === verified.sha256 && (verified.bytes === undefined || record.bytes === verified.bytes), 'Candidate file differs from verified artifact bytes')
+    records.push(record)
   }
   return records
 }
