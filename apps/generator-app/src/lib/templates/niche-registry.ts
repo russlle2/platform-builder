@@ -333,6 +333,20 @@ async function loadCatalogStateAtRevision(expected: CatalogRevisionPin): Promise
   return locator ? loadCatalogStateAtSnapshot(locator) : loadCatalogState()
 }
 
+/** Present validated metadata without changing the hashed source manifest. */
+function presentTemplateMeta(template: TemplateMeta, state: CatalogState): TemplateMeta {
+  return {
+    ...template,
+    // Repair only the two known misdecoded separators; retain other Unicode.
+    name: typeof template.name === 'string'
+      ? template.name.replace(/Â·/g, '·').replace(/â€”/g, '—')
+      : template.name,
+    ...(template.validation?.contractVersion === 3 && state.catalogHash && state.manifestHash
+      ? { catalogHash: state.catalogHash, manifestHash: state.manifestHash }
+      : {}),
+  }
+}
+
 function templateFromCatalogState(
   state: CatalogState,
   nicheSlug: string,
@@ -341,17 +355,7 @@ function templateFromCatalogState(
   const entries = state.manifest?.[nicheSlug]
   const value = Array.isArray(entries) ? entries.find((template) => template?.slug === templateSlug) : undefined
   if (!isPublishableTemplateMeta(value, state.profile)) return null
-  if (
-    value.validation?.contractVersion === 3 &&
-    state.catalogHash && state.manifestHash
-  ) {
-    return {
-      ...value,
-      catalogHash: state.catalogHash,
-      manifestHash: state.manifestHash,
-    }
-  }
-  return value
+  return presentTemplateMeta(value, state)
 }
 
 interface TemplateCaches {
@@ -393,11 +397,7 @@ async function getCaches(state?: CatalogState): Promise<TemplateCaches> {
     sourceTemplates += templates.length
     const publishable = templates
       .filter((template) => isPublishableTemplateMeta(template, state.profile))
-      .map((template) => (
-        template.validation?.contractVersion === 3 && state.catalogHash && state.manifestHash
-          ? { ...template, catalogHash: state.catalogHash, manifestHash: state.manifestHash }
-          : template
-      ))
+      .map((template) => presentTemplateMeta(template, state))
     validatedTemplates += publishable.length
     if (publishable.length !== templates.length) {
       console.warn(
