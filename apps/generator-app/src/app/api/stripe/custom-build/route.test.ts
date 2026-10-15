@@ -57,6 +57,7 @@ describe('custom-build checkout request and Stripe environment gates', () => {
       // The browser cannot add extra checkout challenges or required fields.
       billing_address_collection: 'required', phone_number_collection: { enabled: true },
       payment_method_options: { card: { request_three_d_secure: 'challenge' } },
+      wallet_options: { link: { display: 'auto' } },
     })))
     expect(response.status).toBe(200)
     expect(insert).toHaveBeenCalledWith(expect.objectContaining({ phone: null, contact_name: null }))
@@ -65,6 +66,7 @@ describe('custom-build checkout request and Stripe environment gates', () => {
       billing_address_collection: 'auto',
       phone_number_collection: { enabled: false },
       payment_method_options: { card: { request_three_d_secure: 'automatic' } },
+      wallet_options: { link: { display: 'never' } },
       customer_email: 'buyer@example.com',
     })
     expect(params).not.toHaveProperty('shipping_address_collection')

@@ -192,6 +192,7 @@ describe('template checkout draft-image gate', () => {
       billing_address_collection: 'auto',
       phone_number_collection: { enabled: false },
       payment_method_options: { card: { request_three_d_secure: 'automatic' } },
+      wallet_options: { link: { display: 'never' } },
       customer_email: 'owner@example.com',
     })
     expect(stripePayload).not.toHaveProperty('shipping_address_collection')
