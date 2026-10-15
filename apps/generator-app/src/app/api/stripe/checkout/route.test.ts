@@ -75,6 +75,17 @@ describe('template checkout draft-image gate', () => {
     mocks.getTemplate.mockResolvedValue({ slug: 'serene' })
   })
 
+  it('pauses new paid sales before any Stripe or database action', async () => {
+    vi.stubEnv('DAILYCLARITY_SALES_PAUSED', 'true')
+    try {
+      expect((await checkoutPost(requestWithImages([]))).status).toBe(503)
+      expect(mocks.createStripeClient).not.toHaveBeenCalled()
+      expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
   it('rejects an expired upload session before any Stripe or database write', async () => {
     const response = await checkoutPost(requestWithImages([OWNER_A]))
 

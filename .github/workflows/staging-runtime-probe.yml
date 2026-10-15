@@ -1,0 +1,88 @@
+name: Read-only staging runtime probe
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_release_sha:
+        description: 'Exact 40-character commit SHA currently deployed to the isolated staging site'
+        required: true
+        type: string
+      expected_catalog_profile:
+        description: 'Reviewed staging catalog; launch is explicitly limited to the approved 60-template connected test'
+        required: true
+        type: choice
+        default: rehab-staging
+        options:
+          - rehab-staging
+          - launch
+      expected_catalog_hash:
+        description: 'Independently reviewed active catalog hash (launch uses its approved observed identity digest)'
+        required: true
+        type: string
+      expected_manifest_hash:
+        description: 'Independently reviewed canonical SHA-256 of the exact active manifest'
+        required: true
+        type: string
+      expected_curated_report_hash:
+        description: 'For launch only: approved curated report SHA-256 from the checked-in launch contract'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dailyclarity-staging-runtime-probe
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: staging
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+
+      - name: Validate the reviewed probe target and report guards
+        shell: bash
+        run: |
+          if [[ "$DEPLOY_ENVIRONMENT" != "staging" || ! "$EXPECTED_RELEASE_SHA" =~ ^[a-f0-9]{40}$ || ! "$EXPECTED_CATALOG_HASH" =~ ^[a-f0-9]{64}$ || ! "$EXPECTED_MANIFEST_HASH" =~ ^[a-f0-9]{64}$ ]]; then
+            echo 'Invalid staging probe configuration.' >&2
+            exit 1
+          fi
+          node --test apps/generator-app/scripts/deployed-runtime-report.test.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          EXPECTED_RELEASE_SHA: ${{ inputs.expected_release_sha }}
+          EXPECTED_CATALOG_HASH: ${{ inputs.expected_catalog_hash }}
+          EXPECTED_MANIFEST_HASH: ${{ inputs.expected_manifest_hash }}
+
+      - name: Read the actual deployed runtime without exporting credentials
+        run: node apps/generator-app/scripts/verify-deployed-runtime.mjs
+        env:
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+          NETLIFY_EXPECTED_RELEASE_SHA: ${{ inputs.expected_release_sha }}
+          NETLIFY_EXPECTED_CATALOG_PROFILE: ${{ inputs.expected_catalog_profile }}
+          NETLIFY_EXPECTED_CATALOG_HASH: ${{ inputs.expected_catalog_hash }}
+          NETLIFY_EXPECTED_MANIFEST_HASH: ${{ inputs.expected_manifest_hash }}
+          NETLIFY_EXPECTED_CURATED_REPORT_HASH: ${{ inputs.expected_curated_report_hash }}
+          RUNTIME_PROBE_REPORT_PATH: ${{ runner.temp }}/staging-runtime-report.json
+
+      - name: Retain only the sanitized runtime evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: staging-runtime-probe-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/staging-runtime-report.json
+          if-no-files-found: error
+          retention-days: 1

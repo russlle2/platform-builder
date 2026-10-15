@@ -32,6 +32,13 @@ function request(body: string, contentLength?: string) {
 }
 
 describe('custom-build checkout request and Stripe environment gates', () => {
+  it('pauses new paid sales before saving a brief or contacting Stripe', async () => {
+    vi.stubEnv('DAILYCLARITY_SALES_PAUSED', 'true')
+    const { POST } = await import('./route')
+    expect((await POST(request('{}'))).status).toBe(503)
+    expect(mocks.from).not.toHaveBeenCalled()
+    expect(mocks.createStripeClient).not.toHaveBeenCalled()
+  })
   it('starts guest checkout with minimal billing fields, dynamic wallets, and automatic card authentication', async () => {
     const insert = vi.fn().mockResolvedValue({ error: null })
     const update = vi.fn(() => ({ eq: vi.fn().mockResolvedValue({ error: null }) }))

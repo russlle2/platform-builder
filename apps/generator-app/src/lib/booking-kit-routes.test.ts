@@ -31,7 +31,7 @@ beforeEach(() => {
     NEXT_PUBLIC_SUPABASE_URL: 'https://kit-project.supabase.co', DAILYCLARITY_SUPABASE_PROJECT_REF: 'kit-project',
     SUPABASE_SERVICE_ROLE_KEY: 'service_test_only', NEXT_PUBLIC_SITE_URL: 'https://kit.example.test',
     POSTMARK_SERVER_TOKEN: 'postmark_test_only', EMAIL_FROM_ADDRESS: 'sender@example.test', PORTAL_TOKEN_SECRET: 'y'.repeat(32),
-    DAILYCLARITY_ENVIRONMENT: 'staging',
+    DAILYCLARITY_ENVIRONMENT: 'staging', DAILYCLARITY_SALES_PAUSED: '',
   })) vi.stubEnv(key, value)
   mocks.events.length = 0; mocks.inserts.length = 0; mocks.orders.length = 0; mocks.updateError = false
   mocks.rpc.mockImplementation(async (name: string) => ({ data: name === 'booking_kit_schema_version' ? '20260925.2' : name === 'read_booking_kit_result' ? [] : true, error: null }))
@@ -52,6 +52,12 @@ beforeEach(() => {
 })
 
 describe('Booking Kit checkout boundary', () => {
+  it('pauses new paid sales before database or Stripe calls', async () => {
+    vi.stubEnv('DAILYCLARITY_SALES_PAUSED', 'true')
+    expect((await checkout(post('/api/stripe/booking-kit', validBody))).status).toBe(503)
+    expect(mocks.from).not.toHaveBeenCalled()
+    expect(mocks.create).not.toHaveBeenCalled()
+  })
   it('stores versioned generated content before checkout and stores only the access hash', async () => {
     const response = await checkout(post('/api/stripe/booking-kit', validBody))
     expect(response.status).toBe(200)
@@ -158,6 +164,7 @@ describe('Booking Kit private result and recovery', () => {
 
   it('keeps recovery available when sales are disabled and sends only to the recorded purchase email', async () => {
     vi.stubEnv('BOOKING_KIT_ENABLED', 'false')
+    vi.stubEnv('DAILYCLARITY_SALES_PAUSED', 'true')
     mocks.orders.push({ id: 'order_kit', purchase_email: 'buyer@example.test', access_expires_at: new Date(Date.now() + 86400000).toISOString() })
     const response = await recover(post('/api/booking-kit/recover', { email: 'buyer@example.test', sendTo: 'attacker@example.test' }))
     expect(response.status).toBe(202)

@@ -108,6 +108,16 @@ test('mobile owner workspace edits service copy and publishes only the selected 
   await page.setViewportSize({ width: 375, height: 812 })
   const state = await mockWorkspace(page)
   await openWorkspace(page)
+  const services = page.getByRole('region', { name: 'Website services', exact: true })
+  await expect(services).toBeVisible()
+  await expect(services).toContainText('Subscription billing only')
+  await expect(services).toContainText('does not set up payments from your own customers')
+  await expect(services).toContainText('owner@example.com')
+  await expect(services).not.toContainText('hello@example.com')
+  await expect(services.getByRole('link', { name: 'Review subscription billing' })).toHaveAttribute(
+    'href', `/dashboard?site=${slug}#billing`,
+  )
+  await expect(services.locator('input')).toHaveCount(0)
   await expect(
     page.getByRole('button', { name: 'Save & publish', exact: true }),
   ).toBeDisabled()
@@ -235,6 +245,8 @@ test('slug lookup really loads a website while denied access exposes no editor o
   ).toBeVisible()
   expect(loads).toBeGreaterThan(0)
   await expect(page.getByLabel('Business name', { exact: true })).toHaveCount(0)
+  await expect(page.getByRole('region', { name: 'Website services', exact: true })).toHaveCount(0)
+  await expect(page.getByText('owner@example.com', { exact: true })).toHaveCount(0)
   await expect(
     page.getByRole('heading', { name: 'Website enquiries' }),
   ).toHaveCount(0)

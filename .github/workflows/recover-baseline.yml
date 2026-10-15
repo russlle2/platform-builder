@@ -1,0 +1,133 @@
+name: Recover the reviewed production launch baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        required: true
+        default: verify
+        options: [verify, recover, activate, rollback]
+      artifact_run_id:
+        description: 'Run containing library/ or recovery-journal.json; omit both artifact inputs to generate a read-only verification bundle'
+        required: false
+        type: string
+      artifact_id:
+        description: 'Exact reviewed artifact ID'
+        required: false
+        type: string
+      receipt_hash:
+        description: 'Approved canonical recovery receipt SHA-256 (recover only)'
+        required: false
+        type: string
+      legacy_manifest_hash:
+        description: 'Reviewed exact raw legacy manifest SHA-256 (recover only)'
+        required: false
+        type: string
+      previous_deployment_id:
+        description: 'Reviewed original production deployment ID (recover only)'
+        required: false
+        type: string
+      previous_release_sha:
+        description: 'Reviewed original production release SHA (recover only)'
+        required: false
+        type: string
+      journal_hash:
+        description: 'Approved canonical recovery journal SHA-256 (activate/rollback only)'
+        required: false
+        type: string
+      confirm:
+        description: 'For writes: RECOVER BASELINE, ACTIVATE BASELINE, or ROLLBACK BASELINE'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-production
+  cancel-in-progress: false
+
+jobs:
+  reviewed-baseline:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      OPERATION: ${{ inputs.operation }}
+      CONFIRMATION: ${{ inputs.confirm }}
+      RECEIPT_HASH: ${{ inputs.receipt_hash }}
+      LEGACY_MANIFEST_HASH: ${{ inputs.legacy_manifest_hash }}
+      EXPECTED_PREVIOUS_DEPLOYMENT_ID: ${{ inputs.previous_deployment_id }}
+      EXPECTED_PREVIOUS_RELEASE_SHA: ${{ inputs.previous_release_sha }}
+      JOURNAL_HASH: ${{ inputs.journal_hash }}
+      GITHUB_TOKEN: ${{ github.token }}
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+      NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+      NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+      NETLIFY_EXPECTED_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+      DAILYCLARITY_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+      DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+      DAILYCLARITY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Configure temporary review and journal paths
+        run: |
+          echo "RECOVERY_BUNDLE=$RUNNER_TEMP/recovery-bundle" >> "$GITHUB_ENV"
+          echo "RECOVERY_RECEIPT=$RUNNER_TEMP/recovery-receipt.json" >> "$GITHUB_ENV"
+          echo "RECOVERY_JOURNAL=$RUNNER_TEMP/recovery-journal.json" >> "$GITHUB_ENV"
+      - name: Require exact artifact identity for write operations
+        env:
+          ARTIFACT_RUN_ID: ${{ inputs.artifact_run_id }}
+          ARTIFACT_ID: ${{ inputs.artifact_id }}
+        run: |
+          node --input-type=module <<'JS'
+          const { OPERATION, ARTIFACT_RUN_ID: run, ARTIFACT_ID: id } = process.env
+          if (!(OPERATION === 'verify' && !run && !id) && !(/^\d+$/.test(run || '') && /^\d+$/.test(id || ''))) {
+            throw new Error('Provide both exact artifact IDs; only read-only verify can generate a new local bundle')
+          }
+          JS
+      - name: Install exact repository dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        if: ${{ inputs.artifact_id != '' }}
+        with:
+          artifact-ids: ${{ inputs.artifact_id }}
+          run-id: ${{ inputs.artifact_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.RECOVERY_BUNDLE }}
+          merge-multiple: true
+      - name: Generate reviewed curated material without provider writes
+        if: ${{ inputs.operation == 'verify' && inputs.artifact_id == '' }}
+        run: pnpm --filter @platform/template-factory export:curated -- --output "$RECOVERY_BUNDLE/library"
+      - name: Verify, recover, resume activation, or restore the exact journal
+        run: node apps/generator-app/scripts/run-baseline-recovery.mjs
+      - name: Retain receipt and rollback journal on success or failure
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: baseline-recovery-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.RECOVERY_RECEIPT }}
+            ${{ env.RECOVERY_JOURNAL }}
+          if-no-files-found: warn
+      - name: Retain the exact validated recovery library
+        if: ${{ success() && inputs.operation == 'verify' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: baseline-recovery-library-${{ github.run_id }}
+          path: ${{ env.RECOVERY_BUNDLE }}
+          if-no-files-found: error

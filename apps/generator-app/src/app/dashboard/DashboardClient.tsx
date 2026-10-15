@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { getPlan } from '@/lib/plans'
+import { WebsiteServices } from '@/components/portal/WebsiteServices'
 
 export interface PortalSiteData {
   slug: string
@@ -320,6 +321,8 @@ export default function DashboardClient({
                 </Link>
               ))}
             </section>
+
+            <WebsiteServices site={site} context="dashboard" />
 
             <div className="grid gap-5 md:grid-cols-3">
               <section id="billing" className={`${card} scroll-mt-24`}>

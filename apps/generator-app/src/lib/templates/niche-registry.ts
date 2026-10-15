@@ -1,5 +1,6 @@
 import fs from 'fs'
 import path from 'path'
+import { createHash } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
 import { inspectLaunchCatalog } from './launch-catalog-integrity'
@@ -8,6 +9,7 @@ import {
   LAUNCH_TEMPLATE_STORE,
   REHAB_STAGING_EXPECTED_BY_NICHE,
   REHAB_STAGING_EXPECTED_TOTAL,
+  catalogManifestHash,
   loadCertifiedCatalog,
   loadRehabCatalogSnapshot,
   loadRehabStagingCatalog,
@@ -376,8 +378,8 @@ export function dedupeTemplatesForGallery(templates: readonly TemplateMeta[]): T
   })
 }
 
-async function getCaches(): Promise<TemplateCaches> {
-  const state = await loadCatalogState()
+async function getCaches(state?: CatalogState): Promise<TemplateCaches> {
+  state ??= await loadCatalogState()
   const validRoot = state.manifest && typeof state.manifest === 'object' && !Array.isArray(state.manifest)
   const manifest = validRoot ? state.manifest : {}
   const all = new Map<string, TemplateMeta[]>()
@@ -640,7 +642,7 @@ export async function getTemplateCatalogReadiness() {
   _catalogStateExpiresAt = 0
   const profile = resolveTemplateCatalogProfile(process.env)
   const state = await loadCatalogState()
-  const caches = await getCaches()
+  const caches = await getCaches(state)
   const cache = caches.all
   const niches = [...cache.entries()].map(([slug, templates]) => ({
     slug, templates: templates.map((template) => ({ slug: template.slug, artifactSha256: template.artifactSha256 || '' })),
@@ -656,8 +658,32 @@ export async function getTemplateCatalogReadiness() {
     actualTotal, expectedTotal: REHAB_STAGING_EXPECTED_TOTAL, actualByNiche,
     expectedByNiche: REHAB_STAGING_EXPECTED_BY_NICHE, issues,
   }
+  if (profile.profile === 'launch') {
+    // Readiness binds the complete loaded document, not just the entries left
+    // after filtering. Do not attest an approved subset of a malformed source.
+    const manifestKeys = state.manifest && typeof state.manifest === 'object' && !Array.isArray(state.manifest)
+      ? Object.keys(state.manifest) : []
+    if (caches.diagnostics.rejectedTemplates || caches.diagnostics.malformedNiches
+      || manifestKeys.some((niche) => !Object.prototype.hasOwnProperty.call(NICHE_META, niche))) {
+      integrity.ready = false
+      integrity.issues.push('Active launch manifest contains rejected entries or unexpected niches')
+    }
+    const identities = niches.flatMap(({ slug: niche, templates }) => templates.map(({ slug, artifactSha256 }) => ({
+      niche, slug, sha256: artifactSha256,
+    }))).sort((a, b) => `${a.niche}/${a.slug}`.localeCompare(`${b.niche}/${b.slug}`))
+    const reportHashes = new Set([...cache.values()].flat().map((template) => template.catalogReportSha256))
+    // These hashes describe this validated load. They are not snapshot locators
+    // or a full-catalogue certification and are never added to template metadata.
+    return {
+      ...integrity, diagnostics: caches.diagnostics, profile: profile.profile,
+      catalogHash: integrity.ready ? createHash('sha256').update(JSON.stringify(identities)).digest('hex') : null,
+      manifestHash: integrity.ready ? catalogManifestHash(state.manifest) : null,
+      curatedReportHash: integrity.ready && reportHashes.size === 1 ? [...reportHashes][0] ?? null : null,
+      certificationHash: null, catalogueReleaseSha: null,
+    }
+  }
   return { ...integrity, diagnostics: caches.diagnostics, profile: profile.profile, catalogHash: state.catalogHash ?? null, manifestHash: state.manifestHash ?? null,
-    certificationHash: state.certificationHash ?? null, catalogueReleaseSha: state.releaseSha ?? null }
+    curatedReportHash: null, certificationHash: state.certificationHash ?? null, catalogueReleaseSha: state.releaseSha ?? null }
 }
 
 function safeTemplateKey(...parts: string[]): string | null {

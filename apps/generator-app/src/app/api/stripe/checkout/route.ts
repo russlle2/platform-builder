@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { areSalesPaused } from '@/lib/sales-pause'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import { getStripeTrialDays } from '@/lib/platform-config'
@@ -55,6 +56,7 @@ function randomSuffix(): string {
 }
 
 export async function POST(req: NextRequest) {
+  if (areSalesPaused()) return NextResponse.json({ error: 'Checkout is temporarily unavailable.' }, { status: 503 })
   const allowed = rateLimitByIp(req, 'checkout', 10, 10 * 60 * 1000)
   if (!allowed) return jsonTooManyRequests()
 

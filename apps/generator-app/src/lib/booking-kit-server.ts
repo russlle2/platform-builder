@@ -6,6 +6,7 @@ import { BOOKING_KIT_ACCESS_DAYS, BOOKING_KIT_PRICE_CENTS, type BookingKitArtifa
 import { isDedicatedSupabaseProjectConfigured, isStripeModeAllowed } from './stripe-runtime'
 import { getTrustedSiteOrigin } from './site-origin'
 import { sendEmail } from './email'
+import { areSalesPaused } from './sales-pause'
 
 export const BOOKING_KIT_LINK_MS = 60 * 60 * 1000
 export const BOOKING_KIT_CURRENCY = 'usd'
@@ -33,7 +34,7 @@ export interface BookingKitOrder {
 }
 
 export function bookingKitSalesEnabled(): boolean {
-  return process.env.BOOKING_KIT_ENABLED === 'true'
+  return !areSalesPaused() && process.env.BOOKING_KIT_ENABLED === 'true'
 }
 
 export function bookingKitStripeModeAllowed(key: string, env: NodeJS.ProcessEnv = process.env): boolean {

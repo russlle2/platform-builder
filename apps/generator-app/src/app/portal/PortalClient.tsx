@@ -13,6 +13,7 @@ import { useSearchParams } from 'next/navigation'
 import { CustomerImageLibrary } from '@/components/CustomerImageLibrary'
 import { DomainConnectCard } from '@/components/portal/DomainConnectCard'
 import { CustomerInbox } from '@/components/portal/CustomerInbox'
+import { WebsiteServices } from '@/components/portal/WebsiteServices'
 import {
   getStoredPortalToken,
   storePortalToken,
@@ -517,6 +518,7 @@ export default function PortalClient() {
                 ['#inbox', 'Enquiries'],
                 ['#images', 'Images'],
                 ['#domain', 'Domain'],
+                ['#website-services', 'Website services'],
                 ['#account', 'Plan & billing'],
               ].map(([href, label]) => (
                 <a
@@ -528,6 +530,7 @@ export default function PortalClient() {
                 </a>
               ))}
             </nav>
+            <WebsiteServices site={site} context="portal" onNavigate={guardNavigation} />
             <div className="grid gap-7 lg:grid-cols-[minmax(0,1fr)_340px]">
               <div className="min-w-0 space-y-7">
                 <form id="details" onSubmit={saveSite} className={card}>

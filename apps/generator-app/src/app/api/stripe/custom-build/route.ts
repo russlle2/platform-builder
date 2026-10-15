@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
+import { areSalesPaused } from '@/lib/sales-pause'
 import Stripe from 'stripe'
 import { createClient } from '@supabase/supabase-js'
 import {
@@ -38,6 +39,7 @@ async function resolveCustomBuildPrice(stripe: Stripe): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
+  if (areSalesPaused()) return NextResponse.json({ error: 'Custom-build checkout is temporarily unavailable.' }, { status: 503 })
   if (!rateLimitByIp(req, 'custom-build-checkout', 5, 10 * 60 * 1000)) {
     return jsonTooManyRequests()
   }
