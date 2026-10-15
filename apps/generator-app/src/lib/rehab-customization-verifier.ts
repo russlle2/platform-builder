@@ -28,7 +28,8 @@ import {
   type InlineEditMap,
 } from './inline-edits'
 import { applyPageCustomizationsForDeploy } from './site-deploy'
-import { combineTemplateThemeStylesheets } from './template-preview-composition'
+import { combineTemplateThemeStylesheets, composeTemplatePreview } from './template-preview-composition'
+import type { HydrationField } from './templates/template-hydration'
 import { isSafePreviewPage } from './template-preview-security'
 import { composeCustomerPreviewDocument } from './customer-preview-document'
 import { catalogDocumentHash, catalogManifestHash } from './templates/catalog-profile'
@@ -62,6 +63,10 @@ interface CatalogTemplateEntry {
   themePresetId: string
   niche: string
   qualityReceipt: string
+}
+
+interface RuntimeTemplateEntry extends CatalogTemplateEntry {
+  fields: HydrationField[]
 }
 
 interface CatalogDocument {
@@ -155,6 +160,7 @@ export interface RehabCustomizationVerification {
   imageSlots: number
   themeTokens: number
   diagnosticCount: number
+  diagnosticCountsByCode: Record<string, number>
   diagnostics: RehabCustomizationDiagnostic[]
   diagnosticsTruncated: number
 }
@@ -173,6 +179,7 @@ interface TemplateVerification {
   imageSlots: number
   themeTokens: number
   diagnosticCount: number
+  diagnosticCountsByCode: Record<string, number>
   diagnostics: RehabCustomizationDiagnostic[]
 }
 
@@ -327,12 +334,41 @@ function normalizeInteractionTag(tag: string): string {
     .trim()
 }
 
-function interactionStructure(html: string): string {
+function interactionTags(html: string): RegExpMatchArray[] {
   const searchable = html.replace(PROTECTED_HTML, (protectedBlock) => ' '.repeat(protectedBlock.length))
   return [...searchable.matchAll(/<\/?([A-Za-z][A-Za-z0-9:-]*)\b[^>]*>/g)]
     .filter((match) => INTERACTION_ELEMENTS.has(match[1]!.toLowerCase()))
+}
+
+// Sanitization and asset rewriting may alter URL/event attributes, but cannot
+// remove or reorder controls. Preserve stable element identities as well as
+// opening/closing tag order so same-tag controls cannot silently trade places.
+function interactionTopology(html: string): string {
+  return interactionTags(html).map(([tag, name]) => {
+    if (tag.startsWith('</')) return `</${name!.toLowerCase()}>`
+    const identity = ['id', 'name', 'data-dc-edit-id', 'data-pb-edit-id']
+      .map((attribute) => [attribute, attributeValues(tag, attribute)])
+    return JSON.stringify([name!.toLowerCase(), identity])
+  }).join('|')
+}
+
+function interactionStructure(html: string): string {
+  return interactionTags(html)
     .map((match) => normalizeInteractionTag(match[0]))
     .join('|')
+}
+
+function verificationCustomerValues(fields: readonly HydrationField[]): Record<string, string> {
+  return Object.fromEntries(fields.map((field) => {
+    const name = field.name.trim().toUpperCase()
+    const type = field.type?.toLowerCase()
+    const value = type === 'email' || name.includes('EMAIL') ? 'customer@example.test'
+      : type === 'tel' || name.includes('PHONE') ? '(212) 555-0199'
+        : type === 'url' || name === 'WEBSITE' || name.endsWith('_URL') || name.endsWith('_LINK')
+          ? 'https://example.test/contact'
+          : `Customer ${name.replace(/_/g, ' ').toLowerCase()}`
+    return [name, value]
+  }))
 }
 
 function compilerThemeTokens(css: string): string[] {
@@ -392,6 +428,7 @@ function errorResult(key: string, code: string, detail: unknown): TemplateVerifi
     imageSlots: 0,
     themeTokens: 0,
     diagnosticCount: 1,
+    diagnosticCountsByCode: { [code]: 1 },
     diagnostics: [{ code, detail: bounded(detail), template: key }],
   }
 }
@@ -401,15 +438,17 @@ async function verifyTemplate(
   catalogEntry: CatalogTemplateEntry,
   localDiagnosticLimit: number,
   catalogLocator: CatalogSnapshotLocator,
-  runtimeEntry: CatalogTemplateEntry | undefined,
+  runtimeEntry: RuntimeTemplateEntry | undefined,
 ): Promise<TemplateVerification> {
   const key = `${catalogEntry.niche}/${catalogEntry.legacySlug}`
   const templateRoot = resolve(stagingRoot, catalogEntry.niche, catalogEntry.legacySlug)
   if (!isWithin(stagingRoot, templateRoot)) return errorResult(key, 'template_path_unsafe', 'Template path escapes staging root')
   const diagnostics: RehabCustomizationDiagnostic[] = []
   let diagnosticCount = 0
+  const diagnosticCountsByCode: Record<string, number> = {}
   const add = (code: string, detail: unknown, page?: string, targetId?: string): void => {
     diagnosticCount += 1
+    diagnosticCountsByCode[code] = (diagnosticCountsByCode[code] ?? 0) + 1
     if (diagnostics.length >= localDiagnosticLimit) return
     diagnostics.push({
       code,
@@ -462,6 +501,7 @@ async function verifyTemplate(
         imageSlots: 0,
         themeTokens: 0,
         diagnosticCount,
+        diagnosticCountsByCode,
         diagnostics,
       }
     }
@@ -475,6 +515,7 @@ async function verifyTemplate(
         imageSlots: 0,
         themeTokens: 0,
         diagnosticCount,
+        diagnosticCountsByCode,
         diagnostics,
       }
     }
@@ -482,6 +523,11 @@ async function verifyTemplate(
       add('theme_preset_shape_invalid', 'Theme preset tokens must be an array')
       themePreset.tokens = []
     }
+
+    if (!runtimeEntry || !Array.isArray(runtimeEntry.fields)) {
+      throw new Error('Validated runtime manifest has no hydration fields array')
+    }
+    const customerValues = verificationCustomerValues(runtimeEntry.fields)
 
     const pagePairs = await Promise.all(manifest.pages.map(async (page) => [page, await readSafeFile(templateRoot, page)] as const))
     const pages = new Map(pagePairs)
@@ -649,14 +695,21 @@ async function verifyTemplate(
       const swaps = sanitizedImages[page] ?? []
       if (edits.length === 0 && swaps.length === 0) continue
 
-      const edited = applyInlineEditsToHtmlWithReport(html, edits, page)
-      const customerPreview = composeCustomerPreviewDocument({
-        html,
+      // The preview API hydrates placeholders before the browser composer.
+      // Keep the raw preset checks above, but exercise aggregate customer edits
+      // on the same hydrated document used by preview and deployment.
+      const hydrated = composeTemplatePreview({ html, fields: runtimeEntry.fields, values: customerValues, page }).html
+      const previewInput = {
+        html: hydrated,
         assetBase: `/api/templates/${catalogEntry.niche}/${catalogEntry.legacySlug}/assets/__catalog/${catalogLocator.catalogHash}/${catalogLocator.manifestHash}`,
         page,
-        inlineEdits: edits,
-        imageSwaps: swaps,
-      })
+      }
+      const previewBaseline = composeCustomerPreviewDocument(previewInput)
+      if (interactionTopology(previewBaseline) !== interactionTopology(hydrated)) {
+        add('preview_baseline_interaction_structure_changed', 'Unedited customer preview removed or reordered navigation or form controls', page)
+      }
+      const edited = applyInlineEditsToHtmlWithReport(hydrated, edits, page)
+      const customerPreview = composeCustomerPreviewDocument({ ...previewInput, inlineEdits: edits, imageSwaps: swaps })
       const unmatchedEdits = new Set(edited.unmatchedNodeIds)
       for (const edit of edits) {
         if (
@@ -680,16 +733,16 @@ async function verifyTemplate(
           add('image_customer_path_failed', 'Preview image helper could not update this exact target', page, swap.slotId)
         }
       }
-      const sourceInteractionStructure = interactionStructure(html)
+      const sourceInteractionStructure = interactionStructure(hydrated)
       if (
         interactionStructure(imaged.html) !== sourceInteractionStructure ||
-        interactionStructure(customerPreview) !== sourceInteractionStructure
+        interactionStructure(customerPreview) !== interactionStructure(previewBaseline)
       ) {
         add('preview_interaction_structure_changed', 'Preview customization changed navigation or form structure', page)
       }
 
       try {
-        const deployed = applyPageCustomizationsForDeploy(html, edits, swaps, page)
+        const deployed = applyPageCustomizationsForDeploy(hydrated, edits, swaps, page)
         for (const edit of edits) {
           if (!deployed.includes(edit.updated)) {
             add('content_deploy_path_failed', 'Deploy helper did not preserve the targeted edit', page, edit.nodeId)
@@ -726,7 +779,7 @@ async function verifyTemplate(
         inlineEdits: sanitizedInline,
         imageSwaps: sanitizedImages,
         customTheme: SENTINEL_THEME,
-        customerValues: {},
+        customerValues,
         imageOwner: 'draft-123e4567-e89b-42d3-a456-426614174000',
       })
       const serialized = JSON.parse(JSON.stringify(checkout)) as unknown
@@ -799,6 +852,7 @@ async function verifyTemplate(
       imageSlots: contentPreset.images.length,
       themeTokens: allTokens.length,
       diagnosticCount,
+      diagnosticCountsByCode,
       diagnostics,
     }
   } catch (error) {
@@ -811,6 +865,7 @@ async function verifyTemplate(
       imageSlots: 0,
       themeTokens: 0,
       diagnosticCount,
+      diagnosticCountsByCode,
       diagnostics,
     }
   }
@@ -877,7 +932,7 @@ export async function verifyRehabCustomizationStaging(
   if (catalog.contractVersion !== 3 || !Array.isArray(catalog.templates)) {
     throw new Error('_catalog-v3.json is not a catalogue v3 document')
   }
-  const runtimeManifest = buildValidatedRehabManifest(root) as Record<string, CatalogTemplateEntry[]>
+  const runtimeManifest = buildValidatedRehabManifest(root) as Record<string, RuntimeTemplateEntry[]>
   if (suppliedManifest !== undefined && catalogManifestHash(suppliedManifest) !== catalogManifestHash(runtimeManifest)) {
     throw new Error('_manifest.json differs from the validated compiler library')
   }
@@ -894,8 +949,10 @@ export async function verifyRehabCustomizationStaging(
 
   const globalDiagnostics: RehabCustomizationDiagnostic[] = []
   let globalDiagnosticCount = 0
+  const diagnosticCountsByCode: Record<string, number> = {}
   const addGlobal = (diagnostic: RehabCustomizationDiagnostic): void => {
     globalDiagnosticCount += 1
+    diagnosticCountsByCode[diagnostic.code] = (diagnosticCountsByCode[diagnostic.code] ?? 0) + 1
     if (globalDiagnostics.length < maxDiagnostics) globalDiagnostics.push(diagnostic)
   }
   const entries: CatalogTemplateEntry[] = []
@@ -932,6 +989,9 @@ export async function verifyRehabCustomizationStaging(
   ))
   for (const result of results) {
     globalDiagnosticCount += result.diagnosticCount
+    for (const [code, count] of Object.entries(result.diagnosticCountsByCode)) {
+      diagnosticCountsByCode[code] = (diagnosticCountsByCode[code] ?? 0) + count
+    }
     for (const diagnostic of result.diagnostics) {
       if (globalDiagnostics.length >= maxDiagnostics) break
       globalDiagnostics.push(diagnostic)
@@ -953,6 +1013,7 @@ export async function verifyRehabCustomizationStaging(
     scannedTemplates: results.length,
     ...totals,
     diagnosticCount: globalDiagnosticCount,
+    diagnosticCountsByCode,
     diagnostics: globalDiagnostics,
     diagnosticsTruncated: Math.max(0, globalDiagnosticCount - globalDiagnostics.length),
   }

@@ -3,6 +3,9 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import * as uploader from '../../scripts/upload-templates-to-blobs.mjs'
+import * as previewComposer from './customer-preview-document'
+import * as deployment from './site-deploy'
+import type { HydrationField } from './templates/template-hydration'
 import {
   parseVerifyRehabCustomizationArgs,
   runVerifyRehabCustomizationCli,
@@ -33,6 +36,7 @@ async function createStaging(overrides?: {
   images?: unknown[]
   tokens?: unknown[]
   pages?: string[]
+  fields?: HydrationField[]
 }): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), 'dc-rehab-verifier-'))
   temporaryRoots.push(root)
@@ -49,6 +53,7 @@ async function createStaging(overrides?: {
       ...catalogueEntry,
       slug: catalogueEntry.legacySlug,
       nicheSlug: catalogueEntry.niche,
+      fields: overrides?.fields ?? [],
     }],
   }
   validatedManifests.set(root, runtimeManifest)
@@ -229,6 +234,90 @@ describe('verifyRehabCustomizationStaging', () => {
     expect(result.diagnostics).toEqual([])
   })
 
+  it('hydrates actual runtime fields before comparing the same preview pipeline stages', async () => {
+    const root = await createStaging({
+      html: '<html data-dc-catalog-version="3"><head></head><body><nav><a href="{{PRIMARY_CTA_URL}}" onclick="oldHandler()"><span data-dc-edit-id="txt_cta">{{PRIMARY_CTA_LABEL}}</span></a><a href="assets/guide.pdf">Guide</a></nav></body></html>',
+      entries: [{ nodeId: 'txt_cta', page: 'index.html', html: '{{PRIMARY_CTA_LABEL}}', text: '{{PRIMARY_CTA_LABEL}}' }],
+      images: [],
+      fields: [
+        { name: 'PRIMARY_CTA_URL', type: 'url' },
+        { name: 'PRIMARY_CTA_LABEL', type: 'text', default: 'Book a call' },
+      ],
+    })
+    const compose = previewComposer.composeCustomerPreviewDocument
+    const spy = vi.spyOn(previewComposer, 'composeCustomerPreviewDocument').mockImplementation(compose)
+    const result = await verifyRehabCustomizationStaging({ root })
+
+    expect(result.diagnostics).toEqual([])
+    expect(result.pass).toBe(true)
+    expect(spy).toHaveBeenCalledTimes(2)
+    const baseline = spy.mock.calls[0]![0]
+    const edited = spy.mock.calls[1]![0]
+    expect(baseline.html).toContain('href="https://example.test/contact"')
+    expect(baseline.html).not.toContain('{{PRIMARY_CTA_')
+    expect(edited.html).toBe(baseline.html)
+    expect(edited.assetBase).toBe(baseline.assetBase)
+    expect(edited.page).toBe(baseline.page)
+    expect(compose(baseline)).not.toContain('onclick=')
+    expect(compose(baseline)).toContain(`${baseline.assetBase}/assets/guide.pdf`)
+    expect(result.diagnosticCountsByCode).toEqual({})
+  })
+
+  it.each(['anchor', 'form', 'button', 'order'] as const)('rejects a baseline composer that loses interactive topology: %s', async (mutation) => {
+    const root = await createStaging({
+      html: '<html data-dc-catalog-version="3"><head></head><body><h1 data-dc-edit-id="txt_heading">Welcome</h1><nav><a id="first" href="about.html">About</a><a id="second" href="contact.html">Contact</a></nav><form action="/inquiry"><button type="submit">Send</button></form></body></html>',
+      entries: [{ nodeId: 'txt_heading', page: 'index.html', html: 'Welcome', text: 'Welcome' }],
+      images: [],
+    })
+    expect((await verifyRehabCustomizationStaging({ root })).pass).toBe(true)
+    const compose = previewComposer.composeCustomerPreviewDocument
+    vi.spyOn(previewComposer, 'composeCustomerPreviewDocument').mockImplementation((input) => {
+      const html = compose(input)
+      // Apply the same defect to baseline and edited previews: their equality
+      // alone must not hide controls removed by the shared composition stage.
+      if (mutation === 'order') return html.replace(/(<a id="first"[^>]*>About<\/a>)(<a id="second"[^>]*>Contact<\/a>)/, '$2$1')
+      const tag = mutation === 'anchor' ? 'a' : mutation
+      return html.replace(new RegExp(`<\\/?${tag}\\b[^>]*>`, 'g'), '')
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    expect(result.diagnosticCountsByCode.preview_baseline_interaction_structure_changed).toBe(1)
+    expect(result.diagnosticCountsByCode.preview_interaction_structure_changed).toBeUndefined()
+  })
+
+  it.each(['anchor', 'form', 'href', 'action', 'event'] as const)('rejects customer-preview interaction mutations after the baseline: %s', async (mutation) => {
+    const root = await createStaging()
+    const compose = previewComposer.composeCustomerPreviewDocument
+    vi.spyOn(previewComposer, 'composeCustomerPreviewDocument').mockImplementation((input) => {
+      const html = compose(input)
+      if (!input.inlineEdits) return html
+      if (mutation === 'anchor') return html.replace(/<\/?a\b[^>]*>/g, '')
+      if (mutation === 'form') return html.replace(/<\/?form\b[^>]*>/g, '')
+      if (mutation === 'href') return html.replace('href="about.html"', 'href="other.html"')
+      if (mutation === 'action') return html.replace('action="/"', 'action="/other"')
+      return html.replace('<button ', '<button onclick="unexpected()" ')
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    expect(result.diagnosticCountsByCode.preview_interaction_structure_changed).toBe(1)
+    expect(result.diagnosticCountsByCode.content_customer_path_failed).toBeUndefined()
+  })
+
+  it.each(['href', 'action'] as const)('retains strict deployment interaction checks for %s', async (attribute) => {
+    const root = await createStaging()
+    const deploy = deployment.applyPageCustomizationsForDeploy
+    vi.spyOn(deployment, 'applyPageCustomizationsForDeploy').mockImplementation((...args) => {
+      const html = deploy(...args)
+      return attribute === 'href'
+        ? html.replace('href="about.html"', 'href="other.html"')
+        : html.replace('action="/"', 'action="/other"')
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    expect(result.diagnosticCountsByCode.deploy_interaction_structure_changed).toBe(1)
+    expect(result.diagnosticCountsByCode.content_deploy_path_failed).toBeUndefined()
+  })
+
   it('rejects structural text targets and aria-label-first visible placeholders', async () => {
     const root = await createStaging({
       html: [
@@ -360,6 +449,9 @@ describe('verifyRehabCustomizationStaging', () => {
     expect(result.diagnostics).toHaveLength(2)
     expect(result.diagnosticCount).toBeGreaterThan(2)
     expect(result.diagnosticsTruncated).toBe(result.diagnosticCount - 2)
+    expect(result.diagnosticCountsByCode.content_target_unmatched).toBe(3)
+    expect(result.diagnosticCountsByCode.image_target_unmatched).toBe(3)
+    expect(Object.values(result.diagnosticCountsByCode).reduce((sum, count) => sum + count, 0)).toBe(result.diagnosticCount)
   })
 
   it('fails when a complete preset exceeds the actual persistence limits', async () => {
