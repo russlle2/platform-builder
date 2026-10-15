@@ -27,7 +27,8 @@ test('CLI enforces the model and worker ceilings while accepting lower limits', 
   assert.equal(parsed.flags.aiTokenCap, 500_000);
 
   assert.throws(() => parseLegacyArgs(['run', '--static-workers', '65']), /at most 64/);
-  assert.throws(() => parseLegacyArgs(['run', '--chromium-workers', '7']), /at most 6/);
+  assert.equal(parseLegacyArgs(['run', '--chromium-workers', '12']).flags.chromiumWorkers, 12);
+  assert.throws(() => parseLegacyArgs(['run', '--chromium-workers', '13']), /at most 12/);
   assert.throws(() => parseLegacyArgs(['run', '--ai-dollar-cap', '25.01']), /at most 25/);
   assert.throws(() => parseLegacyArgs(['run', '--ai-token-cap', '1000001']), /at most 1000000/);
 });

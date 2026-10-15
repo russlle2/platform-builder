@@ -1,6 +1,5 @@
 import { createHash } from 'node:crypto';
 import { createServer, type Server } from 'node:http';
-import { cpus, freemem, totalmem } from 'node:os';
 import { dirname, extname, join, relative, resolve, sep } from 'node:path';
 import { lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import axe from 'axe-core';
@@ -13,6 +12,9 @@ import {
   type CustomerPreviewStylesheet,
 } from './customer-preview-adapter.js';
 import { isEmbeddedUrl, isSafeEmbeddedRasterDataUrl } from './url-safety.js';
+import { recommendedRenderWorkers } from './render-scheduling.js';
+
+export { recommendedRenderWorkers } from './render-scheduling.js';
 
 export const LEGACY_VIEWPORTS = {
   desktop: { width: 1440, height: 900 },
@@ -412,17 +414,6 @@ export async function startTemplateServer(
       server.close((error) => error ? reject(error) : resolvePromise());
     }),
   };
-}
-
-export function recommendedRenderWorkers(requested?: number): number {
-  const memoryRatio = freemem() / Math.max(1, totalmem());
-  const memoryBound = memoryRatio < 0.2 ? 2 : memoryRatio < 0.35 ? 3 : memoryRatio < 0.5 ? 4 : 6;
-  const cpuBound = Math.max(2, Math.min(6, Math.floor(cpus().length / 4)));
-  const automatic = Math.max(2, Math.min(memoryBound, cpuBound));
-  if (!requested || !Number.isFinite(requested)) return automatic;
-  // Treat the configured value as a ceiling, not a promise. A long unattended
-  // run should shed browser concurrency when system memory is already tight.
-  return Math.max(1, Math.min(automatic, Math.floor(requested)));
 }
 
 async function screenshotEvidence(
@@ -2075,11 +2066,11 @@ export async function renderTemplateTasks(
   options: RenderRunOptions,
 ): Promise<RenderEvidence[]> {
   const serverRoot = resolve(serverRootInput);
+  const workers = await recommendedRenderWorkers(options.workers, { signal: options.signal });
   // Register every page up front so its artifact URL is served through the
   // same two app-owned composition functions as a customer preview. All other
   // files at those artifact URLs remain byte-for-byte static subresources.
   const server = await startTemplateServer(serverRoot, { renderTasks: tasks });
-  const workers = recommendedRenderWorkers(options.workers);
   const settings = {
     evidenceRoot: resolve(options.evidenceRoot),
     retries: options.retries ?? 3,

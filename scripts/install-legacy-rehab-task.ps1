@@ -14,7 +14,7 @@ param(
     [ValidateRange(1, 64)]
     [int]$StaticWorkers = 8,
 
-    [ValidateRange(1, 6)]
+    [ValidateRange(1, 12)]
     [int]$ChromiumWorkers = 4,
 
     [ValidateRange(1, 999)]

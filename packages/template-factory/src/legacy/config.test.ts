@@ -42,7 +42,8 @@ test('config enforces hard model and worker ceilings while preserving lower oper
   assert.equal(lower.aiDollarCapUsd, 12.5);
   assert.equal(lower.aiTokenCap, 500_000);
   assert.throws(() => resolveLegacyConfig({ sourceRoot, workRoot, staticWorkers: 65 }), /at most 64/);
-  assert.throws(() => resolveLegacyConfig({ sourceRoot, workRoot, chromiumWorkers: 7 }), /at most 6/);
+  assert.equal(resolveLegacyConfig({ sourceRoot, workRoot, chromiumWorkers: 12 }).chromiumWorkers, 12);
+  assert.throws(() => resolveLegacyConfig({ sourceRoot, workRoot, chromiumWorkers: 13 }), /at most 12/);
   assert.throws(() => resolveLegacyConfig({ sourceRoot, workRoot, aiDollarCapUsd: 25.01 }), /at most 25/);
   assert.throws(() => resolveLegacyConfig({ sourceRoot, workRoot, aiTokenCap: 1_000_001 }), /at most 1000000/);
 });

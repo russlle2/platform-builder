@@ -51,7 +51,7 @@ Options:
   --rule-version <version>     Deterministic repair rule version
   --pilot-size <count>         Stratified pilot size (minimum/default: 100)
   --static-workers <count>     Static repair workers (default: 8; maximum: 64)
-  --chromium-workers <count>   Browser workers (default: 4; maximum: 6)
+  --chromium-workers <count>   Browser worker ceiling (default: 4; maximum: 12; resource-adaptive)
   --ai-dollar-cap <usd>        Hard model spend cap (default/maximum: 25)
   --ai-token-cap <count>       Hard aggregate token cap (default/maximum: 1000000)
   --cloud-repair               Explicitly enable the capped OpenAI fragment-repair lane
