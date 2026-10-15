@@ -1,14 +1,20 @@
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import * as uploader from '../../scripts/upload-templates-to-blobs.mjs'
+import * as previewComposer from './customer-preview-document'
+import * as deployment from './site-deploy'
+import type { HydrationField } from './templates/template-hydration'
 import {
   parseVerifyRehabCustomizationArgs,
   runVerifyRehabCustomizationCli,
 } from '../../scripts/verify-rehab-customization'
 import { verifyRehabCustomizationStaging } from './rehab-customization-verifier'
+import { catalogDocumentHash, catalogManifestHash } from './templates/catalog-profile'
 
 const temporaryRoots: string[] = []
+const validatedManifests = new Map<string, Record<string, unknown[]>>()
 
 const catalogueEntry = {
   legacySlug: 'good-template',
@@ -30,6 +36,7 @@ async function createStaging(overrides?: {
   images?: unknown[]
   tokens?: unknown[]
   pages?: string[]
+  fields?: HydrationField[]
 }): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), 'dc-rehab-verifier-'))
   temporaryRoots.push(root)
@@ -41,13 +48,16 @@ async function createStaging(overrides?: {
     sourceTemplates: 1,
     templates: [catalogueEntry],
   })
-  await writeJson(join(root, '_manifest.json'), {
+  const runtimeManifest = {
     [catalogueEntry.niche]: [{
       ...catalogueEntry,
       slug: catalogueEntry.legacySlug,
       nicheSlug: catalogueEntry.niche,
+      fields: overrides?.fields ?? [],
     }],
-  })
+  }
+  validatedManifests.set(root, runtimeManifest)
+  await writeJson(join(root, '_manifest.json'), runtimeManifest)
   await writeJson(join(templateRoot, 'template.json'), {
     contractVersion: 3,
     legacySlug: catalogueEntry.legacySlug,
@@ -130,11 +140,81 @@ async function createStaging(overrides?: {
   return root
 }
 
+// The small customization fixtures isolate rendering/persistence checks from
+// the uploader's separately tested full-5486 inventory and receipt validation.
+beforeEach(() => {
+  vi.spyOn(uploader, 'buildValidatedRehabManifest').mockImplementation((root: string) => {
+    const manifest = validatedManifests.get(root)
+    if (!manifest) throw new Error('No validated fixture manifest')
+    return manifest
+  })
+})
+
 afterEach(async () => {
+  vi.restoreAllMocks()
+  validatedManifests.clear()
   await Promise.all(temporaryRoots.splice(0).map((root) => rm(root, { recursive: true, force: true })))
 })
 
 describe('verifyRehabCustomizationStaging', () => {
+  it('accepts the compiler layout without a root manifest and keeps exact validated catalogue identity', async () => {
+    const root = await createStaging()
+    const runtimeManifest = validatedManifests.get(root)!
+    const localPath = join(root, catalogueEntry.niche, catalogueEntry.legacySlug, 'template.json')
+    const local = JSON.parse(await readFile(localPath, 'utf8'))
+    // Static preflight IDs legitimately predate browser-final receipts and
+    // canonical design selection; immutable source files are not relabelled.
+    local.qualityReceipt = 'receipt_static_preflight'
+    local.designId = 'design_before_visual_dedupe'
+    await writeJson(localPath, local)
+    await rm(join(root, '_manifest.json'))
+    const before = await readFile(localPath)
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(true)
+    expect(result.manifestHash).toBe(catalogManifestHash(runtimeManifest))
+    expect(result.catalogHash).toBe(catalogDocumentHash(await readFile(join(root, '_catalog-v3.json'))))
+    expect(await readFile(localPath)).toEqual(before)
+    await expect(readFile(join(root, '_manifest.json'))).rejects.toMatchObject({ code: 'ENOENT' })
+    expect(uploader.buildValidatedRehabManifest).toHaveBeenCalledWith(root)
+  })
+
+  it('rejects supplied manifests that disagree with the actual validated runtime identity', async () => {
+    const root = await createStaging()
+    const altered = structuredClone(validatedManifests.get(root)!)
+    ;(altered[catalogueEntry.niche]![0] as Record<string, unknown>).qualityReceipt = 'receipt_forged'
+    await writeJson(join(root, '_manifest.json'), altered)
+    await expect(verifyRehabCustomizationStaging({ root })).rejects.toThrow('_manifest.json differs')
+  })
+
+  it('does not fall back around malformed or symlinked supplied manifests', async () => {
+    const root = await createStaging()
+    await writeFile(join(root, '_manifest.json'), '{broken')
+    await expect(verifyRehabCustomizationStaging({ root })).rejects.toThrow()
+    expect(uploader.buildValidatedRehabManifest).not.toHaveBeenCalled()
+    await rm(join(root, '_manifest.json'))
+    await symlink(join(root, '_catalog-v3.json'), join(root, '_manifest.json'))
+    await expect(verifyRehabCustomizationStaging({ root })).rejects.toThrow('not a regular file')
+    expect(uploader.buildValidatedRehabManifest).not.toHaveBeenCalled()
+  })
+
+  it('retains local preset and validated final revision mismatch checks', async () => {
+    const root = await createStaging()
+    await rm(join(root, '_manifest.json'))
+    const localPath = join(root, catalogueEntry.niche, catalogueEntry.legacySlug, 'template.json')
+    const local = JSON.parse(await readFile(localPath, 'utf8'))
+    local.contentPresetId = 'content_forged'
+    await writeJson(localPath, local)
+    const runtime = validatedManifests.get(root)![catalogueEntry.niche]![0] as Record<string, unknown>
+    runtime.qualityReceipt = 'receipt_other'
+    runtime.designId = 'design_other'
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    const details = result.diagnostics.filter((item) => item.code === 'manifest_revision_mismatch').map((item) => item.detail)
+    expect(details).toContain('contentPresetId differs from _catalog-v3.json')
+    expect(details).toContain('Validated runtime qualityReceipt differs from _catalog-v3.json')
+    expect(details).toContain('Validated runtime designId differs from _catalog-v3.json')
+  })
+
   it('proves ID-first text, attribute, image, persistence, deploy, and theme paths', async () => {
     const root = await createStaging()
     const result = await verifyRehabCustomizationStaging({ root, workers: 2 })
@@ -152,6 +232,90 @@ describe('verifyRehabCustomizationStaging', () => {
       diagnosticsTruncated: 0,
     })
     expect(result.diagnostics).toEqual([])
+  })
+
+  it('hydrates actual runtime fields before comparing the same preview pipeline stages', async () => {
+    const root = await createStaging({
+      html: '<html data-dc-catalog-version="3"><head></head><body><nav><a href="{{PRIMARY_CTA_URL}}" onclick="oldHandler()"><span data-dc-edit-id="txt_cta">{{PRIMARY_CTA_LABEL}}</span></a><a href="assets/guide.pdf">Guide</a></nav></body></html>',
+      entries: [{ nodeId: 'txt_cta', page: 'index.html', html: '{{PRIMARY_CTA_LABEL}}', text: '{{PRIMARY_CTA_LABEL}}' }],
+      images: [],
+      fields: [
+        { name: 'PRIMARY_CTA_URL', type: 'url' },
+        { name: 'PRIMARY_CTA_LABEL', type: 'text', default: 'Book a call' },
+      ],
+    })
+    const compose = previewComposer.composeCustomerPreviewDocument
+    const spy = vi.spyOn(previewComposer, 'composeCustomerPreviewDocument').mockImplementation(compose)
+    const result = await verifyRehabCustomizationStaging({ root })
+
+    expect(result.diagnostics).toEqual([])
+    expect(result.pass).toBe(true)
+    expect(spy).toHaveBeenCalledTimes(2)
+    const baseline = spy.mock.calls[0]![0]
+    const edited = spy.mock.calls[1]![0]
+    expect(baseline.html).toContain('href="https://example.test/contact"')
+    expect(baseline.html).not.toContain('{{PRIMARY_CTA_')
+    expect(edited.html).toBe(baseline.html)
+    expect(edited.assetBase).toBe(baseline.assetBase)
+    expect(edited.page).toBe(baseline.page)
+    expect(compose(baseline)).not.toContain('onclick=')
+    expect(compose(baseline)).toContain(`${baseline.assetBase}/assets/guide.pdf`)
+    expect(result.diagnosticCountsByCode).toEqual({})
+  })
+
+  it.each(['anchor', 'form', 'button', 'order'] as const)('rejects a baseline composer that loses interactive topology: %s', async (mutation) => {
+    const root = await createStaging({
+      html: '<html data-dc-catalog-version="3"><head></head><body><h1 data-dc-edit-id="txt_heading">Welcome</h1><nav><a id="first" href="about.html">About</a><a id="second" href="contact.html">Contact</a></nav><form action="/inquiry"><button type="submit">Send</button></form></body></html>',
+      entries: [{ nodeId: 'txt_heading', page: 'index.html', html: 'Welcome', text: 'Welcome' }],
+      images: [],
+    })
+    expect((await verifyRehabCustomizationStaging({ root })).pass).toBe(true)
+    const compose = previewComposer.composeCustomerPreviewDocument
+    vi.spyOn(previewComposer, 'composeCustomerPreviewDocument').mockImplementation((input) => {
+      const html = compose(input)
+      // Apply the same defect to baseline and edited previews: their equality
+      // alone must not hide controls removed by the shared composition stage.
+      if (mutation === 'order') return html.replace(/(<a id="first"[^>]*>About<\/a>)(<a id="second"[^>]*>Contact<\/a>)/, '$2$1')
+      const tag = mutation === 'anchor' ? 'a' : mutation
+      return html.replace(new RegExp(`<\\/?${tag}\\b[^>]*>`, 'g'), '')
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    expect(result.diagnosticCountsByCode.preview_baseline_interaction_structure_changed).toBe(1)
+    expect(result.diagnosticCountsByCode.preview_interaction_structure_changed).toBeUndefined()
+  })
+
+  it.each(['anchor', 'form', 'href', 'action', 'event'] as const)('rejects customer-preview interaction mutations after the baseline: %s', async (mutation) => {
+    const root = await createStaging()
+    const compose = previewComposer.composeCustomerPreviewDocument
+    vi.spyOn(previewComposer, 'composeCustomerPreviewDocument').mockImplementation((input) => {
+      const html = compose(input)
+      if (!input.inlineEdits) return html
+      if (mutation === 'anchor') return html.replace(/<\/?a\b[^>]*>/g, '')
+      if (mutation === 'form') return html.replace(/<\/?form\b[^>]*>/g, '')
+      if (mutation === 'href') return html.replace('href="about.html"', 'href="other.html"')
+      if (mutation === 'action') return html.replace('action="/"', 'action="/other"')
+      return html.replace('<button ', '<button onclick="unexpected()" ')
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    expect(result.diagnosticCountsByCode.preview_interaction_structure_changed).toBe(1)
+    expect(result.diagnosticCountsByCode.content_customer_path_failed).toBeUndefined()
+  })
+
+  it.each(['href', 'action'] as const)('retains strict deployment interaction checks for %s', async (attribute) => {
+    const root = await createStaging()
+    const deploy = deployment.applyPageCustomizationsForDeploy
+    vi.spyOn(deployment, 'applyPageCustomizationsForDeploy').mockImplementation((...args) => {
+      const html = deploy(...args)
+      return attribute === 'href'
+        ? html.replace('href="about.html"', 'href="other.html"')
+        : html.replace('action="/"', 'action="/other"')
+    })
+    const result = await verifyRehabCustomizationStaging({ root })
+    expect(result.pass).toBe(false)
+    expect(result.diagnosticCountsByCode.deploy_interaction_structure_changed).toBe(1)
+    expect(result.diagnosticCountsByCode.content_deploy_path_failed).toBeUndefined()
   })
 
   it('rejects structural text targets and aria-label-first visible placeholders', async () => {
@@ -285,6 +449,9 @@ describe('verifyRehabCustomizationStaging', () => {
     expect(result.diagnostics).toHaveLength(2)
     expect(result.diagnosticCount).toBeGreaterThan(2)
     expect(result.diagnosticsTruncated).toBe(result.diagnosticCount - 2)
+    expect(result.diagnosticCountsByCode.content_target_unmatched).toBe(3)
+    expect(result.diagnosticCountsByCode.image_target_unmatched).toBe(3)
+    expect(Object.values(result.diagnosticCountsByCode).reduce((sum, count) => sum + count, 0)).toBe(result.diagnosticCount)
   })
 
   it('fails when a complete preset exceeds the actual persistence limits', async () => {
@@ -342,6 +509,7 @@ describe('verify-rehab-customization CLI', () => {
 
   it('returns zero for a clean catalogue and one for a bounded gate failure', async () => {
     const cleanRoot = await createStaging()
+    await rm(join(cleanRoot, '_manifest.json'))
     const failingRoot = await createStaging({
       html: '<html><body></body></html>',
       entries: [{ nodeId: 'missing', page: 'index.html', html: 'Missing', text: 'Missing' }],
@@ -358,6 +526,7 @@ describe('verify-rehab-customization CLI', () => {
       { stdout: (value) => failingOutput.push(value), stderr: (value) => failingOutput.push(value) },
     )).resolves.toBe(1)
 
+    expect(cleanOutput).toHaveLength(1)
     expect(JSON.parse(cleanOutput[0]!).pass).toBe(true)
     const failed = JSON.parse(failingOutput[0]!) as { pass: boolean; diagnostics: unknown[]; diagnosticsTruncated: number }
     expect(failed.pass).toBe(false)

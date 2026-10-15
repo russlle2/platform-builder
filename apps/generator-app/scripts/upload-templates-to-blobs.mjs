@@ -2533,13 +2533,13 @@ function loadNicheSlugs() {
 
 // ---------- main ----------
 
-function buildManifest(nicheSlugs) {
+function buildManifest(root, nicheSlugs) {
   const manifest = {}
   let totalTemplates = 0
   const rejectedTemplates = []
 
   for (const nicheSlug of nicheSlugs) {
-    const nicheDir = path.join(PLATFORM_BUILDER_ROOT, nicheSlug)
+    const nicheDir = path.join(root, nicheSlug)
     if (!existsSync(nicheDir)) {
       manifest[nicheSlug] = []
       continue
@@ -2547,7 +2547,7 @@ function buildManifest(nicheSlugs) {
     const templates = []
     for (const entry of readdirSync(nicheDir)) {
       const templateDir = path.resolve(nicheDir, entry)
-      if (!isPathWithin(PLATFORM_BUILDER_ROOT, templateDir)) {
+      if (!isPathWithin(root, templateDir)) {
         throw new Error(`Refusing to scan outside template root: ${templateDir}`)
       }
       const stat = lstatSync(templateDir)
@@ -2588,6 +2588,25 @@ function buildManifest(nicheSlugs) {
   }
 
   return { manifest, totalTemplates, rejectedTemplates }
+}
+
+function validateBuiltManifest(root, { manifest, rejectedTemplates }, rehabV3Staging) {
+  if (rehabV3Staging && rejectedTemplates.length > 0) {
+    throw new Error(
+      `Rehabilitation staging validation requires zero quarantined templates; found ${rejectedTemplates.length}`,
+    )
+  }
+  return applyCatalogV3DocumentFromRoot(root, manifest, { rehabV3Staging })
+}
+
+/** Derive the exact runtime manifest from immutable compiler output, without logging or writes. */
+export function buildValidatedRehabManifest(root) {
+  const resolvedRoot = path.resolve(root)
+  const details = lstatSync(resolvedRoot)
+  if (!details.isDirectory() || details.isSymbolicLink()) {
+    throw new Error('Rehabilitation export root must be a real directory')
+  }
+  return validateBuiltManifest(resolvedRoot, buildManifest(resolvedRoot, loadNicheSlugs()), true)
 }
 
 function formatBytes(bytes) {
@@ -3002,7 +3021,9 @@ export async function main(argv = process.argv.slice(2), env = process.env, depe
     }
   }
 
-  let { manifest, totalTemplates, rejectedTemplates } = buildManifest(nicheSlugs)
+  const built = buildManifest(PLATFORM_BUILDER_ROOT, nicheSlugs)
+  let { manifest } = built
+  const { totalTemplates, rejectedTemplates } = built
   console.log(
     `[upload-templates] Found ${nicheSlugs.length} niches, ${totalTemplates} publishable templates, ` +
     `${rejectedTemplates.length} quarantined.`,
@@ -3026,14 +3047,7 @@ export async function main(argv = process.argv.slice(2), env = process.env, depe
     console.warn(`[upload-templates] Quarantined templates:\n  - ${preview}${suffix}`)
   }
 
-  if (options.rehabV3Staging && rejectedTemplates.length > 0) {
-    throw new Error(
-      `Rehabilitation staging validation requires zero quarantined templates; found ${rejectedTemplates.length}`,
-    )
-  }
-  manifest = applyCatalogV3DocumentFromRoot(PLATFORM_BUILDER_ROOT, manifest, {
-    rehabV3Staging: options.rehabV3Staging,
-  })
+  manifest = validateBuiltManifest(PLATFORM_BUILDER_ROOT, built, options.rehabV3Staging)
   if (options.rehabV3Staging) {
     const stagingCounts = Object.fromEntries(
       Object.entries(manifest).map(([niche, templates]) => [niche, templates.length]),

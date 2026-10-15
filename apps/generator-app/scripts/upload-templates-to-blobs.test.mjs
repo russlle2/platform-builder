@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdtemp, mkdir, readFile, lstat, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
@@ -15,6 +15,7 @@ import {
   main,
   manifestDigest,
   buildReleaseManifest,
+  buildValidatedRehabManifest,
   matchesOnlySelector,
   mergeValidatedManifest,
   normalizeOnlySelector,
@@ -669,6 +670,39 @@ test('rehabilitation v3 staging dry-run rejects an undersized catalogue', async 
       main(['--dry-run', '--root', root, '--rehab-v3-staging'], {}),
       /expected 1292, found 2|expected=5486/i,
     )
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
+test('read-only runtime manifest derivation retains uploader receipt, preset, canonical and complete-inventory gates', async () => {
+  const root = await mkdtemp(path.join(tmpdir(), 'dc-uploader-derived-manifest-'))
+  try {
+    const catalog = await writeRehabStagingRoot(root)
+    const catalogPath = path.join(root, '_catalog-v3.json')
+    const templateRoot = path.join(root, 'aromatherapy', 'canonical')
+    const originalIndex = await readFile(path.join(templateRoot, 'index.html'))
+    const originalReceipt = await readFile(path.join(templateRoot, '.dailyclarity', 'final-quality-receipt.json'))
+    assert.throws(() => buildValidatedRehabManifest(root), /expected 1292, found 2|expected=5486/i)
+    for (const [field, value, expected] of [
+      ['qualityReceipt', 'receipt_forged', /qualityReceipt does not match verified template/],
+      ['contentPresetId', 'content_forged', /contentPresetId does not match verified template/],
+      ['themePresetId', 'theme_forged', /themePresetId does not match verified template/],
+      ['designId', 'design_forged', /invalid canonical lineage/],
+    ]) {
+      const changed = structuredClone(catalog)
+      changed.templates[0][field] = value
+      await writeFile(catalogPath, JSON.stringify(changed))
+      assert.throws(() => buildValidatedRehabManifest(root), expected)
+    }
+    await writeFile(catalogPath, JSON.stringify(catalog))
+    const { id: _id, ...receiptBody } = JSON.parse(originalReceipt.toString('utf8'))
+    const failedReceipt = signedReceipt({ ...receiptBody, checks: { ...receiptBody.checks, mobile: 'failed' } })
+    await writeFile(path.join(templateRoot, '.dailyclarity', 'final-quality-receipt.json'), JSON.stringify(failedReceipt))
+    assert.throws(() => buildValidatedRehabManifest(root), /requires zero quarantined templates/)
+    await writeFile(path.join(templateRoot, '.dailyclarity', 'final-quality-receipt.json'), originalReceipt)
+    assert.deepEqual(await readFile(path.join(templateRoot, 'index.html')), originalIndex)
+    await assert.rejects(lstat(path.join(root, '_manifest.json')), { code: 'ENOENT' })
   } finally {
     await rm(root, { recursive: true, force: true })
   }
