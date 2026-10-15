@@ -143,6 +143,74 @@ describe('sandbox configuration and request boundaries', () => {
     }), true)).toThrow('configured website')
   })
 
+  it('accepts the current canonical Host when Next retained an immutable deployment hostname', () => {
+    const incoming = new Request('https://cached-deploy--dailyclarity.netlify.app/api/paypal/sandbox/order', {
+      method: 'POST', headers: { Host: 'dailyclarity.org', Origin: ORIGIN, 'Sec-Fetch-Site': 'same-origin' },
+    })
+    expect(requirePayPalSandbox(incoming, true)).toBe(ORIGIN)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    'attacker.example',
+    'dailyclarity.org, attacker.example',
+    'user@dailyclarity.org',
+    'dailyclarity.org/path',
+    'dailyclarity.org:444',
+    'dailyclarity.org:443',
+    'dailyclarity.org.attacker.example',
+    '',
+  ])('rejects a foreign or malformed actual Host %s even if Next retained the canonical origin', async (host) => {
+    const response = await orderPost(new Request(`${ORIGIN}/api/paypal/sandbox/order`, {
+      method: 'POST', headers: { Host: host, Origin: ORIGIN, 'Sec-Fetch-Site': 'same-origin' },
+    }))
+    expect(response.status).toBe(403)
+    expect(await response.json()).toMatchObject({ code: 'origin_mismatch' })
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('rejects the wrong protocol even with canonical Host and Origin', async () => {
+    const response = await orderPost(new Request('http://dailyclarity.org/api/paypal/sandbox/order', {
+      method: 'POST', headers: { Host: 'dailyclarity.org', Origin: ORIGIN, 'Sec-Fetch-Site': 'same-origin' },
+    }))
+    expect(response.status).toBe(403)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('retains the exact URL-origin check when Host is absent', () => {
+    expect(requirePayPalSandbox(request('order', { method: 'POST' }), true)).toBe(ORIGIN)
+    expect(() => requirePayPalSandbox(new Request('https://cached-deploy--dailyclarity.netlify.app/api/paypal/sandbox/order', {
+      method: 'POST', headers: { Origin: ORIGIN },
+    }), true)).toThrow('configured website')
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('does not let forwarded Host authorize a foreign actual Host or URL', async () => {
+    const spoofedHeaders: Record<string, string>[] = [
+      { Host: 'attacker.example', Origin: ORIGIN, 'X-Forwarded-Host': 'dailyclarity.org' },
+      { Origin: ORIGIN, 'X-Forwarded-Host': 'dailyclarity.org' },
+    ]
+    for (const headers of spoofedHeaders) {
+      const response = await orderPost(new Request('https://attacker.example/api/paypal/sandbox/order', { method: 'POST', headers }))
+      expect(response.status).toBe(403)
+    }
+    expect(requirePayPalSandbox(new Request(`${ORIGIN}/api/paypal/sandbox/order`, {
+      method: 'POST', headers: { Host: 'dailyclarity.org', Origin: ORIGIN, 'X-Forwarded-Host': 'attacker.example' },
+    }), true)).toBe(ORIGIN)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    { Origin: 'https://attacker.example', 'Sec-Fetch-Site': 'same-origin' },
+    { Origin: ORIGIN, 'Sec-Fetch-Site': 'cross-site' },
+  ])('retains browser-origin and fetch-site rejection with a valid current Host: %j', async (headers) => {
+    const response = await orderPost(new Request('https://cached-deploy--dailyclarity.netlify.app/api/paypal/sandbox/order', {
+      method: 'POST', headers: { Host: 'dailyclarity.org', ...headers },
+    }))
+    expect(response.status).toBe(403)
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
   it('rejects explicit cross-site fetch metadata', () => {
     expect(() => requirePayPalSandbox(new Request(`${ORIGIN}/api/paypal/sandbox/order`, {
       method: 'POST', headers: { Origin: ORIGIN, 'Sec-Fetch-Site': 'cross-site' },
