@@ -1,0 +1,104 @@
+name: Bind actual connected staging evidence to the full catalogue
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_run_id:
+        description: 'Successful import-catalogue run on this exact main SHA'
+        required: true
+        type: string
+      candidate_artifact_id:
+        description: 'Exact immutable three-part candidate artifact ID'
+        required: true
+        type: string
+      receipt_hash:
+        description: 'Reviewed canonical full5486 certification SHA-256'
+        required: true
+        type: string
+      connected_release_id:
+        description: 'Numeric unpublished release ID containing sanitized connected-staging.json'
+        required: true
+        type: string
+      connected_asset_id:
+        description: 'Exact numeric connected-staging.json asset ID'
+        required: true
+        type: string
+      connected_evidence_hash:
+        description: 'Reviewed raw connected-staging.json SHA-256 from actual provider evidence'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-catalogue-finalize
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      CANDIDATE_RUN_ID: ${{ inputs.candidate_run_id }}
+      CANDIDATE_ARTIFACT_ID: ${{ inputs.candidate_artifact_id }}
+      RECEIPT_HASH: ${{ inputs.receipt_hash }}
+      CONNECTED_RELEASE_ID: ${{ inputs.connected_release_id }}
+      CONNECTED_ASSET_ID: ${{ inputs.connected_asset_id }}
+      CONNECTED_EVIDENCE_HASH: ${{ inputs.connected_evidence_hash }}
+      RELEASE_BUNDLE: ${{ runner.temp }}/certified-bundle
+      HANDOFF_REPORT: ${{ runner.temp }}/catalogue-finalization-report.json
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Install exact dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Require successful push CI and the exact successful candidate producer
+        run: |
+          node apps/generator-app/scripts/verify-release-ci.mjs
+          node apps/generator-app/scripts/catalogue-handoff.mjs source-check
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.candidate_artifact_id }}
+          run-id: ${{ inputs.candidate_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.RELEASE_BUNDLE }}
+          merge-multiple: true
+      - name: Reverify downloaded bytes and bind only the reviewed actual connected evidence
+        run: node apps/generator-app/scripts/catalogue-handoff.mjs finalize
+      - name: Retain production-ready bundle without changing the candidate
+        id: final
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: certified-catalogue-${{ github.sha }}
+          path: ${{ env.RELEASE_BUNDLE }}
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 1
+      - name: Record final immutable artifact identity
+        run: |
+          node -e 'const fs=require("node:fs"); const p=process.env.HANDOFF_REPORT; const r=JSON.parse(fs.readFileSync(p)); r.artifact={id:process.env.ARTIFACT_ID,digest:process.env.ARTIFACT_DIGEST}; fs.writeFileSync(p,JSON.stringify(r,null,2)+"\n");'
+        env:
+          ARTIFACT_ID: ${{ steps.final.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.final.outputs.artifact-digest }}
+      - name: Retain sanitized finalization provenance separately
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: catalogue-finalization-provenance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.HANDOFF_REPORT }}
+          if-no-files-found: error
+          retention-days: 14

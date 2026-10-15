@@ -1,0 +1,120 @@
+name: Stage or restore the complete isolated catalogue
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        required: true
+        default: verify
+        options: [verify, stage, rollback, reapply]
+      candidate_run_id:
+        description: 'Exact successful candidate-import run; for rollback/reapply, the saved staging-journal run'
+        required: true
+        type: string
+      candidate_artifact_id:
+        description: 'Exact candidate artifact ID; for rollback/reapply, the saved staging-journal artifact ID'
+        required: true
+        type: string
+      receipt_hash:
+        description: 'Reviewed canonical full certification hash (verify/stage)'
+        required: false
+        type: string
+      previous_deployment_id:
+        description: 'Independently reviewed healthy launch60 staging deployment ID (stage)'
+        required: false
+        type: string
+      previous_release_sha:
+        description: 'Independently reviewed healthy launch60 staging release SHA (stage)'
+        required: false
+        type: string
+      journal_hash:
+        description: 'Exact saved canonical staging journal hash (rollback/reapply)'
+        required: false
+        type: string
+      confirm:
+        description: 'STAGE FULL CATALOGUE, ROLLBACK STAGING CATALOGUE or REAPPLY STAGING CATALOGUE'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-staging
+  cancel-in-progress: false
+
+jobs:
+  guarded-staging:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 360
+    env:
+      OPERATION: ${{ inputs.operation }}
+      CONFIRMATION: ${{ inputs.confirm }}
+      CANDIDATE_RUN_ID: ${{ inputs.candidate_run_id }}
+      CANDIDATE_ARTIFACT_ID: ${{ inputs.candidate_artifact_id }}
+      RECEIPT_HASH: ${{ inputs.receipt_hash }}
+      JOURNAL_HASH: ${{ inputs.journal_hash }}
+      EXPECTED_PREVIOUS_DEPLOYMENT_ID: ${{ inputs.previous_deployment_id }}
+      EXPECTED_PREVIOUS_RELEASE_SHA: ${{ inputs.previous_release_sha }}
+      DAILYCLARITY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+      DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+      NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+      NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+      NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+      NETLIFY_EXPECTED_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+      NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Set artifact paths outside the clean checkout
+        run: |
+          echo "CANDIDATE_BUNDLE=$RUNNER_TEMP/staging-catalogue-input" >> "$GITHUB_ENV"
+          echo "STAGING_JOURNAL_OUTPUT=$RUNNER_TEMP/staging-journal.json" >> "$GITHUB_ENV"
+      - name: Install exact reviewed dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Verify the exact candidate or interrupted journal producer before download
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          if [[ "$OPERATION" == "rollback" || "$OPERATION" == "reapply" ]]; then
+            node apps/generator-app/scripts/run-staging-catalogue.mjs check-journal-source
+          else
+            node apps/generator-app/scripts/catalogue-handoff.mjs source-check
+          fi
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.candidate_artifact_id }}
+          run-id: ${{ inputs.candidate_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.CANDIDATE_BUNDLE }}
+          merge-multiple: true
+      - name: Verify, stage, or restore the exact isolated catalogue transition
+        run: node apps/generator-app/scripts/run-staging-catalogue.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+          DAILYCLARITY_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+          NEXT_PUBLIC_RELEASE_SHA: ${{ github.sha }}
+      - name: Preserve the exact rollback journal even after interrupted publication
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: staging-catalogue-journal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.STAGING_JOURNAL_OUTPUT }}
+          if-no-files-found: warn
