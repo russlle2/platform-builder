@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { LegalList, LegalPage, LegalSection } from '@/components/legal/LegalPage'
 
 export const metadata: Metadata = {
@@ -53,7 +54,11 @@ export default function RefundPolicyPage() {
 
       <LegalSection title="4. Requesting a refund">
         <p>
-          Email support@dailyclarity.org from the address used for your purchase. Include the
+          Use our{' '}
+          <Link href="/contact" className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200">
+            contact form
+          </Link>{' '}
+          and enter the email address used for your purchase. Include the
           purchase date, the relevant site or project name, and why you are requesting a refund.
           Please do not send complete card or bank details. We may request information needed to
           locate and verify the transaction.

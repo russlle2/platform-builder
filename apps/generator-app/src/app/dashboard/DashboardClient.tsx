@@ -338,7 +338,10 @@ export default function DashboardClient({
                 </p>
                 {billingError && (
                   <p role="alert" className="mt-4 text-sm text-amber-200">
-                    {billingError}
+                    {billingError}{' '}
+                    <Link href="/contact" className="underline underline-offset-4">
+                      Contact support
+                    </Link>
                   </p>
                 )}
                 {site.data.stripe_customer_id ? (

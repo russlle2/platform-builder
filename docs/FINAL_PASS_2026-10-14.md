@@ -2,7 +2,17 @@
 
 **Verified snapshot: 2026-10-15 01:12 UTC / 2026-10-14 21:12 America/New_York.** This report records the reviewed checkpoint and provider work in progress. It is not a production-readiness attestation. Update the pending results below against the final commit and deployed release before publication.
 
-## Connected release progress — 2026-10-15 01:43 UTC
+## Managed email and deployment corrections — 2026-10-15 02:00 UTC
+
+PR [21](https://github.com/russlle2/platform-builder/pull/21) is merged as `3322e1f90ed7706cfde97ce4117c51cb76d0f54b`; exact-main [CI 38667782689](https://github.com/russlle2/platform-builder/actions/runs/38667782689) passed. The next staging deployment [38667789046](https://github.com/russlle2/platform-builder/actions/runs/38667789046) failed during its release-gate build when Next's Google Fonts loader could not parse a returned font URL. The application now bundles the same Barlow Condensed and Sora fonts locally, with pinned source hashes and licenses, removing that build-time network dependency. Neither failed staging run published the new application.
+
+The old Postmark login recovery and waiting SMTP prompt were canceled. A signed Supabase Send Email hook now lets Auth use the application's existing protected Postmark connection; no existing token was extracted. The hook is disabled by default, restricts site/project identities and callback destinations, and requires a separate shared-project review for production. A protected read-only health probe checks Postmark authentication without disclosing credentials or claiming delivery. See [activation and rollback instructions](SUPABASE_AUTH_EMAIL_HOOK.md). Provider activation, actual inbox receipt, and customer login remain to be verified.
+
+Both Netlify sites now have notification and reply-address configuration pointing to the Gmail address already selected as the production owner contact; the staging owner contact was also configured. Public support links use the contact form instead of domain inboxes without incoming-mail records. These settings still require a new deployment. Contact routing validates a single destination, preserves tenant isolation, and reports storage and delivery outcomes separately.
+
+The integrated working tree passes full lint, TypeScript, the complete production build, the production dependency audit, and 1,249 tests: 720 application, 418 factory, and 111 release/database checks; three platform-specific factory checks are skipped. All 29 public-route and customer-workspace browser checks also pass against the production build. Exact-commit CI, deployed runtime, and real customer email/payment evidence remain required. The original catalogue continues independently: all 5,486 templates have completed static repair, but browser certification is still in progress. Production remains on the old deployment, so this checkpoint is **not a launch-readiness attestation**.
+
+## Earlier connected release progress — 2026-10-15 01:43 UTC
 
 PR [20](https://github.com/russlle2/platform-builder/pull/20) is merged as `a5ccf8eabfb175b28ec7f07333e90487c192c9aa`. Its exact main push passed [CI run 38665716130](https://github.com/russlle2/platform-builder/actions/runs/38665716130), including dependency audit, lint, TypeScript, unit/browser checks, and build. The integrated application suite has 605 passing tests; the factory has 417 passing tests and three platform skips; release/database scripts have 103 passing checks.
 

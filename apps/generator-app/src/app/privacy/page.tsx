@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { LegalList, LegalPage, LegalSection } from '@/components/legal/LegalPage'
 
 export const metadata: Metadata = {
@@ -105,8 +106,12 @@ export default function PrivacyPage() {
           to certain processing.
         </p>
         <p>
-          To make a privacy request, email support@dailyclarity.org from the address associated
-          with your information. We may need to verify your identity and may retain information
+          To make a privacy request, use our{' '}
+          <Link href="/contact" className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200">
+            contact form
+          </Link>{' '}
+          and enter the email address associated with your information. We may need to verify
+          your identity and may retain information
           where required or permitted by law. If your request concerns a form submitted to a
           customer&apos;s site, contacting that business directly may be the fastest route.
         </p>

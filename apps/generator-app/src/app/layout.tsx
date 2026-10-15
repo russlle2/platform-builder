@@ -1,6 +1,6 @@
 import './globals.css'
 import type { Metadata } from 'next'
-import { Barlow_Condensed, Sora } from 'next/font/google'
+import localFont from 'next/font/local'
 import Analytics from '@/components/Analytics'
 import Chatbot from '@/components/Chatbot'
 import { AppLayout } from '@/components/layout/AppLayout'
@@ -9,14 +9,25 @@ import { organizationSchema, websiteSchema, serviceSchema } from '@/lib/seo'
 import { shouldIndexDeployment } from '@/lib/deployment-environment'
 import type { ReactNode } from 'react'
 
-const display = Barlow_Condensed({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
+const display = localFont({
+  src: [
+    { path: './fonts/barlow-condensed-regular.woff2', weight: '400' },
+    { path: './fonts/barlow-condensed-semibold.woff2', weight: '600' },
+    { path: './fonts/barlow-condensed-bold.woff2', weight: '700' },
+  ],
+  style: 'normal',
+  display: 'swap',
   variable: '--font-display',
 })
-const body = Sora({
-  subsets: ['latin'],
-  weight: ['300', '400', '600', '700'],
+const body = localFont({
+  src: [
+    { path: './fonts/sora-variable.woff2', weight: '300' },
+    { path: './fonts/sora-variable.woff2', weight: '400' },
+    { path: './fonts/sora-variable.woff2', weight: '600' },
+    { path: './fonts/sora-variable.woff2', weight: '700' },
+  ],
+  style: 'normal',
+  display: 'swap',
   variable: '--font-body',
 })
 

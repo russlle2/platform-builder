@@ -52,7 +52,7 @@ export default function ContactPage() {
             Get In Touch
           </h1>
           <p className="text-xl text-pure-white max-w-2xl mx-auto">
-            Have questions about building your presence? We&apos;re here to help you skip the learning curve.
+            For website, billing, refund, or privacy questions, send a message below.
           </p>
         </div>
 
@@ -69,7 +69,7 @@ export default function ContactPage() {
             </div>
             <h2 className="text-3xl font-bold text-white mb-4">Message Received</h2>
             <p className="text-gray-300 text-lg mb-8">
-              Thanks for reaching out! We&apos;ll be in touch shortly.
+              Your message has been saved for review.
             </p>
             <button
               onClick={() => setStatus('idle')}
