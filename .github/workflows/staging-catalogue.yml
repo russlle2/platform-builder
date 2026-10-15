@@ -83,6 +83,8 @@ jobs:
           corepack enable
           corepack install
           pnpm install --frozen-lockfile
+      - name: Install the browser for read-only deployed Auth checks
+        run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
       - name: Verify the exact candidate or interrupted journal producer before download
         env:
           GITHUB_TOKEN: ${{ github.token }}
