@@ -14,6 +14,15 @@ export const metadata: Metadata = {
       'Describe the website you want and submit your project brief with a secure one-time $500 Stripe payment.',
     url: '/custom-build',
     type: 'website',
+    siteName: 'DailyClarity',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1536,
+        height: 1024,
+        alt: 'DailyClarity — Custom Website Build',
+      },
+    ],
   },
 }
 

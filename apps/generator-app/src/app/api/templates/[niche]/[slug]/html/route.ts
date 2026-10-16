@@ -37,8 +37,24 @@ export async function GET(
     return new NextResponse('Page not found', { status: 404 })
   }
 
-  // Hydrate with empty values (placeholders cleared) for gallery view
-  const hydrated = sanitizeTemplatePreviewHtml(hydrateTemplate(html, {}, template.fields))
+  // Neutral examples make the public sample view readable without using a
+  // real person's contact details or inventing credentials, services, or outcomes.
+  // Preserve an authored field default when one exists.
+  const sampleFallbacks: Record<string, string> = {
+    BUSINESS_NAME: 'Example Practice',
+    PRACTITIONER_NAME: 'Example Practitioner',
+    TAGLINE: 'An introduction to your practice.',
+    PRIMARY_CTA_LABEL: 'Get in touch',
+    CTA_LABEL: 'Get in touch',
+  }
+  // Add defaults rather than customer values: a value for an aliased token
+  // (for example PRIMARY_CTA_LABEL) must not replace an authored CTA_LABEL.
+  const sampleFields = url.searchParams.get('sample') === '1'
+    ? template.fields.map((field) => !field.default?.trim() && sampleFallbacks[field.name]
+      ? { ...field, default: sampleFallbacks[field.name] }
+      : field)
+    : template.fields
+  const hydrated = sanitizeTemplatePreviewHtml(hydrateTemplate(html, {}, sampleFields))
 
   // Rewrite asset paths
   const assetBase = `/api/templates/${niche}/${slug}/assets`

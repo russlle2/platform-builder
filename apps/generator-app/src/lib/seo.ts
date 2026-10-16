@@ -113,11 +113,11 @@ const pricingFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'How do I change plans?',
-    a: 'Contact DailyClarity support to change plans. Self-service plan switching stays disabled until the service scope and billing adjustment can be reconciled safely.',
+    a: 'Contact DailyClarity support to request a plan change. We confirm the service scope and any billing adjustment before making the change.',
   },
   {
     q: 'Do I need technical skills?',
-    a: 'None at all. Our guided intake collects your details, and we handle setup, integrations, hosting, and launch.',
+    a: 'Edit supported text and images without code. Your selected template includes managed hosting and publishing. Confirm any particular booking service or integration requirement before paying.',
   },
   {
     q: 'What if I want to cancel?',

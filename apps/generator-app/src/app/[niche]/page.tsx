@@ -645,7 +645,7 @@ export default async function NicheLandingPage({
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white">
                 {copy.headline}
                 <span className={`block ${colors.heading}`}>
-                  {templateCount} templates. Zero hassle.
+                  {templateCount > 0 ? `${templateCount.toLocaleString()} templates to explore.` : 'Find a style for your practice.'}
                 </span>
               </h1>
               <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
@@ -682,6 +682,14 @@ export default async function NicheLandingPage({
           </div>
         </section>
 
+        <LiveTemplateShowcase
+          niche={niche}
+          nicheLabel={meta.label}
+          templates={featuredTemplates}
+          totalCount={templateCount}
+          headingClass={colors.heading}
+        />
+
         {/* Pain points */}
         <section className="container-hvac py-12">
           <div className="max-w-3xl mx-auto text-center mb-8">
@@ -699,13 +707,6 @@ export default async function NicheLandingPage({
           </ul>
         </section>
 
-        <LiveTemplateShowcase
-          niche={niche}
-          nicheLabel={meta.label}
-          templates={featuredTemplates}
-          totalCount={templateCount}
-          headingClass={colors.heading}
-        />
 
         {/* Trust builders */}
         <section className="container-hvac py-12">

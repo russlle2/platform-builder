@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import ts from 'typescript'
 
 function clientSource(path: string): string {
   return readFileSync(join(process.cwd(), path), 'utf8')
@@ -16,7 +17,6 @@ describe('customer preview editor wiring', () => {
   it('routes both customer experiences through the sole app-owned iframe runtime', () => {
     for (const source of [guided, portal]) {
       expect(source).toContain("import { getCustomerPreviewEditorScript } from '@/lib/customer-preview-editor-runtime'")
-      expect(source).toContain('trustedEditorScript: getCustomerPreviewEditorScript(page)')
       expect(source).not.toContain('function getIframeInjectionScript')
       expect(source).toContain('normalizeCoordinatedImageSlotIds(e.data.slotId, e.data.pictureSlotIds)')
       expect(source).toContain('nodeId !== undefined && !isSafeInlineEditId(nodeId)')
@@ -26,6 +26,38 @@ describe('customer preview editor wiring', () => {
     expect(runtime).toContain('if (!slot || slotMatches !== 1) return;')
     expect(runtime).toContain('if (responsiveChildren !== slots.length) return;')
     expect(runtime).toContain('if (!editTarget || editMatches !== 1) return;')
+  })
+
+  it('uses the trusted editor for real drafts and a read-only navigation guard for samples', () => {
+    const editorInitializer = (source: string): ts.Expression => {
+      const file = ts.createSourceFile('preview.tsx', source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX)
+      let found: ts.Expression | undefined
+      const visit = (node: ts.Node) => {
+        if (ts.isPropertyAssignment(node) && node.name.getText(file) === 'trustedEditorScript') found = node.initializer
+        ts.forEachChild(node, visit)
+      }
+      visit(file)
+      if (!found) throw new Error('Preview must provide its app-owned runtime')
+      return found
+    }
+    const assertTrustedEditor = (expression: ts.Expression) => {
+      expect(ts.isCallExpression(expression)).toBe(true)
+      if (!ts.isCallExpression(expression)) return
+      expect(ts.isIdentifier(expression.expression) && expression.expression.text).toBe('getCustomerPreviewEditorScript')
+      expect(expression.arguments).toHaveLength(1)
+      expect(ts.isIdentifier(expression.arguments[0]) && expression.arguments[0].text).toBe('page')
+    }
+    assertTrustedEditor(editorInitializer(portal))
+    const guidedRuntime = editorInitializer(guided)
+    expect(ts.isConditionalExpression(guidedRuntime)).toBe(true)
+    if (!ts.isConditionalExpression(guidedRuntime)) return
+    expect(ts.isIdentifier(guidedRuntime.condition) && guidedRuntime.condition.text).toBe('isSample')
+    assertTrustedEditor(guidedRuntime.whenFalse)
+    expect(ts.isStringLiteral(guidedRuntime.whenTrue)).toBe(true)
+    if (ts.isStringLiteral(guidedRuntime.whenTrue)) {
+      expect(guidedRuntime.whenTrue.text).toContain('preventDefault()')
+      expect(guidedRuntime.whenTrue.text).not.toContain('contentEditable')
+    }
   })
 
   it('prevents an older asynchronous preview from overwriting the latest request', () => {

@@ -86,7 +86,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
     <main className="relative min-h-screen pt-24 pb-20">
       <section className="container-hvac py-12">
         <div className="grid grid-cols-1 lg:grid-cols-[0.8fr_1.2fr] gap-10 items-start">
-          <aside className="lg:sticky lg:top-24 space-y-6">
+          <div className="lg:sticky lg:top-24 space-y-6">
             <div>
               <span className="signal-chip">One-time custom build</span>
               <h1 className="text-4xl md:text-5xl font-bold text-bright-white mt-5">
@@ -125,7 +125,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 <p>No DailyClarity account required before payment</p>
               </div>
             </div>
-          </aside>
+          </div>
 
           <div className="glass-panel rounded-3xl p-6 md:p-10">
             {wasCanceled && (
@@ -146,6 +146,8 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 <Field label="Business name" required>
                   <input
                     required
+                    name="businessName"
+                    autoComplete="organization"
                     minLength={2}
                     maxLength={120}
                     value={form.businessName}
@@ -156,6 +158,8 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 </Field>
                 <Field label="Contact name">
                   <input
+                    name="contactName"
+                    autoComplete="name"
                     maxLength={120}
                     value={form.contactName}
                     onChange={(e) => update('contactName', e.target.value)}
@@ -167,6 +171,10 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                   <input
                     required
                     type="email"
+                    name="email"
+                    autoComplete="email"
+                    autoCapitalize="none"
+                    spellCheck={false}
                     maxLength={254}
                     value={form.email}
                     onChange={(e) => update('email', e.target.value)}
@@ -177,6 +185,8 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 <Field label="Phone">
                   <input
                     type="tel"
+                    name="phone"
+                    autoComplete="tel"
                     maxLength={40}
                     value={form.phone}
                     onChange={(e) => update('phone', e.target.value)}
@@ -233,6 +243,11 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
 
               <Field label="Existing website" hint="Optional">
                 <input
+                  name="existingWebsite"
+                  autoComplete="url"
+                  inputMode="url"
+                  autoCapitalize="none"
+                  spellCheck={false}
                   maxLength={500}
                   value={form.existingWebsite}
                   onChange={(e) => update('existingWebsite', e.target.value)}

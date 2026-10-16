@@ -370,7 +370,7 @@ async function preparePreview(page: Page) {
   await page
     .getByLabel('Business Name', { exact: false })
     .fill('Evening Aromatherapy')
-  await page.getByLabel('Email', { exact: false }).fill('owner@example.com')
+  await page.getByRole('textbox', { name: /^Contact Email/ }).fill('owner@example.com')
 }
 
 test('empty template catalog cannot enter customization or checkout, and retry preserves details', async ({
@@ -393,13 +393,16 @@ test('empty template catalog cannot enter customization or checkout, and retry p
     page.getByRole('button', { name: 'Customize This Template' }),
   ).toHaveCount(0)
   await expect(
-    page.getByRole('link', { name: 'Purchase & Launch' }),
+    page.getByRole('button', { name: 'Choose a launch plan' }),
   ).toHaveCount(0)
   await page
     .getByRole('button', { name: 'Try loading templates again' })
     .click()
   await expect.poll(() => requests).toBe(2)
-  await page.getByRole('button', { name: 'Edit business details' }).click()
+  const matchSection = page.locator('section').filter({
+    has: page.getByRole('heading', { name: 'Choose an available template' }),
+  })
+  await matchSection.getByRole('button', { name: 'Edit business details' }).click()
   await expect(page.getByLabel('Business Name', { exact: false })).toHaveValue(
     'Evening Aromatherapy',
   )
@@ -409,19 +412,23 @@ test('preview email validation is associated with the visible field', async ({
   page,
 }) => {
   await preparePreview(page)
-  await page.getByLabel('Email', { exact: false }).fill('not-an-email')
+  await page.getByRole('textbox', { name: /^Contact Email/ }).fill('not-an-email')
   await page
     .getByRole('button', { name: /Continue to Style Preferences/ })
     .click()
-  await expect(page.getByLabel('Email', { exact: false })).toHaveAttribute(
+  await expect(page.getByRole('textbox', { name: /^Contact Email/ })).toHaveAttribute(
     'aria-invalid',
     'true',
   )
-  await expect(page.getByRole('main').getByRole('alert')).toContainText(
-    'Enter a valid email address',
-  )
+  const email = page.getByRole('textbox', { name: /^Contact Email/ })
+  const errorId = await email.getAttribute('aria-describedby')
+  expect(errorId).toBeTruthy()
+  const fieldError = page.locator(`[id="${errorId}"]`)
+  await expect(fieldError).toBeVisible()
+  await expect(fieldError).toHaveText('Enter a valid contact email address.')
+  await expect(page.getByRole('alert').filter({ hasText: 'Check these details to continue:' })).toBeFocused()
   await expect(
-    page.getByRole('heading', { name: 'Tell us about your business' }),
+    page.getByRole('heading', { name: 'Start with your business name' }),
   ).toBeVisible()
 })
 
@@ -472,7 +479,7 @@ test('a failed website preview cannot advance to purchase', async ({
     page.getByRole('button', { name: 'Preview required before purchase' }),
   ).toBeDisabled()
   await expect(
-    page.getByRole('link', { name: 'Purchase & Launch' }),
+    page.getByRole('button', { name: 'Choose a launch plan' }),
   ).toHaveCount(0)
 })
 

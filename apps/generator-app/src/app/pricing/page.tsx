@@ -21,6 +21,7 @@ export const metadata: Metadata = {
       'Launch from $20/month or purchase a one-time $500 custom website build through secure Stripe Checkout.',
     url: '/pricing',
     type: 'website',
+    images: ['/og-image.png'],
   },
 }
 

@@ -55,6 +55,36 @@ describe('gallery template HTML', () => {
     expect(await response.text()).not.toContain('<script>')
   })
 
+  it('fills missing neutral sample fields only on request and preserves authored defaults', async () => {
+    registry.getTemplate.mockResolvedValue({
+      pages: ['index.html'],
+      fields: [
+        { name: 'BUSINESS_NAME', type: 'text' },
+        { name: 'PRACTITIONER_NAME', type: 'text', default: 'Authored example' },
+        { name: 'EMAIL', type: 'email' },
+        { name: 'PRIMARY_CTA_LABEL', type: 'text' },
+        { name: 'CTA_LABEL', type: 'text', default: 'Ask about a visit' },
+        { name: 'TAGLINE', type: 'text' },
+      ],
+    })
+    setFiles('<html><head></head><body><h1>{{BUSINESS_NAME}}</h1><p>{{PRACTITIONER_NAME}}</p><p>{{EMAIL}}</p><p>{{TAGLINE}}</p><a>{{PRIMARY_CTA_LABEL}}</a><a>{{CTA_LABEL}}</a></body></html>', '')
+    const sampleResponse = await GET(new NextRequest('https://dailyclarity.test/html?sample=1'), params)
+    const sample = await sampleResponse.text()
+    expect(sample).toContain('<h1>Example Practice</h1>')
+    expect(sample).toContain('Authored example')
+    expect(sample).not.toContain('Example Practitioner')
+    expect(sample).not.toContain('@')
+    expect(sample).toContain('<a>Get in touch</a>')
+    expect(sample).toContain('<a>Ask about a visit</a>')
+    expect(sample).toContain('An introduction to your practice.')
+    const normalResponse = await GET(new NextRequest('https://dailyclarity.test/html'), params)
+    const normal = await normalResponse.text()
+    expect(normal).not.toContain('Example Practice')
+    expect(normal).not.toContain('Get in touch')
+    expect(normal).not.toContain('An introduction to your practice.')
+    expect(normal).toContain('Ask about a visit')
+  })
+
   it('does not read an undeclared page', async () => {
     const response = await GET(new NextRequest('https://dailyclarity.test/html?page=missing.html'), params)
     expect(response.status).toBe(404)
