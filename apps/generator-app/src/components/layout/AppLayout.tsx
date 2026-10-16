@@ -39,6 +39,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <a
+        href="#main-content"
+        className="skip-link"
+        onClick={() => {
+          setTemplatesOpen(false);
+          setMobileOpen(false);
+        }}
+      >
+        Skip to main content
+      </a>
       {/* Persistent Navigation */}
       <nav
         aria-label="Primary navigation"
@@ -131,8 +141,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               {[
                 { label: 'Watch Demo', href: '/demo/platform-builder' },
                 { label: 'Pricing', href: '/pricing' },
-                { label: 'Portal', href: '/portal' },
-                { label: 'My Dashboard', href: '/dashboard' },
+                { label: 'My websites', href: '/dashboard' },
                 { label: 'Contact', href: '/contact' },
               ].map((item) => (
                 <Link
@@ -182,8 +191,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               ))}
               <Link href="/demo/platform-builder" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Watch Demo</Link>
               <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Pricing</Link>
-              <Link href="/portal" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Portal</Link>
-              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">My Dashboard</Link>
+              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">My websites</Link>
               <Link href="/contact" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Contact</Link>
               <Link href="/preview-your-business" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm font-semibold text-cyan-300 hover:text-white">Preview Your Business</Link>
             </div>
@@ -192,7 +200,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </nav>
 
       {/* Page content */}
-      {children}
+      <div id="main-content" tabIndex={-1}>
+        {children}
+      </div>
 
       <footer className="border-t border-white/10 bg-slate-950/90">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">

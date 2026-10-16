@@ -144,9 +144,10 @@ export default function WellnessWebsiteChecklistPage() {
         <div className="glass-panel rounded-2xl p-8 space-y-4 border border-cyan-400/20">
           <h2 className="text-2xl font-bold text-white">Check your content in the preview wizard</h2>
           <p className="text-slate-300 leading-relaxed">
-            DailyClarity includes a Client-Readiness Score in the preview flow — a quick check for offer clarity,
-            trust signals, booking paths, local presence, and brand fit. It is not a vanity metric; it mirrors
-            much of this checklist.
+            The “Your website details” panel in DailyClarity’s preview shows which practice details,
+            contact information, service area, and design choices you’ve supplied. It helps you fill
+            gaps in your introduction; it does not verify credentials, test booking, or predict enquiries.
+            Use the checklist above to review your finished site before publishing.
           </p>
           <Link href="/preview-your-business" className="text-cyan-300 font-semibold hover:underline">
             Build My Preview →

@@ -1,9 +1,11 @@
-﻿'use client'
+'use client'
 
 import { useEffect, useState, useCallback, useRef, useMemo, useId } from 'react'
 import Link from 'next/link'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
+import { isValidPreviewEmail, validatePreviewInfo, type PreviewInfoErrors } from '@/lib/preview-intake'
+import { getFirstReviewedShowcaseTemplate } from '@/lib/templates/showcase-curation'
 import {
   type InlineEditMap,
   buildCustomizationScope,
@@ -286,6 +288,10 @@ function scoreTemplate(
 
 export default function PreviewYourBusinessClient() {
   const searchParams = useSearchParams()
+  const router = useRouter()
+  const sampleFromUrl = searchParams.get('sample') === '1'
+  const appliedSampleRef = useRef(false)
+  const matchingRequestIdRef = useRef(0)
   const demoRecord = searchParams.get('demoRecord') === '1'
   const nichePrefill = searchParams.get('niche')
   const templatePrefill = searchParams.get('template')
@@ -294,6 +300,12 @@ export default function PreviewYourBusinessClient() {
   const {
     step,
     setStep,
+    isSample,
+    startSample,
+    endSample,
+    reset,
+    marketingEmailOptIn,
+    setMarketingEmailOptIn,
     businessInfo,
     setBusinessInfo,
     stylePreferences,
@@ -320,7 +332,6 @@ export default function PreviewYourBusinessClient() {
   const [previewLoading, setPreviewLoading] = useState(false)
   const [previewError, setPreviewError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState('index.html')
-  const [editMode, setEditMode] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null!)
   const fileInputRef = useRef<HTMLInputElement>(null!)
   const pendingImageSwapSrc = useRef('')
@@ -358,43 +369,101 @@ export default function PreviewYourBusinessClient() {
   const [browseTotal, setBrowseTotal] = useState(0)
   const [browseHasMore, setBrowseHasMore] = useState(false)
   const [browseLoading, setBrowseLoading] = useState(false)
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [pendingPlansHref, setPendingPlansHref] = useState<string | null>(null)
+  const capturedEmailsRef = useRef(new Set<string>())
+  const leadSaveQueueRef = useRef<Promise<unknown>>(Promise.resolve())
+  const leadSaveRequestRef = useRef(0)
+  const leadSaveFlowRef = useRef(0)
+  const leadSaveControllersRef = useRef(new Set<AbortController>())
+  const plansRequestRef = useRef(0)
+
+  const invalidateLeadSaves = useCallback(() => {
+    leadSaveFlowRef.current += 1
+    leadSaveRequestRef.current += 1
+    plansRequestRef.current += 1
+    for (const controller of leadSaveControllersRef.current) controller.abort()
+    leadSaveControllersRef.current.clear()
+    leadSaveQueueRef.current = Promise.resolve()
+    capturedEmailsRef.current.clear()
+  }, [])
 
   const clientReadiness = useMemo(
     () => computeClientReadiness(businessInfo, stylePreferences),
     [businessInfo, stylePreferences],
   )
 
-  const handleInfoStepNext = useCallback(() => {
-    const { businessInfo: info, stylePreferences: prefs } = usePreviewStore.getState()
-
-    if (info.email && info.businessName) {
-      fetch('/api/intake/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: info.email,
-          name: info.ownerName,
-          phone: info.phone,
-          businessName: info.businessName,
-          niche: info.niche,
-        }),
-      }).catch(() => {})
-
-      fetch('/api/profile/save-draft', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: info.email,
-          profile: {
-            businessInfo: info,
-            stylePreferences: prefs,
-          },
-        }),
-      }).catch(() => {})
+  const persistBusinessDraft = useCallback((stage: string): Promise<boolean> => {
+    const state = usePreviewStore.getState()
+    if (state.isSample || !isValidPreviewEmail(state.businessInfo.email)) return Promise.resolve(false)
+    const email = state.businessInfo.email.trim().toLowerCase()
+    const requestId = ++leadSaveRequestRef.current
+    const flow = leadSaveFlowRef.current
+    const info = { ...state.businessInfo, email }
+    const profile = {
+      businessInfo: info,
+      stylePreferences: state.stylePreferences,
+      matchedTemplate: state.matchedTemplate,
+      funnel: { stage },
+      communicationPreferences: {
+        marketingEmailOptIn: state.marketingEmailOptIn,
+        recordedAt: new Date().toISOString(),
+        noticeVersion: 'preview-followup-2026-10-16',
+      },
     }
+    setSaveStatus('saving')
+    // Serialize profile saves so the first signed draft cookie is established
+    // before later checkpoints update the same browser-owned draft.
+    const save = async () => {
+      if (flow !== leadSaveFlowRef.current || usePreviewStore.getState().isSample) return false
+      const controller = new AbortController()
+      leadSaveControllersRef.current.add(controller)
+      const timeout = setTimeout(() => controller.abort(), 12000)
+      try {
+        const contact = capturedEmailsRef.current.has(email) ? Promise.resolve() : fetch('/api/intake/contact', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
+          body: JSON.stringify({ email, name: info.ownerName, phone: info.phone, businessName: info.businessName, niche: info.niche }),
+        }).then((response) => {
+          if (!response.ok) throw new Error('Contact save failed')
+          if (flow === leadSaveFlowRef.current && !controller.signal.aborted) capturedEmailsRef.current.add(email)
+        })
+        // A contact-table failure must not prevent the full profile being saved.
+        const draft = fetch('/api/profile/save-draft', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: controller.signal,
+          body: JSON.stringify({ email, profile }),
+        }).then((response) => {
+          if (!response.ok) throw new Error('Draft save failed')
+        })
+        const results = await Promise.allSettled([contact, draft])
+        if (flow !== leadSaveFlowRef.current) return false
+        if (controller.signal.aborted || results.some((result) => result.status === 'rejected')) throw new Error('Save incomplete')
+        if (requestId === leadSaveRequestRef.current) setSaveStatus('saved')
+        return true
+      } catch {
+        if (requestId === leadSaveRequestRef.current) setSaveStatus('error')
+        return false
+      } finally {
+        clearTimeout(timeout)
+        leadSaveControllersRef.current.delete(controller)
+      }
+    }
+    const saved = leadSaveQueueRef.current.then(save, save)
+    leadSaveQueueRef.current = saved
+    return saved
+  }, [])
 
+  const handleInfoStepNext = useCallback(() => {
+    if (usePreviewStore.getState().isSample) { endSample(); return }
+    void persistBusinessDraft('business-details')
     setStep('style')
-  }, [setStep])
+  }, [endSample, persistBusinessDraft, setStep])
+
+  useEffect(() => () => {
+    // Stop queued work and abort active requests when leaving this flow.
+    matchingRequestIdRef.current += 1
+    previewRequestIdRef.current += 1
+    invalidateLeadSaves()
+  }, [invalidateLeadSaves])
 
   /* ================ Fetch templates for niche ================ */
   const fetchTemplatesForNiche = useCallback(async (niche: string) => {
@@ -418,74 +487,11 @@ export default function PreviewYourBusinessClient() {
     return []
   }, [])
 
-  /* ================ Match template ================ */
-  const runMatching = useCallback(async () => {
-    setStep('matching')
-    setMatchedTemplate(null)
-    setAlternativeTemplates([])
-    setTemplatesError(null)
-    let tpls = templates.filter((template) => template.nicheSlug === businessInfo.niche)
-    if (tpls.length === 0 && businessInfo.niche) {
-      tpls = await fetchTemplatesForNiche(businessInfo.niche)
-    }
-
-    if (tpls.length === 0) {
-      setTemplatesError((current) => current || 'No published templates are available for this industry right now. Your business details are kept in this browser. Try again or choose another industry.')
-      setTemplatesLoading(false)
-      return
-    }
-
-    // Score all templates with businessInfo for brand matching
-    const scored = tpls.map((t: ApiTemplate) => {
-      const withNiche = { ...t, nicheSlug: t.nicheSlug || businessInfo.niche }
-      return { ...withNiche, ...scoreTemplate(withNiche, stylePreferences, businessInfo.niche, businessInfo) }
-    })
-    scored.sort((a: { score: number }, b: { score: number }) => b.score - a.score)
-
-    // A published gallery link is an explicit selection, ahead of quiz ranking.
-    // Resolve only against this niche's catalog; never trust arbitrary URL slugs.
-    const requestedTemplate = nichePrefill === businessInfo.niche && templatePrefill
-      ? scored.find((template) => template.slug === templatePrefill)
-      : undefined
-    const best = requestedTemplate || scored[0]
-    const resolvedNiche = best.nicheSlug || businessInfo.niche
-    setMatchedTemplate({
-      nicheSlug: resolvedNiche,
-      templateSlug: best.slug,
-      templateName: best.name,
-      pages: best.pages,
-      matchScore: best.score,
-      reason: requestedTemplate
-        ? 'selected from the template gallery'
-        : nichePrefill === businessInfo.niche && templatePrefill
-          ? `The style from your link is no longer available. We matched an available style: ${best.reason}`
-          : best.reason,
-    })
-
-    // Find 2 alternatives with different layoutFamily or voiceFamily
-    const alts: ApiTemplate[] = []
-    for (const t of scored.filter((template) => template.slug !== best.slug)) {
-      if (alts.length >= 2) break
-      const diffVoice = t.voiceFamily !== best.voiceFamily
-      const diffLayout = t.layoutFamily !== best.layoutFamily
-      if (diffVoice || diffLayout) {
-        alts.push(t)
-      }
-    }
-    // If we didn't find 2 diverse ones, just grab the next top scorers
-    for (const t of scored.filter((template) => template.slug !== best.slug)) {
-      if (alts.length >= 2) break
-      if (!alts.some((a) => a.slug === t.slug)) alts.push(t)
-    }
-    setAlternativeTemplates(alts)
-
-    setTemplatesLoading(false)
-  }, [templates, businessInfo, stylePreferences, nichePrefill, templatePrefill, setStep, setMatchedTemplate, fetchTemplatesForNiche])
-
   /* ================ Load live preview ================ */
   const loadPreview = useCallback(
     async (nicheSlug?: string, templateSlug?: string, page = 'index.html') => {
       const requestId = ++previewRequestIdRef.current
+      const { businessInfo, stylePreferences, matchedTemplate, isSample } = usePreviewStore.getState()
       const ns = nicheSlug || matchedTemplate?.nicheSlug || businessInfo.niche
       const ts = templateSlug || matchedTemplate?.templateSlug
       if (!ns || !ts) {
@@ -499,7 +505,7 @@ export default function PreviewYourBusinessClient() {
       // Do this synchronously here because callers can request a new template
       // before React has committed the corresponding matched-template state.
       const customizationScope = buildCustomizationScope(ns, ts)
-      if (customizationScope !== activeCustomizationScopeRef.current) {
+      if (!isSample && customizationScope !== activeCustomizationScopeRef.current) {
         activeCustomizationScopeRef.current = customizationScope
         inlineEditsRef.current = loadInlineEdits(customizationScope)
         imageSwapsRef.current = loadImageSwaps(customizationScope)
@@ -515,10 +521,10 @@ export default function PreviewYourBusinessClient() {
       try {
         let requestedCatalogRevision: ReturnType<typeof sanitizeCatalogRevisionPin> = null
         try {
-          sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
+          if (!isSample) sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
           const rawRevision = sessionStorage.getItem(CHECKOUT_CATALOG_REVISION_KEY)
           const savedRevision = rawRevision ? JSON.parse(rawRevision) as Record<string, unknown> : null
-          if (savedRevision?.niche === ns && savedRevision.template === ts) {
+          if (!isSample && savedRevision?.niche === ns && savedRevision.template === ts) {
             requestedCatalogRevision = sanitizeCatalogRevisionPin(savedRevision.catalogRevision)
           }
         } catch { /* ignore */ }
@@ -529,10 +535,10 @@ export default function PreviewYourBusinessClient() {
           body: JSON.stringify({
             page,
             values: getFieldValues(),
-            colorScheme: resolveQuizColorScheme(stylePreferences.colorMood),
-            fontVariation: resolveQuizFontVariation(stylePreferences.fontPreference),
-            structureVariation: resolveQuizStructureVariation(stylePreferences.layoutDensity),
-            customTheme: customThemeActive
+            colorScheme: isSample ? 'original' : resolveQuizColorScheme(stylePreferences.colorMood),
+            fontVariation: isSample ? 'original' : resolveQuizFontVariation(stylePreferences.fontPreference),
+            structureVariation: isSample ? 'original' : resolveQuizStructureVariation(stylePreferences.layoutDensity),
+            customTheme: !isSample && customThemeActive
               ? sanitizeCustomTheme({
                   primary: customColors.primary,
                   background: customColors.bg,
@@ -556,13 +562,13 @@ export default function PreviewYourBusinessClient() {
         if (requestId !== previewRequestIdRef.current) return
         const catalogRevision = sanitizeCatalogRevisionPin(data.catalogRevision)
         try {
-          if (catalogRevision) {
+          if (!isSample && catalogRevision) {
             sessionStorage.setItem(CHECKOUT_CATALOG_REVISION_KEY, JSON.stringify({
               niche: ns,
               template: ts,
               catalogRevision,
             }))
-          } else {
+          } else if (!isSample) {
             sessionStorage.removeItem(CHECKOUT_CATALOG_REVISION_KEY)
           }
         } catch { /* quota exceeded — checkout will resolve the active revision */ }
@@ -584,9 +590,11 @@ export default function PreviewYourBusinessClient() {
           variationCSS: typeof data.variationCSS === 'string' ? data.variationCSS : null,
           assetBase,
           page,
-          inlineEdits: inlineEditsRef.current[page],
-          imageSwaps: imageSwapsRef.current[page],
-          trustedEditorScript: getCustomerPreviewEditorScript(page),
+          inlineEdits: isSample ? undefined : inlineEditsRef.current[page],
+          imageSwaps: isSample ? undefined : imageSwapsRef.current[page],
+          trustedEditorScript: isSample
+            ? 'document.addEventListener("click", function(event) { if (event.target.closest("a")) event.preventDefault(); });'
+            : getCustomerPreviewEditorScript(page),
         })
 
         setPreviewHtml(html)
@@ -608,17 +616,134 @@ export default function PreviewYourBusinessClient() {
       }
     },
     [
-      matchedTemplate,
-      businessInfo.niche,
       getFieldValues,
-      stylePreferences,
       customThemeActive,
       customColors,
       customFonts,
     ],
   )
 
+  /* ================ Match template ================ */
+  const runMatching = useCallback(async () => {
+    const requestId = ++matchingRequestIdRef.current
+    const { businessInfo, stylePreferences, isSample } = usePreviewStore.getState()
+    setStep('matching')
+    setMatchedTemplate(null)
+    setAlternativeTemplates([])
+    setTemplatesError(null)
+    let tpls = templates.filter((template) => template.nicheSlug === businessInfo.niche)
+    if (tpls.length === 0 && businessInfo.niche) {
+      tpls = await fetchTemplatesForNiche(businessInfo.niche)
+    }
+
+    if (requestId !== matchingRequestIdRef.current) return
+
+    if (tpls.length === 0) {
+      setTemplatesError((current) => current || 'No published templates are available for this industry right now. Your business details are kept in this browser. Try again or choose another industry.')
+      setTemplatesLoading(false)
+      return
+    }
+
+    // Score all templates with businessInfo for brand matching
+    const scored = tpls.map((t: ApiTemplate) => {
+      const withNiche = { ...t, nicheSlug: t.nicheSlug || businessInfo.niche }
+      return { ...withNiche, ...scoreTemplate(withNiche, stylePreferences, businessInfo.niche, businessInfo) }
+    })
+    scored.sort((a: { score: number }, b: { score: number }) => b.score - a.score)
+
+    // A published gallery link is an explicit selection, ahead of quiz ranking.
+    // Resolve only against this niche's catalog; never trust arbitrary URL slugs.
+    const requestedTemplate = nichePrefill === businessInfo.niche && templatePrefill
+      ? scored.find((template) => template.slug === templatePrefill)
+      : undefined
+    const reviewedSample = isSample ? getFirstReviewedShowcaseTemplate(businessInfo.niche, scored) : null
+    const best = requestedTemplate || reviewedSample || scored[0]
+    const resolvedNiche = best.nicheSlug || businessInfo.niche
+    setMatchedTemplate({
+      nicheSlug: resolvedNiche,
+      templateSlug: best.slug,
+      templateName: best.name,
+      pages: best.pages,
+      matchScore: best.score,
+      reason: requestedTemplate
+        ? 'selected from the template gallery'
+        : reviewedSample
+          ? 'a sample design reviewed on desktop and mobile'
+        : nichePrefill === businessInfo.niche && templatePrefill
+          ? `The style from your link is no longer available. We matched an available style: ${best.reason}`
+          : best.reason,
+    })
+
+    // Find 2 alternatives with different layoutFamily or voiceFamily
+    const alts: ApiTemplate[] = []
+    for (const t of scored.filter((template) => template.slug !== best.slug)) {
+      if (alts.length >= 2) break
+      const diffVoice = t.voiceFamily !== best.voiceFamily
+      const diffLayout = t.layoutFamily !== best.layoutFamily
+      if (diffVoice || diffLayout) {
+        alts.push(t)
+      }
+    }
+    // If we didn't find 2 diverse ones, just grab the next top scorers
+    for (const t of scored.filter((template) => template.slug !== best.slug)) {
+      if (alts.length >= 2) break
+      if (!alts.some((a) => a.slug === t.slug)) alts.push(t)
+    }
+    setAlternativeTemplates(alts)
+
+    setTemplatesLoading(false)
+    if (!isSample) void persistBusinessDraft('style-match')
+    if (isSample) {
+      setStep('editor')
+      void loadPreview(resolvedNiche, best.slug)
+    }
+  }, [loadPreview, templates, nichePrefill, templatePrefill, setStep, setMatchedTemplate, fetchTemplatesForNiche, persistBusinessDraft])
+
+  const handleStartSample = useCallback((requestedNiche?: string) => {
+    invalidateLeadSaves()
+    setSaveStatus('idle')
+    setPendingPlansHref(null)
+    const chosenNiche = requestedNiche || businessInfo.niche || nichePrefill
+    const niche = NICHE_OPTIONS.some((option) => option.slug === chosenNiche)
+      ? chosenNiche!
+      : 'wellness_coach'
+    const example = getNicheExample(niche)
+    startSample({
+      ...example, niche, ownerName: 'Alex Morgan', email: 'hello@example.com',
+      phone: '', address: 'Online sessions', website: '',
+    })
+    void runMatching()
+  }, [nichePrefill, businessInfo.niche, startSample, runMatching, invalidateLeadSaves])
+
+  const handleEndSample = useCallback(() => {
+    matchingRequestIdRef.current += 1
+    previewRequestIdRef.current += 1
+    endSample()
+    setPreviewHtml(null)
+    setPreviewLoading(false)
+    setPreviewError(null)
+    if (sampleFromUrl) {
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('sample')
+      params.delete('niche')
+      params.delete('template')
+      router.replace(`/preview-your-business${params.size ? `?${params}` : ''}`, { scroll: false })
+    }
+  }, [endSample, sampleFromUrl, searchParams, router])
+
   useEffect(() => {
+    if (sampleFromUrl && !appliedSampleRef.current && customThemeReady) {
+      appliedSampleRef.current = true
+      handleStartSample(nichePrefill || undefined)
+    } else if (!sampleFromUrl && !appliedSampleRef.current) {
+      // A pricing recovery or regular return always opens the customer's draft.
+      appliedSampleRef.current = true
+      endSample()
+    }
+  }, [sampleFromUrl, nichePrefill, customThemeReady, handleStartSample, endSample])
+
+  useEffect(() => {
+    if (sampleFromUrl || isSample) return
     if (!nichePrefill) {
       appliedSelectionRef.current = null
       return
@@ -628,18 +753,21 @@ export default function PreviewYourBusinessClient() {
     if (appliedSelectionRef.current === selection) return
     appliedSelectionRef.current = selection
     if (businessInfo.niche !== nichePrefill) {
+      plansRequestRef.current += 1
+      setPendingPlansHref(null)
       setBusinessInfo({ niche: nichePrefill })
       setTemplates([])
       setAlternativeTemplates([])
       setBrowseTemplates([])
-      // Discard any preview still resolving for the previous industry.
+      // Discard any work still resolving for the previous industry.
+      matchingRequestIdRef.current += 1
       previewRequestIdRef.current += 1
       setPreviewHtml(null)
       setPreviewLoading(false)
       setPreviewError(null)
     }
     setStep('info')
-  }, [nichePrefill, templatePrefill, businessInfo.niche, setBusinessInfo, setStep])
+  }, [sampleFromUrl, isSample, nichePrefill, templatePrefill, businessInfo.niche, setBusinessInfo, setStep])
 
   /* ================ Restore persisted customization ================ */
   useEffect(() => {
@@ -662,6 +790,7 @@ export default function PreviewYourBusinessClient() {
   }, [])
 
   useEffect(() => {
+    if (isSample) return
     const niche = matchedTemplate?.nicheSlug || businessInfo.niche
     const template = matchedTemplate?.templateSlug
     if (!niche || !template) return
@@ -669,10 +798,10 @@ export default function PreviewYourBusinessClient() {
     activeCustomizationScopeRef.current = scope
     inlineEditsRef.current = loadInlineEdits(scope)
     imageSwapsRef.current = loadImageSwaps(scope)
-  }, [matchedTemplate?.nicheSlug, matchedTemplate?.templateSlug, businessInfo.niche])
+  }, [isSample, matchedTemplate?.nicheSlug, matchedTemplate?.templateSlug, businessInfo.niche])
 
   useEffect(() => {
-    if (!customThemeReady || !customThemeActive) return
+    if (isSample || !customThemeReady || !customThemeActive) return
     const theme = sanitizeCustomTheme({
       primary: customColors.primary,
       background: customColors.bg,
@@ -685,13 +814,14 @@ export default function PreviewYourBusinessClient() {
     try {
       sessionStorage.setItem(CUSTOM_THEME_STORAGE_KEY, JSON.stringify(theme))
     } catch { /* quota exceeded — keep the live preview usable */ }
-  }, [customColors, customFonts, customThemeReady, customThemeActive])
+  }, [isSample, customColors, customFonts, customThemeReady, customThemeActive])
 
   /* ================ Iframe messaging ================ */
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
       if (e.source !== iframeRef.current?.contentWindow) return
       if (!e.data || typeof e.data !== 'object') return
+      if (usePreviewStore.getState().isSample) return
       if (e.data.type === 'navigatePage') {
         if (isSafePreviewPage(e.data.page)) {
           loadPreview(undefined, undefined, e.data.page)
@@ -875,6 +1005,55 @@ export default function PreviewYourBusinessClient() {
     loadPreview(resolvedNiche, t.slug)
   }, [businessInfo.niche, setMatchedTemplate, setStep, loadPreview])
 
+  const handleReset = useCallback(() => {
+    if (!window.confirm('Clear this business draft and its preview customizations from this tab? This cannot be undone.')) return
+    matchingRequestIdRef.current += 1
+    previewRequestIdRef.current += 1
+    invalidateLeadSaves()
+    reset()
+    setSaveStatus('idle')
+    setPendingPlansHref(null)
+    if (nichePrefill && NICHE_OPTIONS.some((option) => option.slug === nichePrefill)) {
+      setBusinessInfo({ niche: nichePrefill })
+    }
+    activeCustomizationScopeRef.current = ''
+    inlineEditsRef.current = {}
+    imageSwapsRef.current = {}
+    setCustomThemeActive(false)
+    setPreviewHtml(null)
+    setPreviewLoading(false)
+    setPreviewError(null)
+  }, [reset, nichePrefill, setBusinessInfo, invalidateLeadSaves])
+
+  const handleCheckoutEmail = useCallback(async (email: string, href: string) => {
+    if (usePreviewStore.getState().isSample || !isValidPreviewEmail(email)) return
+    const flow = leadSaveFlowRef.current
+    const requestId = ++plansRequestRef.current
+    setPendingPlansHref(null)
+    setBusinessInfo({ email: email.trim() })
+    try {
+      sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
+    } catch {
+      setPreviewError('Your browser could not keep your details for checkout. Allow site storage, then retry your preview.')
+      return
+    }
+    const saved = await persistBusinessDraft('plans')
+    if (flow !== leadSaveFlowRef.current || requestId !== plansRequestRef.current || usePreviewStore.getState().isSample) return
+    if (saved) router.push(href)
+    else setPendingPlansHref(href)
+  }, [getFieldValues, router, setBusinessInfo, persistBusinessDraft])
+
+  const handleEditDetails = useCallback(() => {
+    plansRequestRef.current += 1
+    setPendingPlansHref(null)
+    if (isSample) { handleEndSample(); return }
+    matchingRequestIdRef.current += 1
+    previewRequestIdRef.current += 1
+    setTemplatesLoading(false)
+    setPreviewLoading(false)
+    setStep('info')
+  }, [isSample, handleEndSample, setStep])
+
   /* ================================================================ */
   /* Render                                                           */
   /* ================================================================ */
@@ -913,6 +1092,36 @@ export default function PreviewYourBusinessClient() {
             <p className="rounded-xl border border-cyan-300/40 bg-cyan-950/40 p-4 text-cyan-100">Your selected Booking Clarity Kit fields are in this draft. Review your details below, then continue to your free website preview.</p>
           </div>
         )}
+        {isSample && (
+          <div className="container-hvac mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-300/40 bg-amber-950/30 p-5">
+              <div>
+                <p className="font-semibold text-amber-100">Sample preview · fictional business details</p>
+                <p className="mt-1 text-sm text-slate-300">Explore the pages below. Your own draft is kept separately; add your details to customize or launch.</p>
+              </div>
+              <button type="button" onClick={handleEndSample} className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-slate-900">Use my business details</button>
+            </div>
+          </div>
+        )}
+        {!isSample && step !== 'info' && (
+          <div className="container-hvac mb-5 flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm text-slate-400">Draft kept in this browser tab. Closing the tab may clear it.</p>
+            <button type="button" onClick={handleEditDetails} className="rounded-lg border border-white/20 px-4 py-2 text-sm text-cyan-200 hover:bg-white/10">Edit business details</button>
+          </div>
+        )}
+        {!isSample && saveStatus !== 'idle' && (
+          <div className="container-hvac mb-5">
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-white/15 bg-white/5 px-4 py-3">
+              <p role="status" className="text-sm text-slate-300">{saveStatus === 'saving'
+                ? 'Saving your business details…'
+                : saveStatus === 'saved'
+                  ? 'Business details saved for your preview and DailyClarity follow-up.'
+                  : 'We could not save your details yet. They are still in this tab.'}</p>
+              {saveStatus === 'error' && <button type="button" onClick={() => { void persistBusinessDraft(step) }} className="rounded-lg px-3 py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4">Retry saving</button>}
+              {pendingPlansHref && saveStatus !== 'saving' && <button type="button" onClick={() => router.push(pendingPlansHref)} className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white">Continue to plans</button>}
+            </div>
+          </div>
+        )}
         {/* Progress bar */}
         <div className="container-hvac mb-8">
           <div tabIndex={0} role="region" aria-label="Website preview progress" className="flex items-center gap-2 overflow-x-auto pb-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
@@ -921,7 +1130,7 @@ export default function PreviewYourBusinessClient() {
               const isActive = s === step
               const isCompleted = meta.number < STEP_META[step].number
               return (
-                <div key={s} className="flex items-center gap-2 shrink-0">
+                <div key={s} aria-current={isActive ? 'step' : undefined} className="flex items-center gap-2 shrink-0">
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
                       isActive
@@ -949,7 +1158,12 @@ export default function PreviewYourBusinessClient() {
             info={businessInfo}
             onChange={setBusinessInfo}
             onNext={handleInfoStepNext}
+            marketingEmailOptIn={marketingEmailOptIn}
+            onMarketingEmailOptIn={setMarketingEmailOptIn}
             nicheFromUrl={nichePrefill}
+            onSample={() => handleStartSample()}
+            onReset={handleReset}
+            onResume={matchedTemplate?.templateSlug ? openEditor : undefined}
           />
         )}
 
@@ -958,7 +1172,7 @@ export default function PreviewYourBusinessClient() {
           <StyleStep
             prefs={stylePreferences}
             onChange={setStylePreferences}
-            onBack={() => setStep('info')}
+            onBack={handleEditDetails}
             onNext={runMatching}
           />
         )}
@@ -971,7 +1185,7 @@ export default function PreviewYourBusinessClient() {
             loading={templatesLoading}
             error={templatesError}
             onRetry={runMatching}
-            onBack={() => setStep('info')}
+            onBack={handleEditDetails}
             readiness={clientReadiness}
             onEdit={openEditor}
             onBrowse={openBrowse}
@@ -1003,6 +1217,9 @@ export default function PreviewYourBusinessClient() {
         {step === 'editor' && matchedTemplate?.templateSlug && (
           <EditorStep
             matched={matchedTemplate}
+            isSample={isSample}
+            contactEmail={businessInfo.email}
+            onCheckoutEmail={handleCheckoutEmail}
             readiness={clientReadiness}
             previewHtml={previewHtml}
             previewStylesheet={previewStylesheetRef.current}
@@ -1010,8 +1227,6 @@ export default function PreviewYourBusinessClient() {
             previewError={previewError}
             demoRecord={demoRecord}
             currentPage={currentPage}
-            editMode={editMode}
-            setEditMode={setEditMode}
             iframeRef={iframeRef}
             fileInputRef={fileInputRef}
             handleImageFileChange={handleImageFileChange}
@@ -1027,7 +1242,7 @@ export default function PreviewYourBusinessClient() {
             setCustomColors={setCustomColors}
             customFonts={customFonts}
             setCustomFonts={setCustomFonts}
-            customThemeActive={customThemeActive}
+            customThemeActive={!isSample && customThemeActive}
             setCustomThemeActive={setCustomThemeActive}
             checkoutHref={`/pricing?template=${encodeURIComponent(matchedTemplate.templateSlug)}&niche=${encodeURIComponent(matchedTemplate.nicheSlug)}&color=${encodeURIComponent(resolveQuizColorScheme(stylePreferences.colorMood))}&font=${encodeURIComponent(resolveQuizFontVariation(stylePreferences.fontPreference))}&structure=${encodeURIComponent(resolveQuizStructureVariation(stylePreferences.layoutDensity))}${searchParams.get('from') === 'booking-kit' ? '&from=booking-kit' : ''}`}
           />
@@ -1072,122 +1287,143 @@ function InfoStep({
   onChange,
   onNext,
   nicheFromUrl,
+  onSample,
+  onReset,
+  onResume,
+  marketingEmailOptIn,
+  onMarketingEmailOptIn,
 }: {
   info: BusinessInfo
   onChange: (info: Partial<BusinessInfo>) => void
   onNext: () => void
   nicheFromUrl?: string | null
+  onSample: () => void
+  onReset: () => void
+  onResume?: () => void
+  marketingEmailOptIn: boolean
+  onMarketingEmailOptIn: (enabled: boolean) => void
 }) {
-  const nicheIsLocked = !!(nicheFromUrl && NICHE_OPTIONS.some((n) => n.slug === nicheFromUrl))
-  const [errors, setErrors] = useState<Partial<Record<keyof BusinessInfo, string>>>({})
+  const [showIndustries, setShowIndustries] = useState(false)
+  const nicheIsLocked = !showIndustries && !!(nicheFromUrl && info.niche === nicheFromUrl && NICHE_OPTIONS.some((n) => n.slug === nicheFromUrl))
+  const [errors, setErrors] = useState<PreviewInfoErrors>({})
+  const [showOptional, setShowOptional] = useState(false)
+  const errorSummaryRef = useRef<HTMLDivElement>(null)
+  const hasDraft = Object.entries(info).some(([key, value]) => key !== 'niche' && value.trim())
 
-  const validate = () => {
-    const e: typeof errors = {}
-    if (!info.businessName.trim()) e.businessName = 'Required'
-    if (!info.niche) e.niche = 'Pick your industry'
-    if (!info.email.trim()) e.email = 'Required'
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(info.email.trim())) e.email = 'Enter a valid email address'
-    setErrors(e)
-    return Object.keys(e).length === 0
-  }
+  useEffect(() => {
+    if (Object.keys(errors).length) errorSummaryRef.current?.focus()
+  }, [errors])
 
-  const handleNext = () => {
-    if (validate()) onNext()
+  const handleNext = (event: React.FormEvent) => {
+    event.preventDefault()
+    const nextErrors = validatePreviewInfo(info)
+    setErrors(nextErrors)
+    if (Object.keys(nextErrors).length === 0) onNext()
   }
 
   const ex = getNicheExample(info.niche)
 
   return (
     <section className="container-hvac py-8 max-w-3xl mx-auto">
-      <div className="space-y-2 mb-8">
+      <div className="space-y-3 mb-8">
         <span className="signal-chip">Step 1 of 4</span>
-        <h1 className="text-4xl md:text-5xl font-bold text-white">
-          Tell us about your business
-        </h1>
-        <p className="text-lg text-slate-300">
-          We&apos;ll apply these details to supported fields throughout your website preview.
-        </p>
+        <h1 className="text-4xl md:text-5xl font-bold text-white">Start with your business name</h1>
+        <p className="text-lg text-slate-300">Add your industry, business name and contact email for a personalized preview. Explore the sample first with no details or payment.</p>
+        <div className="rounded-xl border border-cyan-300/25 bg-cyan-950/30 p-5">
+          <p className="font-semibold text-white">Want to see a website first?</p>
+          <p className="mt-1 text-sm text-slate-300">Try a fictional business in your selected industry. Your own draft stays separate.</p>
+          <button type="button" onClick={onSample} className="mt-4 rounded-lg border border-cyan-300/50 px-5 py-3 font-semibold text-cyan-100 hover:bg-cyan-400/10">Try with sample details →</button>
+        </div>
       </div>
 
-      <div className="glass-panel rounded-2xl p-8 space-y-6">
-        {/* Niche selector -- hidden when arriving from a niche landing page */}
-        <div>
-          {nicheIsLocked ? (
-            <div className="flex items-center gap-3 p-4 rounded-xl border border-cyan-400/30 bg-cyan-500/10">
-              <span className="text-2xl">{NICHE_OPTIONS.find((n) => n.slug === info.niche)?.icon}</span>
-              <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wide">Industry</p>
-                <p className="text-white font-semibold">{NICHE_OPTIONS.find((n) => n.slug === info.niche)?.label}</p>
+      {hasDraft && (
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/15 bg-white/5 p-4">
+          <p className="text-sm text-slate-300">Your business details are kept in this tab.</p>
+          <div className="flex flex-wrap gap-3">
+            {onResume && <button type="button" onClick={onResume} className="rounded-lg px-3 py-2 text-sm font-semibold text-cyan-200 hover:bg-white/10">Resume preview</button>}
+            <button type="button" onClick={onReset} className="rounded-lg px-3 py-2 text-sm text-slate-300 underline underline-offset-4 hover:bg-white/10">Clear draft</button>
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleNext} noValidate>
+        {Object.keys(errors).length > 0 && (
+          <div ref={errorSummaryRef} tabIndex={-1} role="alert" className="mb-5 rounded-xl border border-red-400/50 bg-red-950/30 p-4 text-red-100 focus:outline focus:outline-2 focus:outline-red-300">
+            <p className="font-semibold">Check these details to continue:</p>
+            <ul className="mt-2 list-inside list-disc text-sm">{Object.entries(errors).map(([key, message]) => <li key={key}>{message}</li>)}</ul>
+          </div>
+        )}
+        <div className="glass-panel rounded-2xl p-5 sm:p-8 space-y-6">
+          <fieldset aria-describedby={errors.niche ? 'preview-industry-error' : undefined}>
+            <legend className="mb-3 text-sm font-semibold text-slate-200">Your industry <span className="text-red-400">*</span></legend>
+            {nicheIsLocked ? (
+              <div className="flex items-center justify-between gap-3 p-4 rounded-xl border border-cyan-400/30 bg-cyan-500/10">
+                <p className="font-semibold text-white"><span aria-hidden="true">{NICHE_OPTIONS.find((n) => n.slug === info.niche)?.icon} </span><span>{NICHE_OPTIONS.find((n) => n.slug === info.niche)?.label}</span></p>
+                <button type="button" onClick={() => setShowIndustries(true)} className="shrink-0 rounded-lg px-2 py-2 text-sm text-cyan-200 underline underline-offset-4">Change industry</button>
               </div>
-            </div>
-          ) : (
-            <>
-              <label className="block text-sm font-semibold text-slate-200 mb-3">
-                What industry are you in? <span className="text-red-400">*</span>
-              </label>
+            ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {NICHE_OPTIONS.map((n) => (
-                  <button
-                    key={n.slug}
-                    type="button"
+                  <button key={n.slug} type="button" aria-pressed={info.niche === n.slug}
                     onClick={() => onChange({ niche: n.slug })}
-                    className={`p-4 rounded-xl border text-left transition-all ${
-                      info.niche === n.slug
-                        ? 'border-cyan-400 bg-cyan-500/15 text-white ring-2 ring-cyan-400/40'
-                        : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20'
-                    }`}
-                  >
-                    <span className="text-2xl block mb-1">{n.icon}</span>
+                    className={`p-4 rounded-xl border text-left transition-all ${info.niche === n.slug
+                      ? 'border-cyan-400 bg-cyan-500/15 text-white ring-2 ring-cyan-400/40'
+                      : 'border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20'}`}>
+                    <span aria-hidden="true" className="text-2xl block mb-1">{n.icon}</span>
                     <span className="text-sm font-semibold">{n.label}</span>
                   </button>
                 ))}
               </div>
-              {errors.niche && <p className="text-red-400 text-sm mt-1">{errors.niche}</p>}
-            </>
-          )}
-        </div>
+            )}
+            {errors.niche && <p id="preview-industry-error" className="text-red-300 text-sm mt-2">{errors.niche}</p>}
+          </fieldset>
 
-        {/* Core fields */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <Field label="Business Name" required value={info.businessName} error={errors.businessName}
-            onChange={(v) => onChange({ businessName: v })} placeholder={ex.businessName} />
-          <Field label="Owner / Contact Name" value={info.ownerName}
-            onChange={(v) => onChange({ ownerName: v })} placeholder="Jane Smith" />
-          <Field label="Email" required type="email" value={info.email} error={errors.email}
-            onChange={(v) => onChange({ email: v })} placeholder="hello@yourbusiness.com" />
-          <Field label="Phone" type="tel" value={info.phone}
-            onChange={(v) => onChange({ phone: v })} placeholder="(555) 123-4567" />
-        </div>
+          <Field label="Business Name" required autoComplete="organization" value={info.businessName} error={errors.businessName}
+            onChange={(v) => onChange({ businessName: v })} placeholder={ex.businessName} maxLength={200} />
+          <Field label="Contact Email" required type="email" autoComplete="email" value={info.email} error={errors.email}
+            onChange={(v) => onChange({ email: v })} placeholder="hello@yourbusiness.com" maxLength={320} />
+          <p className="text-sm text-slate-300">Use a public contact email. This can appear on your website and will be used for your account and project follow-up.</p>
 
-        <Field label="Address / Service Area" value={info.address}
-          onChange={(v) => onChange({ address: v })} placeholder="123 Main St, Denver, CO" />
-        <Field label="Tagline" value={info.tagline}
-          onChange={(v) => onChange({ tagline: v })} placeholder={ex.tagline} />
-        <div>
-          <label htmlFor="preview-business-description" className="block text-sm font-semibold text-slate-200 mb-2">Description</label>
-          <textarea
-            id="preview-business-description"
-            value={info.description}
-            onChange={(e) => onChange({ description: e.target.value })}
-            rows={3}
-            placeholder={ex.description}
-            className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-y"
-          />
+          <div className="border-t border-white/15 pt-5">
+            <button type="button" onClick={() => setShowOptional(!showOptional)} aria-expanded={showOptional} aria-controls="preview-optional-details"
+              className="flex w-full items-center justify-between gap-3 rounded-lg py-2 text-left font-semibold text-cyan-100">
+              Add more business details <span className="text-sm font-normal text-slate-300">Optional {showOptional ? '−' : '+'}</span>
+            </button>
+            <p className="mt-2 text-sm text-slate-400">Add these now or after you explore. Details you provide can appear on your website; use public contact information.</p>
+          </div>
+          <div id="preview-optional-details" hidden={!showOptional} className="space-y-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <Field label="Owner / Contact Name" autoComplete="name" value={info.ownerName}
+                onChange={(v) => onChange({ ownerName: v })} placeholder="Jane Smith" />
+              <Field label="Phone" type="tel" autoComplete="tel" value={info.phone}
+                onChange={(v) => onChange({ phone: v })} placeholder="(555) 123-4567" />
+              <Field label="City / Service Area" value={info.address}
+                onChange={(v) => onChange({ address: v })} placeholder="Denver, CO or online sessions" />
+            </div>
+            <Field label="Tagline" value={info.tagline} onChange={(v) => onChange({ tagline: v })} placeholder={ex.tagline} />
+            <div>
+              <label htmlFor="preview-business-description" className="block text-sm font-semibold text-slate-200 mb-2">Description</label>
+              <textarea id="preview-business-description" value={info.description}
+                onChange={(e) => onChange({ description: e.target.value })} rows={3} maxLength={8000} placeholder={ex.description}
+                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-y" />
+            </div>
+            <Field label="Services (comma-separated)" value={info.services} onChange={(v) => onChange({ services: v })} placeholder={ex.services} />
+            <Field label="Existing website for design reference (optional; never published)" autoComplete="url" value={info.website}
+              onChange={(v) => onChange({ website: v })} placeholder="https://yourbusiness.com" />
+          </div>
         </div>
-        <Field label="Services (comma-separated)" value={info.services}
-          onChange={(v) => onChange({ services: v })} placeholder={ex.services} />
-        <Field label="Existing website for design reference (optional; never published)" value={info.website}
-          onChange={(v) => onChange({ website: v })} placeholder="https://yourbusiness.com" />
-      </div>
-
-      <div className="flex justify-end mt-8">
-        <button
-          onClick={handleNext}
-          className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
-        >
-          Continue to Style Preferences →
-        </button>
-      </div>
+        <div className="mt-5 space-y-3">
+          <p className="text-sm text-slate-400">We save your details to prepare your preview and follow up about DailyClarity, even if you do not buy. <Link href="/privacy" className="text-cyan-200 underline underline-offset-4">Privacy policy</Link></p>
+          <label className="flex items-start gap-3 text-sm text-slate-200">
+            <input type="checkbox" checked={marketingEmailOptIn} onChange={(event) => onMarketingEmailOptIn(event.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-cyan-400" />
+            <span>Email me DailyClarity news and offers (optional).</span>
+          </label>
+        </div>
+        <p className="mt-4 text-sm text-slate-400">Unsaved edits stay in this browser tab when storage is available. Closing the tab may clear them. Your website is not published during preview.</p>
+        <div className="flex justify-end mt-6">
+          <button type="submit" className="px-6 sm:px-8 py-4 text-base sm:text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all">Continue to Style Preferences →</button>
+        </div>
+      </form>
     </section>
   )
 }
@@ -1532,6 +1768,9 @@ function MatchStep({
 
 function EditorStep({
   matched,
+  isSample,
+  contactEmail,
+  onCheckoutEmail,
   readiness,
   previewHtml,
   previewStylesheet,
@@ -1539,8 +1778,6 @@ function EditorStep({
   previewError,
   demoRecord,
   currentPage,
-  editMode,
-  setEditMode,
   iframeRef,
   fileInputRef,
   handleImageFileChange,
@@ -1561,6 +1798,9 @@ function EditorStep({
   checkoutHref,
 }: {
   matched: MatchedTemplate
+  isSample: boolean
+  contactEmail: string
+  onCheckoutEmail: (email: string, href: string) => void
   readiness: ReturnType<typeof computeClientReadiness>
   previewHtml: string | null
   previewStylesheet: string
@@ -1568,8 +1808,6 @@ function EditorStep({
   previewError: string | null
   demoRecord: boolean
   currentPage: string
-  editMode: boolean
-  setEditMode: (v: boolean) => void
   iframeRef: React.RefObject<HTMLIFrameElement>
   fileInputRef: React.RefObject<HTMLInputElement>
   handleImageFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -1589,6 +1827,15 @@ function EditorStep({
   setCustomThemeActive: (v: boolean) => void
   checkoutHref: string
 }) {
+  const [showCheckoutEmail, setShowCheckoutEmail] = useState(false)
+  const [email, setEmail] = useState(contactEmail)
+  const [emailError, setEmailError] = useState('')
+  const checkoutEmailRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (showCheckoutEmail) checkoutEmailRef.current?.focus()
+  }, [showCheckoutEmail])
+
   const COLOR_PRESETS = [
     { label: 'Ocean', primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' },
     { label: 'Forest', primary: '#10b981', bg: '#0a1f15', text: '#d1fae5' },
@@ -1670,7 +1917,7 @@ function EditorStep({
 
   return (
     <section className={`container-hvac ${demoRecord ? 'py-2' : 'py-4'}`}>
-      {!demoRecord && (
+      {!demoRecord && !isSample && (
         <div className="mb-6">
           <ClientReadinessPanel result={readiness} compact />
         </div>
@@ -1683,9 +1930,9 @@ function EditorStep({
         <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold text-white">{matched.templateName}</h1>
-            <p className="text-sm text-slate-400">Double-click text or labels to edit • Click images to replace</p>
+            <p className="text-sm text-slate-400">{isSample ? 'Sample website · use the page buttons below to explore' : 'Double-click text or labels to edit • Click images to replace'}</p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
+          {!isSample && <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setShowColorPanel(!showColorPanel)}
             className={`px-4 py-2 text-sm font-semibold rounded-lg border transition-all ${
@@ -1712,20 +1959,48 @@ function EditorStep({
           >
             ⌕ Page SEO
           </button>
-          {previewHtml && !previewLoading && !previewError ? <Link
-            href={checkoutHref}
+          {previewHtml && !previewLoading && !previewError ? <button
+            type="button"
+            onClick={() => {
+              if (isValidPreviewEmail(contactEmail)) onCheckoutEmail(contactEmail, checkoutHref)
+              else setShowCheckoutEmail(true)
+            }}
             className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
           >
-            Purchase & Launch
-          </Link> : <button type="button" disabled className="rounded-lg border border-white/20 px-4 py-2 text-sm text-slate-400 disabled:cursor-not-allowed">Preview required before purchase</button>}
-        </div>
+            Choose a launch plan
+          </button> : <button type="button" disabled className="rounded-lg border border-white/20 px-4 py-2 text-sm text-slate-400 disabled:cursor-not-allowed">Preview required before purchase</button>}
+        </div>}
       </div>
       )}
 
-      {!demoRecord && <CustomerImageLibrary compact />}
+      {!isSample && showCheckoutEmail && (
+        <form className="mb-6 rounded-xl border border-cyan-300/30 bg-cyan-950/30 p-5" noValidate onSubmit={(event) => {
+          event.preventDefault()
+          if (!isValidPreviewEmail(email)) {
+            setEmailError('Enter a valid contact email to continue.')
+            checkoutEmailRef.current?.focus()
+            return
+          }
+          onCheckoutEmail(email, checkoutHref)
+        }}>
+          <label htmlFor="preview-checkout-email" className="block font-semibold text-white">Add your contact email to continue</label>
+          <p id="preview-checkout-email-help" className="mt-2 text-sm text-slate-300">This email will appear in supported contact fields on your website and be used for your account and launch updates. You will review pricing before any payment.</p>
+          <div className="mt-4 flex flex-wrap items-end gap-3">
+            <input ref={checkoutEmailRef} id="preview-checkout-email" type="email" autoComplete="email" maxLength={320} required value={email}
+              onChange={(event) => { setEmail(event.target.value); setEmailError('') }}
+              aria-invalid={Boolean(emailError)} aria-describedby={`preview-checkout-email-help${emailError ? ' preview-checkout-email-error' : ''}`}
+              placeholder="hello@yourbusiness.com" className="min-w-0 flex-1 rounded-lg border border-white/30 bg-white/10 px-4 py-3 text-white" />
+            <button type="submit" className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold text-slate-950">Continue to plans</button>
+            <button type="button" onClick={() => setShowCheckoutEmail(false)} className="rounded-lg px-4 py-3 text-sm text-slate-300 underline underline-offset-4">Keep exploring</button>
+          </div>
+          {emailError && <p id="preview-checkout-email-error" role="alert" className="mt-2 text-sm text-red-200">{emailError}</p>}
+        </form>
+      )}
+
+      {!demoRecord && !isSample && <CustomerImageLibrary compact />}
 
       {/* Color panel */}
-      {!demoRecord && showColorPanel && (
+      {!demoRecord && !isSample && showColorPanel && (
         <div className="glass-panel rounded-xl p-4 mb-4">
           <h3 className="text-sm font-bold text-white mb-3">Color Presets</h3>
           <div className="flex flex-wrap gap-3">
@@ -1776,7 +2051,7 @@ function EditorStep({
       )}
 
       {/* Font panel */}
-      {!demoRecord && showFontPanel && (
+      {!demoRecord && !isSample && showFontPanel && (
         <div className="glass-panel rounded-xl p-4 mb-4">
           <h3 className="text-sm font-bold text-white mb-3">Font Presets</h3>
           <div className="flex flex-wrap gap-3">
@@ -1800,7 +2075,7 @@ function EditorStep({
         </div>
       )}
 
-      {!demoRecord && showSeoPanel && (
+      {!demoRecord && !isSample && showSeoPanel && (
         <PageSeoSettingsPanel
           html={previewHtml}
           page={currentPage}
@@ -1816,6 +2091,7 @@ function EditorStep({
       >
         {previewLoading ? (
           <div
+            role="status" aria-label="Loading website preview"
             className={`flex items-center justify-center bg-slate-900 ${
               demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'
             }`}
@@ -1839,7 +2115,7 @@ function EditorStep({
               demoRecord ? 'h-[88vh] min-h-[720px]' : 'h-[70vh]'
             }`}
           >
-            <p className="text-red-200 text-sm max-w-md">{previewError}</p>
+            <p role="alert" className="text-red-200 text-sm max-w-md">{previewError}</p>
             <button
               type="button"
               onClick={() => onLoadPreview(matched.nicheSlug, matched.templateSlug, currentPage)}
@@ -1874,6 +2150,8 @@ function EditorStep({
         {(matched.pages?.length ? matched.pages : ['index.html']).map((page) => (
           <button
             key={page}
+            type="button"
+            aria-current={currentPage === page ? 'page' : undefined}
             onClick={() => onLoadPreview(matched.nicheSlug, matched.templateSlug, page)}
             className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all ${
               currentPage === page
@@ -2018,6 +2296,8 @@ function Field({
   type = 'text',
   required,
   error,
+  autoComplete,
+  maxLength = 2000,
 }: {
   label: string
   value: string
@@ -2026,6 +2306,8 @@ function Field({
   type?: string
   required?: boolean
   error?: string
+  autoComplete?: string
+  maxLength?: number
 }) {
   const id = useId()
   return (
@@ -2036,6 +2318,8 @@ function Field({
       <input
         id={id}
         type={type}
+        autoComplete={autoComplete}
+        maxLength={maxLength}
         required={required}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? `${id}-error` : undefined}

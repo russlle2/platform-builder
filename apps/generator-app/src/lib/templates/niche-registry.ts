@@ -3,6 +3,7 @@ import path from 'path'
 import { createHash } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
+import { getReviewedShowcaseTemplates, isShowcaseEligible } from './showcase-curation'
 import { inspectLaunchCatalog } from './launch-catalog-integrity'
 import launchCatalogContract from './launch-catalog-contract.json'
 import {
@@ -556,16 +557,45 @@ export async function getTemplatesForNiche(nicheSlug: string): Promise<TemplateM
   return cache.get(nicheSlug) || []
 }
 
-/** Featured templates for niche landing showcase, ordered by showcaseOrder */
+/** Choose a bounded showcase from the already validated, deduplicated gallery. */
+export function selectShowcaseTemplates(templates: TemplateMeta[]): TemplateMeta[] {
+  const limit = 6
+  const rank = (value?: number) => typeof value === 'number' && Number.isFinite(value)
+    ? value
+    : Number.MAX_SAFE_INTEGER
+  const ordered = templates.filter((template) => isShowcaseEligible(template.slug)).sort((a, b) =>
+    rank(a.showcaseOrder) - rank(b.showcaseOrder)
+    || rank(a.order) - rank(b.order)
+    || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0),
+  )
+  const featured = ordered.filter((template) => template.featured)
+  if (featured.length) return featured.slice(0, limit)
+  const reviewed = getReviewedShowcaseTemplates(templates[0]?.nicheSlug || '', ordered)
+  if (reviewed.length) return reviewed.slice(0, limit)
+
+  // Catalog releases do not all carry editorial flags. Show a few actual
+  // published choices instead of silently removing the entire product gallery.
+  const selected: TemplateMeta[] = []
+  const families = new Set<string>()
+  for (const template of ordered) {
+    const family = (template.layoutFamily || '').toLowerCase().replace(/[-\s]+/g, '_')
+    if (families.has(family)) continue
+    families.add(family)
+    selected.push(template)
+    if (selected.length === limit) return selected
+  }
+  const selectedSlugs = new Set(selected.map((template) => template.slug))
+  for (const template of ordered) {
+    if (selectedSlugs.has(template.slug)) continue
+    selected.push(template)
+    if (selected.length === limit) break
+  }
+  return selected
+}
+
+/** Featured or diverse fallback choices, always drawn from the publishable gallery. */
 export async function getFeaturedTemplatesForNiche(nicheSlug: string): Promise<TemplateMeta[]> {
-  const templates = await getTemplatesForNiche(nicheSlug)
-  return templates
-    .filter((t) => t.featured)
-    .sort((a, b) => {
-      const ao = typeof a.showcaseOrder === 'number' ? a.showcaseOrder : Number.POSITIVE_INFINITY
-      const bo = typeof b.showcaseOrder === 'number' ? b.showcaseOrder : Number.POSITIVE_INFINITY
-      return ao - bo
-    })
+  return selectShowcaseTemplates(await getTemplatesForNiche(nicheSlug))
 }
 
 /** Get a single template by niche + slug */

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
@@ -11,6 +11,7 @@ import {
   type CustomTheme,
 } from '@/lib/custom-theme'
 import { sanitizeCatalogRevisionPin } from '@/lib/catalog-revision'
+import { PREVIEW_SAMPLE_STORAGE_KEY } from '@/store/previewStore'
 
 const pricingTiers = PLAN_LIST
 
@@ -30,7 +31,7 @@ export default function PricingClient() {
   const billingPeriod: 'monthly' | 'annual' = 'monthly'
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [checkoutRecoveryUrl, setCheckoutRecoveryUrl] = useState<string | null>(null)
-  const [trialDays, setTrialDays] = useState(0)
+  const [trialDays, setTrialDays] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
   const [checkoutReady, setCheckoutReady] = useState(false)
   const searchParams = useSearchParams()
@@ -101,7 +102,7 @@ export default function PricingClient() {
       // after they click a button that appears to start checkout.
       const businessName = (customerValues.BUSINESS_NAME || '').trim()
       const email = (customerValues.EMAIL || '').trim()
-      if (!businessName || !email || !ctx.template || !ctx.niche) {
+      if (sessionStorage.getItem(PREVIEW_SAMPLE_STORAGE_KEY) || !businessName || !email || !ctx.template || !ctx.niche) {
         sessionStorage.setItem('pb_selected_plan', planKey)
         track('checkout_prerequisite_redirect', {
           planKey,
@@ -176,7 +177,7 @@ export default function PricingClient() {
     // Persist any wizard context that arrived via URL.
     if (template || niche || slug) {
       try {
-        sessionStorage.setItem(
+        if (!sessionStorage.getItem(PREVIEW_SAMPLE_STORAGE_KEY)) sessionStorage.setItem(
           CHECKOUT_CONTEXT_KEY,
           JSON.stringify({
             slug,
@@ -195,6 +196,7 @@ export default function PricingClient() {
       const customerValues = saved ? JSON.parse(saved) as Record<string, string> : {}
       const ctx = readCheckoutContext()
       setCheckoutReady(Boolean(
+        !sessionStorage.getItem(PREVIEW_SAMPLE_STORAGE_KEY) &&
         customerValues.BUSINESS_NAME?.trim() &&
         customerValues.EMAIL?.trim() &&
         ctx.template &&
@@ -205,9 +207,12 @@ export default function PricingClient() {
     }
 
     fetch('/api/platform/config')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error('Billing terms unavailable')
+        return res.json()
+      })
       .then((data) => {
-        if (typeof data?.trialDays === 'number' && data.trialDays >= 0) {
+        if (Number.isInteger(data?.trialDays) && data.trialDays >= 0) {
           setTrialDays(data.trialDays)
         }
       })
@@ -228,7 +233,7 @@ export default function PricingClient() {
               <p className="text-xl text-slate-200 max-w-xl">
                 Explore the platform, build an editable preview with your own details, and compare
                 the published scope of each plan before checkout.
-                {trialDays > 0 && (
+                {trialDays !== null && trialDays > 0 && (
                   <span className="block mt-2 text-cyan-200">
                     {trialDays}-day free trial — card required, cancel anytime before billing starts.
                   </span>
@@ -243,10 +248,10 @@ export default function PricingClient() {
             <div className="glass-panel rounded-3xl p-8 space-y-6">
               <h2 className="text-2xl font-bold text-white">What you can check before checkout</h2>
               <ul className="space-y-3 text-slate-200">
-                <li>Interactive platform walkthrough</li>
+                <li>A video walkthrough and a sample website you can explore</li>
                 <li>A template preview populated with your business details</li>
                 <li>{bookingKitFunnel ? 'Included website features and the separate custom-build option' : 'Included features and managed services compared side by side'}</li>
-                <li>Current price and trial terms before Stripe opens</li>
+                <li>Current prices, plan scope, and where to review trial terms</li>
               </ul>
               <div className="flex items-center justify-between text-sm text-slate-300">
                 <span>No sales call required</span>
@@ -304,11 +309,10 @@ export default function PricingClient() {
               )}
             </div>
           )}
-          {!slug && (
-            <p className="text-center text-gray-300 mt-4">
-              Tip: add a preferred slug in the wizard to reserve your subdomain sooner.
-            </p>
-          )}
+          <p className="text-center text-slate-300 mt-6 text-sm">
+            Monthly plans renew until canceled. Cancel through your billing portal or contact support.{' '}
+            <Link href="/refund-policy" className="text-cyan-300 underline underline-offset-4">Cancellation and refund details</Link>
+          </p>
           <p className="text-center text-slate-400 text-sm mt-6">
             Need help choosing?{' '}
             <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">
@@ -328,15 +332,20 @@ export default function PricingClient() {
                   Want a website designed around your exact instructions?
                 </h2>
                 <p className="text-slate-200 mt-4 max-w-3xl leading-relaxed">
-                  Describe how your site should look and function in detail. Your brief is saved,
-                  you make one immediate $500 Stripe payment, and the request is delivered to our
-                  manual custom-build queue.
+                  Describe the website you want. The $500 payment is charged immediately, then
+                  we review your brief and confirm the accepted scope and next steps by email.
                 </p>
                 <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-sm text-slate-300">
                   <span>Detailed design brief</span>
                   <span>Custom functionality request</span>
                   <span>No monthly plan required</span>
                 </div>
+                <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                  The payment covers the accepted website scope. Domains, paid plugins,
+                  third-party subscriptions, and expanded application work are separate.
+                  For specific functionality, hosting, revisions, or timing,{' '}
+                  <Link href="/contact" className="text-cyan-200 underline underline-offset-4">discuss your scope before paying</Link>.
+                </p>
               </div>
               <div className="lg:text-right min-w-[230px]">
                 <div className="flex lg:justify-end items-baseline gap-2">
@@ -353,12 +362,12 @@ export default function PricingClient() {
         </section>
 
         {!bookingKitFunnel && <section className="container-hvac pb-20">
-          <div className="glass-panel rounded-3xl p-10">
+          <div className="glass-panel rounded-3xl p-6 sm:p-10">
             <h2 className="text-3xl font-bold text-white mb-2">Compare plans</h2>
             <p className="text-slate-300 mb-8 max-w-2xl">
-              Everything in the platform is automated and included in both plans. The
+              Both plans include the website tools shown below. The
               <strong className="text-white"> Security + Ads</strong> plan adds one done-for-you
-              service we run for you by hand.
+              service bundle managed by our team. SSL and managed hosting are included in both plans.
             </p>
             <div className="grid grid-cols-[1.6fr_repeat(2,1fr)] gap-x-6 gap-y-3 text-sm text-slate-200">
               <p className="text-slate-400 uppercase tracking-[0.3em] text-xs">Feature</p>
@@ -383,7 +392,7 @@ export default function PricingClient() {
           <div className="glass-panel rounded-3xl p-10">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
-                Evidence, not theater
+                Explore the product
               </p>
               <h2 className="mt-3 text-3xl font-bold text-white">
                 What we can substantiate today
@@ -397,7 +406,7 @@ export default function PricingClient() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
                 {
-                  title: 'Interactive walkthrough',
+                  title: 'Video walkthrough',
                   copy: 'See the platform workflow, page structure, and customer editing path in the product demo.',
                 },
                 {
@@ -420,7 +429,7 @@ export default function PricingClient() {
 
         {/* FAQ Section */}
         <section className="container-hvac py-16">
-          <div className="glass-panel rounded-3xl p-12">
+          <div className="glass-panel rounded-3xl p-6 sm:p-12">
             <h2 className="text-4xl font-bold text-bright-white mb-8 text-center">
               Frequently Asked Questions
             </h2>
@@ -435,7 +444,7 @@ export default function PricingClient() {
               />}
               <FAQItem
                 question="How does the $500 custom website build work?"
-                answer="Choose Custom Website Build, submit a detailed description of the appearance and functionality you want, and complete one immediate $500 Stripe payment. Your full brief is saved before checkout and delivered to our manual build queue after Stripe confirms payment. We then review the scope and contact you by email with next steps."
+                answer="Submit a detailed brief and complete one immediate $500 payment. We review your brief after payment and confirm the accepted scope and next steps by email. Domains, paid plugins, third-party subscriptions, and expanded application work are separate. If your decision depends on specific functionality, hosting, revisions, or timing, contact us to discuss those details before paying."
               />
               <FAQItem
                 question="How fast can I launch?"
@@ -444,14 +453,16 @@ export default function PricingClient() {
               <FAQItem
                 question="Is there a free trial?"
                 answer={
-                  trialDays > 0
+                  trialDays === null
+                    ? 'Current trial terms could not be confirmed on this page. Review the price, any trial, and the first billing date in checkout before you pay. The one-time custom build does not include a trial.'
+                    : trialDays > 0
                     ? `Yes — ${bookingKitFunnel ? 'the Basic monthly plan includes' : 'both monthly plans include'} a ${trialDays}-day trial. We collect your card at checkout, but you are not charged until the trial ends. The one-time custom build does not include a trial.`
                     : 'Subscriptions start billing when you complete checkout.'
                 }
               />
               <FAQItem
                 question="How do I change plans?"
-                answer="Contact DailyClarity support to change plans. Self-service plan switching stays disabled until we can reconcile the service scope and billing adjustment safely."
+                answer="Contact DailyClarity support to request a plan change. We will confirm the service scope and any billing adjustment before making the change."
               />
               <FAQItem
                 question="Why don't you show customer results or testimonials yet?"
@@ -459,7 +470,7 @@ export default function PricingClient() {
               />
               <FAQItem
                 question="Do I need technical skills?"
-                answer="None at all. Our guided intake collects your details, and we handle setup, integrations, hosting, and launch."
+                answer="You can edit supported text and images without code. Your selected template includes managed hosting and publishing. If you need a particular booking service or other integration, confirm that requirement with us before paying."
               />
               <FAQItem
                 question="What if I want to cancel?"
@@ -467,7 +478,7 @@ export default function PricingClient() {
               />
               <FAQItem
                 question="Can I edit my site after launch?"
-                answer="Yes — through your portal anytime. Update your business name, tagline, phone, email, services, and images without touching code. Changes publish to your live site automatically."
+                answer="Use your website editing portal to update supported text and images in your selected template. Review your changes and publish them to your live site. This is the portal for managing your business website, not a patient or client-record system."
               />
               <FAQItem
                 question="What if I need help?"
@@ -517,7 +528,7 @@ function PricingCard({
 }: {
   tier: (typeof pricingTiers)[0]
   billingPeriod: 'monthly' | 'annual'
-  trialDays: number
+  trialDays: number | null
   onCheckout: () => void
   isSubmitting: boolean
   checkoutReady: boolean
@@ -528,8 +539,8 @@ function PricingCard({
   return (
     <div
       className={`card-mahogany relative ${
-        tier.highlight ? 'ring-2 ring-cyan-400/80 scale-105' : ''
-      } hover:scale-105 transition-all`}
+        tier.highlight ? 'ring-2 ring-cyan-400/80' : ''
+      } transition-all`}
     >
       {/* Badge */}
       {tier.badge && (
@@ -553,7 +564,7 @@ function PricingCard({
           )}
         </div>
         <p className="text-gray-300">{tier.description}</p>
-        {trialDays > 0 && (
+        {trialDays !== null && trialDays > 0 && (
           <p className="text-sm text-cyan-300">{trialDays}-day free trial, then billed monthly</p>
         )}
       </div>
@@ -578,6 +589,13 @@ function PricingCard({
         ))}
       </ul>
 
+      {tier.managedService && (
+        <p className="mb-6 text-sm leading-relaxed text-slate-300">
+          Advertising spend and third-party fees are separate unless agreed in writing.
+          Contact us before checkout if you need a specific campaign scope or cadence.
+        </p>
+      )}
+
       {/* CTA Button */}
       <button
         type="button"
@@ -592,8 +610,8 @@ function PricingCard({
         {isSubmitting
           ? 'Redirecting…'
           : !checkoutReady
-            ? 'Build preview to start trial'
-          : trialDays > 0
+            ? 'Build preview to choose plan'
+          : trialDays !== null && trialDays > 0
             ? `Start ${trialDays}-day trial`
             : 'Choose Plan'}
       </button>
@@ -614,10 +632,14 @@ function PricingCard({
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false)
+  const answerId = useId()
 
   return (
     <div className="border-b border-white/10 pb-6">
       <button
+        type="button"
+        aria-expanded={isOpen}
+        aria-controls={answerId}
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between text-left group"
       >
@@ -625,6 +647,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
           {question}
         </h3>
         <svg
+          aria-hidden="true"
           className={`w-6 h-6 text-gray-400 transition-transform ${
             isOpen ? 'rotate-180' : ''
           }`}
@@ -640,7 +663,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
           />
         </svg>
       </button>
-      {isOpen && <p className="mt-4 text-gray-300 leading-relaxed">{answer}</p>}
+      <p id={answerId} hidden={!isOpen} className="mt-4 text-gray-300 leading-relaxed">{answer}</p>
     </div>
   )
 }

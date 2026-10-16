@@ -12,6 +12,7 @@ export default function PrivacyPage() {
   return (
     <LegalPage
       title="Privacy Policy"
+      effectiveDate={{ dateTime: '2026-10-16', label: 'October 16, 2026' }}
       summary="This policy explains what information DailyClarity collects, why we use it, and the choices available to customers, site visitors, and people who contact a DailyClarity-powered business."
     >
       <LegalSection title="1. Scope">
@@ -29,7 +30,10 @@ export default function PrivacyPage() {
           <li>
             <strong className="text-white">Information you provide:</strong> name, email address,
             phone number, business details, website content, project instructions, uploaded
-            files, support messages, and form submissions.
+            files, support messages, and form submissions. When you continue through a personalized
+            preview, we also save your business details, design preferences, template selection,
+            progress, and email preferences before any purchase. Sample demos are separate from
+            real-business lead records.
           </li>
           <li>
             <strong className="text-white">Account and transaction information:</strong> account
@@ -55,6 +59,12 @@ export default function PrivacyPage() {
           <li>Create accounts, process orders, manage subscriptions, and provide support.</li>
           <li>Build and publish the website or other deliverables a customer requests.</li>
           <li>Deliver form submissions and service messages to the appropriate recipient.</li>
+          <li>
+            Follow up about your preview and relevant DailyClarity services, including when you
+            do not complete a purchase. Send promotional news and offers according to the email
+            preferences you provide. Choosing not to receive those offers does not prevent you
+            from using the preview.
+          </li>
           <li>
             Respond to optional assistant-chat questions using an artificial-intelligence service
             provider. Do not enter sensitive information in the assistant.

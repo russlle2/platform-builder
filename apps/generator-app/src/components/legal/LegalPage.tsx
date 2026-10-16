@@ -5,10 +5,12 @@ export function LegalPage({
   title,
   summary,
   children,
+  effectiveDate = { dateTime: '2026-09-03', label: 'September 3, 2026' },
 }: {
   title: string
   summary: string
   children: ReactNode
+  effectiveDate?: { dateTime: string; label: string }
 }) {
   return (
     <main className="min-h-screen px-4 pb-20 pt-28 sm:px-6">
@@ -20,7 +22,7 @@ export function LegalPage({
           <h1 className="text-4xl font-bold text-white sm:text-5xl">{title}</h1>
           <p className="mt-5 max-w-3xl text-base leading-7 text-slate-300">{summary}</p>
           <p className="mt-4 text-sm text-slate-400">
-            Effective <time dateTime="2026-09-03">September 3, 2026</time>
+            Effective <time dateTime={effectiveDate.dateTime}>{effectiveDate.label}</time>
           </p>
         </header>
 

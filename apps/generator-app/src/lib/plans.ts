@@ -46,7 +46,7 @@ export const PLANS: Record<PlanKey, Plan> = {
     highlight: false,
     managedService: false,
     features: [
-      'Professional website, built and launched for you',
+      'Your selected template, personalized and published',
       'Hosted subdomain + SSL included',
       'Live preview and self-serve portal editing',
       'Edit supported text and images after launch',
