@@ -61,9 +61,10 @@ describe('reviewed marketing choices', () => {
     const input = [
       template('wellness_coach-2026-06-18T0600-095', 'clinical', { featured: true }),
       template('sound_bath-2026-02-16T11-24-27-037Z-003', 'zen', { featured: true }),
+      template('aromatherapy-2026-02-16T14-59-46-083Z-001', 'glass', { featured: true }),
       template('available-style', 'minimal'),
     ]
-    expect(selectShowcaseTemplates(input)).toEqual([input[2]])
-    expect(input).toHaveLength(3)
+    expect(selectShowcaseTemplates(input)).toEqual([input[3]])
+    expect(input).toHaveLength(4)
   })
 })

@@ -6,7 +6,6 @@
  */
 export const REVIEWED_SHOWCASE_SLUGS: Readonly<Record<string, readonly string[]>> = {
   aromatherapy: [
-    'aromatherapy-2026-02-16T14-59-46-083Z-001',
     'aromatherapy-2026-02-16T18-54-45-056Z-049',
     'aromatherapy-MORE-2026-02-17T13-26-31-190Z-006',
   ],
@@ -33,11 +32,13 @@ export const REVIEWED_SHOWCASE_SLUGS: Readonly<Record<string, readonly string[]>
 
 /**
  * Marketing-only hold: decorative layers obscure content in native renders,
- * including when the approved runtime is enabled. Reconsider only after a
+ * or the main CTA has inadequate contrast (the aromatherapy design is 1.77:1).
+ * These issues also exist with the approved runtime enabled. Reconsider after a
  * repaired, recertified artifact has been visually reviewed. The general
  * catalog and template access checks remain unchanged.
  */
 const SHOWCASE_VISUAL_HOLDS = new Set([
+  'aromatherapy-2026-02-16T14-59-46-083Z-001',
   'sound_bath-2026-02-16T11-24-27-037Z-003',
   'wellness_coach-2026-06-18T0600-095',
 ])

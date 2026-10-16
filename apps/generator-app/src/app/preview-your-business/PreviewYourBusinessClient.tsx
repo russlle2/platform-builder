@@ -535,9 +535,9 @@ export default function PreviewYourBusinessClient() {
           body: JSON.stringify({
             page,
             values: getFieldValues(),
-            colorScheme: resolveQuizColorScheme(stylePreferences.colorMood),
-            fontVariation: resolveQuizFontVariation(stylePreferences.fontPreference),
-            structureVariation: resolveQuizStructureVariation(stylePreferences.layoutDensity),
+            colorScheme: isSample ? 'original' : resolveQuizColorScheme(stylePreferences.colorMood),
+            fontVariation: isSample ? 'original' : resolveQuizFontVariation(stylePreferences.fontPreference),
+            structureVariation: isSample ? 'original' : resolveQuizStructureVariation(stylePreferences.layoutDensity),
             customTheme: !isSample && customThemeActive
               ? sanitizeCustomTheme({
                   primary: customColors.primary,

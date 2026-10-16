@@ -184,21 +184,27 @@ test('a failed sample can exit to the real draft without leaving a sample checko
 })
 
 test('sample starts with an available reviewed design and respects an exact gallery selection', async ({ page }) => {
-  const reviewedSlug = 'aromatherapy-2026-02-16T14-59-46-083Z-001'
+  const reviewedSlug = 'aromatherapy-2026-02-16T18-54-45-056Z-049'
   const previews: string[] = []
+  const previewOptions: Record<string, unknown>[] = []
   await page.route('**/api/templates/aromatherapy?all=true', (route) => route.fulfill({ json: { templates: [
     { slug: 'sample-layout', name: 'Unreviewed ranking match', nicheSlug: 'aromatherapy', pages: ['index.html'], snippet: 'warm natural professional earthy' },
     { slug: reviewedSlug, name: 'Reviewed sample', nicheSlug: 'aromatherapy', pages: ['index.html'], snippet: '' },
   ] } }))
   page.on('request', (request) => {
-    if (request.url().includes('/api/templates/aromatherapy/') && request.url().endsWith('/preview')) previews.push(request.url())
+    if (request.url().includes('/api/templates/aromatherapy/') && request.url().endsWith('/preview')) {
+      previews.push(request.url())
+      previewOptions.push(request.postDataJSON())
+    }
   })
   await page.goto('/preview-your-business?sample=1&niche=aromatherapy')
   await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Wildflower Aromatherapy' })).toBeVisible()
   expect(previews.at(-1)).toContain(`/${reviewedSlug}/preview`)
+  expect(previewOptions.at(-1)).toMatchObject({ colorScheme: 'original', fontVariation: 'original', structureVariation: 'original', customTheme: null })
   await page.goto('/preview-your-business?sample=1&niche=aromatherapy&template=sample-layout')
   await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Wildflower Aromatherapy' })).toBeVisible()
   expect(previews.at(-1)).toContain('/sample-layout/preview')
+  expect(previewOptions.at(-1)).toMatchObject({ colorScheme: 'original', fontVariation: 'original', structureVariation: 'original', customTheme: null })
 })
 
 for (const leaveFlow of ['reset', 'unmount'] as const) {
