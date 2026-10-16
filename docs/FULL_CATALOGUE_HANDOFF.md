@@ -137,7 +137,7 @@ Require real Stripe test payment, exact database order/session/intent/event bind
 
 Then retain actual refund, retry/recovery and staging rollback/reapply evidence. Current Basic website refund events are not reconciled into a website refund state; they are dispatched through BookingKit handling and return for non-Kit payments. Test subscription cancellation is a separate action that does reconcile billing status, and a Stripe refund does not itself cancel a subscription. Do not mark `refundRecovery` passed merely because Stripe returned a refund or because a queue event succeeded. For Basic, record the approved test refund as provider financial evidence, separately cancel the exact test subscription and verify its signed webhook plus customer billing state, and prove genuine failed fulfillment recovers on the same order/site. Historical paid-order evidence may remain paid; do not invent automatic refund-driven cancellation or access revocation. Keep BookingKit sales disabled.
 
-A scoped recovery rehearsal can use a newly created task-owned Netlify site at the exact reserved test slug before card entry, with one unique task-owned non-Netlify alias. The real staging provisioner rejects that alias, causing an actual signed payment event to enter failed fulfillment. Capture the exact event/order/intent failure first. Then remove only that fixture alias after rechecking the recorded site/account/name and unchanged singleton alias set; let the normal sweeper or protected admin retry resume the exact event. Verify the same deterministic site is reused, with no second order/site, and complete actual email/customer checks. Create no fixture if the deterministic site already exists; do not proceed with payment unless the provider accepted and independently read back the intended isolated fault. This is a proposed connected procedure, not an executed result. Do not edit database success rows into failure or submit fabricated webhook payloads.
+A scoped recovery rehearsal can use a newly created task-owned Netlify site at the exact reserved test slug before card entry, with one unique task-owned non-Netlify alias. The real staging provisioner rejects that alias, causing an actual signed payment event to enter failed fulfillment. Capture the exact event/order/intent failure first. Then remove only that fixture alias after rechecking the recorded site/account/name and unchanged singleton alias set; let the normal sweeper or protected admin retry resume the exact event. Verify the same deterministic site is reused, with no second order/site, and complete actual email/customer checks. Create no fixture if the deterministic site already exists; do not proceed with payment unless the provider accepted and independently read back the intended isolated fault. The protected `staging-recovery-proof.yml` workflow now provides scoped prepare, clear, inspect and exact-event retry controls; follow [the operator procedure](STAGING_RECOVERY_REHEARSAL.md). Workflow source and mocked tests are not evidence that the rehearsal has executed. Do not edit database success rows into failure or submit fabricated webhook payloads.
 
 Store only sanitized underlying evidence in an unpublished GitHub draft release on the same SHA, or an actual successful same SHA repository workflow artifact. Exclude private checkout state, tokens, email bodies, cookies and raw provider objects. The operator reviews the real retained evidence and writes `connected-staging.json` with exactly the existing production contract fields:
 
@@ -163,6 +163,55 @@ Store only sanitized underlying evidence in an unpublished GitHub draft release 
 This is an operator attestation bound to retained real evidence, not an automated provider certificate. No helper fills `passed` automatically. Finalization requires all six actual checks passed, matching hashes, review no older than 24 hours, and an evidence URL without private query/fragment data. A draft evidence URL must equal the exact metadata URL of the draft containing this report. If it points to a workflow run, that run must actually have completed successfully on the same main SHA. Neither location alone proves the claims: the separately approved raw report hash records the operator's review.
 
 Upload only this small report to that unpublished release with normal `gh release upload` and retain its exact asset ID and raw SHA256. Dispatch `finalize-catalogue.yml` with candidate run/artifact IDs, certificate hash, connected release/asset IDs and report hash. It revalidates candidate provenance/full bytes, checks the report and creates a NEW `certified-catalogue-SHA` artifact with the original three paths plus `connected-staging.json`. It does not overwrite the candidate or mutate a provider.
+
+### Protected upload of already reviewed connected evidence
+
+`upload-connected-evidence.yml` is an additional upload route when the reviewed files are local. It uses its own short-lived `GITHUB_TOKEN` in the protected staging environment on exact current main with successful push CI. It shares finalization concurrency and uploads only two fixed asset names to an **existing, initially empty, unpublished exact-SHA draft**: `connected-staging-support.json` first, then the unchanged `connected-staging.json`. Create that separate empty draft through normal GitHub authentication and read its actual numeric ID and `html_url` before writing the report. Do not use the populated catalogue transport draft or construct a URL from a tag guess.
+
+The uploader checks structure, consistency, approved bytes and retained workflow provenance. It does **not** independently verify provider truth, generate observations, turn booleans into `passed`, change a review timestamp, create/publish/delete releases, delete/overwrite assets, or dispatch finalization. The operator must review the actual complete journey and correlation before supplying either raw file hash. The finalizer and all existing gates remain unchanged.
+
+Supporting JSON has exactly `version:1`, `releaseSha`, `catalogHash`, `manifestHash`, `certificationHash`, `observations`, and `gateEvidence`. Its release/hashes must match the reviewed report and actual certificate. Each of at most 64 observations has:
+
+- `id`: `observation-1` through `observation-64`; `gate`: one of the six report gates.
+- `kind`: `provider`, `browser`, `inbox`, `workflow`, or `source-review`; `executionMode`: `connected-test`, `no-stripe-simulation`, or `source-review`.
+- `scope`: `current` or `historical`; `observedReleaseSha` and `observedAt`: the **actual original** observed SHA and UTC ISO timestamp. Historical, simulated and source-review observations may remain as unselected context. They cannot substitute for current connected evidence or be redated/rebound.
+- `bindingHash`: a canonical SHA-256 commitment to the actual high-entropy journey/order/site identity tuple reviewed privately. Reuse the same commitment across related observations so reviewers can follow the same order/site and recovery. A separate staging rollback identity tuple may use its own commitment. Do not hash a bare email address, use an arbitrary per-record label hash, or publish the private tuple.
+- `facts`: a nonempty object containing only the gate-specific boolean, bounded-count, hash or fixed-enum fields allowed by [connected-evidence-contract.mjs](../apps/generator-app/scripts/connected-evidence-contract.mjs). No arbitrary notes, inbox addresses, message bodies, auth/checkout URLs, cookies, raw provider IDs/objects or local file paths are allowed.
+- Optional `source`: exactly `runId`, `runAttempt`, `artifactId` as numeric strings and `artifactDigest` as raw SHA-256. This is required for `kind:workflow`. The uploader checks the actual successful same-observed-SHA main workflow attempt and unexpired immutable artifact metadata/digest; the artifact creation must fall within that attempt. Preserve sanitized facts in the support file because a reference alone is neither observed evidence nor durable after artifact expiry.
+
+`gateEvidence` maps each of the six gates to a nonempty list of distinct observation IDs from that gate. Every selected observation must be an actual `connected-test` on the **current final release** and have been available by `reviewedAt` (at most five minutes of clock skew). Preserve failed attempts and later successes as separate observations without editing the old facts. Selected facts must collectively provide the following existing handoff assertions; this consistency check does not establish that the supplied observations are true:
+
+| Gate | Selected facts required to be `true` |
+| --- | --- |
+| `stripe` | `stripeTestPayment`, `signedWebhook`, `orderBound`, and a positive `amountMinor` |
+| `email` | `confirmationEmailReceived`, `liveEmailReceived`, `authLogin` |
+| `provisioning` | `orderBound`, `https`, `noindex` |
+| `previewEditing` | `authLogin`, `ownedEditPersisted`, `deliveredContentMatched`, `republishMatched` |
+| `refundRecovery` | `fulfillmentFailed`, `fulfillmentRecovered`, `sameOrderAndSite`, `noDuplicateOrder`, `refundConfirmed`, `subscriptionCanceled`, `billingStateConverged`, `signedWebhook` |
+| `rollback` | `stagingRollback`, `stagingReapply`, `runtimeVerified` |
+
+Optional typed facts can retain actual Stripe receipt arrival, recipient index `0`/`1`, private-account/public-contact separation, text/image/theme edits and failed-save/retry results. Their omission must not be filled with invented values. Provider acceptance is not inbox receipt; no-Stripe simulation is not a real test payment; refund confirmation is separate from subscription cancellation and recovery of the same order/site.
+
+Run local validation **before sending any payload to GitHub**, using Node 22–24 and the repository dependencies. Keep all files outside the checkout. Substitute actual reviewed paths/identity values:
+
+```sh
+node apps/generator-app/scripts/upload-connected-evidence.mjs validate \
+  --report /absolute/reviewed/connected-staging.json \
+  --support /absolute/reviewed/connected-staging-support.json \
+  --certificate /absolute/reviewed/certification.json \
+  --release-sha ACTUAL_FINAL_MAIN_SHA \
+  --draft-url ACTUAL_DRAFT_HTML_URL \
+  --release-id ACTUAL_NUMERIC_EMPTY_DRAFT_ID \
+  --output /absolute/reviewed/connected-evidence-dispatch.json
+```
+
+This command makes no network requests. It refuses duplicate JSON keys, malformed UTF-8, unknown/private fields and inconsistent reports; it prints only identities, digests and payload size. It writes the optional dispatch file exclusively after validation and never sends it. Report/support bytes stay unchanged. Report size is at most 16 KiB, support 32 KiB and certificate 4 KiB; the complete encoded dispatch must also remain **below 60,000 bytes**, safely below GitHub's aggregate input limit. The certificate is bound by its canonical hash; report/support require separately reviewed raw hashes. Canonical base64 is validated again by the workflow.
+
+After reviewing the local results and confirming current main/CI, submit that exact payload through the normal workflow-dispatch API and complete the protected environment review. The payload includes `ref:main` and the seven exact workflow inputs; the helper never performs this dispatch. Inputs are read from `GITHUB_EVENT_PATH`, not interpolated into shell commands or the displayed step environment.
+
+Both uploaded files receive actual byte download/readback checks. The report is never uploaded after failed support validation/readback. A partial failure may leave support or report assets in an unpublished draft; retain that draft for diagnosis, create a new empty one, update and review the actual draft URL/report raw hash, and rerun local validation. Never resume by deleting or clobbering reviewed assets.
+
+Review the small `connected-evidence-upload-provenance-RUN_ID-ATTEMPT` artifact. It binds the actual draft ID/URL, both asset IDs/raw hashes and the unchanged report/certificate identity, while explicitly stating that provider observations were not independently verified. Supply its `releaseId`, `report.assetId`, and `report.sha256`, plus the independently approved candidate IDs/certificate hash, to the existing finalizer. Successful upload is transport evidence; it is not a connected-gate pass or deployment.
 
 The finalization run/artifact IDs now fit the existing production `deploy.yml` inputs exactly. Use production `verify` first, then the existing reviewed promotion procedure. Production promotion retains its own rollback record and full target/schema/CI/catalogue gates. These workflows prepare the route; successful real executions remain required.
 
