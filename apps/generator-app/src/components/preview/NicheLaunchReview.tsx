@@ -43,7 +43,7 @@ export function NicheLaunchReview({
           <p className="mt-1 leading-relaxed">The preview cannot confirm message delivery or a live booking. On your connected website, try this path before sharing it:</p>
           <ol className="mt-2 list-decimal space-y-2 pl-5 leading-relaxed">
             <li>Open the homepage on a phone and follow the main contact or booking link.</li>
-            <li>Check that email or phone links open the correct address or number. If you use a form, send clearly labeled test details with an email address you control and confirm the enquiry reaches you.</li>
+            <li>Check that email or phone links open the correct address or number. If you use a form, send a test enquiry with clearly labeled details and an email address you control, then confirm it reaches you.</li>
             <li>If you connect a booking provider, make a test appointment and check confirmation and cancellation. Test any payment step only in your provider’s test mode.</li>
             <li>If a step is not set up, use a working contact option and explain what happens next.</li>
           </ol>
