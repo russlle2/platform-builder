@@ -28,24 +28,26 @@ test.describe('Full purchase funnel (test mode)', () => {
 
     // STEP 2: Go to preview-your-business
     await page.goto('/preview-your-business')
-    await expect(page.getByRole('heading', { name: 'Tell us about your business' })).toBeVisible({
+    await expect(page.getByRole('heading', { name: 'Start with your business name' })).toBeVisible({
       timeout: 10000,
     })
 
     // STEP 3: Fill Step 1 (business info)
     await page.getByRole('button', { name: 'Aromatherapy' }).click()
     await page.getByLabel('Business Name').fill(testBusinessName)
-    await page.getByLabel('Email').fill(testEmail)
-    await page.getByLabel('Phone').fill(testPhone)
+    await page.getByRole('textbox', { name: /^Contact Email/ }).fill(testEmail)
+    await page.getByRole('button', { name: /Add more business details/ }).click()
+    await page.getByRole('textbox', { name: 'Phone', exact: true }).fill(testPhone)
     await page.getByRole('button', { name: /Continue to Style Preferences/i }).click()
 
     // STEP 4: Assert intake_contact was saved
     await expect(page.getByRole('heading', { name: /What's your style/i })).toBeVisible({
       timeout: 10000,
     })
-    await page.waitForTimeout(2000)
-    const saved = await verifyIntakeContact(testEmail)
-    expect(saved).toBe(true)
+    await expect.poll(() => verifyIntakeContact(testEmail), {
+      timeout: 15000,
+      message: 'The real staging intake contact must be persisted before purchase.',
+    }).toBe(true)
 
     // STEP 5: Match a real catalog template, edit it in the customer-facing
     // iframe, and carry the editor's persisted state into the test purchase.
@@ -55,10 +57,10 @@ test.describe('Full purchase funnel (test mode)', () => {
     })
     await page.getByRole('button', { name: 'Customize This Template' }).click()
 
-    const checkoutLink = page.getByRole('link', { name: 'Purchase & Launch' })
-    await expect(checkoutLink).toBeVisible({ timeout: 20000 })
+    const plansButton = page.getByRole('button', { name: 'Choose a launch plan' })
+    await expect(plansButton).toBeVisible({ timeout: 20000 })
     const preview = page.frameLocator('iframe[title="Template preview"]')
-    const editableText = preview.locator('p[data-pb-edit-id]').filter({ hasText: /\S/ }).first()
+    const editableText = preview.locator('p[data-dc-edit-id], p[data-pb-edit-id]').filter({ hasText: /\S/ }).first()
     await expect(editableText).toBeVisible({ timeout: 20000 })
 
     const editorProofText = `E2E editor proof ${Date.now()}`
@@ -80,18 +82,19 @@ test.describe('Full purchase funnel (test mode)', () => {
       return raw ? JSON.parse(raw)?.primary : null
     })).toBe('#0ea5e9')
 
-    const checkoutHref = await checkoutLink.getAttribute('href')
-    expect(checkoutHref).toBeTruthy()
-    const checkoutUrl = new URL(checkoutHref!, 'https://dailyclarity.test')
+    await Promise.all([
+      page.waitForURL(/\/pricing(?:\?|$)/),
+      plansButton.click(),
+    ])
+    // Plans are reached after the explicit save checkpoint. Read the real
+    // destination so the provisioning simulation receives the selected layout
+    // and style variations used by the customer-facing handoff.
+    const checkoutUrl = new URL(page.url())
     const templateSlug = checkoutUrl.searchParams.get('template')
     const niche = checkoutUrl.searchParams.get('niche')
     expect(templateSlug).toBeTruthy()
     expect(niche).toBe('aromatherapy')
 
-    await Promise.all([
-      page.waitForURL(/\/pricing(?:\?|$)/),
-      checkoutLink.click(),
-    ])
     await expect(page.getByRole('heading', {
       name: /See the product first\. Then choose the plan that fits\./i,
     })).toBeVisible()
