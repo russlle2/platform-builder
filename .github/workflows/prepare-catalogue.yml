@@ -1,0 +1,114 @@
+name: Prepare an exact-main certified catalogue transport
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_release_sha:
+        description: 'Reviewed full main SHA with successful push CI; must still be current main'
+        required: true
+        type: string
+      source_sha:
+        description: 'Reviewed original import SHA whose compiler/browser evidence is the trust anchor'
+        required: true
+        type: string
+      source_run_id:
+        description: 'Exact successful original import-catalogue workflow run'
+        required: true
+        type: string
+      source_artifact_id:
+        description: 'Immutable original catalogue candidate artifact ID'
+        required: true
+        type: string
+      source_provenance_id:
+        description: 'Original import provenance artifact ID from the same successful run'
+        required: true
+        type: string
+      source_artifact_digest:
+        description: 'Reviewed original candidate artifact ZIP SHA-256, without sha256: prefix'
+        required: true
+        type: string
+      source_receipt_hash:
+        description: 'Reviewed original canonical catalogue certificate SHA-256'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-catalogue-import
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 120
+    permissions:
+      contents: write # Create an unpublished transport using this job's own identity.
+      actions: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      EXPECTED_RELEASE_SHA: ${{ inputs.expected_release_sha }}
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SOURCE_ARTIFACT_ID: ${{ inputs.source_artifact_id }}
+      SOURCE_PROVENANCE_ID: ${{ inputs.source_provenance_id }}
+      SOURCE_ARTIFACT_DIGEST: ${{ inputs.source_artifact_digest }}
+      SOURCE_RECEIPT_HASH: ${{ inputs.source_receipt_hash }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Keep all source and preparation artifacts outside the clean checkout
+        run: |
+          echo "SOURCE_BUNDLE=$RUNNER_TEMP/original-catalogue" >> "$GITHUB_ENV"
+          echo "SOURCE_PROVENANCE_DIR=$RUNNER_TEMP/original-import-provenance" >> "$GITHUB_ENV"
+          echo "RELEASE_BUNDLE=$RUNNER_TEMP/prepared-catalogue" >> "$GITHUB_ENV"
+          echo "TRANSPORT_OUTPUT=$RUNNER_TEMP/prepared-transport" >> "$GITHUB_ENV"
+          echo "PREPARATION_REPORT=$RUNNER_TEMP/catalogue-preparation-report.json" >> "$GITHUB_ENV"
+          echo "HANDOFF_REPORT=$RUNNER_TEMP/catalogue-transport-report.json" >> "$GITHUB_ENV"
+          echo "UPLOAD_READBACK_ROOT=$RUNNER_TEMP/upload-readback" >> "$GITHUB_ENV"
+      - name: Install the exact repository dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Require current exact main CI, retained compiler closure and immutable original import provenance
+        run: node apps/generator-app/scripts/prepare-catalogue-transport.mjs source-check
+      - name: Download the exact original candidate without changing its bytes
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.source_artifact_id }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.SOURCE_BUNDLE }}
+          merge-multiple: true
+      - name: Download the original import provenance separately
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.source_provenance_id }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ env.SOURCE_PROVENANCE_DIR }}
+          merge-multiple: true
+      - name: Verify original bytes, rerun full customization, prepare a fresh certificate and pack the transport
+        run: node apps/generator-app/scripts/prepare-catalogue-transport.mjs prepare
+      - name: Upload a new draft only, with canary readback, parts in order and manifest last
+        run: node apps/generator-app/scripts/prepare-catalogue-transport.mjs upload
+      - name: Retain bounded preparation and transport identities for independent import review
+        if: ${{ always() && !cancelled() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: catalogue-preparation-provenance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.PREPARATION_REPORT }}
+            ${{ env.HANDOFF_REPORT }}
+          if-no-files-found: warn
+          retention-days: 14

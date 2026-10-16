@@ -4,6 +4,36 @@ This path transfers the actual completed 5,486-template output. It does not subs
 
 Merge application and workflow changes before choosing the final main SHA. Certification, successful push CI, staging application, connected evidence and production must all identify that exact SHA. If main changes, prepare a new reviewed certification using the existing compiler provenance procedure; do not edit an old receipt or report.
 
+## Automated preparation from a retained, reviewed original import
+
+After an application change, `prepare-catalogue.yml` provides the normal **prepare → pack → upload** path using its own short-lived `GITHUB_TOKEN`. It runs only on main, behind the existing staging environment protection and catalogue-import concurrency. It requires the explicitly reviewed SHA to remain current main and have successful push CI before preparation, before each asset upload, and at final readback. Merge the application and this workflow first, then choose that final SHA. A draft for an older SHA must never be relabeled.
+
+This route requires an unexpired original candidate and its provenance from the same successful `import-catalogue.yml` run. The previously reviewed original import is the trust anchor for retained compiler/browser evidence: its receipts do not independently identify the Windows compiler Git checkpoint. Review of that original checkpoint remains a prerequisite. The new workflow proves that the factory, the complete browser-renderer closure, dependency/install/configuration inputs and certification computations still match it. If those inputs changed, it stops; obtain newly produced and reviewed compiler/browser evidence through the original procedure below. It does not expand the guarded rebind workflow or the candidate-producer allowlist.
+
+The retained original source identities are:
+
+| Workflow input | Reviewed original value |
+| --- | --- |
+| `expected_release_sha` | **The new final 40-character main SHA after all intended merges and successful push CI** |
+| `source_sha` | `2bc0bd7af293a1cf7de11821baa77ea11613506d` |
+| `source_run_id` | `38780575189` |
+| `source_artifact_id` | `11996673078` |
+| `source_provenance_id` | `11996458556` |
+| `source_artifact_digest` | `e5a6a145fe4913e01b283eb9c97e25c41053656fe4d63d0a95fd8edf047aee1a` |
+| `source_receipt_hash` | `82adc1b86d5322c1bb5740b329d3bc1e22b88f4d779ac06fc79b3b46af891f79` |
+
+Read back these exact artifact IDs and their unexpired state before dispatch. Expired/deleted artifacts, missing ancestry, failed CI or changed protected source inputs are concrete prerequisites to resolve, not reasons to weaken validation or substitute an unreviewed artifact.
+
+The workflow checks provenance before downloading the large candidate. It verifies every original file and the unchanged promotion report, keeps the original certificate untouched, and moves the verified library/report into a new candidate directory on the same runner filesystem. This retains one expanded library rather than a second approximately 4.9 GB copy. It reruns the **current** customization verifier over all 5,486 templates, requiring exact catalogue/manifest hashes, complete page coverage and zero diagnostics. It then calls the normal certificate preparation and packer, requiring every evidence field except the new release SHA and every source content byte to match. Retained browser checks are explicitly reported as not repeated; current customization is reported as repeated.
+
+Before packing, free-space checks reserve a conservative uncompressed tar/gzip bound plus 1 GiB headroom. Dependencies and artifact-download overhead must also fit the runner. Only the validated library, unchanged promotion plan and fresh certificate enter the transport. Original certificate/provenance, preparation diagnostics and repository files are never added to that archive.
+
+Upload creates a new unpublished draft named `dc-transport-FULL_SHA-RUN_ID-ATTEMPT`. It uploads and downloads the exact canary first, then each bounded part, then the manifest last. Every asset is bound to its actual ID, size and SHA-256; absent provider digests require a byte download/hash. The workflow cannot publish, overwrite, delete, deploy or dispatch another workflow. A failed attempt may leave an unpublished partial draft; retain it for diagnosis. A rerun uses a new attempt identity, never `--clobber` or an older draft.
+
+Download the small `catalogue-preparation-provenance-RUN_ID-ATTEMPT` artifact and review `catalogue-transport-report.json`. Its `workflowSha` and `transport.releaseSha` must equal the final main SHA. Record `transport.releaseId`, `canaryAssetId`, `manifestAssetId`, `manifestHash` and `certificationHash`. This is transport provenance, **not** an accepted candidate or connected-deployment pass.
+
+Next run the unchanged importer with `operation=check-transport`, the reported release ID and canary ID; require its own protected-token readback success. Then follow section 3 with `operation=import` and the reported manifest/certificate identities. Sections 4 onward, including fresh connected checks for the changed application and all production gates, still apply. The local Windows transfer instructions below remain the route for newly compiled output or unavailable retained artifacts.
+
 ## 1. Prove normal GitHub draft access first
 
 The standard GitHub Actions artifact REST API has no ordinary local-upload operation. Use supported `gh release create --draft` / `gh release upload` from the existing user login, then the protected importer uses its own short-lived `GITHUB_TOKEN`. Do not copy Actions runtime tokens or protected admin/provider credentials onto the laptop.
