@@ -1,0 +1,76 @@
+name: Upload reviewed connected evidence to an unpublished draft
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_release_sha:
+        description: 'Reviewed full main SHA with successful push CI; must still be current main'
+        required: true
+        type: string
+      connected_release_id:
+        description: 'Existing EMPTY unpublished exact-SHA draft ID; report URL must match its actual metadata URL'
+        required: true
+        type: string
+      report_base64:
+        description: 'Canonical base64 of the locally validated, already-reviewed connected-staging.json bytes'
+        required: true
+        type: string
+      report_sha256:
+        description: 'Approved raw SHA-256 of those exact report bytes'
+        required: true
+        type: string
+      support_base64:
+        description: 'Canonical base64 of locally validated typed connected-staging-support.json observations'
+        required: true
+        type: string
+      support_sha256:
+        description: 'Approved raw SHA-256 of those exact supporting evidence bytes'
+        required: true
+        type: string
+      certificate_base64:
+        description: 'Canonical base64 of the reviewed exact-main certificate; canonical hash must match both inputs'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-catalogue-finalize
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Install exact repository dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      # Read reviewed payloads from GITHUB_EVENT_PATH rather than expanding
+      # input text into shell commands or the displayed step environment.
+      - name: Validate all reviewed bytes, require exact main CI, and upload support before the unchanged report
+        run: node apps/generator-app/scripts/upload-connected-evidence.mjs upload
+      - name: Retain exact uploaded asset identities and review hashes
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: connected-evidence-upload-provenance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/connected-evidence-upload-report.json
+          if-no-files-found: error
+          retention-days: 14
