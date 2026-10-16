@@ -395,11 +395,11 @@ export default function PreviewYourBusinessClient() {
 
   const persistBusinessDraft = useCallback((stage: string): Promise<boolean> => {
     const state = usePreviewStore.getState()
-    if (state.isSample || !isValidPreviewEmail(state.businessInfo.email)) return Promise.resolve(false)
-    const email = state.businessInfo.email.trim().toLowerCase()
+    if (state.isSample || !isValidPreviewEmail(state.businessInfo.accountEmail)) return Promise.resolve(false)
+    const email = state.businessInfo.accountEmail.trim().toLowerCase()
     const requestId = ++leadSaveRequestRef.current
     const flow = leadSaveFlowRef.current
-    const info = { ...state.businessInfo, email }
+    const info = { ...state.businessInfo, accountEmail: email, email: state.businessInfo.email.trim() }
     const profile = {
       businessInfo: info,
       stylePreferences: state.stylePreferences,
@@ -709,7 +709,7 @@ export default function PreviewYourBusinessClient() {
       : 'wellness_coach'
     const example = getNicheExample(niche)
     startSample({
-      ...example, niche, ownerName: 'Alex Morgan', email: 'hello@example.com',
+      ...example, niche, ownerName: 'Alex Morgan', accountEmail: '', email: 'hello@example.com',
       phone: '', address: 'Online sessions', website: '',
     })
     void runMatching()
@@ -727,9 +727,11 @@ export default function PreviewYourBusinessClient() {
       params.delete('sample')
       params.delete('niche')
       params.delete('template')
-      router.replace(`/preview-your-business${params.size ? `?${params}` : ''}`, { scroll: false })
+      // Clear the sample URL immediately, including if the customer refreshes
+      // before a client-side route transition could finish.
+      window.history.replaceState(null, '', `/preview-your-business${params.size ? `?${params}` : ''}`)
     }
-  }, [endSample, sampleFromUrl, searchParams, router])
+  }, [endSample, sampleFromUrl, searchParams])
 
   useEffect(() => {
     if (sampleFromUrl && !appliedSampleRef.current && customThemeReady) {
@@ -1025,12 +1027,12 @@ export default function PreviewYourBusinessClient() {
     setPreviewError(null)
   }, [reset, nichePrefill, setBusinessInfo, invalidateLeadSaves])
 
-  const handleCheckoutEmail = useCallback(async (email: string, href: string) => {
-    if (usePreviewStore.getState().isSample || !isValidPreviewEmail(email)) return
+  const handleCheckoutEmail = useCallback(async (accountEmail: string, email: string, href: string) => {
+    if (usePreviewStore.getState().isSample || !isValidPreviewEmail(accountEmail) || !isValidPreviewEmail(email)) return
     const flow = leadSaveFlowRef.current
     const requestId = ++plansRequestRef.current
     setPendingPlansHref(null)
-    setBusinessInfo({ email: email.trim() })
+    setBusinessInfo({ accountEmail: accountEmail.trim().toLowerCase(), email: email.trim() })
     try {
       sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
     } catch {
@@ -1219,6 +1221,7 @@ export default function PreviewYourBusinessClient() {
             matched={matchedTemplate}
             isSample={isSample}
             contactEmail={businessInfo.email}
+            accountEmail={businessInfo.accountEmail}
             onCheckoutEmail={handleCheckoutEmail}
             readiness={clientReadiness}
             previewHtml={previewHtml}
@@ -1328,7 +1331,7 @@ function InfoStep({
       <div className="space-y-3 mb-8">
         <span className="signal-chip">Step 1 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">Start with your business name</h1>
-        <p className="text-lg text-slate-300">Add your industry, business name and contact email for a personalized preview. Explore the sample first with no details or payment.</p>
+        <p className="text-lg text-slate-300">Add your business details and choose the email addresses for your account and website. Explore the sample first with no details or payment.</p>
         <div className="rounded-xl border border-cyan-300/25 bg-cyan-950/30 p-5">
           <p className="font-semibold text-white">Want to see a website first?</p>
           <p className="mt-1 text-sm text-slate-300">Try a fictional business in your selected industry. Your own draft stays separate.</p>
@@ -1380,9 +1383,16 @@ function InfoStep({
 
           <Field label="Business Name" required autoComplete="organization" value={info.businessName} error={errors.businessName}
             onChange={(v) => onChange({ businessName: v })} placeholder={ex.businessName} maxLength={200} />
-          <Field label="Contact Email" required type="email" autoComplete="email" value={info.email} error={errors.email}
-            onChange={(v) => onChange({ email: v })} placeholder="hello@yourbusiness.com" maxLength={320} />
-          <p className="text-sm text-slate-300">Use a public contact email. This can appear on your website and will be used for your account and project follow-up.</p>
+          <Field label="Account email" required type="email" autoComplete="email" value={info.accountEmail} error={errors.accountEmail}
+            onChange={(v) => onChange({ accountEmail: v })} placeholder="you@example.com" maxLength={320}
+            help="For sign-in, receipts and DailyClarity follow-up. This address is not added to your website." />
+          <div className="space-y-3">
+            <Field label="Public contact email" required type="email" autoComplete="off" value={info.email} error={errors.email}
+              onChange={(v) => onChange({ email: v })} placeholder="hello@yourbusiness.com" maxLength={320}
+              help="Published in your website’s supported contact fields. Choose an address you want visitors to see." />
+            <button type="button" disabled={!isValidPreviewEmail(info.accountEmail)} onClick={() => onChange({ email: info.accountEmail.trim() })}
+              className="rounded-lg px-2 py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50">Use account email</button>
+          </div>
 
           <div className="border-t border-white/15 pt-5">
             <button type="button" onClick={() => setShowOptional(!showOptional)} aria-expanded={showOptional} aria-controls="preview-optional-details"
@@ -1656,7 +1666,7 @@ function MatchStep({
       </div>
 
       <div className="mb-8">
-        <ClientReadinessPanel result={readiness} />
+        <ClientReadinessPanel result={readiness} niche={matched?.nicheSlug} />
       </div>
 
       {loading ? (
@@ -1770,6 +1780,7 @@ function EditorStep({
   matched,
   isSample,
   contactEmail,
+  accountEmail,
   onCheckoutEmail,
   readiness,
   previewHtml,
@@ -1800,7 +1811,8 @@ function EditorStep({
   matched: MatchedTemplate
   isSample: boolean
   contactEmail: string
-  onCheckoutEmail: (email: string, href: string) => void
+  accountEmail: string
+  onCheckoutEmail: (accountEmail: string, email: string, href: string) => void
   readiness: ReturnType<typeof computeClientReadiness>
   previewHtml: string | null
   previewStylesheet: string
@@ -1829,12 +1841,17 @@ function EditorStep({
 }) {
   const [showCheckoutEmail, setShowCheckoutEmail] = useState(false)
   const [email, setEmail] = useState(contactEmail)
-  const [emailError, setEmailError] = useState('')
+  const [privateEmail, setPrivateEmail] = useState(accountEmail)
+  const [emailErrors, setEmailErrors] = useState<PreviewInfoErrors>({})
   const checkoutEmailRef = useRef<HTMLInputElement>(null)
+  const accountEmailRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (showCheckoutEmail) checkoutEmailRef.current?.focus()
-  }, [showCheckoutEmail])
+    if (showCheckoutEmail) {
+      if (!isValidPreviewEmail(accountEmail)) accountEmailRef.current?.focus()
+      else checkoutEmailRef.current?.focus()
+    }
+  }, [showCheckoutEmail, accountEmail])
 
   const COLOR_PRESETS = [
     { label: 'Ocean', primary: '#0ea5e9', bg: '#0f172a', text: '#e2e8f0' },
@@ -1919,7 +1936,7 @@ function EditorStep({
     <section className={`container-hvac ${demoRecord ? 'py-2' : 'py-4'}`}>
       {!demoRecord && !isSample && (
         <div className="mb-6">
-          <ClientReadinessPanel result={readiness} compact />
+          <ClientReadinessPanel result={readiness} compact niche={matched.nicheSlug} previewPages={matched.pages} onPreviewPage={(page) => onLoadPreview(matched.nicheSlug, matched.templateSlug, page)} />
         </div>
       )}
       {demoRecord ? (
@@ -1962,7 +1979,7 @@ function EditorStep({
           {previewHtml && !previewLoading && !previewError ? <button
             type="button"
             onClick={() => {
-              if (isValidPreviewEmail(contactEmail)) onCheckoutEmail(contactEmail, checkoutHref)
+              if (isValidPreviewEmail(accountEmail) && isValidPreviewEmail(contactEmail)) onCheckoutEmail(accountEmail, contactEmail, checkoutHref)
               else setShowCheckoutEmail(true)
             }}
             className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
@@ -1976,24 +1993,31 @@ function EditorStep({
       {!isSample && showCheckoutEmail && (
         <form className="mb-6 rounded-xl border border-cyan-300/30 bg-cyan-950/30 p-5" noValidate onSubmit={(event) => {
           event.preventDefault()
-          if (!isValidPreviewEmail(email)) {
-            setEmailError('Enter a valid contact email to continue.')
-            checkoutEmailRef.current?.focus()
+          const errors: PreviewInfoErrors = {}
+          if (!isValidPreviewEmail(privateEmail)) errors.accountEmail = 'Enter a valid account email address.'
+          if (!isValidPreviewEmail(email)) errors.email = 'Enter a valid public contact email address.'
+          setEmailErrors(errors)
+          if (errors.accountEmail || errors.email) {
+            if (errors.accountEmail) accountEmailRef.current?.focus()
+            else checkoutEmailRef.current?.focus()
             return
           }
-          onCheckoutEmail(email, checkoutHref)
+          onCheckoutEmail(privateEmail, email, checkoutHref)
         }}>
-          <label htmlFor="preview-checkout-email" className="block font-semibold text-white">Add your contact email to continue</label>
-          <p id="preview-checkout-email-help" className="mt-2 text-sm text-slate-300">This email will appear in supported contact fields on your website and be used for your account and launch updates. You will review pricing before any payment.</p>
+          <h2 className="font-semibold text-white">Confirm your email addresses before plans</h2>
+          <p className="mt-2 text-sm text-slate-300">Keep your account inbox private and choose what visitors see. You will review pricing before any payment.</p>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Field label="Account email" inputRef={accountEmailRef} type="email" autoComplete="email" maxLength={320} required value={privateEmail}
+              onChange={setPrivateEmail} error={emailErrors.accountEmail} help="For sign-in, receipts and DailyClarity follow-up. Not added to your website." />
+            <Field label="Public contact email" inputRef={checkoutEmailRef} type="email" autoComplete="off" maxLength={320} required value={email}
+              onChange={setEmail} error={emailErrors.email} help="Published in supported contact fields on your website." />
+          </div>
+          <button type="button" disabled={!isValidPreviewEmail(privateEmail)} onClick={() => setEmail(privateEmail.trim())}
+            className="mt-2 rounded-lg px-2 py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50">Use account email</button>
           <div className="mt-4 flex flex-wrap items-end gap-3">
-            <input ref={checkoutEmailRef} id="preview-checkout-email" type="email" autoComplete="email" maxLength={320} required value={email}
-              onChange={(event) => { setEmail(event.target.value); setEmailError('') }}
-              aria-invalid={Boolean(emailError)} aria-describedby={`preview-checkout-email-help${emailError ? ' preview-checkout-email-error' : ''}`}
-              placeholder="hello@yourbusiness.com" className="min-w-0 flex-1 rounded-lg border border-white/30 bg-white/10 px-4 py-3 text-white" />
             <button type="submit" className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold text-slate-950">Continue to plans</button>
             <button type="button" onClick={() => setShowCheckoutEmail(false)} className="rounded-lg px-4 py-3 text-sm text-slate-300 underline underline-offset-4">Keep exploring</button>
           </div>
-          {emailError && <p id="preview-checkout-email-error" role="alert" className="mt-2 text-sm text-red-200">{emailError}</p>}
         </form>
       )}
 
@@ -2297,6 +2321,8 @@ function Field({
   required,
   error,
   autoComplete,
+  help,
+  inputRef,
   maxLength = 2000,
 }: {
   label: string
@@ -2307,6 +2333,8 @@ function Field({
   required?: boolean
   error?: string
   autoComplete?: string
+  help?: string
+  inputRef?: React.RefObject<HTMLInputElement>
   maxLength?: number
 }) {
   const id = useId()
@@ -2316,13 +2344,14 @@ function Field({
         {label} {required && <span className="text-red-400">*</span>}
       </label>
       <input
+        ref={inputRef}
         id={id}
         type={type}
         autoComplete={autoComplete}
         maxLength={maxLength}
         required={required}
         aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : undefined}
+        aria-describedby={[help ? `${id}-help` : '', error ? `${id}-error` : ''].filter(Boolean).join(' ') || undefined}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -2330,6 +2359,7 @@ function Field({
           error ? 'border-red-400' : 'border-white/20'
         }`}
       />
+      {help && <p id={`${id}-help`} className="mt-2 text-sm text-slate-300">{help}</p>}
       {error && <p id={`${id}-error`} role="alert" className="text-red-400 text-sm mt-1">{error}</p>}
     </div>
   )

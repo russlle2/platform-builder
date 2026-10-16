@@ -4,6 +4,7 @@ import {
   categoryPercent,
   type ClientReadinessResult,
 } from '@/lib/client-readiness'
+import { NicheLaunchReview } from '@/components/preview/NicheLaunchReview'
 
 function scoreTone(overall: number): { ring: string; label: string } {
   if (overall === 100) return { ring: 'text-emerald-400', label: 'Details supplied' }
@@ -14,9 +15,15 @@ function scoreTone(overall: number): { ring: string; label: string } {
 export function ClientReadinessPanel({
   result,
   compact = false,
+  niche,
+  previewPages,
+  onPreviewPage,
 }: {
   result: ClientReadinessResult
   compact?: boolean
+  niche?: string
+  previewPages?: readonly string[]
+  onPreviewPage?: (page: string) => void
 }) {
   const tone = scoreTone(result.overall)
 
@@ -79,15 +86,7 @@ export function ClientReadinessPanel({
           </ul>
         </div>
       )}
-      <div className="border-t border-white/10 pt-4 text-sm text-slate-300">
-        <h3 className="font-semibold text-slate-200 mb-2">Before you publish</h3>
-        <ul className="list-disc pl-5 space-y-1">
-          <li>Replace sample text, photos, and contact details with your own.</li>
-          <li>Check that every claim and qualification is accurate and yours to use.</li>
-          <li>Explain the first appointment and fees, or how to ask about them, where relevant.</li>
-          <li>Test contact links, send a test enquiry, and try any booking flow from start to finish.</li>
-        </ul>
-      </div>
+      <NicheLaunchReview niche={niche} previewPages={previewPages} onPreviewPage={onPreviewPage} />
     </div>
   )
 }

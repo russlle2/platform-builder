@@ -133,6 +133,7 @@ export async function POST(req: NextRequest) {
     let ownerEmail: string | null = normalizedSlug
       ? null
       : notificationRecipient(process.env.CONTACT_EMAIL_ADDRESS) || notificationRecipient(process.env.PLATFORM_OWNER_EMAIL)
+    let visitorReplyTo = ownerEmail
     let siteName = normalizedSlug ? 'Your business' : 'DailyClarity'
 
     // ---- Persist to Supabase ----
@@ -196,6 +197,9 @@ export async function POST(req: NextRequest) {
         ownerEmail = notificationRecipient(typeof siteData.email === 'string'
           ? siteData.email
           : customerValues.EMAIL)
+        // Account delivery is private. A visitor may reply only to the site's
+        // public contact address, never to the account/portal recipient.
+        visitorReplyTo = notificationRecipient(customerValues.EMAIL)
         siteName = typeof siteData.businessName === 'string'
           ? siteData.businessName
           : typeof customerValues.BUSINESS_NAME === 'string'
@@ -229,7 +233,7 @@ export async function POST(req: NextRequest) {
           visitorEmail: email,
           visitorName: name,
           siteName,
-          replyTo: ownerEmail || undefined,
+          replyTo: visitorReplyTo || undefined,
         }),
       ])
 

@@ -135,7 +135,7 @@ export async function POST(req: NextRequest) {
       custom_text: {
         submit: {
           message:
-            'Your $500 payment is charged immediately. Your saved project brief is sent to DailyClarity after successful payment.',
+            'Your $500 payment is charged immediately for the scope discussed with DailyClarity. Request a scope review before paying if any requirements are unresolved.',
         },
       },
     }, { idempotencyKey: `dailyclarity-custom-build-${requestId}` })

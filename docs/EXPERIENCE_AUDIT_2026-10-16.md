@@ -45,7 +45,9 @@ Real-business lead capture remains independent of purchase. The personalized flo
 
 The short form notice and Privacy Policy explain follow-up. Optional news/offers preference is recorded separately; entering a preview is not treated as promotional-email opt-in. No marketing emails are sent by this change. Sample data is excluded from real lead records. Failed saves must remain visible and retryable rather than being reported as captured. These are progress-checkpoint saves, not a claim that every abandoned keystroke, uploaded byte, or client-side edit is in a marketing database.
 
-## Next priorities
+## Next priorities at the first audit
+
+The subsequent [customer-control follow-up](OWNER_CONTROLS_2026-10-16.md) implements an unpaid scope-review path, separate account/public contact emails, practice-specific manual launch reviews, and a factual customer help page. The operational promises, catalogue repairs, and measurement work below still require their own evidence; this table records the original prioritization.
 
 | Priority | Recommended work | Why it matters | Evidence to collect |
 | --- | --- | --- | --- |

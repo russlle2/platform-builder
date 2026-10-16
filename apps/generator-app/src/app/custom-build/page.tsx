@@ -4,14 +4,14 @@ import { breadcrumbSchema, SITE_URL } from '@/lib/seo'
 import CustomBuildForm from './CustomBuildForm'
 
 export const metadata: Metadata = {
-  title: 'Custom Website Build — $500 One-Time Payment',
+  title: 'Custom Website Build — Request a Scope Review',
   description:
-    'Submit your detailed website design and functionality brief, then purchase a custom DailyClarity website build for a one-time $500 payment.',
+    'Describe your custom website and request a scope review with no payment. Discuss the inclusions, hosting, revisions, and timing before a one-time $500 build.',
   alternates: { canonical: '/custom-build' },
   openGraph: {
     title: 'Custom Website Build — $500 | DailyClarity',
     description:
-      'Describe the website you want and submit your project brief with a secure one-time $500 Stripe payment.',
+      'Send your custom website brief for a scope discussion before deciding on a one-time $500 build. No card needed to request a review.',
     url: '/custom-build',
     type: 'website',
     siteName: 'DailyClarity',

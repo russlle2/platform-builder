@@ -24,6 +24,7 @@ import {
 } from '@/lib/stripe-runtime'
 import { normalizeSiteSlug, validateSiteSlug } from '@/lib/site-slug'
 import { UPLOAD_SESSION_COOKIE, verifyUploadSessionValue } from '@/lib/upload-session'
+import { normalizeAccountEmail, omitAccountEmailFields } from '@/lib/account-email'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -108,14 +109,24 @@ export async function POST(req: NextRequest) {
     if (!customerValues || typeof customerValues !== 'object' || Array.isArray(customerValues)) {
       return NextResponse.json({ error: 'Business profile details are required.' }, { status: 400 })
     }
-    const safeCustomerValues = sanitizeCustomerValues(customerValues)
+    // Private account identity is never part of the template payload, even if
+    // an older/malformed client accidentally nests it among public fields.
+    const safeCustomerValues = omitAccountEmailFields(sanitizeCustomerValues(customerValues))
     const businessName = String(safeCustomerValues.BUSINESS_NAME || '').trim()
-    const email = String(safeCustomerValues.EMAIL || '').trim().toLowerCase()
+    const publicEmail = String(safeCustomerValues.EMAIL || '').trim().toLowerCase()
     if (!businessName || businessName.length > 200) {
       return NextResponse.json({ error: 'Business name is required.' }, { status: 400 })
     }
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 320) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(publicEmail) || publicEmail.length > 320) {
       return NextResponse.json({ error: 'A valid email address is required.' }, { status: 400 })
+    }
+    // Only clients predating this field may use the public contact address as
+    // their account recipient. An explicit invalid value must never fall back.
+    const accountEmail = normalizeAccountEmail(
+      Object.prototype.hasOwnProperty.call(body, 'accountEmail') ? body.accountEmail : publicEmail,
+    )
+    if (!accountEmail) {
+      return NextResponse.json({ error: 'A valid account email address is required.' }, { status: 400 })
     }
     const templateSlug = typeof template === 'string' ? template.trim() : ''
     const nicheSlug = typeof niche === 'string' ? niche.trim() : ''
@@ -228,7 +239,7 @@ export async function POST(req: NextRequest) {
       id: checkoutIntentId,
       slug: resolvedSlug,
       plan: canonicalPlan,
-      email,
+      email: accountEmail,
       payload: checkoutPayload,
       status: 'pending',
     })
@@ -295,7 +306,7 @@ export async function POST(req: NextRequest) {
       allow_promotion_codes: true,
       payment_method_collection: 'always',
       expires_at: Math.floor(expiresAt.getTime() / 1000),
-      ...(email ? { customer_email: email } : {}),
+      customer_email: accountEmail,
       client_reference_id: checkoutIntentId,
       integration_identifier: stripeIntegrationIdentifier('dailyclarity-template', checkoutIntentId),
       metadata,

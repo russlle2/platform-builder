@@ -8,6 +8,8 @@ import { getNicheSlugs } from '@/lib/templates/niche-meta'
 export interface BusinessInfo {
   businessName: string
   ownerName: string
+  /** Private sign-in, billing and follow-up address; never a template value. */
+  accountEmail: string
   email: string
   phone: string
   address: string
@@ -90,6 +92,7 @@ interface PreviewState {
 const defaultBusinessInfo: BusinessInfo = {
   businessName: '',
   ownerName: '',
+  accountEmail: '',
   email: '',
   phone: '',
   address: '',
@@ -143,6 +146,9 @@ function restoreBusinessInfo(): BusinessInfo {
     const value = (raw as Record<string, unknown>)[key]
     if (typeof value === 'string') restored[key] = value
   }
+  // Only drafts created before the split inherit the original shared address.
+  // An explicitly cleared or malformed new account address must stay invalid.
+  if (!Object.prototype.hasOwnProperty.call(raw, 'accountEmail')) restored.accountEmail = restored.email
   if (!getNicheSlugs().includes(restored.niche)) restored.niche = ''
   return restored
 }

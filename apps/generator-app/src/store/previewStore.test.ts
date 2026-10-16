@@ -3,9 +3,9 @@ import type { BusinessInfo } from './previewStore'
 
 const real: BusinessInfo = {
   businessName: 'My Real Practice', niche: 'wellness_coach', ownerName: 'Morgan',
-  email: '', phone: '', address: '', tagline: 'Real tagline', description: '', services: '', website: '',
+  accountEmail: 'private@example.com', email: 'hello@example.com', phone: '', address: '', tagline: 'Real tagline', description: '', services: '', website: '',
 }
-const sample: BusinessInfo = { ...real, businessName: 'Fictional Studio', niche: 'aromatherapy', email: 'hello@example.com' }
+const sample: BusinessInfo = { ...real, businessName: 'Fictional Studio', niche: 'aromatherapy', accountEmail: '', email: 'sample@example.com' }
 const realMatch = { nicheSlug: 'wellness_coach', templateSlug: 'real-layout', templateName: 'My Layout', matchScore: 50, reason: 'match' }
 
 let storage: Map<string, string>
@@ -24,6 +24,26 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('preview draft lifecycle', () => {
+  it('migrates only legacy shared email drafts without adding private identity to template values', async () => {
+    const { accountEmail: _oldAccount, ...legacy } = real
+    storage.set('pb_biz_info', JSON.stringify(legacy))
+    const { usePreviewStore: store } = await import('./previewStore')
+    expect(store.getState().businessInfo).toEqual({ ...legacy, accountEmail: legacy.email })
+    store.getState().setBusinessInfo({ accountEmail: 'private@example.com' })
+    const fields = store.getState().getFieldValues()
+    expect(fields).toMatchObject({ EMAIL: legacy.email, email: legacy.email })
+    expect(JSON.stringify(fields)).not.toContain('private@example.com')
+    expect(fields).not.toHaveProperty('accountEmail')
+    expect(JSON.parse(storage.get('pb_biz_info')!).accountEmail).toBe('private@example.com')
+  })
+
+  it.each(['', null, 123])('does not replace an explicitly invalid account email (%s) with the public address', async (accountEmail) => {
+    storage.set('pb_biz_info', JSON.stringify({ ...real, accountEmail }))
+    const { usePreviewStore: store } = await import('./previewStore')
+    expect(store.getState().businessInfo.accountEmail).toBe('')
+    expect(store.getState().businessInfo.email).toBe(real.email)
+  })
+
   it('keeps all real draft data persisted while sample matching and edits remain transient', async () => {
     const { usePreviewStore: store, PREVIEW_SAMPLE_STORAGE_KEY } = await import('./previewStore')
     store.getState().setBusinessInfo(real)

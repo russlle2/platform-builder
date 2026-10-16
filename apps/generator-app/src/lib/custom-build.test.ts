@@ -3,6 +3,9 @@ import {
   CUSTOM_BUILD_AMOUNT_CENTS,
   CUSTOM_BUILD_CURRENCY,
   validateCustomBuildInput,
+  validateCustomBuildBrief,
+  customBuildReviewMessage,
+  CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT,
 } from './custom-build'
 
 const validInput = {
@@ -41,5 +44,30 @@ describe('custom build checkout validation', () => {
       ok: false,
       error: 'You must accept the service terms before checkout.',
     })
+  })
+
+  it('allows an unpaid brief without creating payment consent', () => {
+    const result = validateCustomBuildBrief({ ...validInput, acceptedTerms: false })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).not.toHaveProperty('acceptedTerms')
+    expect(validateCustomBuildInput(result.data)).toEqual({
+      ok: false, error: 'You must accept the service terms before checkout.',
+    })
+    expect(customBuildReviewMessage(result.data)).toContain('no payment requested or taken')
+  })
+
+  it('retains every brief field and lets the caller detect over-limit messages without truncation', () => {
+    const result = validateCustomBuildBrief({
+      ...validInput, siteVision: 'v'.repeat(5000), requiredFunctionality: 'f'.repeat(4000),
+      inspirationLinks: 'r'.repeat(2000), existingWebsite: 'https://example.com',
+    })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    const message = customBuildReviewMessage(result.data)
+    for (const value of [result.data.businessName, result.data.siteVision, result.data.requiredFunctionality, result.data.inspirationLinks, result.data.existingWebsite]) {
+      expect(message).toContain(value)
+    }
+    expect(message.length).toBeGreaterThan(CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT)
   })
 })

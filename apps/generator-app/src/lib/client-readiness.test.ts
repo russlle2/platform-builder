@@ -9,6 +9,7 @@ const baseInfo: BusinessInfo = {
   businessName: '',
   ownerName: '',
   email: '',
+  accountEmail: '',
   phone: '',
   address: '',
   niche: 'wellness_coach',
@@ -110,6 +111,14 @@ describe('computeClientReadiness', () => {
       'Add an email address or phone number you monitor. Either contact method is enough.',
     ])
     expect(result.categories.find((category) => category.id === 'bookingPath')?.score).toBe(0)
+  })
+
+  it('does not mistake a private account email for public website contact details', () => {
+    const info = { ...completeInfo, email: '', phone: '', accountEmail: 'private@example.com' }
+    expect(categoryScore(info, 'bookingPath')).toBe(0)
+    expect(computeClientReadiness(info, completePrefs).suggestions).toContain(
+      'Add an email address or phone number you monitor. Either contact method is enough.',
+    )
   })
 
   it.each([

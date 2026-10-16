@@ -12,6 +12,7 @@ import {
 } from '@/lib/custom-theme'
 import { sanitizeCatalogRevisionPin } from '@/lib/catalog-revision'
 import { PREVIEW_SAMPLE_STORAGE_KEY } from '@/store/previewStore'
+import { checkoutAccountEmail } from '@/lib/preview-intake'
 
 const pricingTiers = PLAN_LIST
 
@@ -102,7 +103,8 @@ export default function PricingClient() {
       // after they click a button that appears to start checkout.
       const businessName = (customerValues.BUSINESS_NAME || '').trim()
       const email = (customerValues.EMAIL || '').trim()
-      if (sessionStorage.getItem(PREVIEW_SAMPLE_STORAGE_KEY) || !businessName || !email || !ctx.template || !ctx.niche) {
+      const accountEmail = checkoutAccountEmail(customerValues, sessionStorage.getItem('pb_biz_info'))
+      if (sessionStorage.getItem(PREVIEW_SAMPLE_STORAGE_KEY) || !businessName || !email || !accountEmail || !ctx.template || !ctx.niche) {
         sessionStorage.setItem('pb_selected_plan', planKey)
         track('checkout_prerequisite_redirect', {
           planKey,
@@ -123,6 +125,7 @@ export default function PricingClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planKey,
+          accountEmail,
           slug: ctx.slug,
           template: ctx.template,
           niche: ctx.niche,
@@ -199,6 +202,7 @@ export default function PricingClient() {
         !sessionStorage.getItem(PREVIEW_SAMPLE_STORAGE_KEY) &&
         customerValues.BUSINESS_NAME?.trim() &&
         customerValues.EMAIL?.trim() &&
+        checkoutAccountEmail(customerValues, sessionStorage.getItem('pb_biz_info')) &&
         ctx.template &&
         ctx.niche
       ))
@@ -332,8 +336,8 @@ export default function PricingClient() {
                   Want a website designed around your exact instructions?
                 </h2>
                 <p className="text-slate-200 mt-4 max-w-3xl leading-relaxed">
-                  Describe the website you want. The $500 payment is charged immediately, then
-                  we review your brief and confirm the accepted scope and next steps by email.
+                  Send a detailed brief with no payment. We agree the scope, inclusions and timing
+                  before you choose whether to continue to the $500 checkout.
                 </p>
                 <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-sm text-slate-300">
                   <span>Detailed design brief</span>
@@ -343,8 +347,7 @@ export default function PricingClient() {
                 <p className="mt-4 text-sm leading-relaxed text-slate-300">
                   The payment covers the accepted website scope. Domains, paid plugins,
                   third-party subscriptions, and expanded application work are separate.
-                  For specific functionality, hosting, revisions, or timing,{' '}
-                  <Link href="/contact" className="text-cyan-200 underline underline-offset-4">discuss your scope before paying</Link>.
+                  Include specific functionality, hosting and revision needs in your scope review.
                 </p>
               </div>
               <div className="lg:text-right min-w-[230px]">
@@ -352,9 +355,9 @@ export default function PricingClient() {
                   <span className="text-5xl font-bold text-white">$500</span>
                   <span className="text-slate-300">one time</span>
                 </div>
-                <p className="text-sm text-amber-200 mt-2 mb-5">Charged immediately</p>
+                <p className="text-sm text-amber-200 mt-2 mb-5">Charged immediately only when you choose checkout</p>
                 <Link href="/custom-build" className="cta-button inline-flex justify-center">
-                  Start my custom build
+                  Request a scope review
                 </Link>
               </div>
             </div>
@@ -444,7 +447,7 @@ export default function PricingClient() {
               />}
               <FAQItem
                 question="How does the $500 custom website build work?"
-                answer="Submit a detailed brief and complete one immediate $500 payment. We review your brief after payment and confirm the accepted scope and next steps by email. Domains, paid plugins, third-party subscriptions, and expanded application work are separate. If your decision depends on specific functionality, hosting, revisions, or timing, contact us to discuss those details before paying."
+                answer="Send a detailed brief for a scope review with no payment. We agree the scope, inclusions and timing before you choose whether to proceed. If the scope has already been discussed, the separate checkout charges $500 immediately. Domains, paid plugins, third-party subscriptions, and expanded application work are separate."
               />
               <FAQItem
                 question="How fast can I launch?"

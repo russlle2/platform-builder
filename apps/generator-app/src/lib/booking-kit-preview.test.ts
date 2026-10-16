@@ -3,7 +3,7 @@ import { composeBookingKit } from './booking-kit-content'
 import { bookingKitPreviewTransfer, clearReplacedPreviewCustomizations, hasPopulatedPreview, hasSavedPreviewCustomizations } from './booking-kit-preview'
 import type { BusinessInfo } from '@/store/previewStore'
 
-const empty: BusinessInfo = { businessName: '', ownerName: '', email: '', phone: '', address: '', niche: '', tagline: '', description: '', services: '', website: '' }
+const empty: BusinessInfo = { businessName: '', ownerName: '', accountEmail: '', email: '', phone: '', address: '', niche: '', tagline: '', description: '', services: '', website: '' }
 const kit = composeBookingKit({ niche: 'sound_bath', service: 'Evening sound bath', audience: 'adults', format: 'In-person group', duration: '60 minutes', pricingChoice: 'quote', bookingMethod: 'Email hello@example.com' })
 
 describe('explicit booking kit preview transfer', () => {

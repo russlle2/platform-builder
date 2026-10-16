@@ -77,7 +77,7 @@ describe('fulfillment catalogue revision persistence', () => {
       id: 'intent-1',
       slug: 'customer-site',
       plan: 'basic',
-      email: '',
+      email: 'buyer@example.com',
       stripe_session_id: 'cs_test',
       payload: {
         template: 'legacy-alias',

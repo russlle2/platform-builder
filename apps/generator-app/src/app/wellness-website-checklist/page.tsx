@@ -24,9 +24,9 @@ const CHECKLIST_SECTIONS: { title: string; intro: string; items: string[] }[] = 
     intro: 'Visitors should know what you do and who it is for within seconds.',
     items: [
       'Business name and practitioner title visible on the homepage',
-      'Tagline states the outcome you help people achieve',
+      'Tagline says who you help and what you offer without promising results',
       'Description explains who you serve and how you work',
-      'At least three distinct services or programs listed',
+      'At least one service you actually offer, described clearly',
     ],
   },
   {
@@ -34,7 +34,7 @@ const CHECKLIST_SECTIONS: { title: string; intro: string; items: string[] }[] = 
     intro: 'Wellness buyers look for credibility before they reach out.',
     items: [
       'Photo or human introduction on the about section',
-      'Credentials, certifications, or relevant experience mentioned',
+      'Relevant experience or qualifications described accurately; credentials included only when applicable',
       'Approach or philosophy described in plain language',
       'Professional tone that matches your niche (clinical, warm, immersive, etc.)',
     ],
@@ -53,20 +53,20 @@ const CHECKLIST_SECTIONS: { title: string; intro: string; items: string[] }[] = 
     title: 'Booking & contact path',
     intro: 'Make the next step obvious on every key page.',
     items: [
-      'Email and phone visible without digging',
+      'A monitored email address or phone number visible without digging',
       'Primary CTA above the fold on mobile',
-      'Contact or intake form with clear response expectations',
+      'A working contact route with clear response expectations; send a test enquiry if you use a form',
       'Telehealth or service-area note if you are not in-person only',
     ],
   },
   {
-    title: 'Testimonials & proof',
-    intro: 'Social proof reduces hesitation for first-time clients.',
+    title: 'Accurate claims & permission',
+    intro: 'Every page should reflect your real practice and the permissions you have.',
     items: [
-      'At least two client quotes or short stories',
+      'Example testimonials removed; real client quotes used only with permission and when appropriate for your profession',
       'Outcomes described realistically (no overpromising)',
       'Photos or logos only with permission',
-      'Proof placed near booking CTAs, not buried on one page',
+      'Accurate practitioner information easy to find before someone enquires',
     ],
   },
   {
@@ -91,12 +91,12 @@ const CHECKLIST_SECTIONS: { title: string; intro: string; items: string[] }[] = 
   },
   {
     title: 'Mobile CTA',
-    intro: 'Most wellness inquiries start on a phone.',
+    intro: 'Make the next step comfortable on a phone.',
     items: [
       'Click-to-call or tap-to-email on mobile',
       'Sticky or repeated CTA on long pages',
       'Readable text without horizontal scrolling',
-      'Forms that work on small screens',
+      'If you use a form or connect a booking provider, test the full path on a small screen',
     ],
   },
 ]
@@ -147,7 +147,9 @@ export default function WellnessWebsiteChecklistPage() {
             The “Your website details” panel in DailyClarity’s preview shows which practice details,
             contact information, service area, and design choices you’ve supplied. It helps you fill
             gaps in your introduction; it does not verify credentials, test booking, or predict enquiries.
-            Use the checklist above to review your finished site before publishing.
+            Its separate manual launch review adds questions for your type of practice, from therapy fees
+            and online visits to sound bath preparation and access needs. Use these questions and the checklist
+            above to review your finished site before publishing.
           </p>
           <Link href="/preview-your-business" className="text-cyan-300 font-semibold hover:underline">
             Build My Preview →

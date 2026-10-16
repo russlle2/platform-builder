@@ -12,13 +12,13 @@ import {
 export const metadata: Metadata = {
   title: 'Pricing — Plans from $20/month or a $500 custom website',
   description:
-    'Choose a hosted website plan at $20 or $80 per month, review any current trial terms before checkout, or submit a detailed brief for a one-time $500 custom website build. ' +
+    'Choose a hosted website plan at $20 or $80 per month, review current trial terms before checkout, or request a scope review before a one-time $500 custom website build. ' +
     SITE_DESCRIPTION,
   alternates: { canonical: '/pricing' },
   openGraph: {
     title: 'Pricing | DailyClarity',
     description:
-      'Launch from $20/month or purchase a one-time $500 custom website build through secure Stripe Checkout.',
+      'Launch from $20/month or discuss your scope before a one-time $500 custom website build. Request a custom-build review with no payment.',
     url: '/pricing',
     type: 'website',
     images: ['/og-image.png'],

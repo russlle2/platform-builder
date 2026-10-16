@@ -35,9 +35,11 @@ export default function LeadCaptureModal() {
       '/portal',
       '/dashboard',
       '/login',
+      '/help',
     ].some((path) => pathname?.startsWith(path))
 
     if (suppressOnHighIntentPath) {
+      setIsOpen(false)
       return
     }
 

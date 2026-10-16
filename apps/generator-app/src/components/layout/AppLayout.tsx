@@ -217,6 +217,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <nav aria-label="Footer navigation">
             <ul className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-400">
               <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
+              <li><Link href="/help" className="hover:text-white">Help</Link></li>
               <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
               <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
               <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
