@@ -42,6 +42,7 @@ import {
 } from '@/lib/stripe-runtime'
 import { ensureManualServiceTask, notifyManualServiceOwner } from '@/lib/stripe-manual-service'
 import { preparePortalCustomizationUpdate } from '@/lib/customer-site-state'
+import { normalizeAccountEmail } from '@/lib/account-email'
 import {
   STRIPE_FULFILLMENT_LEASE_MS,
   STRIPE_FULFILLMENT_MAX_ATTEMPTS,
@@ -291,7 +292,11 @@ export async function handleCheckoutCompleted(
     inlineEdits = payload.inlineEdits || {}
     imageSwaps = sanitizeImageSwapMap(payload.imageSwaps)
     imageOwner = payload.imageOwner || ''
-    intentEmail = intent.email || ''
+    // The durable checkout recipient owns access and delivery. Public template
+    // contact details (or a later Stripe email edit) cannot replace it.
+    const accountEmail = normalizeAccountEmail(intent.email)
+    if (!accountEmail) throw new Error('Checkout intent account email is invalid.')
+    intentEmail = accountEmail
     planKey = normalizePlanKey(intent.plan) || planKey
 
     if (!intent.stripe_session_id) {
@@ -303,7 +308,9 @@ export async function handleCheckoutCompleted(
     }
   }
 
-  const customerEmail = (customerValues.EMAIL || intentEmail || session.customer_details?.email || '')
+  const customerEmail = (checkoutIntentId
+    ? intentEmail
+    : customerValues.EMAIL || session.customer_details?.email || '')
     .trim()
     .toLowerCase()
   const businessName = customerValues.BUSINESS_NAME || slug || 'your business'

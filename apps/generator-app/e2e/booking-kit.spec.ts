@@ -122,7 +122,7 @@ test('kit upgrade path offers Basic and custom build while normal pricing retain
   await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
   await page.goto('/pricing?from=booking-kit')
   await expect(page.getByRole('heading', { name: 'Basic', exact: true })).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Start my custom build' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Request a scope review' })).toBeVisible()
   await expect(page.locator('main')).not.toContainText('Security + Ads')
   await expect(page.locator('main')).not.toContainText('$80')
   await page.goto('/pricing')

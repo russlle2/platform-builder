@@ -29,11 +29,15 @@ const OWNER_A = 'draft-123e4567-e89b-42d3-a456-426614174000'
 const OWNER_B = 'draft-123e4567-e89b-42d3-b456-426614174001'
 
 let checkoutPost: typeof import('./route').POST
+let requestNumber = 1
 
 function requestWithImages(owners: string[], overrides: Record<string, unknown> = {}): NextRequest {
   return new NextRequest('https://dailyclarity.org/api/stripe/checkout', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: {
+      'content-type': 'application/json',
+      'x-nf-client-connection-ip': `198.51.100.${requestNumber++}`,
+    },
     body: JSON.stringify({
       planKey: 'basic',
       template: 'serene',
@@ -254,5 +258,71 @@ describe('template checkout draft-image gate', () => {
     expect(mocks.getTemplate).not.toHaveBeenCalled()
     expect(mocks.supabaseFrom).not.toHaveBeenCalled()
     expect(mocks.createStripeClient).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['separate inboxes', { accountEmail: '  Private.Owner@Example.com  ' }, 'private.owner@example.com'],
+    ['same inbox', { accountEmail: ' Public.Contact@Example.com ' }, 'public.contact@example.com'],
+    ['legacy absent field', {}, 'public.contact@example.com'],
+  ])('keeps account and template email separate for %s', async (_label, account, expectedEmail) => {
+    const insertIntent = vi.fn().mockResolvedValue({ error: null })
+    mocks.supabaseFrom.mockImplementation((table: string) => {
+      if (table === 'checkout_intents') return {
+        insert: insertIntent,
+        update: () => ({ eq: vi.fn().mockResolvedValue({ error: null }) }),
+      }
+      if (table === 'site_slugs') return { insert: vi.fn().mockResolvedValue({ error: null }) }
+      throw new Error(`Unexpected table ${table}`)
+    })
+    const createSession = vi.fn().mockResolvedValue({ id: 'cs_separate_email', url: 'https://checkout.stripe.test/session' })
+    mocks.createStripeClient.mockReturnValue({
+      prices: { retrieve: vi.fn().mockResolvedValue({
+        id: 'price_basic', active: true, type: 'recurring',
+        recurring: { interval: 'month', interval_count: 1 }, unit_amount: 2_000, currency: 'usd',
+      }) },
+      checkout: { sessions: { create: createSession } },
+    })
+    const response = await checkoutPost(requestWithImages([], {
+      ...account,
+      customerValues: {
+        BUSINESS_NAME: 'Public Business', EMAIL: 'Public.Contact@Example.com',
+        accountEmail: 'nested-private@example.com', ACCOUNT_EMAIL: 'nested-private@example.com',
+      },
+    }))
+
+    expect(response.status).toBe(200)
+    const intent = insertIntent.mock.calls[0][0]
+    expect(intent.email).toBe(expectedEmail)
+    expect(intent.payload.customerValues).toEqual({
+      BUSINESS_NAME: 'Public Business', EMAIL: 'Public.Contact@Example.com',
+    })
+    expect(intent.payload).not.toHaveProperty('accountEmail')
+    expect(JSON.stringify(intent.payload)).not.toContain('private@example.com')
+    if (_label === 'separate inboxes') expect(JSON.stringify(intent.payload)).not.toContain(expectedEmail)
+    expect(createSession.mock.calls[0][0].customer_email).toBe(expectedEmail)
+    expect(JSON.stringify(createSession.mock.calls[0][0].metadata)).not.toContain(expectedEmail)
+  })
+
+  it.each(['', '   ', 'invalid', 'a@b', 'a,b@example.com', '<a@example.com>', 'a@example.com\r\nBcc:b@example.com', null, false, 123, {}, [], `${'a'.repeat(310)}@example.com`])(
+    'rejects explicit invalid account email %j before provider side effects',
+    async (accountEmail) => {
+      const response = await checkoutPost(requestWithImages([], { accountEmail }))
+      expect(response.status).toBe(400)
+      await expect(response.json()).resolves.toEqual({ error: 'A valid account email address is required.' })
+      expect(mocks.getTemplate).not.toHaveBeenCalled()
+      expect(mocks.createStripeClient).not.toHaveBeenCalled()
+      expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+    },
+  )
+
+  it('still validates the public email when the private account email is valid', async () => {
+    const response = await checkoutPost(requestWithImages([], {
+      accountEmail: 'private@example.com',
+      customerValues: { BUSINESS_NAME: 'Public Business', EMAIL: 'invalid' },
+    }))
+    expect(response.status).toBe(400)
+    expect(mocks.getTemplate).not.toHaveBeenCalled()
+    expect(mocks.createStripeClient).not.toHaveBeenCalled()
+    expect(mocks.supabaseFrom).not.toHaveBeenCalled()
   })
 })

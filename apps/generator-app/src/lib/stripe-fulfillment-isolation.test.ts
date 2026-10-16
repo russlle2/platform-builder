@@ -24,15 +24,21 @@ import { handleCheckoutCompleted, processStripeEvent } from './stripe-fulfillmen
 const SLUG = 'e2e-checkout-site'
 const DEFAULT_DOMAIN = `platform-${SLUG}.netlify.app`
 
-function database(plan = 'basic', initialPortal: Record<string, unknown> | null = null) {
+function database(
+  plan = 'basic',
+  initialPortal: Record<string, unknown> | null = null,
+  options: { accountEmail?: unknown; publicEmail?: string; legacy?: boolean } = {},
+) {
   let portal = initialPortal
   let task: Record<string, unknown> | null = null
   let slugStatus = 'checkout_pending'
   const intent = {
-    id: 'intent-1', slug: SLUG, plan, email: 'buyer@example.com', stripe_session_id: 'cs_test_paid',
+    id: 'intent-1', slug: SLUG, plan,
+    email: Object.prototype.hasOwnProperty.call(options, 'accountEmail') ? options.accountEmail : 'buyer@example.com',
+    stripe_session_id: 'cs_test_paid',
     payload: {
       niche: 'wellness', template: 'serene',
-      customerValues: { BUSINESS_NAME: 'Original Business', EMAIL: 'buyer@example.com' },
+      customerValues: { BUSINESS_NAME: 'Original Business', EMAIL: options.publicEmail ?? 'buyer@example.com' },
     },
   }
   const builder = (data: () => unknown, apply?: () => void) => {
@@ -49,7 +55,7 @@ function database(plan = 'basic', initialPortal: Record<string, unknown> | null 
       select: () => builder(() => intent), update: () => builder(() => intent),
     }
     if (table === 'site_slugs') return {
-      select: () => builder(() => ({ slug: SLUG, status: slugStatus, reserved_for: intent.id })),
+      select: () => builder(() => ({ slug: SLUG, status: slugStatus, reserved_for: options.legacy ? 'cs_test_paid' : intent.id })),
       update: (values: { status: string }) => builder(() => ({ slug: SLUG }), () => { slugStatus = values.status }),
     }
     if (table === 'portal_sites') return { select: () => builder(() => portal ? { data: portal } : null) }
@@ -75,10 +81,10 @@ function database(plan = 'basic', initialPortal: Record<string, unknown> | null 
   }
 }
 
-function session(plan = 'basic', paymentStatus = 'paid') {
+function session(plan = 'basic', paymentStatus = 'paid', metadata: Record<string, string> = {}) {
   return {
     id: 'cs_test_paid', created: 1_788_465_600,
-    metadata: { checkoutType: 'template_subscription', slug: SLUG, checkoutIntentId: 'intent-1', planKey: plan },
+    metadata: { checkoutType: 'template_subscription', slug: SLUG, checkoutIntentId: 'intent-1', planKey: plan, ...metadata },
     customer: 'cus_test', subscription: 'sub_test', customer_details: { email: 'buyer@example.com' },
     payment_status: paymentStatus,
     amount_total: paymentStatus === 'no_payment_required' ? 0 : plan === 'basic' ? 2_000 : 8_000,
@@ -106,6 +112,93 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllEnvs())
 
 describe('real Stripe test-mode fulfillment isolation and delivery retry', () => {
+  it('uses the durable private recipient for ownership, orders and delivery while deploying the public address', async () => {
+    const state = database('security_ads', null, {
+      accountEmail: '  Private.Owner@Example.com  ', publicEmail: 'Public.Contact@Example.com',
+    })
+    await handleCheckoutCompleted(state.db, session('security_ads'))
+
+    const privateEmail = 'private.owner@example.com'
+    expect(mocks.buildDeployFiles).toHaveBeenCalledWith(expect.objectContaining({
+      customerValues: { BUSINESS_NAME: 'Original Business', EMAIL: 'Public.Contact@Example.com' },
+    }))
+    expect(JSON.stringify(mocks.buildDeployFiles.mock.calls)).not.toContain(privateEmail)
+    expect(state.portal()).toMatchObject({
+      email: privateEmail,
+      customerValues: { EMAIL: 'Public.Contact@Example.com' },
+    })
+    const ownershipWrites = state.rpc.mock.calls.filter(([name]) => name === 'upsert_portal_checkout_state')
+    expect(ownershipWrites.length).toBeGreaterThan(0)
+    for (const [, args] of ownershipWrites) expect(args.p_owner_email).toBe(privateEmail)
+    expect(state.rpc).toHaveBeenCalledWith('upsert_checkout_order', expect.objectContaining({ p_email: privateEmail }))
+    expect(state.task()).toMatchObject({ email: privateEmail })
+    expect(mocks.sendOrderConfirmationEmail).toHaveBeenCalledWith(privateEmail, 'Original Business', SLUG, 'portal-token', 'wellness')
+    expect(mocks.sendWebsiteLiveEmail).toHaveBeenCalledWith(privateEmail, 'Original Business', SLUG, 'portal-token', `https://${DEFAULT_DOMAIN}`)
+    expect(mocks.sendManualServiceAlert).toHaveBeenCalledWith(expect.objectContaining({ customerEmail: privateEmail }))
+  })
+
+  it('retries customer delivery to the private inbox after a public contact edit without redeploying', async () => {
+    const state = database('basic', null, { accountEmail: 'private@example.com', publicEmail: 'public@example.com' })
+    mocks.sendWebsiteLiveEmail.mockRejectedValueOnce(new Error('Postmark outage'))
+    await expect(handleCheckoutCompleted(state.db, session())).rejects.toThrow('Postmark outage')
+    state.edit({ customerValues: { BUSINESS_NAME: 'Edited Business', EMAIL: 'changed-public@example.com' } })
+    await handleCheckoutCompleted(state.db, session())
+
+    expect(mocks.buildDeployFiles).toHaveBeenCalledOnce()
+    expect(mocks.sendOrderConfirmationEmail).toHaveBeenCalledOnce()
+    expect(mocks.sendWebsiteLiveEmail).toHaveBeenCalledTimes(2)
+    for (const call of mocks.sendWebsiteLiveEmail.mock.calls) expect(call[0]).toBe('private@example.com')
+    expect(state.portal()).toMatchObject({ email: 'private@example.com', customerValues: { EMAIL: 'changed-public@example.com' } })
+    expect(state.rpc).toHaveBeenLastCalledWith('merge_portal_site_data', expect.objectContaining({
+      p_data_patch: { website_live_sent_at: expect.any(String) },
+    }))
+    for (const [name, args] of state.rpc.mock.calls) {
+      if (name === 'upsert_portal_checkout_state') expect(args.p_owner_email).toBe('private@example.com')
+      if (name === 'upsert_checkout_order') expect(args.p_email).toBe('private@example.com')
+    }
+  })
+
+  it('uses saved public edits during deployment recovery without changing the private recipient', async () => {
+    const state = database('basic', null, { accountEmail: 'private@example.com', publicEmail: 'public@example.com' })
+    mocks.deploySiteFiles.mockRejectedValueOnce(new Error('Temporary deploy failure'))
+    await expect(handleCheckoutCompleted(state.db, session())).rejects.toThrow('Temporary deploy failure')
+    state.edit({ customerValues: { BUSINESS_NAME: 'Edited Business', EMAIL: 'changed-public@example.com' } })
+    await handleCheckoutCompleted(state.db, session())
+
+    expect(mocks.provisionSite).toHaveBeenCalledOnce()
+    expect(mocks.buildDeployFiles).toHaveBeenLastCalledWith(expect.objectContaining({
+      customerValues: { BUSINESS_NAME: 'Edited Business', EMAIL: 'changed-public@example.com' },
+    }))
+    expect(state.portal()).toMatchObject({ email: 'private@example.com', customerValues: { EMAIL: 'changed-public@example.com' } })
+    expect(mocks.sendWebsiteLiveEmail.mock.calls[0][0]).toBe('private@example.com')
+    expect(mocks.sendOrderConfirmationEmail.mock.calls[0][0]).toBe('private@example.com')
+  })
+
+  it.each(['', null, 123, 'invalid'])('fails closed for invalid durable account email %j', async (accountEmail) => {
+    const state = database('basic', null, { accountEmail, publicEmail: 'valid-public@example.com' })
+    await expect(handleCheckoutCompleted(state.db, session())).rejects.toThrow('Checkout intent account email is invalid.')
+    expect(state.rpc).not.toHaveBeenCalled()
+    expect(mocks.provisionSite).not.toHaveBeenCalled()
+    expect(mocks.buildDeployFiles).not.toHaveBeenCalled()
+    expect(mocks.sendOrderConfirmationEmail).not.toHaveBeenCalled()
+    expect(mocks.sendWebsiteLiveEmail).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['public@example.com', 'public@example.com'],
+    ['', 'buyer@example.com'],
+  ])('retains no-intent legacy recipient fallback for public email %j', async (publicEmail, expectedEmail) => {
+    const state = database('basic', null, { legacy: true })
+    await handleCheckoutCompleted(state.db, session('basic', 'paid', {
+      checkoutIntentId: '', template: 'serene', niche: 'wellness',
+      customerValues_n: '1',
+      customerValues_0: JSON.stringify({ BUSINESS_NAME: 'Legacy Business', EMAIL: publicEmail }),
+    }))
+    expect(state.portal()).toMatchObject({ email: expectedEmail, customerValues: { EMAIL: publicEmail } })
+    expect(state.rpc).toHaveBeenCalledWith('upsert_checkout_order', expect.objectContaining({ p_email: expectedEmail }))
+    expect(mocks.sendOrderConfirmationEmail.mock.calls[0][0]).toBe(expectedEmail)
+  })
+
   it('opens managed work and alerts the operator at trial start without inventing a paid invoice', async () => {
     const state = database('security_ads')
     await processStripeEvent(state.db, {} as never, {

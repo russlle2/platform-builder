@@ -45,6 +45,7 @@ import {
   type PageSeoField,
 } from '@/lib/page-seo-settings'
 import type { CatalogRevisionPin } from '@/lib/catalog-revision'
+import { PREVIEW_SAMPLE_STORAGE_KEY, usePreviewStore } from '@/store/previewStore'
 
 interface TemplateField {
   name: string
@@ -98,6 +99,8 @@ export default function TemplateCustomizePage({
   const [template, setTemplate] = useState<TemplateData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null)
+  const sourceBusinessInfoRef = useRef<string | null>(null)
   const [values, setValues] = useState<Record<string, string>>({})
   const [previewHtml, setPreviewHtml] = useState<string | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
@@ -242,11 +245,13 @@ export default function TemplateCustomizePage({
 
         // Try to load saved business info from Preview Your Business flow
         let savedValues: Record<string, string> = {}
+        sourceBusinessInfoRef.current = null
         try {
           const savedInfo = sessionStorage.getItem('pb_biz_info')
           const infoSaved = sessionStorage.getItem('pb_info_saved')
           if (savedInfo && infoSaved === 'true') {
             const info = JSON.parse(savedInfo)
+            if (!portalSlug) sourceBusinessInfoRef.current = savedInfo
             savedValues = {
               BUSINESS_NAME: info.businessName || '',
               PRACTICE_NAME: info.businessName || '',
@@ -507,12 +512,36 @@ export default function TemplateCustomizePage({
   }, [currentPage, previewHtml])
 
   const handleGeneratePreview = () => {
+    setFormError(null)
     // Persist customer values so they survive navigation to pricing page
     try {
-      sessionStorage.setItem('pb_template_values', JSON.stringify(values))
+      if (!portalSlug) {
+        if (sessionStorage.getItem(PREVIEW_SAMPLE_STORAGE_KEY)) {
+          setFormError('Exit the sample and confirm your business details before preparing checkout.')
+          return
+        }
+        const source = sourceBusinessInfoRef.current
+        if (source !== null) {
+          if (sessionStorage.getItem('pb_biz_info') !== source) {
+            setFormError('Your business draft changed in another view. Reload this editor to review the current draft before continuing.')
+            return
+          }
+          // These are edits to the draft loaded above, not a new identity.
+          // Keep the private account address and update only its public fields.
+          usePreviewStore.getState().setBusinessInfo({
+            ...(typeof values.BUSINESS_NAME === 'string' ? { businessName: values.BUSINESS_NAME } : {}),
+            ...(typeof values.EMAIL === 'string' ? { email: values.EMAIL } : {}),
+          })
+          sourceBusinessInfoRef.current = sessionStorage.getItem('pb_biz_info')
+        }
+        sessionStorage.setItem('pb_template_values', JSON.stringify(values))
+      }
       saveImageSwaps(imageSwapsRef.current, activeCustomizationScopeRef.current)
       if (!portalSlug) sessionStorage.removeItem(CUSTOM_THEME_STORAGE_KEY)
-    } catch { /* ignore */ }
+    } catch {
+      setFormError('Your browser could not save this preview. Allow site storage and try again; your edits are still here.')
+      return
+    }
     setStep('preview')
     loadPreview('index.html')
   }
@@ -606,6 +635,7 @@ export default function TemplateCustomizePage({
           <span className="text-white">{template.name}</span>
         </div>
 
+        {formError && <p role="alert" className="mb-4 rounded-xl border border-amber-300/40 bg-amber-950/30 p-4 text-amber-100">{formError}</p>}
         {step === 'form' ? (
           <FormStep
             template={template}

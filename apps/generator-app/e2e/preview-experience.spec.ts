@@ -37,7 +37,7 @@ test.beforeEach(async ({ page }) => {
   await page.route('**/api/templates/*/*/preview', (route) => {
     const body = route.request().postDataJSON()
     return route.fulfill({ json: {
-      html: `<!doctype html><html><head><title>Preview</title></head><body><h1>${body.values.BUSINESS_NAME}</h1><p>Original words</p><p>${body.page}</p></body></html>`,
+      html: `<!doctype html><html><head><title>Preview</title></head><body><h1>${body.values.BUSINESS_NAME}</h1><p>Original words</p><p>${body.page}</p><a href="mailto:${body.values.EMAIL}">${body.values.EMAIL}</a></body></html>`,
       css: '', variationCSS: '',
       catalogRevision: { contractVersion: 3, designId: 'design_sample', contentPresetId: 'content_sample', themePresetId: 'theme_sample', qualityReceipt: 'receipt_sample' },
     } })
@@ -77,6 +77,7 @@ test('direct sample shows a real preview without overwriting the saved business,
   await page.getByRole('button', { name: 'contact', exact: true }).click()
   await expect(page.frameLocator('iframe[title="Template preview"]').getByText('contact.html', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Use my business details' }).click()
+  await expect(page).not.toHaveURL(/sample=1/)
   await expect(page.getByLabel('Business Name')).toHaveValue('Saved Studio')
   await expect(page.getByRole('button', { name: 'Wellness Coach', exact: true })).toHaveAttribute('aria-pressed', 'true')
   expect(await page.evaluate(() => sessionStorage.getItem('pb_preview_sample'))).toBeNull()
@@ -93,22 +94,34 @@ test('real details and style are saved for follow-up before any purchase, with a
   const profiles: Record<string, any>[] = []
   const contacts: Record<string, any>[] = []
   let checkoutRequests = 0
+  const previews: Record<string, any>[] = []
+  let checkout: Record<string, any> | undefined
+  await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
+  await page.route('**/api/stripe/checkout', (route) => {
+    checkout = route.request().postDataJSON()
+    return route.fulfill({ status: 409, json: { error: 'Checkout fixture captured.' } })
+  })
   page.on('request', (request) => {
     if (request.url().includes('/api/profile/save-draft')) profiles.push(request.postDataJSON())
     if (request.url().includes('/api/intake/contact')) contacts.push(request.postDataJSON())
     if (request.url().includes('/api/stripe/checkout')) checkoutRequests += 1
+    if (/\/api\/templates\/.*\/preview$/.test(request.url())) previews.push(request.postDataJSON())
   })
   await page.goto('/preview-your-business?niche=aromatherapy')
   const promotions = page.getByRole('checkbox', { name: /Email me DailyClarity news and offers/ })
   await expect(promotions).not.toBeChecked()
   await page.getByLabel('Business Name').fill('My New Studio')
-  await page.getByLabel('Contact Email').fill('hello@mynewstudio.example')
+  await page.getByLabel('Account email', { exact: false }).fill('private@mynewstudio.example')
+  await expect(page.getByLabel('Public contact email')).toHaveValue('')
+  await page.getByLabel('Public contact email').fill('hello@mynewstudio.example')
   await page.getByRole('button', { name: 'Add more business details', exact: false }).click()
   await page.getByLabel('Tagline', { exact: true }).fill('My authentic tagline')
   await promotions.check()
-  await page.getByLabel('Contact Email').press('Enter')
+  await page.getByLabel('Public contact email').press('Enter')
   await expect.poll(() => profiles.length).toBe(1)
-  expect(profiles[0].profile.businessInfo).toMatchObject({ businessName: 'My New Studio', tagline: 'My authentic tagline' })
+  expect(profiles[0]).toMatchObject({ email: 'private@mynewstudio.example', profile: { businessInfo: {
+    businessName: 'My New Studio', tagline: 'My authentic tagline', accountEmail: 'private@mynewstudio.example', email: 'hello@mynewstudio.example',
+  } } })
   expect(profiles[0].profile.communicationPreferences).toMatchObject({ marketingEmailOptIn: true, noticeVersion: 'preview-followup-2026-10-16' })
   expect(profiles[0].profile.funnel.stage).toBe('business-details')
   await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
@@ -117,25 +130,49 @@ test('real details and style are saved for follow-up before any purchase, with a
   expect(profiles[1].profile.funnel.stage).toBe('style-match')
   expect(profiles[1].profile.stylePreferences).toHaveProperty('colorMood')
   expect(contacts).toHaveLength(1)
+  expect(contacts[0].email).toBe('private@mynewstudio.example')
   expect(checkoutRequests).toBe(0)
   await page.getByRole('button', { name: 'Customize This Template' }).click()
   await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'My New Studio' })).toBeVisible()
+  const preview = page.frameLocator('iframe[title="Template preview"]')
+  await expect(preview.getByRole('link', { name: 'hello@mynewstudio.example' })).toHaveAttribute('href', 'mailto:hello@mynewstudio.example')
+  expect(await preview.locator('html').innerHTML()).not.toContain('private@mynewstudio.example')
+  expect(previews.length).toBeGreaterThan(0)
+  expect(JSON.stringify(previews)).not.toContain('private@mynewstudio.example')
+  expect(previews[0].values).not.toHaveProperty('accountEmail')
   await page.getByRole('button', { name: 'Choose a launch plan' }).click()
   await expect(page).toHaveURL(/\/pricing\?template=sample-layout&niche=aromatherapy/)
   expect(profiles[2].profile.funnel.stage).toBe('plans')
   expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('pb_template_values')!).EMAIL)).toBe('hello@mynewstudio.example')
+  expect(page.url()).not.toContain('mynewstudio.example')
+  await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
+  await expect.poll(() => checkoutRequests).toBe(1)
+  expect(checkout).toMatchObject({ accountEmail: 'private@mynewstudio.example', customerValues: { EMAIL: 'hello@mynewstudio.example', email: 'hello@mynewstudio.example' } })
+  expect(checkout?.customerValues).not.toHaveProperty('accountEmail')
+  expect(JSON.stringify(checkout?.customerValues)).not.toContain('private@mynewstudio.example')
 })
 
-test('an old draft without email can resume but collects a valid contact email before plans', async ({ page }) => {
+test('publishing the account address requires an explicit copy, and later account edits do not silently change public contact', async ({ page }) => {
+  await page.goto('/preview-your-business?niche=aromatherapy')
+  await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
+  await expect(page.getByLabel('Public contact email')).toHaveValue('')
+  await page.getByRole('button', { name: 'Use account email', exact: true }).click()
+  await expect(page.getByLabel('Public contact email')).toHaveValue('private@example.com')
+  await page.getByLabel('Account email', { exact: false }).fill('new-private@example.com')
+  await expect(page.getByLabel('Public contact email')).toHaveValue('private@example.com')
+})
+
+test('an old draft without emails can resume but confirms private and public addresses before plans', async ({ page }) => {
   await seedRealDraft(page)
   await page.goto('/preview-your-business')
   await page.getByRole('button', { name: 'Resume preview' }).click()
   await page.getByRole('button', { name: 'Choose a launch plan' }).click()
-  const email = page.getByLabel('Add your contact email to continue')
+  const email = page.getByLabel('Account email', { exact: false })
   await expect(email).toBeFocused()
   await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
-  await expect(page.getByText('Enter a valid contact email to continue.')).toBeVisible()
-  await email.fill('hello@mynewstudio.example')
+  await expect(page.getByText('Enter a valid account email address.')).toBeVisible()
+  await email.fill('private@mynewstudio.example')
+  await page.getByLabel('Public contact email').fill('hello@mynewstudio.example')
   await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
   await expect(page).toHaveURL(/\/pricing\?template=saved-layout/)
 })
@@ -145,8 +182,9 @@ test('failed lead storage leaves the preview usable and offers a successful retr
   await page.route('**/api/profile/save-draft', (route) => route.fulfill({ status: fail ? 503 : 200, json: fail ? { error: 'Temporarily unavailable' } : { ok: true } }))
   await page.goto('/preview-your-business?niche=aromatherapy')
   await page.getByLabel('Business Name').fill('My New Studio')
-  await page.getByLabel('Contact Email').fill('hello@mynewstudio.example')
-  await page.getByLabel('Contact Email').press('Enter')
+  await page.getByLabel('Account email', { exact: false }).fill('hello@mynewstudio.example')
+  await page.getByLabel('Public contact email').fill('hello@mynewstudio.example')
+  await page.getByLabel('Public contact email').press('Enter')
   await expect(page.getByText('We could not save your details yet. They are still in this tab.')).toBeVisible()
   await expect(page.getByRole('button', { name: /Find My Perfect Template/ })).toBeVisible()
   fail = false
@@ -229,8 +267,9 @@ for (const leaveFlow of ['reset', 'unmount'] as const) {
     })
     await page.goto('/preview-your-business?niche=aromatherapy')
     await page.getByLabel('Business Name').fill('Previous Studio')
-    await page.getByLabel('Contact Email').fill('previous@example.com')
-    await page.getByLabel('Contact Email').press('Enter')
+    await page.getByLabel('Account email', { exact: false }).fill('previous@example.com')
+    await page.getByLabel('Public contact email').fill('previous@example.com')
+    await page.getByLabel('Public contact email').press('Enter')
     await expect.poll(() => profiles.length).toBe(1)
     await expect.poll(() => contacts.length).toBe(1)
     await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
@@ -252,8 +291,9 @@ for (const leaveFlow of ['reset', 'unmount'] as const) {
 
     if (leaveFlow === 'reset') {
       await page.getByLabel('Business Name').fill('New Studio')
-      await page.getByLabel('Contact Email').fill('previous@example.com')
-      await page.getByLabel('Contact Email').press('Enter')
+      await page.getByLabel('Account email', { exact: false }).fill('previous@example.com')
+      await page.getByLabel('Public contact email').fill('previous@example.com')
+      await page.getByLabel('Public contact email').press('Enter')
       await expect(page.getByText('Business details saved for your preview and DailyClarity follow-up.')).toBeVisible()
       expect(profiles).toHaveLength(2)
       expect(profiles[1].profile.businessInfo.businessName).toBe('New Studio')
@@ -278,7 +318,8 @@ test('a delayed plans checkpoint cannot navigate or restore a handoff after retu
   await page.goto('/preview-your-business')
   await page.getByRole('button', { name: 'Resume preview' }).click()
   await page.getByRole('button', { name: 'Choose a launch plan' }).click()
-  await page.getByLabel('Add your contact email to continue').fill('hello@example.com')
+  await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
+  await page.getByLabel('Public contact email').fill('hello@example.com')
   await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
   await expect.poll(() => plansRequested).toBe(true)
   await page.getByRole('button', { name: 'Edit business details', exact: true }).click()

@@ -25,6 +25,7 @@ import {
   hasSecureTestPurchaseSecret,
 } from '@/lib/test-purchase-guard'
 import { readBoundedJson } from '@/lib/bounded-json'
+import { normalizeAccountEmail, omitAccountEmailFields } from '@/lib/account-email'
 
 const MAX_TEST_PURCHASE_REQUEST_BYTES = 512_000
 
@@ -137,7 +138,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'slug, template, and niche are required' }, { status: 400 })
   }
 
-  const safeCustomerValues = sanitizeCustomerValues(customerValues)
+  const safeCustomerValues = omitAccountEmailFields(sanitizeCustomerValues(customerValues))
   const safeInlineEdits = sanitizeInlineEditMap(inlineEdits)
   const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
   const safeImageOwner = typeof imageOwner === 'string' ? imageOwner.trim().slice(0, 200) : ''
@@ -148,8 +149,15 @@ export async function POST(req: Request) {
     .replace(/[^a-z0-9-]/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '')
-  const customerEmail = (safeCustomerValues.EMAIL || '').trim().toLowerCase()
-  if (!/^e2e-[a-z0-9._+-]+@dailyclarity\.test$/.test(customerEmail)
+  const publicEmail = normalizeAccountEmail(safeCustomerValues.EMAIL)
+  const customerEmail = normalizeAccountEmail(
+    Object.prototype.hasOwnProperty.call(body, 'accountEmail') ? body.accountEmail : publicEmail,
+  )
+  if (!customerEmail) {
+    return NextResponse.json({ error: 'A valid account email address is required.' }, { status: 400 })
+  }
+  if (!publicEmail || !/^e2e-[a-z0-9._+-]+@dailyclarity\.test$/.test(publicEmail)
+      || !/^e2e-[a-z0-9._+-]+@dailyclarity\.test$/.test(customerEmail)
       || !/^e2e-[a-z0-9-]{1,50}$/.test(normalizedSlug)) {
     return NextResponse.json(
       { error: 'Only generated E2E fixtures are accepted by the staging purchase harness.' },

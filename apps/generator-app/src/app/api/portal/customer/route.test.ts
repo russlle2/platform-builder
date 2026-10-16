@@ -114,4 +114,51 @@ describe('customer portal catalogue revision persistence', () => {
       customerValues: { BUSINESS_NAME: 'After' },
     }))
   })
+
+  it('republishes a public email edit without accepting account or ownership changes', async () => {
+    const existingData = {
+      niche: 'wellness', template: 'serene', email: 'private-owner@example.com',
+      customerValues: { BUSINESS_NAME: 'Customer Business', EMAIL: 'old-public@example.com' },
+      netlify_site_id: 'netlify-site', site_url: 'https://customer-site.netlify.app',
+    }
+    mocks.from.mockReturnValue({
+      select: () => ({ eq: () => ({ maybeSingle: async () => ({
+        data: { slug: 'customer-site', data: existingData, status: 'active', owner_id: 'verified-owner', owner_email: 'private-owner@example.com' },
+        error: null,
+      }) }) }),
+    })
+    mocks.rpc.mockImplementation(async (_name: string, args: {
+      p_customer_values: Record<string, string>
+      p_data_patch: Record<string, unknown>
+    }) => ({
+      data: {
+        ...existingData,
+        customerValues: { ...existingData.customerValues, ...args.p_customer_values },
+        ...args.p_data_patch,
+      },
+      error: null,
+    }))
+    mocks.buildDeployFiles.mockResolvedValue({ 'index.html': '<html></html>' })
+    mocks.deploySiteFiles.mockResolvedValue({ deployId: 'deploy-1' })
+
+    const response = await post(new NextRequest('https://dailyclarity.org/api/portal/customer', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        slug: 'customer-site', customerValues: { EMAIL: 'new-public@example.com' },
+        accountEmail: 'changed-owner@example.com', email: 'changed-owner@example.com',
+        owner_email: 'changed-owner@example.com', owner_id: 'different-owner',
+        data: { email: 'changed-owner@example.com' },
+      }),
+    }))
+    expect(response.status).toBe(200)
+    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('merge_portal_site_data', {
+      p_slug: 'customer-site', p_customer_values: { EMAIL: 'new-public@example.com' },
+      p_data_patch: { imageOwner: 'customer-site' },
+    })
+    expect(mocks.buildDeployFiles).toHaveBeenCalledWith(expect.objectContaining({
+      customerValues: { BUSINESS_NAME: 'Customer Business', EMAIL: 'new-public@example.com' },
+    }))
+    expect(JSON.stringify(mocks.buildDeployFiles.mock.calls)).not.toContain('private-owner@example.com')
+    expect(JSON.stringify(mocks.buildDeployFiles.mock.calls)).not.toContain('changed-owner@example.com')
+  })
 })

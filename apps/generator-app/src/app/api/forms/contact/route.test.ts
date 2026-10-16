@@ -166,12 +166,13 @@ describe('platform contact recipient and reply address', () => {
 })
 
 describe('tenant recipient isolation', () => {
-  it('uses only the selected site owner for notification and visitor Reply-To', async () => {
+  it('notifies the selected private owner but gives visitors only the public Reply-To', async () => {
     const response = await submit({ slug: 'alpha-site' }, 'https://platform-alpha-site.netlify.app')
     expect(response.status).toBe(200)
     expect(response.headers.get('Access-Control-Allow-Origin')).toBe('https://platform-alpha-site.netlify.app')
     expect(mocks.notifyOwner).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ ownerEmail: 'alpha-owner@example.test', siteName: 'Alpha' }))
-    expect(mocks.confirmVisitor).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ replyTo: 'alpha-owner@example.test', siteName: 'Alpha' }))
+    expect(mocks.confirmVisitor).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ replyTo: 'alpha-public@example.test', siteName: 'Alpha' }))
+    expect(JSON.stringify(mocks.confirmVisitor.mock.calls)).not.toContain('alpha-owner@example.test')
     expect(messages[0]).toMatchObject({ slug: 'alpha-site', owner_notification_status: 'sent' })
     expect(queries.find((query) => query.table === 'portal_sites')?.filters).toEqual([['slug', 'alpha-site']])
   })
@@ -191,8 +192,26 @@ describe('tenant recipient isolation', () => {
     const response = await submit({ slug: 'alpha-site' })
     expect(await response.json()).toEqual({ ok: true, deliveryStatus: 'stored_for_review' })
     expect(mocks.notifyOwner).not.toHaveBeenCalled()
-    expect(mocks.confirmVisitor).toHaveBeenCalledWith(expect.objectContaining({ replyTo: undefined }))
+    expect(mocks.confirmVisitor).toHaveBeenCalledWith(expect.objectContaining({ replyTo: 'alpha-public@example.test' }))
     expect(messages[0]).toMatchObject({ slug: 'alpha-site', owner_notification_status: 'no_recipient' })
+  })
+
+  it.each([undefined, '', 'invalid', 'first@example.test,second@example.test'])('does not expose a private recipient when public contact email is %j', async (publicEmail) => {
+    sites[1].data = { email: 'private-owner@example.test', customerValues: { EMAIL: publicEmail } }
+    expect((await submit({ slug: 'alpha-site' })).status).toBe(200)
+    expect(mocks.notifyOwner).toHaveBeenCalledWith(expect.objectContaining({ ownerEmail: 'private-owner@example.test' }))
+    expect(mocks.confirmVisitor).toHaveBeenCalledWith(expect.objectContaining({ replyTo: undefined }))
+    expect(JSON.stringify(mocks.confirmVisitor.mock.calls)).not.toContain('private-owner@example.test')
+  })
+
+  it('keeps notifications private after the public contact address is edited', async () => {
+    sites[1].data = {
+      email: 'private-owner@example.test',
+      customerValues: { EMAIL: 'updated-public@example.test' },
+    }
+    expect((await submit({ slug: 'alpha-site', accountEmail: 'request-injection@example.test' })).status).toBe(200)
+    expect(mocks.notifyOwner).toHaveBeenCalledWith(expect.objectContaining({ ownerEmail: 'private-owner@example.test' }))
+    expect(mocks.confirmVisitor).toHaveBeenCalledWith(expect.objectContaining({ replyTo: 'updated-public@example.test' }))
   })
 
   it('keeps a missing tenant portal row from selecting the platform fallback', async () => {

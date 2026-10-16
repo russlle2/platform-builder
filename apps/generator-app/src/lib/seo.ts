@@ -105,7 +105,7 @@ const pricingFaq: Array<{ q: string; a: string }> = [
   },
   {
     q: 'How does the $500 custom website build work?',
-    a: 'Submit a detailed design and functionality brief, then complete one immediate $500 Stripe payment. DailyClarity securely saves the brief before checkout and manually reviews it after payment is confirmed.',
+    a: 'Send a detailed brief for a scope review with no payment. Discuss the inclusions, hosting, revisions, and timing before deciding to proceed. If you choose checkout after that discussion, the one-time $500 payment is charged immediately. Domains, paid plugins, third-party subscriptions, and expanded application work are separate unless agreed in writing.',
   },
   {
     q: 'Is there a free trial?',

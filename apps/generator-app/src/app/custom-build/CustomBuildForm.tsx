@@ -3,6 +3,7 @@
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import Link from 'next/link'
 import { track } from '@/lib/analytics'
+import { CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT, customBuildReviewMessage, validateCustomBuildBrief } from '@/lib/custom-build'
 
 const DRAFT_KEY = 'dailyclarity_custom_build_draft'
 
@@ -35,11 +36,20 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
   const [hydrated, setHydrated] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [mode, setMode] = useState<'review' | 'payment'>('review')
+  const [saved, setSaved] = useState<'sent' | 'stored_for_review' | null>(null)
 
   useEffect(() => {
     try {
       const saved = sessionStorage.getItem(DRAFT_KEY)
-      if (saved) setForm({ ...EMPTY_FORM, ...JSON.parse(saved), acceptedTerms: false })
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        const restored = { ...EMPTY_FORM }
+        for (const key of Object.keys(EMPTY_FORM) as (keyof FormState)[]) {
+          if (key !== 'acceptedTerms' && typeof parsed?.[key] === 'string') restored[key] = parsed[key]
+        }
+        setForm(restored)
+      }
     } catch { /* ignore invalid drafts */ }
     setHydrated(true)
     track('custom_build_view', {})
@@ -53,28 +63,53 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
   }, [form, hydrated])
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
-    setForm((current) => ({ ...current, [key]: value }))
+    setForm((current) => ({ ...current, acceptedTerms: false, [key]: value }))
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
+    setSaved(null)
+    const brief = validateCustomBuildBrief(form)
+    if (!brief.ok) {
+      setError(brief.error)
+      return
+    }
+    const message = customBuildReviewMessage(brief.data)
+    if (mode === 'review' && message.length > CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT) {
+      setError('Your combined brief is too long to send. Please shorten the descriptions or references by at least ' + (message.length - CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT).toLocaleString() + ' characters. Your draft is still saved on this device.')
+      return
+    }
     setSubmitting(true)
-    track('custom_build_checkout_start', {})
+    track(mode === 'review' ? 'custom_build_review_start' : 'custom_build_checkout_start', {})
 
     try {
-      const response = await fetch('/api/stripe/custom-build', {
+      const response = await fetch(mode === 'review' ? '/api/forms/contact' : '/api/stripe/custom-build', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(mode === 'review' ? {
+          name: brief.data.contactName || brief.data.businessName,
+          email: brief.data.email,
+          phone: brief.data.phone || '',
+          message,
+        } : form),
       })
       const data = await response.json().catch(() => ({}))
+      if (mode === 'review') {
+        if (!response.ok || data?.ok !== true) {
+          throw new Error(data?.error || 'Unable to save your brief. Please try again.')
+        }
+        setSaved(data.deliveryStatus === 'sent' ? 'sent' : 'stored_for_review')
+        setSubmitting(false)
+        track('custom_build_review_saved', {})
+        return
+      }
       if (!response.ok || !data?.url) {
         throw new Error(data?.error || 'Unable to open secure checkout. Please try again.')
       }
       window.location.assign(data.url)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to open secure checkout.')
+      setError(err instanceof Error ? err.message : 'Unable to submit your brief. Please try again.')
       setSubmitting(false)
     }
   }
@@ -94,8 +129,8 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
               </h1>
               <p className="text-lg text-slate-300 mt-5 leading-relaxed">
                 Describe the appearance, pages, interactions, and functionality you need. Your
-                complete brief is saved before Stripe opens, then released to our build queue
-                after successful payment.
+                brief goes to DailyClarity for a scope discussion before you decide to pay.
+                Agree the inclusions, hosting, revisions, and timing before starting a build.
               </p>
             </div>
 
@@ -106,13 +141,13 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                   <span className="text-5xl font-bold text-white">$500</span>
                   <span className="text-slate-300 pb-1">one time</span>
                 </div>
-                <p className="text-sm text-cyan-200 mt-2">Charged immediately at secure checkout.</p>
+                <p className="text-sm text-cyan-200 mt-2">Request a scope review first. No payment details needed.</p>
               </div>
               <ul className="space-y-3 text-sm text-slate-200">
                 <li>✓ Detailed design and functionality brief</li>
                 <li>✓ Manual review by DailyClarity</li>
                 <li>✓ Responsive custom website build</li>
-                <li>✓ Written next steps sent to your email</li>
+                <li>✓ Scope and next steps discussed by email</li>
               </ul>
               <p className="text-xs text-slate-400 leading-relaxed">
                 The $500 covers the custom website build described in the accepted project scope.
@@ -120,7 +155,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 functionality are not included unless confirmed separately in writing.
               </p>
               <div className="pt-4 border-t border-white/10 text-xs text-slate-300 space-y-2">
-                <p>Secure Stripe Checkout</p>
+                <p>If you choose to proceed: $500 charged immediately through Stripe Checkout</p>
                 <p>Card, Apple Pay, Stripe Link, and Cash App where available</p>
                 <p>No DailyClarity account required before payment</p>
               </div>
@@ -141,7 +176,16 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
               </p>
             </div>
 
-            <form onSubmit={submit} className="space-y-7">
+            {saved ? (
+              <div role="status" className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 p-6 space-y-4 text-slate-200">
+                <h3 className="text-xl font-semibold text-white">Brief saved for review. No payment taken.</h3>
+                <p>We’ll use your contact details to discuss the project. A submitted brief does not confirm the scope or a start date.</p>
+                {saved === 'stored_for_review' && <p>Your brief is stored, but we could not confirm delivery of the notification email. You do not need to submit it again.</p>}
+                <Link href="/contact" className="block text-cyan-200 underline underline-offset-4">Contact DailyClarity about your brief</Link>
+                <button type="button" className="text-sm text-cyan-200 underline underline-offset-4" onClick={() => setSaved(null)}>Return to my draft</button>
+              </div>
+            ) : <form onSubmit={submit} className="space-y-7">
+              <fieldset disabled={submitting} className="space-y-7 disabled:opacity-70">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <Field label="Business name" required>
                   <input
@@ -256,7 +300,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 />
               </Field>
 
-              <label className="flex items-start gap-3 p-4 rounded-xl border border-white/15 bg-white/5 text-sm text-slate-200">
+              {mode === 'payment' && <label className="flex items-start gap-3 p-4 rounded-xl border border-white/15 bg-white/5 text-sm text-slate-200">
                 <input
                   required
                   type="checkbox"
@@ -265,11 +309,13 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                   className="mt-1 h-4 w-4 accent-cyan-400"
                 />
                 <span>
-                  I confirm that my brief is accurate, authorize an immediate one-time $500 charge,
+                  I have discussed this scope with DailyClarity, confirm that my brief is accurate, authorize an immediate one-time $500 charge,
                   and agree to the <Link href="/terms" className="text-cyan-300 underline">Terms of Service</Link>{' '}
                   and <Link href="/privacy" className="text-cyan-300 underline">Privacy Policy</Link>.
                 </span>
-              </label>
+              </label>}
+
+              {mode === 'review' && <p className="text-sm text-slate-300">We’ll save your brief and use these details to discuss your project. See our <Link href="/privacy" className="text-cyan-200 underline">Privacy Policy</Link>.</p>}
 
               {error && (
                 <p role="alert" className="p-4 rounded-xl bg-red-500/10 border border-red-400/30 text-red-100">
@@ -282,12 +328,20 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 disabled={submitting}
                 className="cta-button w-full disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {submitting ? 'Opening secure checkout…' : 'Continue to secure $500 payment'}
+                {submitting ? (mode === 'review' ? 'Saving your brief…' : 'Opening secure checkout…') : (mode === 'review' ? 'Request a scope review — no payment' : 'Continue to secure $500 payment')}
               </button>
               <p className="text-center text-xs text-slate-400">
-                Your card details are entered on Stripe and never pass through DailyClarity.
+                {mode === 'review' ? 'No card required. This request does not place a paid order.' : 'Your card details are entered on Stripe and never pass through DailyClarity.'}
               </p>
-            </form>
+              <button type="button" className="w-full text-center text-sm text-slate-300 underline underline-offset-4" onClick={() => {
+                setMode(mode === 'review' ? 'payment' : 'review')
+                update('acceptedTerms', false)
+                setError(null)
+              }}>
+                {mode === 'review' ? 'Already discussed your scope? Continue to payment' : 'Request a scope review first instead'}
+              </button>
+              </fieldset>
+            </form>}
           </div>
         </div>
       </section>

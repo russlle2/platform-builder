@@ -44,7 +44,7 @@ function optionalString(value: unknown, label: string, max: number): { value?: s
   return { value: trimmed }
 }
 
-export function validateCustomBuildInput(body: unknown): ValidationResult {
+export function validateCustomBuildBrief(body: unknown): ValidationResult {
   if (!body || typeof body !== 'object') return { ok: false, error: 'Invalid request.' }
   const data = body as Record<string, unknown>
 
@@ -70,10 +70,6 @@ export function validateCustomBuildInput(body: unknown): ValidationResult {
   const existingWebsite = optionalString(data.existingWebsite, 'Existing website', 500)
   if (existingWebsite.error) return { ok: false, error: existingWebsite.error }
 
-  if (data.acceptedTerms !== true) {
-    return { ok: false, error: 'You must accept the service terms before checkout.' }
-  }
-
   return {
     ok: true,
     data: {
@@ -88,3 +84,27 @@ export function validateCustomBuildInput(body: unknown): ValidationResult {
     },
   }
 }
+
+export function validateCustomBuildInput(body: unknown): ValidationResult {
+  const brief = validateCustomBuildBrief(body)
+  if (!brief.ok) return brief
+  if ((body as Record<string, unknown>).acceptedTerms !== true) {
+    return { ok: false, error: 'You must accept the service terms before checkout.' }
+  }
+  return brief
+}
+
+/** Fits the existing contact inbox without dropping any part of the submitted brief. */
+export function customBuildReviewMessage(brief: CustomBuildInput): string {
+  return [
+    'Custom website scope review — no payment requested or taken',
+    `Business: ${brief.businessName}`,
+    `Website appearance and content:\n${brief.siteVision}`,
+    `Required features and functionality:\n${brief.requiredFunctionality}`,
+    brief.inspirationLinks ? `Visual references:\n${brief.inspirationLinks}` : '',
+    brief.existingWebsite ? `Existing website: ${brief.existingWebsite}` : '',
+    'Please discuss the scope, inclusions, hosting, revisions, and timing before any payment.',
+  ].filter(Boolean).join('\n\n')
+}
+
+export const CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT = 10_000

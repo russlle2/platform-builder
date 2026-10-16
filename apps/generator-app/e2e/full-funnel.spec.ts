@@ -2,6 +2,7 @@ import { test, expect } from '@playwright/test'
 import { verifyIntakeContact, cleanupTestData } from './helpers/supabase-check'
 
 const testEmail = `e2e-${Date.now()}@dailyclarity.test`
+const publicEmail = `e2e-public-${Date.now()}@dailyclarity.test`
 const testBusinessName = `E2E Test Wellness ${Date.now()}`
 const testPhone = '555-123-4567'
 const testSlug = `e2e-${Date.now().toString(36)}`
@@ -35,7 +36,8 @@ test.describe('Full purchase funnel (test mode)', () => {
     // STEP 3: Fill Step 1 (business info)
     await page.getByRole('button', { name: 'Aromatherapy' }).click()
     await page.getByLabel('Business Name').fill(testBusinessName)
-    await page.getByRole('textbox', { name: /^Contact Email/ }).fill(testEmail)
+    await page.getByRole('textbox', { name: /^Account email/ }).fill(testEmail)
+    await page.getByRole('textbox', { name: /^Public contact email/ }).fill(publicEmail)
     await page.getByRole('button', { name: /Add more business details/ }).click()
     await page.getByRole('textbox', { name: 'Phone', exact: true }).fill(testPhone)
     await page.getByRole('button', { name: /Continue to Style Preferences/i }).click()
@@ -105,6 +107,7 @@ test.describe('Full purchase funnel (test mode)', () => {
         return value ? JSON.parse(value) : {}
       }
       return {
+        accountEmail: (readJson('pb_biz_info') as { accountEmail?: string }).accountEmail,
         customerValues: readJson('pb_template_values'),
         inlineEdits: readJson('pb_inline_edits'),
         imageSwaps: readJson('pb_image_swaps'),
@@ -112,6 +115,7 @@ test.describe('Full purchase funnel (test mode)', () => {
         customTheme: readJson('pb_custom_theme'),
       }
     }) as {
+      accountEmail: string
       customerValues: Record<string, string>
       inlineEdits: Record<string, unknown>
       imageSwaps: Record<string, unknown>
@@ -120,10 +124,12 @@ test.describe('Full purchase funnel (test mode)', () => {
     }
 
     expect(editorState.customerValues).toMatchObject({
-      EMAIL: testEmail,
+      EMAIL: publicEmail,
       BUSINESS_NAME: testBusinessName,
       PHONE: testPhone,
     })
+    expect(editorState.accountEmail).toBe(testEmail)
+    expect(JSON.stringify(editorState.customerValues)).not.toContain(testEmail)
 
     const response = await request.post('/api/test-purchase', {
       headers: {
@@ -135,6 +141,7 @@ test.describe('Full purchase funnel (test mode)', () => {
         template: templateSlug,
         niche,
         planKey: 'basic',
+        accountEmail: editorState.accountEmail,
         colorScheme: checkoutUrl.searchParams.get('color') || 'original',
         fontVariation: checkoutUrl.searchParams.get('font') || 'original',
         structureVariation: checkoutUrl.searchParams.get('structure') || 'original',
@@ -166,6 +173,7 @@ test.describe('Full purchase funnel (test mode)', () => {
     expect(publishedSite.ok()).toBeTruthy()
     expect(publishedSite.headers()['x-robots-tag']).toContain('noindex')
     const publishedHtml = await publishedSite.text()
+    expect(publishedHtml).not.toContain(testEmail)
     expect(publishedHtml).toContain(testBusinessName)
     expect(publishedHtml).toContain(editorProofText)
     expect(publishedHtml).toContain('--pb-primary: #0ea5e9')
@@ -182,6 +190,7 @@ test.describe('Full purchase funnel (test mode)', () => {
     await expect(page.getByPlaceholder('Business name')).toHaveValue(testBusinessName, {
       timeout: 15000,
     })
+    await expect(page.getByLabel('Email address', { exact: true })).toHaveValue(publicEmail)
 
     const republishedBusinessName = `${testBusinessName} Updated`
     await page.getByLabel('Business name').fill(republishedBusinessName)
@@ -196,6 +205,7 @@ test.describe('Full purchase funnel (test mode)', () => {
     expect(republishedSite.ok()).toBeTruthy()
     expect(republishedSite.headers()['x-robots-tag']).toContain('noindex')
     const republishedHtml = await republishedSite.text()
+    expect(republishedHtml).not.toContain(testEmail)
     expect(republishedHtml).toContain(republishedBusinessName)
     expect(republishedHtml).toContain(editorProofText)
     expect(republishedHtml).toContain('--pb-primary: #0ea5e9')
