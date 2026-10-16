@@ -5,6 +5,7 @@ import { validateSiteSlug } from './site-slug'
 
 export interface CheckoutConfirmation {
   ok: boolean
+  awaitingPayment?: boolean
   slug?: string
   planName?: string
   managed?: boolean
@@ -22,6 +23,15 @@ export function describeCheckoutConfirmation(
 ): CheckoutConfirmation {
   if (session.status !== 'complete' || session.livemode !== expectedLivemode) return { ok: false }
   const meta = session.metadata || {}
+  // A completed Checkout can still be awaiting an asynchronous payment result.
+  // Keep this separate from confirmation: it grants no fulfillment or access.
+  const knownCheckout = (meta.checkoutType === 'custom_build' && session.mode === 'payment') ||
+    (meta.checkoutType === 'template_subscription' && session.mode === 'subscription' && Boolean(
+      typeof session.subscription === 'string' ? session.subscription : session.subscription?.id,
+    ))
+  if (knownCheckout && session.payment_status === 'unpaid') {
+    return { ok: false, awaitingPayment: true }
+  }
   if (meta.checkoutType === 'custom_build') {
     return session.mode === 'payment' && session.payment_status === 'paid'
       ? { ok: true, customBuild: true, requestId: meta.customBuildRequestId || undefined, testMode: !session.livemode }

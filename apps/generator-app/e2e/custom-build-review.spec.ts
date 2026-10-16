@@ -68,7 +68,7 @@ test('payment remains an explicit separate choice and consent is never restored'
   await page.route('**/api/forms/contact', route => { reviews++; return route.abort() })
   await page.route('**/api/stripe/custom-build', route => {
     payment = route.request().postDataJSON()
-    return route.fulfill({ status: 503, json: { error: 'Checkout test stopped before payment.' } })
+    return route.fulfill({ status: 503, json: { error: 'Checkout test stopped before payment.', retrySafe: true } })
   })
   await page.goto('/custom-build?canceled=1')
   await fillBrief(page)
@@ -87,3 +87,75 @@ test('payment remains an explicit separate choice and consent is never restored'
   expect(payment).toMatchObject({ acceptedTerms: true, businessName: 'Example Practice', siteVision: vision })
   expect(reviews).toBe(0)
 })
+
+for (const outcome of ['rejected', 'uncertain', 'interrupted', 'gateway-timeout', 'redirect'] as const) {
+  test(`custom payment is single-flight and handles ${outcome} safely`, async ({ page }) => {
+    let requests = 0
+    let releaseResponse!: () => void
+    const heldResponse = new Promise<void>(resolve => { releaseResponse = resolve })
+    let navigationRequested = false
+    await page.route('**/custom-checkout-fixture', async route => {
+      navigationRequested = true
+      // A 204 destination leaves this document visible after assign() returns,
+      // so an accidental post-redirect unlock remains observable.
+      await route.fulfill({ status: 204 })
+    })
+    await page.route('**/api/stripe/custom-build', async route => {
+      requests++
+      await heldResponse
+      if (outcome === 'interrupted') await route.abort('failed')
+      else if (outcome === 'gateway-timeout') await route.fulfill({ status: 504, json: { error: 'Function invocation timed out.' } })
+      else if (outcome === 'redirect') await route.fulfill({ json: { url: '/custom-checkout-fixture' } })
+      else await route.fulfill({ status: 409, json: outcome === 'uncertain'
+        ? { code: 'checkout_creation_uncertain', reference: 'custom-test-attempt', error: 'Unconfirmed checkout.' }
+        : { error: 'Checkout rejected before creation.' } })
+    })
+    await page.goto('/custom-build')
+    await fillBrief(page)
+    await expect(page.getByText('Pay by card or an eligible wallet.', { exact: false })).toBeVisible()
+    await expect(page.getByText('Stripe Link', { exact: false })).toHaveCount(0)
+    await page.getByRole('button', { name: 'Already discussed your scope? Continue to payment' }).click()
+    await page.getByRole('checkbox').check()
+    await page.locator('main form').evaluate(form => {
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    })
+    await expect.poll(() => requests).toBe(1)
+    await expect(page.getByRole('button', { name: 'Opening secure checkout…' })).toBeDisabled()
+    releaseResponse()
+    if (outcome === 'rejected') {
+      await expect(page.locator('main').getByRole('alert')).toContainText('Checkout rejected before creation.')
+      await expect(page.getByRole('button', { name: 'Continue to secure $500 payment' })).toBeEnabled()
+      await expect(page.getByLabel('Business name', { exact: false })).toHaveValue('Example Practice')
+    } else if (outcome === 'redirect') {
+      await expect.poll(() => navigationRequested).toBe(true)
+      await expect(page.getByRole('button', { name: 'Opening secure checkout…' })).toBeDisabled()
+    } else {
+      const alert = page.locator('main').getByRole('alert')
+      await expect(alert).toContainText("Please don't start another payment yet")
+      await expect(alert.getByRole('link', { name: 'Contact support about this attempt' })).toHaveAttribute('href', '/contact')
+      if (outcome === 'uncertain') await expect(alert).toContainText('custom-test-attempt')
+      await expect(page.getByRole('button', { name: 'Checkout needs review' })).toBeDisabled()
+    }
+    expect(requests).toBe(1)
+  })
+}
+
+for (const storage of ['missing', 'malformed', 'unavailable', 'restored'] as const) {
+  test(`custom checkout return describes ${storage} draft storage accurately`, async ({ page }) => {
+    await page.addInitScript(state => {
+      if (state === 'unavailable') {
+        Storage.prototype.getItem = () => { throw new Error('Storage disabled') }
+        Storage.prototype.setItem = () => { throw new Error('Storage disabled') }
+      } else if (state !== 'missing') {
+        sessionStorage.setItem('dailyclarity_custom_build_draft', state === 'malformed' ? '{' : JSON.stringify({ businessName: 'Restored Practice' }))
+      }
+    }, storage)
+    await page.goto('/custom-build?canceled=1')
+    await expect(page.locator('main').getByRole('status')).toContainText(storage === 'restored'
+      ? 'Your project brief was restored from this tab.'
+      : 'No saved brief was found in this tab.')
+    if (storage === 'restored') await expect(page.getByLabel('Business name', { exact: false })).toHaveValue('Restored Practice')
+    await expect(page.getByText('saved on this device', { exact: false })).toHaveCount(0)
+  })
+}

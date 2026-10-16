@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useId, useMemo, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
@@ -32,6 +32,10 @@ export default function PricingClient() {
   const billingPeriod: 'monthly' | 'annual' = 'monthly'
   const [checkoutError, setCheckoutError] = useState<string | null>(null)
   const [checkoutRecoveryUrl, setCheckoutRecoveryUrl] = useState<string | null>(null)
+  const [checkoutRecoveryLabel, setCheckoutRecoveryLabel] = useState('Return to your preview')
+  const [checkoutUncertain, setCheckoutUncertain] = useState(false)
+  const [checkoutReference, setCheckoutReference] = useState<string | null>(null)
+  const checkoutInFlightRef = useRef(false)
   const [trialDays, setTrialDays] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
   const [checkoutReady, setCheckoutReady] = useState(false)
@@ -64,10 +68,18 @@ export default function PricingClient() {
   }, [slug, template, niche, searchParams])
 
   const startCheckout = useCallback(async (planKey: string) => {
+    // React state alone cannot stop two clicks in the same event turn.
+    if (checkoutInFlightRef.current) return
+    checkoutInFlightRef.current = true
+    setIsSubmitting(planKey)
+    let requestSent = false
+    let definiteFailure = false
     try {
       track('checkout_start', { planKey })
       setCheckoutError(null)
       setCheckoutRecoveryUrl(null)
+      setCheckoutUncertain(false)
+      setCheckoutReference(null)
 
       // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
@@ -119,7 +131,7 @@ export default function PricingClient() {
 
       // The customer already reviewed these details in the live preview. Go
       // directly to Stripe instead of inserting another confirmation page.
-      setIsSubmitting(planKey)
+      requestSent = true
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -140,9 +152,20 @@ export default function PricingClient() {
           catalogRevision,
         }),
       })
-      const data = await response.json().catch(() => ({}))
+      const data = await response.json().catch(() => null)
+      if (data?.code === 'checkout_creation_uncertain') {
+        setCheckoutUncertain(true)
+        setCheckoutReference(typeof data.reference === 'string' ? data.reference : null)
+        setCheckoutError("We couldn't confirm this checkout attempt. Please don't start another payment yet. Contact support so we can check it.")
+        return
+      }
       if (!response.ok) {
-        const failure = data as { error?: string; code?: string; recoveryUrl?: string }
+        const failure = (data || {}) as { error?: string; code?: string; recoveryUrl?: string; retrySafe?: boolean }
+        // A proxy timeout may follow a successful provider request. Only the
+        // application can mark a server error as safe to retry.
+        definiteFailure = typeof failure.error === 'string' && (
+          (response.status >= 400 && response.status < 500) || failure.retrySafe === true
+        )
         if (
           failure.code?.startsWith('image_upload_') ||
           failure.code === 'catalog_revision_unavailable'
@@ -155,6 +178,9 @@ export default function PricingClient() {
           }
           const base = failure.recoveryUrl || '/preview-your-business'
           setCheckoutRecoveryUrl(`${base}?plan=${encodeURIComponent(planKey)}${bookingKitFunnel ? '&from=booking-kit' : ''}`)
+          setCheckoutRecoveryLabel(failure.code === 'catalog_revision_unavailable'
+            ? 'Return to your preview to refresh this design'
+            : 'Return to your preview to re-upload images')
         }
         throw new Error(
           failure.error || 'Checkout failed. Please try again.'
@@ -166,10 +192,15 @@ export default function PricingClient() {
         throw new Error('Missing checkout URL')
       }
     } catch (error) {
+      if (requestSent && !definiteFailure) {
+        setCheckoutUncertain(true)
+        setCheckoutError("We couldn't confirm this checkout attempt. Please don't start another payment yet. Contact support so we can check it.")
+        return
+      }
       setCheckoutError(
         error instanceof Error ? error.message : 'Unable to start checkout. Please try again.'
       )
-    } finally {
+      checkoutInFlightRef.current = false
       setIsSubmitting(null)
     }
   }, [readCheckoutContext, bookingKitFunnel])
@@ -296,6 +327,8 @@ export default function PricingClient() {
                 trialDays={trialDays}
                 onCheckout={() => startCheckout(tier.key)}
                 isSubmitting={isSubmitting === tier.key}
+                checkoutDisabled={isSubmitting !== null}
+                checkoutUncertain={checkoutUncertain}
                 checkoutReady={checkoutReady}
               />
             ))}
@@ -308,8 +341,15 @@ export default function PricingClient() {
                   href={checkoutRecoveryUrl}
                   className="inline-block mt-3 font-semibold text-cyan-200 underline hover:text-cyan-100"
                 >
-                  Return to your preview to re-upload images
+                  {checkoutRecoveryLabel}
                 </Link>
+              )}
+              {checkoutUncertain && (
+                <div className="mt-3 space-y-3">
+                  {checkoutReference && <p className="break-all text-sm">Reference: {checkoutReference}</p>}
+                  <p><Link href="/contact" className="font-semibold text-cyan-200 underline">Contact support about this attempt</Link></p>
+                  <p><Link href="/dashboard" className="text-cyan-200 underline">Check your account</Link></p>
+                </div>
               )}
             </div>
           )}
@@ -527,6 +567,8 @@ function PricingCard({
   trialDays,
   onCheckout,
   isSubmitting,
+  checkoutDisabled,
+  checkoutUncertain,
   checkoutReady,
 }: {
   tier: (typeof pricingTiers)[0]
@@ -534,6 +576,8 @@ function PricingCard({
   trialDays: number | null
   onCheckout: () => void
   isSubmitting: boolean
+  checkoutDisabled: boolean
+  checkoutUncertain: boolean
   checkoutReady: boolean
 }) {
   const displayPrice = tier.price
@@ -603,15 +647,16 @@ function PricingCard({
       <button
         type="button"
         onClick={onCheckout}
-        disabled={isSubmitting}
+        disabled={checkoutDisabled}
+        aria-busy={isSubmitting && !checkoutUncertain}
         className={`block w-full text-center px-6 py-3 rounded-lg font-bold transition-all ${
           tier.highlight
             ? 'bg-cyan-400 hover:bg-cyan-300 text-slate-900 shadow-lg hover:shadow-xl'
             : 'bg-white/10 hover:bg-white/20 text-white'
-        } ${isSubmitting ? 'opacity-70 cursor-not-allowed' : ''}`}
+        } ${checkoutDisabled ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
         {isSubmitting
-          ? 'Redirecting…'
+          ? checkoutUncertain ? 'Checkout needs review' : checkoutReady ? 'Opening secure checkout…' : 'Opening your preview…'
           : !checkoutReady
             ? 'Build preview to choose plan'
           : trialDays !== null && trialDays > 0
@@ -620,7 +665,7 @@ function PricingCard({
       </button>
       <p className="text-center text-xs text-slate-300 mt-3">
         {checkoutReady
-          ? 'Secure Stripe checkout. Pay by card without creating a Stripe Link account.'
+          ? 'Secure Stripe checkout. Available card and wallet options are shown there.'
           : 'Choose a template and add your business details before payment.'}
       </p>
       <p className="text-center text-xs text-slate-400 mt-3">

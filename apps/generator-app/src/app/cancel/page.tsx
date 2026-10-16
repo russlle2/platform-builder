@@ -27,7 +27,11 @@ export default function CancelPage() {
           Checkout canceled
         </h1>
         <p className="text-gray-300 text-lg mb-8">
-          No charges were made. You can pick a plan whenever you are ready.
+          You returned from checkout. You can review your plan or update your preview before continuing.
+        </p>
+        <p className="text-slate-300 mb-8">
+          If you submitted payment or see a pending bank entry, check your account and email before
+          trying again. Returning to this page does not confirm a payment or cancel an existing subscription.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/pricing" className="cta-button">
@@ -39,6 +43,10 @@ export default function CancelPage() {
           >
             Update details
           </Link>
+        </div>
+        <div className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-3 text-cyan-200">
+          <Link href="/dashboard" className="underline underline-offset-4">Check My websites</Link>
+          <Link href="/contact" className="underline underline-offset-4">Contact support</Link>
         </div>
       </div>
     </main>

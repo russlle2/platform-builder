@@ -107,7 +107,8 @@ export async function sendEmail(options: SendEmailOptions): Promise<PostmarkResp
 }
 
 /**
- * Send order confirmation email immediately after purchase.
+ * Send order/account access information. Delivery can be retried after setup,
+ * so this message must not claim a build is currently running or promise an ETA.
  */
 export async function sendOrderConfirmationEmail(
   to: string,
@@ -128,7 +129,9 @@ export async function sendOrderConfirmationEmail(
 
   return sendEmail({
     to,
-    subject: `Your DailyClarity website is being built now`,
+    subject: 'Your DailyClarity order and account access',
+    disableTracking: true,
+    textBody: `Your DailyClarity order and account access\n\n${businessName}\n\nYour selected website and saved business details are linked to your account. Check your dashboard for the current website status.\n\nSign in with your DailyClarity account email: ${baseClean}/dashboard\n\nYour private website portal: ${portalUrl}\nKeep this link private; it provides editing access.\n\nWebsite delivery details arrive in a separate email. Monthly-plan invoices and payment-method updates are available through Manage billing in your dashboard.\n\nDomain help: ${baseClean}/help#domains\nSupport: ${baseClean}/contact`,
     htmlBody: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -148,23 +151,23 @@ export async function sendOrderConfirmationEmail(
       <!-- HERO -->
       <tr>
         <td style="padding:48px 40px 44px;background:#0f172a;text-align:center;">
-          <h1 style="margin:0 0 14px;font-size:26px;font-weight:700;color:#ffffff;line-height:1.3;">Your website is being built, ${escapeHtml(businessName)}!</h1>
-          <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.6;">You'll hear from us within a few minutes when it's live.</p>
+          <h1 style="margin:0 0 14px;font-size:26px;font-weight:700;color:#ffffff;line-height:1.3;">Your order and account access</h1>
+          <p style="margin:0;font-size:15px;color:#94a3b8;line-height:1.6;">${escapeHtml(businessName)} — check your dashboard for the current website status.</p>
         </td>
       </tr>
 
       <!-- STEPS -->
       <tr>
         <td style="padding:40px;background:#f8fafc;">
-          <p style="margin:0 0 24px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">What's happening now</p>
+          <p style="margin:0 0 24px;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.08em;">Your next steps</p>
 
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr><td style="padding-bottom:20px;">
               <table role="presentation" cellpadding="0" cellspacing="0"><tr>
                 <td style="width:36px;height:36px;min-width:36px;background:#0f172a;border-radius:50%;text-align:center;vertical-align:middle;font-size:13px;font-weight:700;color:#ffffff;">1</td>
                 <td style="padding-left:16px;vertical-align:top;">
-                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">We're building your site</p>
-                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Your custom${nicheLabel} website is being assembled now</p>
+                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">Your website order</p>
+                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Your selected${nicheLabel} website and saved business details are linked to your account.</p>
                 </td>
               </tr></table>
             </td></tr>
@@ -172,8 +175,8 @@ export async function sendOrderConfirmationEmail(
               <table role="presentation" cellpadding="0" cellspacing="0"><tr>
                 <td style="width:36px;height:36px;min-width:36px;background:#0f172a;border-radius:50%;text-align:center;vertical-align:middle;font-size:13px;font-weight:700;color:#ffffff;">2</td>
                 <td style="padding-left:16px;vertical-align:top;">
-                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">You'll get a link</p>
-                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Check your inbox — we'll email your live site URL and portal access link</p>
+                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">Check website status</p>
+                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Open your dashboard for the current status. Website delivery details arrive in a separate email.</p>
                 </td>
               </tr></table>
             </td></tr>
@@ -181,8 +184,8 @@ export async function sendOrderConfirmationEmail(
               <table role="presentation" cellpadding="0" cellspacing="0"><tr>
                 <td style="width:36px;height:36px;min-width:36px;background:#0f172a;border-radius:50%;text-align:center;vertical-align:middle;font-size:13px;font-weight:700;color:#ffffff;">3</td>
                 <td style="padding-left:16px;vertical-align:top;">
-                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">Edit anytime</p>
-                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Log in to your dashboard at dailyclarity.org/dashboard to make changes</p>
+                  <p style="margin:0 0 3px;font-size:14px;font-weight:700;color:#1e293b;">Manage your account</p>
+                  <p style="margin:0;font-size:13px;color:#64748b;line-height:1.5;">Sign in with your DailyClarity account email. Monthly-plan invoices and payment-method updates are available through Manage billing.</p>
                 </td>
               </tr></table>
             </td></tr>
@@ -193,8 +196,8 @@ export async function sendOrderConfirmationEmail(
       <!-- CTA -->
       <tr>
         <td style="padding:36px 40px;text-align:center;background:#ffffff;">
-          <a href="${portalUrl}" style="display:inline-block;padding:14px 36px;background:#10b981;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;">Go to My Dashboard</a>
-          <p style="margin:20px 0 0;font-size:13px;color:#94a3b8;">Or use your portal direct access link:<br>
+          <a href="${baseClean}/dashboard" style="display:inline-block;padding:14px 36px;background:#10b981;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;">Go to My Dashboard</a>
+          <p style="margin:20px 0 0;font-size:13px;color:#94a3b8;">Or use your private portal link. Keep it private; it provides editing access.<br>
             <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;word-break:break-all;">Access My Site Portal &rarr;</a>
           </p>
         </td>
@@ -205,7 +208,7 @@ export async function sendOrderConfirmationEmail(
         <td style="padding:20px 40px;background:#f0fdf4;border-top:1px solid #d1fae5;border-bottom:1px solid #d1fae5;">
           <p style="margin:0;font-size:13px;color:#065f46;line-height:1.6;">
             <strong>Want a custom domain?</strong> Point your DNS and get a professional address.&nbsp;
-            <a href="https://dailyclarity.org/help/custom-domain" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
+            <a href="${baseClean}/help#domains" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
           </p>
         </td>
       </tr>
@@ -253,6 +256,8 @@ export async function sendWebsiteLiveEmail(
   return sendEmail({
     to,
     subject: `🎉 Your website is live!`,
+    disableTracking: true,
+    textBody: `Your DailyClarity website is live!\n\n${businessName}\n\nVisit your website: ${siteUrl}\n\nEdit through your private portal: ${portalUrl}\nKeep this link private; it provides editing access.\n\nSign in with your DailyClarity account email: ${baseClean}/dashboard\n\nDomain help: ${baseClean}/help#domains\nSupport: ${baseClean}/contact`,
     htmlBody: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -297,7 +302,7 @@ export async function sendWebsiteLiveEmail(
         <td style="padding:0 40px 32px;text-align:center;background:#ffffff;">
           <a href="${portalUrl}" style="display:inline-block;padding:12px 28px;background:#0f172a;color:#ffffff;text-decoration:none;font-size:14px;font-weight:600;border-radius:8px;">Edit My Site</a>
           <p style="margin:16px 0 0;font-size:13px;color:#94a3b8;">
-            Direct portal link: <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;word-break:break-all;">Access My Site Portal &rarr;</a>
+            Keep this editing link private: <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;word-break:break-all;">Access My Site Portal &rarr;</a>
           </p>
         </td>
       </tr>
@@ -307,7 +312,7 @@ export async function sendWebsiteLiveEmail(
         <td style="padding:20px 40px;background:#f0fdf4;border-top:1px solid #d1fae5;border-bottom:1px solid #d1fae5;">
           <p style="margin:0;font-size:13px;color:#065f46;line-height:1.6;">
             <strong>Want a custom domain?</strong> Point your DNS and get a professional address.&nbsp;
-            <a href="https://dailyclarity.org/help/custom-domain" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
+            <a href="${baseClean}/help#domains" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
           </p>
         </td>
       </tr>

@@ -20,6 +20,7 @@ const topics = [
   ['access', 'Find your website'],
   ['editing', 'Edit & publish'],
   ['enquiries', 'Check enquiries'],
+  ['payment', 'Checkout & payment status'],
   ['billing', 'Billing & cancellation'],
   ['domains', 'Domains & hosting'],
   ['content', 'Your content & moving away'],
@@ -61,7 +62,7 @@ export default function HelpPage() {
         <section id="access" aria-labelledby="access-title" className={sectionClass}>
           <h2 id="access-title" className="text-2xl font-bold text-white">Find your website</h2>
           <ol className="mt-4 list-decimal space-y-3 pl-5 leading-relaxed text-slate-300">
-            <li>Open <Link href="/dashboard" className={linkClass}>My websites</Link> and sign in with the email used at checkout.</li>
+            <li>Open <Link href="/dashboard" className={linkClass}>My websites</Link> and sign in with the account email you entered in your website details.</li>
             <li>Follow the sign-in link sent to your inbox. If it has expired, request a new one from the sign-in page.</li>
             <li>Choose your website if your account lists more than one.</li>
           </ol>
@@ -103,6 +104,27 @@ export default function HelpPage() {
             Send a test enquiry from your live site using your own details. Check the saved
             message, its notification result, and your email inbox or spam folder. If something
             is missing, tell support which site you tested and approximately when.
+          </p>
+        </section>
+
+        <section id="payment" aria-labelledby="payment-title" className={sectionClass}>
+          <h2 id="payment-title" className="text-2xl font-bold text-white">Checkout and payment status</h2>
+          <p className="mt-4 leading-relaxed text-slate-300">
+            Payment opens in Stripe Checkout. You can pay by card without creating a Stripe Link account;
+            other available payment methods appear there. Your bank may ask you to approve the payment.
+            Complete that step only in the bank or payment provider’s own screen.
+          </p>
+          <p className="mt-4 leading-relaxed text-slate-300">
+            The card statement name is <strong className="text-white">DAILYCLARITY.ORG</strong>.
+            Your bank may abbreviate it. For monthly plans, invoices and payment-method updates are
+            available through <strong className="text-white">Manage billing</strong> in My websites.
+          </p>
+          <p className="mt-4 leading-relaxed text-slate-300">
+            If you submitted payment but the result is unclear, check the confirmation page again,
+            your account, and your email before starting another purchase. A pending bank entry can
+            be an authorization rather than a completed payment. If you still need help,{' '}
+            <Link href="/contact" className={linkClass}>contact support</Link> with your account email,
+            plan, and approximate payment time. Never send your full card number or a bank verification code.
           </p>
         </section>
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import Link from 'next/link'
 import { track } from '@/lib/analytics'
 import { CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT, customBuildReviewMessage, validateCustomBuildBrief } from '@/lib/custom-build'
@@ -34,7 +34,11 @@ const EMPTY_FORM: FormState = {
 export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean }) {
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
   const [hydrated, setHydrated] = useState(false)
+  const [restoredDraft, setRestoredDraft] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const submittingRef = useRef(false)
+  const [checkoutUncertain, setCheckoutUncertain] = useState(false)
+  const [checkoutReference, setCheckoutReference] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [mode, setMode] = useState<'review' | 'payment'>('review')
   const [saved, setSaved] = useState<'sent' | 'stored_for_review' | null>(null)
@@ -49,6 +53,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
           if (key !== 'acceptedTerms' && typeof parsed?.[key] === 'string') restored[key] = parsed[key]
         }
         setForm(restored)
+        setRestoredDraft(Object.values(restored).some((value) => typeof value === 'string' && value.trim().length > 0))
       }
     } catch { /* ignore invalid drafts */ }
     setHydrated(true)
@@ -68,6 +73,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submittingRef.current) return
     setError(null)
     setSaved(null)
     const brief = validateCustomBuildBrief(form)
@@ -77,10 +83,14 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
     }
     const message = customBuildReviewMessage(brief.data)
     if (mode === 'review' && message.length > CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT) {
-      setError('Your combined brief is too long to send. Please shorten the descriptions or references by at least ' + (message.length - CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT).toLocaleString() + ' characters. Your draft is still saved on this device.')
+      setError('Your combined brief is too long to send. Please shorten the descriptions or references by at least ' + (message.length - CUSTOM_BUILD_REVIEW_MESSAGE_LIMIT).toLocaleString() + ' characters. Your draft is still in this form.')
       return
     }
+    submittingRef.current = true
     setSubmitting(true)
+    setCheckoutUncertain(false)
+    setCheckoutReference(null)
+    let definiteFailure = false
     track(mode === 'review' ? 'custom_build_review_start' : 'custom_build_checkout_start', {})
 
     try {
@@ -94,22 +104,38 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
           message,
         } : form),
       })
-      const data = await response.json().catch(() => ({}))
+      const data = await response.json().catch(() => null)
       if (mode === 'review') {
         if (!response.ok || data?.ok !== true) {
           throw new Error(data?.error || 'Unable to save your brief. Please try again.')
         }
         setSaved(data.deliveryStatus === 'sent' ? 'sent' : 'stored_for_review')
+        submittingRef.current = false
         setSubmitting(false)
         track('custom_build_review_saved', {})
         return
       }
+      if (data?.code === 'checkout_creation_uncertain') {
+        setCheckoutUncertain(true)
+        setCheckoutReference(typeof data.reference === 'string' ? data.reference : null)
+        setError("We couldn't confirm this checkout attempt. Please don't start another payment yet. Contact support so we can check it.")
+        return
+      }
       if (!response.ok || !data?.url) {
+        definiteFailure = !response.ok && typeof data?.error === 'string' && (
+          (response.status >= 400 && response.status < 500) || data.retrySafe === true
+        )
         throw new Error(data?.error || 'Unable to open secure checkout. Please try again.')
       }
       window.location.assign(data.url)
     } catch (err) {
+      if (mode === 'payment' && !definiteFailure) {
+        setCheckoutUncertain(true)
+        setError("We couldn't confirm this checkout attempt. Please don't start another payment yet. Contact support so we can check it.")
+        return
+      }
       setError(err instanceof Error ? err.message : 'Unable to submit your brief. Please try again.')
+      submittingRef.current = false
       setSubmitting(false)
     }
   }
@@ -156,16 +182,18 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
               </p>
               <div className="pt-4 border-t border-white/10 text-xs text-slate-300 space-y-2">
                 <p>If you choose to proceed: $500 charged immediately through Stripe Checkout</p>
-                <p>Card, Apple Pay, Stripe Link, and Cash App where available</p>
+                <p>Pay by card or an eligible wallet. Available methods are shown in Stripe Checkout.</p>
                 <p>No DailyClarity account required before payment</p>
               </div>
             </div>
           </div>
 
           <div className="glass-panel rounded-3xl p-6 md:p-10">
-            {wasCanceled && (
-              <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-100">
-                Checkout was canceled. Your project brief is still saved on this device.
+            {wasCanceled && hydrated && (
+              <div role="status" className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-100">
+                {restoredDraft
+                  ? 'You returned from checkout. Your project brief was restored from this tab. Review it before continuing.'
+                  : 'You returned from checkout. No saved brief was found in this tab.'}
               </div>
             )}
 
@@ -318,17 +346,22 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
               {mode === 'review' && <p className="text-sm text-slate-300">We’ll save your brief and use these details to discuss your project. See our <Link href="/privacy" className="text-cyan-200 underline">Privacy Policy</Link>.</p>}
 
               {error && (
-                <p role="alert" className="p-4 rounded-xl bg-red-500/10 border border-red-400/30 text-red-100">
-                  {error}
-                </p>
+                <div role="alert" className="p-4 rounded-xl bg-red-500/10 border border-red-400/30 text-red-100 space-y-3">
+                  <p>{error}</p>
+                  {checkoutUncertain && <>
+                    {checkoutReference && <p className="break-all text-sm">Reference: {checkoutReference}</p>}
+                    <p><Link href="/contact" className="text-cyan-200 underline">Contact support about this attempt</Link></p>
+                  </>}
+                </div>
               )}
 
               <button
                 type="submit"
                 disabled={submitting}
+                aria-busy={submitting && !checkoutUncertain}
                 className="cta-button w-full disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {submitting ? (mode === 'review' ? 'Saving your brief…' : 'Opening secure checkout…') : (mode === 'review' ? 'Request a scope review — no payment' : 'Continue to secure $500 payment')}
+                {checkoutUncertain ? 'Checkout needs review' : submitting ? (mode === 'review' ? 'Saving your brief…' : 'Opening secure checkout…') : (mode === 'review' ? 'Request a scope review — no payment' : 'Continue to secure $500 payment')}
               </button>
               <p className="text-center text-xs text-slate-400">
                 {mode === 'review' ? 'No card required. This request does not place a paid order.' : 'Your card details are entered on Stripe and never pass through DailyClarity.'}

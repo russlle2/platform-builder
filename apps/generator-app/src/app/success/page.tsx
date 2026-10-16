@@ -3,15 +3,16 @@ import type { Metadata } from 'next'
 import { createStripeClient } from '@/lib/stripe-client'
 import { describeCheckoutConfirmation, type CheckoutConfirmation } from '@/lib/checkout-confirmation'
 import { configuredStripeLivemode, isStripeModeAllowed } from '@/lib/stripe-runtime'
+import { CheckPaymentAgain } from './CheckPaymentAgain'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Checkout Complete',
+  title: 'Checkout Status',
   description: 'Review the status and next steps for your DailyClarity order.',
   alternates: { canonical: '/success' },
   openGraph: {
-    title: 'Checkout Complete | DailyClarity',
+    title: 'Checkout Status | DailyClarity',
     description: 'Review the status and next steps for your DailyClarity order.',
     url: '/success',
     type: 'website',
@@ -52,15 +53,21 @@ export default async function SuccessPage({
       <main className="min-h-screen pt-24 pb-16 container-hvac">
         <div className="glass-panel rounded-3xl p-12 max-w-3xl mx-auto text-center">
           <h1 className="text-3xl md:text-4xl font-bold text-bright-white mb-4">
-            We couldn&rsquo;t confirm this payment
+            {result.awaitingPayment ? 'Your payment is not confirmed yet' : 'We couldn’t confirm this checkout'}
           </h1>
           <p className="text-gray-300 text-lg">
-            If you just completed checkout, give it a moment and refresh. If you were charged but
-            don&rsquo;t see your portal, contact us and we&rsquo;ll sort it out right away.
+            {result.awaitingPayment
+              ? 'Some payment methods take longer to confirm. Check again shortly, or check your account and email for an update.'
+              : 'If you just completed checkout, check again shortly. You can also check your account or contact support with the email you used at checkout.'}
+          </p>
+          <p className="mt-4 text-slate-300">
+            If you submitted payment, avoid starting another purchase while checking its status.
+            A pending bank entry alone does not confirm that an order is complete.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-            <Link href="/pricing" className="cta-button">
-              Back to pricing
+            {session_id && <CheckPaymentAgain />}
+            <Link href="/dashboard" className="px-6 py-3 font-semibold text-cyan-200 underline underline-offset-4">
+              Check My websites
             </Link>
             <Link
               href="/contact"
@@ -141,7 +148,8 @@ export default async function SuccessPage({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
             </svg>
             <span>
-              <strong className="text-cyan-200">Use your checkout email</strong> to sign in to your dashboard. You can also use the private portal link in your delivery email.
+              <strong className="text-cyan-200">Use your DailyClarity account email</strong> from your website details to sign in.
+              Changing a billing email in Stripe does not change your website account. You can also use the private portal link in your delivery email.
             </span>
           </div>
 
