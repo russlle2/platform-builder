@@ -36,6 +36,23 @@ describe('checkout confirmation', () => {
     expect(describeCheckoutConfirmation(unexpanded, false)).toMatchObject({ ok: true, trialStarted: false, noPaymentRequired: true })
   })
 
+  it('describes a known unpaid checkout without confirming payment or granting access', () => {
+    const result = describeCheckoutConfirmation(checkout({ payment_status: 'unpaid' }), false)
+    expect(result).toEqual({ ok: false, awaitingPayment: true })
+    const customBuild = checkout({ mode: 'payment', subscription: null, payment_status: 'unpaid', metadata: { checkoutType: 'custom_build' } })
+    expect(describeCheckoutConfirmation(customBuild, false)).toEqual({ ok: false, awaitingPayment: true })
+    for (const invalid of [
+      checkout({ status: 'open', payment_status: 'unpaid' }),
+      checkout({ status: 'expired', payment_status: 'unpaid' }),
+      checkout({ payment_status: 'unpaid', livemode: true }),
+      checkout({ payment_status: 'unpaid', subscription: null }),
+      checkout({ payment_status: 'unpaid', metadata: { checkoutType: 'unrelated' } }),
+      checkout({ payment_status: 'unpaid', mode: 'payment' }),
+    ]) {
+      expect(describeCheckoutConfirmation(invalid, false)).toEqual({ ok: false })
+    }
+  })
+
   it('requires a subscription reference before confirming a subscription checkout', () => {
     expect(describeCheckoutConfirmation(checkout({ subscription: null }), false).ok).toBe(false)
     expect(describeCheckoutConfirmation(checkout({ subscription: '' }), false).ok).toBe(false)

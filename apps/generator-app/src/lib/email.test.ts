@@ -1,7 +1,31 @@
 import { afterEach, expect, it, vi } from 'vitest'
-import { sendContactConfirmation, sendEmail } from './email'
+import { sendContactConfirmation, sendEmail, sendOrderConfirmationEmail, sendWebsiteLiveEmail } from './email'
 
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.restoreAllMocks() })
+
+it('delivers private account links without tracking redirects and includes usable plain-text links', async () => {
+  vi.stubEnv('POSTMARK_SERVER_TOKEN', 'local-fixture')
+  vi.stubEnv('EMAIL_FROM_ADDRESS', 'sender@example.test')
+  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://platform.example.test')
+  const fetch = vi.fn().mockImplementation(async () => Response.json({ ErrorCode: 0 }))
+  vi.stubGlobal('fetch', fetch)
+  await sendOrderConfirmationEmail('owner@example.test', 'A & B <Practice>', 'practice', 'private-fixture-token', 'wellness')
+  await sendWebsiteLiveEmail('owner@example.test', 'A & B <Practice>', 'practice', 'private-fixture-token', 'https://practice.example.test')
+  for (const [, request] of fetch.mock.calls) {
+    const message = JSON.parse(request.body)
+    expect(message).toMatchObject({ To: 'owner@example.test', TrackOpens: false, TrackLinks: 'None' })
+    expect(message.HtmlBody).toContain('A &amp; B &lt;Practice&gt;')
+    expect(message.HtmlBody).toContain('https://platform.example.test/help#domains')
+    expect(message.HtmlBody).not.toContain('/help/custom-domain')
+    expect(message.TextBody).toContain('https://platform.example.test/portal?slug=practice#token=private-fixture-token')
+    expect(message.TextBody).toContain('https://platform.example.test/dashboard')
+    expect(message.TextBody).toContain('Keep this link private')
+  }
+  const order = JSON.parse(fetch.mock.calls[0][1].body)
+  expect(order.Subject).toBe('Your DailyClarity order and account access')
+  expect(order.HtmlBody).not.toMatch(/being built|assembled now|within a few minutes/)
+  expect(JSON.parse(fetch.mock.calls[1][1].body).TextBody).toContain('https://practice.example.test')
+})
 
 it('keeps the existing 10s timeout and permits a bounded short Auth-hook deadline', async () => {
   vi.stubEnv('POSTMARK_SERVER_TOKEN', 'local-fixture')

@@ -8,12 +8,19 @@ vi.mock('next/script', () => ({ default: ({ src, children }: { src?: string; chi
 import Analytics from './Analytics'
 import { BOOKING_KIT_ACCESS_STORAGE_KEY, canLoadPageAnalytics } from '@/lib/analytics-privacy'
 
-describe('private kit analytics exclusion', () => {
-  it('loads no analytics scripts on private kit result pages even with configured trackers', () => {
-    for (const pathname of ['/booking-kit/result', '/booking-kit/result/']) {
+describe('private page analytics exclusion', () => {
+  it('loads no analytics scripts on private result pages even with configured trackers', () => {
+    for (const pathname of ['/booking-kit/result', '/booking-kit/result/', '/success', '/success/']) {
       route.pathname = pathname
       expect(renderToStaticMarkup(createElement(Analytics, { plausibleDomain: 'dailyclarity.org', googleAnalyticsId: 'G-EXAMPLE' }))).toBe('')
     }
+  })
+  it('rejects checkout confirmation tracking before reading browser storage', () => {
+    const getItem = vi.fn(() => null)
+    expect(canLoadPageAnalytics('/success', { getItem })).toBe(false)
+    expect(canLoadPageAnalytics('/success/', { getItem })).toBe(false)
+    expect(getItem).not.toHaveBeenCalled()
+    expect(canLoadPageAnalytics('/success-stories', { getItem })).toBe(true)
   })
   it('does not render public trackers before private storage is checked in the browser', () => {
     route.pathname = '/pricing'

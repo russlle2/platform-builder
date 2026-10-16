@@ -329,3 +329,41 @@ test('a delayed plans checkpoint cannot navigate or restore a handoff after retu
   await expect(page).toHaveURL(/\/preview-your-business$/)
   await expect(page.getByRole('button', { name: 'Continue to plans', exact: true })).toHaveCount(0)
 })
+
+test('opening plans saves one checkpoint despite repeated submits and resumes after a clear save failure', async ({ page }) => {
+  let releasePlans!: () => void
+  const heldPlans = new Promise<void>(resolve => { releasePlans = resolve })
+  let plansRequests = 0
+  await page.route('**/api/profile/save-draft', async route => {
+    if (route.request().postDataJSON().profile.funnel.stage === 'plans') {
+      plansRequests++
+      if (plansRequests === 1) {
+        await heldPlans
+        await route.fulfill({ status: 503, json: { error: 'Draft save unavailable.' } })
+        return
+      }
+    }
+    await route.fulfill({ json: { ok: true } })
+  })
+  await seedRealDraft(page)
+  await page.goto('/preview-your-business')
+  await page.getByRole('button', { name: 'Resume preview' }).click()
+  await page.getByRole('button', { name: 'Choose a launch plan' }).click()
+  await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
+  await page.getByLabel('Public contact email').fill('hello@example.com')
+  await page.getByRole('heading', { name: 'Confirm your email addresses before plans' }).locator('..').locator('..').evaluate(form => {
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
+  })
+  await expect.poll(() => plansRequests).toBe(1)
+  const busy = page.getByRole('button', { name: 'Opening plans…', exact: true })
+  await expect(busy).toHaveCount(2)
+  await expect(busy.first()).toBeDisabled()
+  await expect(busy.last()).toBeDisabled()
+  releasePlans()
+  await expect(page.getByRole('button', { name: 'Choose a launch plan' })).toBeEnabled()
+  await expect(page.getByText(/could not save your details/)).toBeVisible()
+  await page.getByRole('button', { name: 'Choose a launch plan' }).click()
+  await expect(page).toHaveURL(/\/pricing\?/)
+  expect(plansRequests).toBe(2)
+})

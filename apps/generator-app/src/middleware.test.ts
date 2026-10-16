@@ -93,3 +93,28 @@ describe('private callback middleware boundary', () => {
     expect(updateSession).toHaveBeenCalledExactlyOnceWith(expect.any(NextRequest))
   })
 })
+
+describe('checkout confirmation privacy boundary', () => {
+  it.each(['/success?session_id=invalid-fixture', '/success/?session_id=invalid-fixture'])(
+    'keeps %s private without bypassing the account session refresh', async (path) => {
+      const response = await middleware(new NextRequest(`https://dailyclarity-staging.netlify.app${path}`))
+      expect(updateSession).toHaveBeenCalledExactlyOnceWith(expect.any(NextRequest))
+      expect(response.headers.get('location')).toBeNull()
+      expect(response.headers.get('cache-control')).toBe('private, no-store, max-age=0')
+      expect(response.headers.get('referrer-policy')).toBe('no-referrer')
+      expect(response.headers.get('x-robots-tag')).toBe('noindex, nofollow')
+      const policy = response.headers.get('content-security-policy')!
+      expect(policy).toContain("script-src 'self' 'unsafe-inline' 'unsafe-eval'")
+      expect(policy).toContain("connect-src 'self'")
+      expect(policy).toContain("img-src 'self' data: blob:")
+      expect(policy).toContain("frame-src 'none'")
+      expect(policy).not.toMatch(/google|plausible|posthog|stripe/)
+    },
+  )
+
+  it('retains the ordinary public policy for a similarly named page', async () => {
+    const response = await middleware(new NextRequest('https://dailyclarity-staging.netlify.app/success-stories'))
+    expect(response.headers.get('referrer-policy')).toBe('strict-origin-when-cross-origin')
+    expect(response.headers.get('content-security-policy')).toContain('https://www.googletagmanager.com')
+  })
+})

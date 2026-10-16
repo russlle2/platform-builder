@@ -187,3 +187,85 @@ test('homepage sample choice carries the chosen practice without asking for cont
   await page.getByRole('button', { name: 'Try a sample website', exact: true }).click()
   await expect(page).toHaveURL(/\/preview-your-business\?sample=1&niche=sound_bath/)
 })
+
+async function preparePaymentDraft(page: Page) {
+  await page.addInitScript(() => {
+    sessionStorage.setItem('pb_biz_info', JSON.stringify({ businessName: 'Payment Studio', email: 'public@example.com', accountEmail: 'private@example.com' }))
+    sessionStorage.setItem('pb_template_values', JSON.stringify({ BUSINESS_NAME: 'Payment Studio', EMAIL: 'public@example.com' }))
+  })
+  await page.route('**/api/platform/config', route => route.fulfill({ json: { trialDays: 0 } }))
+  await page.goto('/pricing?template=payment-layout&niche=aromatherapy')
+  await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toHaveCount(2)
+}
+
+test('all plans share a synchronous checkout guard, recover on rejection, and remain busy after redirect starts', async ({ page }) => {
+  let requests = 0
+  let releaseFailure!: () => void
+  const heldFailure = new Promise<void>(resolve => { releaseFailure = resolve })
+  let navigationRequested = false
+  await page.route('**/checkout-fixture', async route => {
+    navigationRequested = true
+    // Keep the originating document visible after the redirect request.
+    await route.fulfill({ status: 204 })
+  })
+  await page.route('**/api/stripe/checkout', async route => {
+    requests++
+    if (requests === 1) {
+      await heldFailure
+      await route.fulfill({ status: 503, json: { error: 'Checkout is unavailable before session creation.', retrySafe: true } })
+    } else await route.fulfill({ json: { url: '/checkout-fixture' } })
+  })
+  await preparePaymentDraft(page)
+  const plans = page.getByRole('button', { name: 'Choose Plan', exact: true })
+  await plans.evaluateAll(buttons => buttons.forEach(button => (button as HTMLButtonElement).click()))
+  await expect.poll(() => requests).toBe(1)
+  await expect(page.getByRole('button', { name: 'Opening secure checkout…', exact: true })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toBeDisabled()
+  releaseFailure()
+  await expect(page.getByRole('alert').filter({ hasText: 'Checkout is unavailable' })).toBeVisible()
+  await expect(plans.first()).toBeEnabled()
+  await expect(plans.last()).toBeEnabled()
+  await plans.last().click({ noWaitAfter: true })
+  await expect.poll(() => navigationRequested).toBe(true)
+  await expect(page.getByRole('button', { name: 'Opening secure checkout…', exact: true })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toBeDisabled()
+  expect(requests).toBe(2)
+})
+
+for (const outcome of ['uncertain', 'interrupted', 'gateway-timeout'] as const) {
+  test(`${outcome} checkout does not invite another payment`, async ({ page }) => {
+    let requests = 0
+    await page.route('**/api/stripe/checkout', route => {
+      requests++
+      if (outcome === 'interrupted') return route.abort('failed')
+      if (outcome === 'gateway-timeout') return route.fulfill({ status: 504, json: { error: 'Function invocation timed out.' } })
+      return route.fulfill({ status: 409, json: {
+        code: 'checkout_creation_uncertain', reference: 'test-attempt-123', supportUrl: '/contact',
+        error: 'Checkout outcome is unconfirmed.',
+      } })
+    })
+    await preparePaymentDraft(page)
+    await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
+    const alert = page.getByRole('alert').filter({ hasText: "Please don't start another payment yet" })
+    await expect(alert).toBeVisible()
+    await expect(alert.getByRole('link', { name: 'Contact support about this attempt' })).toHaveAttribute('href', '/contact')
+    if (outcome === 'uncertain') await expect(alert).toContainText('test-attempt-123')
+    await expect(page.getByRole('button', { name: 'Checkout needs review' })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toBeDisabled()
+    expect(requests).toBe(1)
+  })
+}
+
+for (const [code, label] of [
+  ['catalog_revision_unavailable', 'Return to your preview to refresh this design'],
+  ['image_upload_missing', 'Return to your preview to re-upload images'],
+] as const) {
+  test(`${code} offers the matching preview recovery`, async ({ page }) => {
+    await page.route('**/api/stripe/checkout', route => route.fulfill({ status: 409, json: { code, error: 'Your preview needs attention.', recoveryUrl: '/preview-your-business' } }))
+    await preparePaymentDraft(page)
+    await page.evaluate(() => sessionStorage.setItem('pb_catalog_revision', 'stale'))
+    await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
+    await expect(page.getByRole('link', { name: label })).toHaveAttribute('href', '/preview-your-business?plan=basic')
+    if (code === 'catalog_revision_unavailable') expect(await page.evaluate(() => sessionStorage.getItem('pb_catalog_revision'))).toBeNull()
+  })
+}

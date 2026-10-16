@@ -371,22 +371,30 @@ export default function PreviewYourBusinessClient() {
   const [browseLoading, setBrowseLoading] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [pendingPlansHref, setPendingPlansHref] = useState<string | null>(null)
+  const [openingPlans, setOpeningPlans] = useState(false)
   const capturedEmailsRef = useRef(new Set<string>())
   const leadSaveQueueRef = useRef<Promise<unknown>>(Promise.resolve())
   const leadSaveRequestRef = useRef(0)
   const leadSaveFlowRef = useRef(0)
   const leadSaveControllersRef = useRef(new Set<AbortController>())
   const plansRequestRef = useRef(0)
+  const plansInFlightRef = useRef(false)
+
+  const cancelPlansHandoff = useCallback(() => {
+    plansRequestRef.current += 1
+    plansInFlightRef.current = false
+    setOpeningPlans(false)
+  }, [])
 
   const invalidateLeadSaves = useCallback(() => {
     leadSaveFlowRef.current += 1
     leadSaveRequestRef.current += 1
-    plansRequestRef.current += 1
+    cancelPlansHandoff()
     for (const controller of leadSaveControllersRef.current) controller.abort()
     leadSaveControllersRef.current.clear()
     leadSaveQueueRef.current = Promise.resolve()
     capturedEmailsRef.current.clear()
-  }, [])
+  }, [cancelPlansHandoff])
 
   const clientReadiness = useMemo(
     () => computeClientReadiness(businessInfo, stylePreferences),
@@ -755,7 +763,7 @@ export default function PreviewYourBusinessClient() {
     if (appliedSelectionRef.current === selection) return
     appliedSelectionRef.current = selection
     if (businessInfo.niche !== nichePrefill) {
-      plansRequestRef.current += 1
+      cancelPlansHandoff()
       setPendingPlansHref(null)
       setBusinessInfo({ niche: nichePrefill })
       setTemplates([])
@@ -769,7 +777,7 @@ export default function PreviewYourBusinessClient() {
       setPreviewError(null)
     }
     setStep('info')
-  }, [sampleFromUrl, isSample, nichePrefill, templatePrefill, businessInfo.niche, setBusinessInfo, setStep])
+  }, [sampleFromUrl, isSample, nichePrefill, templatePrefill, businessInfo.niche, setBusinessInfo, setStep, cancelPlansHandoff])
 
   /* ================ Restore persisted customization ================ */
   useEffect(() => {
@@ -1028,7 +1036,9 @@ export default function PreviewYourBusinessClient() {
   }, [reset, nichePrefill, setBusinessInfo, invalidateLeadSaves])
 
   const handleCheckoutEmail = useCallback(async (accountEmail: string, email: string, href: string) => {
-    if (usePreviewStore.getState().isSample || !isValidPreviewEmail(accountEmail) || !isValidPreviewEmail(email)) return
+    if (plansInFlightRef.current || usePreviewStore.getState().isSample || !isValidPreviewEmail(accountEmail) || !isValidPreviewEmail(email)) return
+    plansInFlightRef.current = true
+    setOpeningPlans(true)
     const flow = leadSaveFlowRef.current
     const requestId = ++plansRequestRef.current
     setPendingPlansHref(null)
@@ -1037,16 +1047,22 @@ export default function PreviewYourBusinessClient() {
       sessionStorage.setItem('pb_template_values', JSON.stringify(getFieldValues()))
     } catch {
       setPreviewError('Your browser could not keep your details for checkout. Allow site storage, then retry your preview.')
+      plansInFlightRef.current = false
+      setOpeningPlans(false)
       return
     }
     const saved = await persistBusinessDraft('plans')
     if (flow !== leadSaveFlowRef.current || requestId !== plansRequestRef.current || usePreviewStore.getState().isSample) return
     if (saved) router.push(href)
-    else setPendingPlansHref(href)
+    else {
+      plansInFlightRef.current = false
+      setOpeningPlans(false)
+      setPendingPlansHref(href)
+    }
   }, [getFieldValues, router, setBusinessInfo, persistBusinessDraft])
 
   const handleEditDetails = useCallback(() => {
-    plansRequestRef.current += 1
+    cancelPlansHandoff()
     setPendingPlansHref(null)
     if (isSample) { handleEndSample(); return }
     matchingRequestIdRef.current += 1
@@ -1054,7 +1070,7 @@ export default function PreviewYourBusinessClient() {
     setTemplatesLoading(false)
     setPreviewLoading(false)
     setStep('info')
-  }, [isSample, handleEndSample, setStep])
+  }, [isSample, handleEndSample, setStep, cancelPlansHandoff])
 
   /* ================================================================ */
   /* Render                                                           */
@@ -1223,6 +1239,7 @@ export default function PreviewYourBusinessClient() {
             contactEmail={businessInfo.email}
             accountEmail={businessInfo.accountEmail}
             onCheckoutEmail={handleCheckoutEmail}
+            openingPlans={openingPlans}
             readiness={clientReadiness}
             previewHtml={previewHtml}
             previewStylesheet={previewStylesheetRef.current}
@@ -1782,6 +1799,7 @@ function EditorStep({
   contactEmail,
   accountEmail,
   onCheckoutEmail,
+  openingPlans,
   readiness,
   previewHtml,
   previewStylesheet,
@@ -1813,6 +1831,7 @@ function EditorStep({
   contactEmail: string
   accountEmail: string
   onCheckoutEmail: (accountEmail: string, email: string, href: string) => void
+  openingPlans: boolean
   readiness: ReturnType<typeof computeClientReadiness>
   previewHtml: string | null
   previewStylesheet: string
@@ -1978,13 +1997,15 @@ function EditorStep({
           </button>
           {previewHtml && !previewLoading && !previewError ? <button
             type="button"
+            disabled={openingPlans}
+            aria-busy={openingPlans}
             onClick={() => {
               if (isValidPreviewEmail(accountEmail) && isValidPreviewEmail(contactEmail)) onCheckoutEmail(accountEmail, contactEmail, checkoutHref)
               else setShowCheckoutEmail(true)
             }}
             className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
           >
-            Choose a launch plan
+            {openingPlans ? 'Opening plans…' : 'Choose a launch plan'}
           </button> : <button type="button" disabled className="rounded-lg border border-white/20 px-4 py-2 text-sm text-slate-400 disabled:cursor-not-allowed">Preview required before purchase</button>}
         </div>}
       </div>
@@ -2004,6 +2025,7 @@ function EditorStep({
           }
           onCheckoutEmail(privateEmail, email, checkoutHref)
         }}>
+          <fieldset disabled={openingPlans}>
           <h2 className="font-semibold text-white">Confirm your email addresses before plans</h2>
           <p className="mt-2 text-sm text-slate-300">Keep your account inbox private and choose what visitors see. You will review pricing before any payment.</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -2015,9 +2037,10 @@ function EditorStep({
           <button type="button" disabled={!isValidPreviewEmail(privateEmail)} onClick={() => setEmail(privateEmail.trim())}
             className="mt-2 rounded-lg px-2 py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50">Use account email</button>
           <div className="mt-4 flex flex-wrap items-end gap-3">
-            <button type="submit" className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold text-slate-950">Continue to plans</button>
+            <button type="submit" aria-busy={openingPlans} className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold text-slate-950">{openingPlans ? 'Opening plans…' : 'Continue to plans'}</button>
             <button type="button" onClick={() => setShowCheckoutEmail(false)} className="rounded-lg px-4 py-3 text-sm text-slate-300 underline underline-offset-4">Keep exploring</button>
           </div>
+          </fieldset>
         </form>
       )}
 

@@ -25,6 +25,7 @@ import {
 import { normalizeSiteSlug, validateSiteSlug } from '@/lib/site-slug'
 import { UPLOAD_SESSION_COOKIE, verifyUploadSessionValue } from '@/lib/upload-session'
 import { normalizeAccountEmail, omitAccountEmailFields } from '@/lib/account-email'
+import { isDefinitiveCheckoutRejection, uncertainCheckoutResponse } from '@/lib/checkout-creation-error'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -57,12 +58,14 @@ function randomSuffix(): string {
 }
 
 export async function POST(req: NextRequest) {
-  if (areSalesPaused()) return NextResponse.json({ error: 'Checkout is temporarily unavailable.' }, { status: 503 })
+  if (areSalesPaused()) return NextResponse.json({ error: 'Checkout is temporarily unavailable.', retrySafe: true }, { status: 503 })
   const allowed = rateLimitByIp(req, 'checkout', 10, 10 * 60 * 1000)
   if (!allowed) return jsonTooManyRequests()
 
   let checkoutIntentId: string | null = null
   let reservedSlug: string | null = null
+  let sessionCreationAttempted = false
+  let createdSession: Stripe.Checkout.Session | null = null
   const supabase = supabaseUrl && supabaseServiceKey
     ? createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } })
     : null
@@ -74,7 +77,7 @@ export async function POST(req: NextRequest) {
         '[stripe/checkout] unavailable; fulfillment configuration issues:',
         runtimeConfigIssues.join(', '),
       )
-      return NextResponse.json({ error: 'Checkout is temporarily unavailable.' }, { status: 503 })
+      return NextResponse.json({ error: 'Checkout is temporarily unavailable.', retrySafe: true }, { status: 503 })
     }
     const parsedBody = await readBoundedJson(req, MAX_CHECKOUT_PAYLOAD_BYTES)
     if (!parsedBody.ok) {
@@ -102,7 +105,7 @@ export async function POST(req: NextRequest) {
       )
     }
     if (isManagedPlan(canonicalPlan) && !process.env.PLATFORM_OWNER_EMAIL?.trim()) {
-      return NextResponse.json({ error: 'Managed-service checkout is temporarily unavailable.' }, { status: 503 })
+      return NextResponse.json({ error: 'Managed-service checkout is temporarily unavailable.', retrySafe: true }, { status: 503 })
     }
 
     // Validate required profile fields
@@ -214,7 +217,7 @@ export async function POST(req: NextRequest) {
 
     const origin = getTrustedSiteOrigin(req.url)
     if (!origin) {
-      return NextResponse.json({ error: 'Checkout redirect configuration is missing.' }, { status: 503 })
+      return NextResponse.json({ error: 'Checkout redirect configuration is missing.', retrySafe: true }, { status: 503 })
     }
 
     checkoutIntentId = randomUUID()
@@ -297,7 +300,7 @@ export async function POST(req: NextRequest) {
       subscriptionData.trial_period_days = trialDays
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       ...stripeCheckoutExperience(),
       mode: 'subscription',
       line_items: [{ price: priceId, quantity: 1 }],
@@ -311,14 +314,19 @@ export async function POST(req: NextRequest) {
       integration_identifier: stripeIntegrationIdentifier('dailyclarity-template', checkoutIntentId),
       metadata,
       subscription_data: subscriptionData,
-    }, { idempotencyKey: `dailyclarity-checkout-${checkoutIntentId}` })
+    }
+    sessionCreationAttempted = true
+    const session = await stripe.checkout.sessions.create(sessionParams, {
+      idempotencyKey: `dailyclarity-checkout-${checkoutIntentId}`,
+    })
+    createdSession = session
 
     if (!session.url) throw new Error('stripe_checkout_missing_url')
     const { error: sessionUpdateError } = await supabase.from('checkout_intents').update({
       status: 'session_created',
       stripe_session_id: session.id,
       updated_at: new Date().toISOString(),
-    }).eq('id', checkoutIntentId)
+    }).eq('id', checkoutIntentId).in('status', ['pending', 'session_created'])
     if (sessionUpdateError) {
       console.error('[stripe/checkout] intent session update failed:', sessionUpdateError)
     }
@@ -328,6 +336,25 @@ export async function POST(req: NextRequest) {
     const message =
       error instanceof Error ? error.message : 'Unable to create checkout session.'
     console.error('[stripe/checkout]', message)
+    if (createdSession || (sessionCreationAttempted && !isDefinitiveCheckoutRejection(error))) {
+      // Never release the reservation or manufacture a failure after Stripe
+      // might have created a payable session. Signed events can still resolve
+      // this durable intent; status filters preserve concurrent fulfillment.
+      if (supabase && checkoutIntentId) {
+        try {
+          const { error: recordError } = await supabase.from('checkout_intents').update({
+            ...(createdSession ? { stripe_session_id: createdSession.id, status: 'session_created' } : {}),
+            last_error: 'checkout_creation_uncertain',
+            updated_at: new Date().toISOString(),
+          }).eq('id', checkoutIntentId).in('status', ['pending', 'session_created'])
+          if (recordError) console.error('[stripe/checkout] uncertain checkout recording failed')
+        } catch {
+          // A database outage must not turn uncertainty into permission to buy again.
+          console.error('[stripe/checkout] uncertain checkout recording failed')
+        }
+      }
+      return NextResponse.json(uncertainCheckoutResponse(checkoutIntentId), { status: 409 })
+    }
     if (supabase && checkoutIntentId) {
       await supabase.from('checkout_intents').update({
         status: 'checkout_failed',
@@ -342,7 +369,7 @@ export async function POST(req: NextRequest) {
       }
     }
     return NextResponse.json(
-      { error: 'Unable to start checkout. Please try again.' },
+      { error: 'Unable to start checkout. Please try again.', retrySafe: true },
       { status: 500 },
     )
   }

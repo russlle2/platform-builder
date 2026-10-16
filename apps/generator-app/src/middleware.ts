@@ -123,12 +123,18 @@ export default async function middleware(req: NextRequest) {
     ].join('; ')
   )
 
-  if (req.nextUrl.pathname === '/booking-kit/result' || req.nextUrl.pathname.startsWith('/booking-kit/result/')) {
+  if (
+    req.nextUrl.pathname === '/booking-kit/result' ||
+    req.nextUrl.pathname.startsWith('/booking-kit/result/') ||
+    req.nextUrl.pathname === '/success' ||
+    req.nextUrl.pathname === '/success/'
+  ) {
     supabaseResponse.headers.set('Cache-Control', 'private, no-store, max-age=0')
     supabaseResponse.headers.set('Referrer-Policy', 'no-referrer')
     supabaseResponse.headers.set('X-Robots-Tag', 'noindex, nofollow')
-    // Enforce the private document boundary even if a tracker is accidentally
-    // added to a shared layout in a future change.
+    // Checkout references can retrieve order status. Keep them and private kit
+    // credentials out of trackers, referrers and shared caches, even if a
+    // tracker is accidentally added to a shared layout in a future change.
     supabaseResponse.headers.set('Content-Security-Policy', [
       "default-src 'self'", "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'", "font-src 'self'", "img-src 'self' data: blob:",

@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
+import Stripe from 'stripe'
 
 const mocks = vi.hoisted(() => ({
   createStripeClient: vi.fn(),
@@ -58,6 +59,38 @@ function requestWithImages(owners: string[], overrides: Record<string, unknown> 
   })
 }
 
+function checkoutLifecycle() {
+  const insertIntent = vi.fn().mockResolvedValue({ error: null })
+  const insertSlug = vi.fn().mockResolvedValue({ error: null })
+  const intentStatusFilter = vi.fn().mockResolvedValue({ error: null })
+  const updateIntent = vi.fn((_values: Record<string, unknown>) => ({
+    eq: vi.fn(() => ({
+      in: intentStatusFilter,
+      then: (resolve: (result: { error: null }) => unknown) => Promise.resolve({ error: null }).then(resolve),
+    })),
+  }))
+  const deletedSlugFilters: Array<[string, unknown]> = []
+  const slugDeletion = {
+    eq: (field: string, value: unknown) => { deletedSlugFilters.push([field, value]); return slugDeletion },
+    then: (resolve: (result: { error: null }) => unknown) => Promise.resolve({ error: null }).then(resolve),
+  }
+  const deleteSlug = vi.fn(() => slugDeletion)
+  mocks.supabaseFrom.mockImplementation((table: string) => {
+    if (table === 'checkout_intents') return { insert: insertIntent, update: updateIntent }
+    if (table === 'site_slugs') return { insert: insertSlug, delete: deleteSlug }
+    throw new Error(`Unexpected table ${table}`)
+  })
+  const retrievePrice = vi.fn().mockResolvedValue({
+    id: 'price_basic', active: true, type: 'recurring',
+    recurring: { interval: 'month', interval_count: 1 }, unit_amount: 2_000, currency: 'usd',
+  })
+  const createSession = vi.fn().mockResolvedValue({ id: 'cs_lifecycle', url: 'https://checkout.stripe.test/session' })
+  mocks.createStripeClient.mockReturnValue({
+    prices: { retrieve: retrievePrice }, checkout: { sessions: { create: createSession } },
+  })
+  return { insertIntent, insertSlug, updateIntent, intentStatusFilter, deleteSlug, deletedSlugFilters, retrievePrice, createSession }
+}
+
 describe('template checkout draft-image gate', () => {
   beforeAll(async () => {
     process.env.STRIPE_SECRET_KEY = 'sk_test_checkout'
@@ -82,7 +115,9 @@ describe('template checkout draft-image gate', () => {
   it('pauses new paid sales before any Stripe or database action', async () => {
     vi.stubEnv('DAILYCLARITY_SALES_PAUSED', 'true')
     try {
-      expect((await checkoutPost(requestWithImages([]))).status).toBe(503)
+      const response = await checkoutPost(requestWithImages([]))
+      expect(response.status).toBe(503)
+      expect(await response.json()).toHaveProperty('retrySafe', true)
       expect(mocks.createStripeClient).not.toHaveBeenCalled()
       expect(mocks.supabaseFrom).not.toHaveBeenCalled()
     } finally {
@@ -107,6 +142,7 @@ describe('template checkout draft-image gate', () => {
     try {
       const response = await checkoutPost(requestWithImages([], { planKey: 'security_ads' }))
       expect(response.status).toBe(503)
+      expect(await response.json()).toHaveProperty('retrySafe', true)
       expect(mocks.createStripeClient).not.toHaveBeenCalled()
       expect(mocks.supabaseFrom).not.toHaveBeenCalled()
     } finally {
@@ -138,7 +174,7 @@ describe('template checkout draft-image gate', () => {
     }
     const insertIntent = vi.fn().mockResolvedValue({ error: null })
     const insertSlug = vi.fn().mockResolvedValue({ error: null })
-    const updateIntentEq = vi.fn().mockResolvedValue({ error: null })
+    const updateIntentEq = vi.fn(() => ({ in: vi.fn().mockResolvedValue({ error: null }) }))
     mocks.supabaseFrom.mockImplementation((table: string) => {
       if (table === 'checkout_intents') {
         return { insert: insertIntent, update: vi.fn(() => ({ eq: updateIntentEq })) }
@@ -269,7 +305,7 @@ describe('template checkout draft-image gate', () => {
     mocks.supabaseFrom.mockImplementation((table: string) => {
       if (table === 'checkout_intents') return {
         insert: insertIntent,
-        update: () => ({ eq: vi.fn().mockResolvedValue({ error: null }) }),
+        update: () => ({ eq: vi.fn(() => ({ in: vi.fn().mockResolvedValue({ error: null }) })) }),
       }
       if (table === 'site_slugs') return { insert: vi.fn().mockResolvedValue({ error: null }) }
       throw new Error(`Unexpected table ${table}`)
@@ -324,5 +360,107 @@ describe('template checkout draft-image gate', () => {
     expect(mocks.getTemplate).not.toHaveBeenCalled()
     expect(mocks.createStripeClient).not.toHaveBeenCalled()
     expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+  })
+
+  it('keeps a pre-creation Stripe read failure distinct from an uncertain checkout creation', async () => {
+    const state = checkoutLifecycle()
+    state.retrievePrice.mockRejectedValue(new Stripe.errors.StripeConnectionError({ message: 'Price lookup unavailable' }))
+    const response = await checkoutPost(requestWithImages([]))
+    expect(response.status).toBe(500)
+    const body = await response.json()
+    expect(body).not.toHaveProperty('code', 'checkout_creation_uncertain')
+    expect(body).toHaveProperty('retrySafe', true)
+    expect(state.createSession).not.toHaveBeenCalled()
+    expect(state.insertIntent).not.toHaveBeenCalled()
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('marks a saved intent failed when slug reservation fails before session creation', async () => {
+    const state = checkoutLifecycle()
+    state.insertSlug.mockResolvedValue({ error: { code: 'unavailable' } } as never)
+    const response = await checkoutPost(requestWithImages([]))
+    expect(response.status).toBe(500)
+    expect(await response.json()).toHaveProperty('retrySafe', true)
+    expect(state.createSession).not.toHaveBeenCalled()
+    expect(state.updateIntent).toHaveBeenCalledWith(expect.objectContaining({ status: 'checkout_failed' }))
+  })
+
+  it.each([
+    new Stripe.errors.StripeConnectionError({ message: 'Connection lost' }),
+    new Stripe.errors.StripeAPIError({ message: 'Server error', statusCode: 500 }),
+    new Error('Unknown transport outcome'),
+  ])('preserves the durable intent and reserved slug after uncertain creation: %s', async (error) => {
+    const state = checkoutLifecycle()
+    state.createSession.mockRejectedValue(error)
+    const response = await checkoutPost(requestWithImages([]))
+    const body = await response.json()
+    expect(response.status).toBe(409)
+    expect(body).toMatchObject({ code: 'checkout_creation_uncertain', reference: state.insertIntent.mock.calls[0][0].id, supportUrl: '/contact' })
+    expect(body.error).toContain("don't start another payment")
+    expect(body).not.toHaveProperty('retrySafe')
+    expect(state.updateIntent).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ last_error: 'checkout_creation_uncertain' }))
+    expect(state.updateIntent.mock.calls[0][0]).not.toHaveProperty('status')
+    expect(state.intentStatusFilter).toHaveBeenCalledWith('status', ['pending', 'session_created'])
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('retains the known session and slug when creation succeeds but its checkout URL is missing', async () => {
+    const state = checkoutLifecycle()
+    state.createSession.mockResolvedValue({ id: 'cs_known', url: null } as never)
+    const response = await checkoutPost(requestWithImages([]))
+    expect(response.status).toBe(409)
+    expect(await response.json()).not.toHaveProperty('retrySafe')
+    expect(state.updateIntent).toHaveBeenCalledWith(expect.objectContaining({
+      stripe_session_id: 'cs_known', status: 'session_created', last_error: 'checkout_creation_uncertain',
+    }))
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('returns the uncertain contract even if recording uncertainty also fails', async () => {
+    const state = checkoutLifecycle()
+    state.createSession.mockRejectedValue(new Stripe.errors.StripeConnectionError({ message: 'Connection lost' }))
+    state.intentStatusFilter.mockRejectedValue(new Error('Database unavailable'))
+    const response = await checkoutPost(requestWithImages([]))
+    expect(response.status).toBe(409)
+    expect(await response.json()).toHaveProperty('code', 'checkout_creation_uncertain')
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('fails and releases only its own reservation after a definitive Stripe request rejection', async () => {
+    const state = checkoutLifecycle()
+    state.createSession.mockRejectedValue(new Stripe.errors.StripeInvalidRequestError({ message: 'Invalid price', statusCode: 400 }))
+    const response = await checkoutPost(requestWithImages([]))
+    expect(response.status).toBe(500)
+    const body = await response.json()
+    expect(body).not.toHaveProperty('code', 'checkout_creation_uncertain')
+    expect(body).toHaveProperty('retrySafe', true)
+    expect(state.updateIntent).toHaveBeenCalledWith(expect.objectContaining({ status: 'checkout_failed' }))
+    expect(state.deleteSlug).toHaveBeenCalledOnce()
+    expect(state.deletedSlugFilters).toEqual([
+      ['slug', 'example-site'], ['reserved_for', state.insertIntent.mock.calls[0][0].id], ['status', 'checkout_pending'],
+    ])
+  })
+
+  it('does not regress a concurrently completed intent when persisting a successful session', async () => {
+    const state = checkoutLifecycle()
+    let persistedStatus = 'pending'
+    state.createSession.mockImplementation(async () => {
+      // The signed webhook wins the race before the create response arrives.
+      persistedStatus = 'completed'
+      return { id: 'cs_already_completed', url: 'https://checkout.stripe.test/session' }
+    })
+    state.intentStatusFilter.mockImplementation(async (_field: string, allowedStatuses: string[]) => {
+      if (allowedStatuses.includes(persistedStatus)) {
+        persistedStatus = String(state.updateIntent.mock.calls.at(-1)?.[0].status)
+      }
+      return { error: null }
+    })
+
+    const response = await checkoutPost(requestWithImages([]))
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ url: 'https://checkout.stripe.test/session' })
+    expect(state.intentStatusFilter).toHaveBeenCalledExactlyOnceWith('status', ['pending', 'session_created'])
+    expect(persistedStatus).toBe('completed')
+    expect(state.deleteSlug).not.toHaveBeenCalled()
   })
 })

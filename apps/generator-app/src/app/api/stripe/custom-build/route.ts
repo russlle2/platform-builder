@@ -18,6 +18,7 @@ import {
   isStripeModeAllowed,
 } from '@/lib/stripe-runtime'
 import { readBoundedJson } from '@/lib/bounded-json'
+import { isDefinitiveCheckoutRejection, uncertainCheckoutResponse } from '@/lib/checkout-creation-error'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -39,7 +40,7 @@ async function resolveCustomBuildPrice(stripe: Stripe): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-  if (areSalesPaused()) return NextResponse.json({ error: 'Custom-build checkout is temporarily unavailable.' }, { status: 503 })
+  if (areSalesPaused()) return NextResponse.json({ error: 'Custom-build checkout is temporarily unavailable.', retrySafe: true }, { status: 503 })
   if (!rateLimitByIp(req, 'custom-build-checkout', 5, 10 * 60 * 1000)) {
     return jsonTooManyRequests()
   }
@@ -58,12 +59,14 @@ export async function POST(req: NextRequest) {
   )
   if (!customBuildRuntimeReady || !stripeSecretKey || !supabaseUrl || !supabaseServiceKey) {
     return NextResponse.json(
-      { error: 'Custom-build checkout is temporarily unavailable.' },
+      { error: 'Custom-build checkout is temporarily unavailable.', retrySafe: true },
       { status: 503 },
     )
   }
 
   let requestId: string | null = null
+  let sessionCreationAttempted = false
+  let createdSession: Stripe.Checkout.Session | null = null
   const supabase = createClient(supabaseUrl, supabaseServiceKey, {
     auth: { persistSession: false },
   })
@@ -103,7 +106,7 @@ export async function POST(req: NextRequest) {
     if (insertError) {
       console.error('[stripe/custom-build] request insert failed:', insertError)
       return NextResponse.json(
-        { error: 'We could not save your project brief. Please try again.' },
+        { error: 'We could not save your project brief. Please try again.', retrySafe: true },
         { status: 500 },
       )
     }
@@ -113,7 +116,7 @@ export async function POST(req: NextRequest) {
     const origin = getTrustedSiteOrigin(req.url)
     if (!origin) throw new Error('checkout_redirect_not_configured')
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams: Stripe.Checkout.SessionCreateParams = {
       ...stripeCheckoutExperience(),
       mode: 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
@@ -138,7 +141,12 @@ export async function POST(req: NextRequest) {
             'Your $500 payment is charged immediately for the scope discussed with DailyClarity. Request a scope review before paying if any requirements are unresolved.',
         },
       },
-    }, { idempotencyKey: `dailyclarity-custom-build-${requestId}` })
+    }
+    sessionCreationAttempted = true
+    const session = await stripe.checkout.sessions.create(sessionParams, {
+      idempotencyKey: `dailyclarity-custom-build-${requestId}`,
+    })
+    createdSession = session
 
     const { error: updateError } = await supabase
       .from('custom_build_requests')
@@ -154,6 +162,23 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unable to start checkout.'
     console.error('[stripe/custom-build]', message)
+    if (createdSession || (sessionCreationAttempted && !isDefinitiveCheckoutRejection(error))) {
+      // Leave unknown outcomes pending for signed webhook reconciliation. If
+      // creation returned a session, retain its identity without regressing a
+      // concurrently paid request. This is not cross-request deduplication.
+      if (requestId && createdSession) {
+        try {
+          const { error: recordError } = await supabase.from('custom_build_requests')
+            .update({ stripe_session_id: createdSession.id, updated_at: new Date().toISOString() })
+            .eq('id', requestId)
+            .in('status', ['checkout_pending', 'payment_pending'])
+          if (recordError) console.error('[stripe/custom-build] uncertain checkout recording failed')
+        } catch {
+          console.error('[stripe/custom-build] uncertain checkout recording failed')
+        }
+      }
+      return NextResponse.json(uncertainCheckoutResponse(requestId), { status: 409 })
+    }
     if (requestId) {
       try {
         await supabase
@@ -163,7 +188,7 @@ export async function POST(req: NextRequest) {
       } catch { /* preserve the original checkout error */ }
     }
     return NextResponse.json(
-      { error: 'Unable to start custom-build checkout. Please try again.' },
+      { error: 'Unable to start custom-build checkout. Please try again.', retrySafe: true },
       { status: 500 },
     )
   }

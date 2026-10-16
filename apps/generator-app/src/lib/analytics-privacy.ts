@@ -4,9 +4,9 @@ export function isBookingKitPath(pathname: string | null): boolean {
   return pathname === '/booking-kit' || !!pathname?.startsWith('/booking-kit/')
 }
 
-/** A kit credential stays usable in the tab without allowing third-party trackers alongside it. */
+/** Private delivery credentials and checkout references must stay away from trackers. */
 export function canLoadPageAnalytics(pathname: string | null, storage: Pick<Storage, 'getItem'>): boolean {
-  if (!pathname || isBookingKitPath(pathname) || pathname === '/paypal-test') return false
+  if (!pathname || isBookingKitPath(pathname) || pathname === '/paypal-test' || pathname === '/success' || pathname === '/success/') return false
   try { return !storage.getItem(BOOKING_KIT_ACCESS_STORAGE_KEY) } catch { return false }
 }
 
