@@ -373,6 +373,7 @@ export default function PreviewYourBusinessClient() {
   const [browseTotal, setBrowseTotal] = useState(0)
   const [browseHasMore, setBrowseHasMore] = useState(false)
   const [browseLoading, setBrowseLoading] = useState(false)
+  const browseRequestIdRef = useRef(0)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [pendingPlansHref, setPendingPlansHref] = useState<string | null>(null)
   const [openingPlans, setOpeningPlans] = useState(false)
@@ -383,6 +384,37 @@ export default function PreviewYourBusinessClient() {
   const leadSaveControllersRef = useRef(new Set<AbortController>())
   const plansRequestRef = useRef(0)
   const plansInFlightRef = useRef(false)
+
+  useEffect(() => {
+    const unsubscribe = usePreviewStore.subscribe((state, previous) => {
+      if (state.isSample !== previous.isSample
+        || state.businessInfo !== previous.businessInfo
+        || (previous.step === 'browse' && state.step !== 'browse')) {
+        browseRequestIdRef.current += 1
+        setBrowseLoading(false)
+      }
+    })
+    return () => {
+      browseRequestIdRef.current += 1
+      unsubscribe()
+    }
+  }, [])
+
+  const beginBrowseRequest = useCallback(() => {
+    const requestId = ++browseRequestIdRef.current
+    const state = usePreviewStore.getState()
+    return {
+      state,
+      isCurrent: () => {
+        const current = usePreviewStore.getState()
+        return requestId === browseRequestIdRef.current
+          && current.step === 'browse'
+          && current.isSample === state.isSample
+          && current.businessInfo === state.businessInfo
+          && current.businessInfo.niche === state.businessInfo.niche
+      },
+    }
+  }, [])
 
   const cancelPlansHandoff = useCallback(() => {
     plansRequestRef.current += 1
@@ -980,9 +1012,9 @@ export default function PreviewYourBusinessClient() {
 
   /* ================ Open browse mode ================ */
   const openBrowse = useCallback(async () => {
-    const { isSample, businessInfo } = usePreviewStore.getState()
-    if (!isSample) markInfoSaved()
+    if (!usePreviewStore.getState().isSample) markInfoSaved()
     setStep('browse')
+    const { state: { isSample, businessInfo }, isCurrent } = beginBrowseRequest()
     setBrowseTemplates([])
     setBrowseTotal(0)
     setBrowseHasMore(false)
@@ -999,6 +1031,7 @@ export default function PreviewYourBusinessClient() {
       const res = await fetch(`/api/templates/${businessInfo.niche}?page=1&limit=12&seed=${sessionSeed}`)
       if (res.ok) {
         const data = await res.json()
+        if (!isCurrent()) return
         setBrowseTemplates(
           (data.templates || []).map((t: ApiTemplate) => ({ ...t, nicheSlug: t.nicheSlug || businessInfo.niche })),
         )
@@ -1006,18 +1039,21 @@ export default function PreviewYourBusinessClient() {
         setBrowseHasMore(data.hasMore || false)
       }
     } catch { /* ignore */ }
-    setBrowseLoading(false)
-  }, [markInfoSaved, setStep, sessionSeed])
+    finally { if (isCurrent()) setBrowseLoading(false) }
+  }, [markInfoSaved, setStep, sessionSeed, beginBrowseRequest])
 
   /* ================ Load more browse templates ================ */
   const loadMoreBrowse = useCallback(async () => {
-    if (usePreviewStore.getState().isSample) return
+    const current = usePreviewStore.getState()
+    if (current.isSample || current.step !== 'browse' || browseLoading || !browseHasMore) return
+    const { state: { businessInfo }, isCurrent } = beginBrowseRequest()
     const nextPage = browsePage + 1
     setBrowseLoading(true)
     try {
       const res = await fetch(`/api/templates/${businessInfo.niche}?page=${nextPage}&limit=12&seed=${sessionSeed}`)
       if (res.ok) {
         const data = await res.json()
+        if (!isCurrent()) return
         setBrowseTemplates((prev) => [
           ...prev,
           ...(data.templates || []).map((t: ApiTemplate) => ({ ...t, nicheSlug: t.nicheSlug || businessInfo.niche })),
@@ -1026,8 +1062,8 @@ export default function PreviewYourBusinessClient() {
         setBrowsePage(nextPage)
       }
     } catch { /* ignore */ }
-    setBrowseLoading(false)
-  }, [browsePage, businessInfo.niche, sessionSeed])
+    finally { if (isCurrent()) setBrowseLoading(false) }
+  }, [browsePage, browseLoading, browseHasMore, sessionSeed, beginBrowseRequest])
 
   /* ================ Select a template from browse ================ */
   const selectBrowseTemplate = useCallback((t: ApiTemplate, reason = 'manually selected') => {
