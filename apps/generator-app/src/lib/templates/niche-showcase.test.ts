@@ -3,7 +3,7 @@ import { selectShowcaseTemplates, type TemplateMeta } from './niche-registry'
 
 function template(slug: string, family: string, extra: Partial<TemplateMeta> = {}): TemplateMeta {
   return {
-    slug, name: slug, niche: 'Wellness Coach', nicheSlug: 'wellness_coach',
+    slug, name: slug, niche: 'Other Practice', nicheSlug: 'uncurated_practice',
     pages: ['index.html'], files: ['index.html'], dir: `wellness_coach/${slug}`,
     fields: [], snippet: '', layoutFamily: family, ...extra,
   }
@@ -53,8 +53,16 @@ describe('reviewed marketing choices', () => {
       template('wellness-spec-2026-02-16T01-22-17-887Z-012', 'hero-left'),
       template('wellness-spec-2026-02-16T01-20-21-384Z-026', 'sidebar-nav'),
     ]
-    expect(selectShowcaseTemplates(input)).toEqual([input[2], input[1]])
+    expect(selectShowcaseTemplates(input, 'wellness_coach')).toEqual([input[2], input[1]])
     expect(input[2]?.featured).toBeUndefined()
+  })
+
+  it('does not let featured metadata bypass an explicit curation policy', () => {
+    const unreviewed = template('unreviewed-featured', 'minimal', { featured: true, showcaseOrder: 0 })
+    const reviewed = template('wellness-spec-2026-02-16T01-20-21-384Z-026', 'sidebar-nav')
+    expect(selectShowcaseTemplates([unreviewed, reviewed], 'wellness_coach')).toEqual([reviewed])
+    expect(selectShowcaseTemplates([unreviewed], 'wellness_coach')).toEqual([])
+    expect(selectShowcaseTemplates([], 'wellness_coach')).toEqual([])
   })
 
   it('holds known unreadable designs out of marketing even if marked featured', () => {

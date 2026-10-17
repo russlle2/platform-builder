@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { getNiches } from '@/lib/templates/niche-registry'
+import { getNichesWithSampleAvailability } from '@/lib/templates/niche-registry'
 
 // The launch catalog lives in a site-wide Netlify Blobs store. Reading it at
 // request time prevents a credential-less CI build from permanently baking an
@@ -33,7 +33,10 @@ const nicheAccentClasses: Record<string, { border: string; text: string; bg: str
 }
 
 export default async function HomePage() {
-  const niches = await getNiches()
+  const niches = await getNichesWithSampleAvailability()
+  const sampleNiches = niches.filter((niche) => niche.sampleAvailable)
+  const defaultSampleNiche = sampleNiches.find((niche) => niche.slug === 'wellness_coach')?.slug || sampleNiches[0]?.slug
+  const sampleHref = defaultSampleNiche ? `/preview-your-business?sample=1&niche=${encodeURIComponent(defaultSampleNiche)}` : '/preview-your-business'
   const totalTemplates = niches.reduce((sum, n) => sum + n.templateCount, 0)
   const hasTemplateCounts = totalTemplates > 0
 
@@ -109,15 +112,17 @@ export default async function HomePage() {
             <div className="glass-panel rounded-3xl p-8 space-y-6">
               <span className="text-xs uppercase tracking-[0.2em] text-cyan-300">Explore before you commit</span>
               <h2 className="text-3xl font-bold text-white">See a website for a practice like yours.</h2>
-              <p className="text-slate-300">Open a real template with clearly labeled example details. No account or contact information needed.</p>
-              <form action="/preview-your-business" method="get" className="space-y-4">
-                <input type="hidden" name="sample" value="1" />
-                <label htmlFor="sample-practice" className="block text-sm font-semibold text-slate-200">Your type of practice</label>
-                <select id="sample-practice" name="niche" defaultValue="wellness_coach" className="w-full rounded-xl border border-white/20 bg-slate-900 px-4 py-3 text-white">
-                  {niches.map((niche) => <option key={niche.slug} value={niche.slug}>{niche.label}</option>)}
-                </select>
-                <button type="submit" className="cta-button w-full">Try a sample website</button>
-              </form>
+              <p className="text-slate-300">{sampleNiches.length > 0 ? 'Open an available sample with clearly labeled example details. No account or contact information needed.' : 'No sample is available right now. You can still start with your own business details.'}</p>
+              {sampleNiches.length > 0 ? (
+                <form action="/preview-your-business" method="get" className="space-y-4">
+                  <input type="hidden" name="sample" value="1" />
+                  <label htmlFor="sample-practice" className="block text-sm font-semibold text-slate-200">Available sample practices</label>
+                  <select id="sample-practice" name="niche" defaultValue={defaultSampleNiche} className="w-full rounded-xl border border-white/20 bg-slate-900 px-4 py-3 text-white">
+                    {sampleNiches.map((niche) => <option key={niche.slug} value={niche.slug}>{niche.label}</option>)}
+                  </select>
+                  <button type="submit" className="cta-button w-full">Try a sample website</button>
+                </form>
+              ) : <Link href="/preview-your-business" className="cta-button block text-center">Start with my business details</Link>}
               <p className="text-sm text-slate-400">Then use your own details when you are ready. Your existing preview stays separate.</p>
               {hasTemplateCounts && <p className="border-t border-white/10 pt-4 text-xs text-slate-400">{totalTemplates.toLocaleString('en-US')} published templates across {niches.length} practice types.</p>}
             </div>
@@ -263,7 +268,7 @@ export default async function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { title: 'Try the real preview', copy: 'See a published template with example details, then bring your own content.', href: '/preview-your-business?sample=1&niche=wellness_coach', action: 'Open a sample website' },
+              { title: 'Try the real preview', copy: defaultSampleNiche ? 'See a published template with example details, then bring your own content.' : 'Start with your business details and explore available designs.', href: sampleHref, action: defaultSampleNiche ? 'Open a sample website' : 'Start my preview' },
               { title: 'Check the client journey', copy: 'Review your offer, qualifications, first-visit information, and contact path.', href: '/wellness-website-checklist', action: 'Use the launch checklist' },
               { title: 'Know what you are buying', copy: 'Compare hosting, editing, optional managed services, and current billing terms.', href: '/pricing', action: 'Compare the plans' },
             ].map((item) => (

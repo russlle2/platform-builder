@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
+import { REVIEWED_SHOWCASE_SLUGS } from '../src/lib/templates/showcase-curation'
 
 test.use({ launchOptions: { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH } })
 
@@ -32,6 +33,7 @@ test.beforeEach(async ({ page }) => {
     const niche = new URL(route.request().url()).pathname.split('/')[3]
     return route.fulfill({ json: { templates: [
       { slug: 'sample-layout', name: 'Published Sample Layout', nicheSlug: niche, pages: ['index.html', 'contact.html'], snippet: 'warm natural professional' },
+      ...(niche === 'wellness_coach' ? REVIEWED_SHOWCASE_SLUGS.wellness_coach!.map((slug, index) => ({ slug, name: `Sample choice ${index + 1}`, nicheSlug: niche, pages: ['index.html', 'contact.html'], snippet: '' })) : []),
     ] } })
   })
   await page.route('**/api/templates/*/*/preview', (route) => {
@@ -53,9 +55,9 @@ test('direct sample shows a real preview without overwriting the saved business,
   page.on('request', (request) => {
     if (/\/api\/(intake\/contact|profile\/save-draft)/.test(request.url())) submittedProfiles.push(request.url())
   })
-  await page.goto('/preview-your-business?sample=1&niche=aromatherapy')
+  await page.goto('/preview-your-business?sample=1&niche=wellness_coach')
   await expect(page.getByText('Sample preview · fictional business details')).toBeVisible()
-  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Wildflower Aromatherapy' })).toBeVisible()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Vitality Path Coaching' })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Choose a launch plan' })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Colors', exact: false })).toHaveCount(0)
   const storage = await page.evaluate(() => ({
@@ -221,28 +223,159 @@ test('a failed sample can exit to the real draft without leaving a sample checko
   expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('pb_biz_info')!).niche)).toBe('wellness_coach')
 })
 
-test('sample starts with an available reviewed design and respects an exact gallery selection', async ({ page }) => {
-  const reviewedSlug = 'aromatherapy-2026-02-16T18-54-45-056Z-049'
-  const previews: string[] = []
-  const previewOptions: Record<string, unknown>[] = []
-  await page.route('**/api/templates/aromatherapy?all=true', (route) => route.fulfill({ json: { templates: [
-    { slug: 'sample-layout', name: 'Unreviewed ranking match', nicheSlug: 'aromatherapy', pages: ['index.html'], snippet: 'warm natural professional earthy' },
-    { slug: reviewedSlug, name: 'Reviewed sample', nicheSlug: 'aromatherapy', pages: ['index.html'], snippet: '' },
+test('sample URL choices and manual alternatives stay inside the active eligible selection without touching a personal draft', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await seedRealDraft(page)
+  const [first, second] = REVIEWED_SHOWCASE_SLUGS.wellness_coach!
+  const held = 'wellness_coach-2026-06-18T0600-095'
+  const previews: { url: string; options: Record<string, unknown> }[] = []
+  const writes: string[] = []
+  await page.route('**/api/templates/wellness_coach?all=true', route => route.fulfill({ json: { templates: [
+    { slug: held, name: 'Held featured sample', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: 'warm natural professional earthy' },
+    { slug: 'unreviewed', name: 'Unreviewed ranking favorite', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: 'warm natural professional earthy' },
+    { slug: second, name: 'Second sample choice', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' },
+    { slug: first, name: 'First sample choice', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' },
   ] } }))
-  page.on('request', (request) => {
-    if (request.url().includes('/api/templates/aromatherapy/') && request.url().endsWith('/preview')) {
-      previews.push(request.url())
-      previewOptions.push(request.postDataJSON())
-    }
+  page.on('request', request => {
+    if (/\/api\/templates\/.*\/preview$/.test(request.url())) previews.push({ url: request.url(), options: request.postDataJSON() })
+    if (/\/api\/(intake\/contact|profile\/save-draft|stripe\/checkout)/.test(request.url())) writes.push(request.url())
   })
-  await page.goto('/preview-your-business?sample=1&niche=aromatherapy')
-  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Wildflower Aromatherapy' })).toBeVisible()
-  expect(previews.at(-1)).toContain(`/${reviewedSlug}/preview`)
-  expect(previewOptions.at(-1)).toMatchObject({ colorScheme: 'original', fontVariation: 'original', structureVariation: 'original', customTheme: null })
-  await page.goto('/preview-your-business?sample=1&niche=aromatherapy&template=sample-layout')
-  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Wildflower Aromatherapy' })).toBeVisible()
-  expect(previews.at(-1)).toContain('/sample-layout/preview')
-  expect(previewOptions.at(-1)).toMatchObject({ colorScheme: 'original', fontVariation: 'original', structureVariation: 'original', customTheme: null })
+  for (const requested of [held, 'unreviewed', second]) {
+    await page.goto(`/preview-your-business?sample=1&niche=wellness_coach&template=${requested}`)
+    await expect(page.getByText('Sample preview · fictional business details')).toBeVisible({ timeout: 15_000 })
+    await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Vitality Path Coaching' })).toBeVisible()
+    expect(previews.at(-1)?.url).toContain(`/${requested === second ? second : first}/preview`)
+  }
+  await page.getByRole('button', { name: 'Choose another sample', exact: true }).click()
+  await expect(page.getByRole('heading', { name: 'Wellness Coach Samples', exact: true })).toBeVisible()
+  await expect(page.getByText('2 samples available. These previews use fictional business details.')).toBeVisible()
+  await expect(page.getByRole('button', { name: /Held featured sample|Unreviewed ranking favorite|Load More/ })).toHaveCount(0)
+  await expect(page.getByText('Your info is saved.', { exact: false })).toHaveCount(0)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await test.info().attach('sample-picker-mobile', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' })
+  await page.getByRole('button', { name: /First sample choice/ }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Vitality Path Coaching' })).toBeVisible()
+  expect(previews.at(-1)?.url).toContain(`/${first}/preview`)
+  await page.getByLabel('Sample practice', { exact: true }).selectOption('aromatherapy')
+  await expect(page.getByText('No sample is available for this practice yet. Choose another sample practice or start with your own details.')).toBeVisible()
+  await expect(page.locator('iframe[title="Template preview"]')).toHaveCount(0)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await test.info().attach('sample-unavailable-mobile', { body: await page.screenshot({ fullPage: true }), contentType: 'image/png' })
+  await page.getByLabel('Sample practice', { exact: true }).selectOption('wellness_coach')
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Vitality Path Coaching' })).toBeVisible()
+  expect(previews.every(({ options }) => options.colorScheme === 'original' && options.fontVariation === 'original' && options.structureVariation === 'original' && options.customTheme === null)).toBe(true)
+  expect(previews.every(({ url }) => !url.includes(`/${held}/`) && !url.includes('/unreviewed/'))).toBe(true)
+  expect(writes).toEqual([])
+  const saved = await page.evaluate(() => Object.fromEntries(['pb_biz_info', 'pb_matched', 'pb_style_prefs', 'pb_custom_theme', 'pb_catalog_revision', 'pb_inline_edits'].map(key => [key, JSON.parse(sessionStorage.getItem(key)!)])))
+  expect(saved.pb_biz_info).toEqual(ownInfo)
+  expect(saved.pb_matched).toEqual(ownMatch)
+  expect(saved.pb_style_prefs).toMatchObject({ colorMood: 'cool-modern', fontPreference: 'serif', layoutDensity: 'compact' })
+  expect(saved.pb_custom_theme).toEqual(ownTheme)
+  expect(saved.pb_catalog_revision).toEqual(ownPin)
+  expect(saved.pb_inline_edits['index.html'][0].updated).toBe('My saved words')
+  await page.getByRole('button', { name: 'Use my business details', exact: true }).click()
+  await expect(page.getByLabel('Business Name')).toHaveValue('Saved Studio')
+  expect(await page.evaluate(() => sessionStorage.getItem('pb_preview_sample'))).toBeNull()
+  expect(writes).toEqual([])
+})
+
+test('a curated practice with no eligible active sample never previews an unreviewed URL choice', async ({ page }) => {
+  await seedRealDraft(page)
+  const previews: string[] = []
+  let sampleAvailable = false
+  const reviewed = REVIEWED_SHOWCASE_SLUGS.wellness_coach![0]
+  await page.route('**/api/templates/wellness_coach?all=true', route => route.fulfill({ json: { templates: [
+    { slug: 'sample-layout', name: 'Unreviewed choice', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' },
+    ...(sampleAvailable ? [{ slug: reviewed, name: 'Available sample', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }] : []),
+  ] } }))
+  page.on('request', request => { if (request.url().endsWith('/preview')) previews.push(request.url()) })
+  await page.goto('/preview-your-business?sample=1&niche=wellness_coach&template=sample-layout')
+  await expect(page.getByText('No sample is available for this practice yet. Choose another sample practice or start with your own details.')).toBeVisible()
+  await expect(page.locator('iframe[title="Template preview"]')).toHaveCount(0)
+  expect(previews).toEqual([])
+  sampleAvailable = true
+  await page.getByRole('button', { name: 'Try loading templates again' }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Vitality Path Coaching' })).toBeVisible()
+  expect(previews).toHaveLength(1)
+  expect(previews[0]).toContain(`/${reviewed}/preview`)
+  await page.getByRole('button', { name: 'Use my business details', exact: true }).click()
+  await expect(page.getByLabel('Business Name')).toHaveValue('Saved Studio')
+})
+
+for (const delayedPage of [1, 2]) {
+  test(`a late personal browse page ${delayedPage} cannot replace sample choices or totals`, async ({ page }) => {
+    await seedRealDraft(page)
+    let release!: () => void
+    const heldResponse = new Promise<void>(resolve => { release = resolve })
+    let requested = false
+    const writes: string[] = []
+    page.on('request', request => {
+      if (/\/api\/(intake\/contact|profile\/save-draft|stripe\/checkout)/.test(request.url())) writes.push(request.url())
+    })
+    await page.route('**/api/templates/wellness_coach?page=*', async route => {
+      const pageNumber = Number(new URL(route.request().url()).searchParams.get('page'))
+      if (pageNumber === delayedPage) { requested = true; await heldResponse }
+      await route.fulfill({ json: { templates: [{ slug: `personal-${pageNumber}`, name: `Unreviewed personal page ${pageNumber}`, nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 99, hasMore: true } })
+    })
+    await page.goto('/preview-your-business')
+    await page.getByLabel('Account email', { exact: false }).fill('saved@example.com')
+    await page.getByLabel('Public contact email').fill('hello@example.com')
+    await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
+    await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+    await page.getByRole('button', { name: 'Browse Custom Templates' }).click()
+    if (delayedPage === 2) await page.getByRole('button', { name: /Load More/ }).click()
+    await expect.poll(() => requested).toBe(true)
+    await page.getByRole('button', { name: 'Edit business details', exact: true }).click()
+    const saved = await page.evaluate(() => Object.fromEntries(['pb_biz_info', 'pb_matched', 'pb_style_prefs', 'pb_custom_theme', 'pb_catalog_revision', 'pb_inline_edits'].map(key => [key, sessionStorage.getItem(key)])))
+    await page.getByRole('button', { name: /Try with sample details/ }).click()
+    await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Vitality Path Coaching' })).toBeVisible()
+    await page.getByRole('button', { name: 'Choose another sample', exact: true }).click()
+    const writeCount = writes.length
+    await expect(page.getByText('3 samples available. These previews use fictional business details.')).toBeVisible()
+    const response = page.waitForResponse(value => new URL(value.url()).pathname === '/api/templates/wellness_coach' && new URL(value.url()).searchParams.get('page') === String(delayedPage))
+    release()
+    await (await response).finished()
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+    await expect(page.getByText('3 samples available. These previews use fictional business details.')).toBeVisible()
+    await expect(page.getByRole('button', { name: /Unreviewed personal|Load More|Loading\.\.\./ })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Sample choice.*Open sample/ })).toHaveCount(3)
+    expect(writes).toHaveLength(writeCount)
+    expect(await page.evaluate(() => Object.fromEntries(['pb_biz_info', 'pb_matched', 'pb_style_prefs', 'pb_custom_theme', 'pb_catalog_revision', 'pb_inline_edits'].map(key => [key, sessionStorage.getItem(key)])))).toEqual(saved)
+  })
+}
+
+test('an older browse response cannot clear a newer request loading state for the same personal niche', async ({ page }) => {
+  await seedRealDraft(page)
+  const releases: (() => void)[] = []
+  await page.route('**/api/templates/wellness_coach?page=*', async route => {
+    const index = releases.length
+    await new Promise<void>(resolve => { releases.push(resolve) })
+    await route.fulfill({ json: { templates: [{ slug: `request-${index}`, name: index === 0 ? 'Stale browse result' : 'Current browse result', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 1, hasMore: false } })
+  })
+  await page.goto('/preview-your-business')
+  await page.getByLabel('Account email', { exact: false }).fill('saved@example.com')
+  await page.getByLabel('Public contact email').fill('hello@example.com')
+  const startBrowse = async () => {
+    await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
+    await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+    await page.getByRole('button', { name: 'Browse Custom Templates' }).click()
+  }
+  await startBrowse()
+  await expect.poll(() => releases.length).toBe(1)
+  await page.getByRole('button', { name: 'Edit business details', exact: true }).click()
+  await startBrowse()
+  await expect.poll(() => releases.length).toBe(2)
+  const firstResponse = page.waitForResponse(value => value.url().includes('/api/templates/wellness_coach?page='))
+  releases[0]()
+  await (await firstResponse).finished()
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+  await expect(page.getByRole('button', { name: 'Loading...' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: /Stale browse result/ })).toHaveCount(0)
+  const secondResponse = page.waitForResponse(value => value.url().includes('/api/templates/wellness_coach?page='))
+  releases[1]()
+  await (await secondResponse).finished()
+  await expect(page.getByRole('button', { name: /Current browse result/ })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Loading...' })).toHaveCount(0)
 })
 
 for (const leaveFlow of ['reset', 'unmount'] as const) {
