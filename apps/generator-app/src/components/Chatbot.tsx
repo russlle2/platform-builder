@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -8,6 +9,7 @@ interface Message {
 }
 
 export default function Chatbot() {
+  const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     { role: 'assistant', content: 'Hi! I can help you understand DailyClarity Platform Builder — pricing, preview flow, and launch. What would you like to know?' }
@@ -62,6 +64,8 @@ export default function Chatbot() {
       setIsLoading(false)
     }
   }
+
+  if (pathname === '/wellness-experiences') return null
 
   return (
     <div className="fixed bottom-3 right-3 sm:bottom-6 sm:right-6 z-50 flex flex-col items-end">
