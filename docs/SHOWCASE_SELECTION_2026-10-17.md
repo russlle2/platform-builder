@@ -4,6 +4,8 @@ The previous selection could replace an unavailable reviewed sample with an unre
 
 The homepage picker uses actual sample availability. The sample editor offers a clearly labeled practice selector and another-sample action. Sample browsing reports its own count, uses fictional details, cannot submit a lead or open checkout, and restores the separate personal draft. Samples continue requesting `original/original/original` with no custom theme. The separate original-colors default change is not included in this branch; the two changes need combined validation when integrated.
 
+The homepage derives niche counts and sample availability together from one validated gallery load. This avoids six repeated registry validations per request while retaining the existing catalogue loading, validation, deduplication, cache lifetime, and empty-selection policy; it is a source-level work reduction, not a measured latency claim.
+
 ## Current bounded selection
 
 One therapist design and three wellness designs remain eligible when available in the active catalogue:

@@ -1,25 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { NICHE_META } from '@/lib/templates/niche-meta'
-import { getFeaturedTemplatesForNiche, getNiches, type TemplateMeta } from '@/lib/templates/niche-registry'
+import { getNichesWithSampleAvailability } from '@/lib/templates/niche-registry'
 import HomePage from './page'
 
 vi.mock('@/lib/templates/niche-registry', () => ({
-  getNiches: vi.fn(),
-  getFeaturedTemplatesForNiche: vi.fn(),
+  getNichesWithSampleAvailability: vi.fn(),
 }))
 
 beforeEach(() => {
-  vi.mocked(getNiches).mockResolvedValue(Object.entries(NICHE_META).map(([slug, meta]) => ({ slug, ...meta, templateCount: 10 })))
-  vi.mocked(getFeaturedTemplatesForNiche).mockResolvedValue([])
+  vi.mocked(getNichesWithSampleAvailability).mockReset()
+  vi.mocked(getNichesWithSampleAvailability).mockResolvedValue(Object.entries(NICHE_META).map(([slug, meta]) => ({ slug, ...meta, templateCount: 10, sampleAvailable: false })))
 })
 
 describe('homepage sample availability', () => {
   it('offers only sample practices present in the active showcase and keeps full-catalog discovery', async () => {
-    vi.mocked(getFeaturedTemplatesForNiche).mockImplementation(async niche =>
-      niche === 'private_practice_therapist' ? [{ slug: 'active-reviewed' } as TemplateMeta] : [],
-    )
+    vi.mocked(getNichesWithSampleAvailability).mockResolvedValue(Object.entries(NICHE_META).map(([slug, meta]) => ({
+      slug, ...meta, templateCount: 10, sampleAvailable: slug === 'private_practice_therapist',
+    })))
     const html = renderToStaticMarkup(await HomePage())
+    expect(getNichesWithSampleAvailability).toHaveBeenCalledTimes(1)
     const picker = html.match(/<select[^>]*id="sample-practice"[\s\S]*?<\/select>/)?.[0]
     expect(picker).toContain('value="private_practice_therapist" selected=""')
     expect(picker).not.toContain('wellness_coach')
@@ -31,6 +31,7 @@ describe('homepage sample availability', () => {
 
   it('shows an honest empty state and a personal preview route when no sample is active', async () => {
     const html = renderToStaticMarkup(await HomePage())
+    expect(getNichesWithSampleAvailability).toHaveBeenCalledTimes(1)
     expect(html).toContain('No sample is available right now.')
     expect(html).toContain('Start with my business details')
     expect(html).toContain('href="/preview-your-business"')

@@ -551,6 +551,20 @@ export async function getNiches(): Promise<NicheInfo[]> {
   }))
 }
 
+/** Homepage counts and sample availability from one validated gallery load. */
+export async function getNichesWithSampleAvailability(): Promise<Array<NicheInfo & { sampleAvailable: boolean }>> {
+  const { gallery } = await getCaches()
+  return Object.entries(NICHE_META).map(([slug, meta]) => {
+    const templates = gallery.get(slug) || []
+    return {
+      slug,
+      ...meta,
+      templateCount: templates.length,
+      sampleAvailable: selectShowcaseTemplates(templates, slug).length > 0,
+    }
+  })
+}
+
 /** Get all templates for a niche */
 export async function getTemplatesForNiche(nicheSlug: string): Promise<TemplateMeta[]> {
   const cache = (await getCaches()).gallery
