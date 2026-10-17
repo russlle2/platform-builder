@@ -302,6 +302,82 @@ test('a curated practice with no eligible active sample never previews an unrevi
   await expect(page.getByLabel('Business Name')).toHaveValue('Saved Studio')
 })
 
+for (const delayedPage of [1, 2]) {
+  test(`a late personal browse page ${delayedPage} cannot replace sample choices or totals`, async ({ page }) => {
+    await seedRealDraft(page)
+    let release!: () => void
+    const heldResponse = new Promise<void>(resolve => { release = resolve })
+    let requested = false
+    const writes: string[] = []
+    page.on('request', request => {
+      if (/\/api\/(intake\/contact|profile\/save-draft|stripe\/checkout)/.test(request.url())) writes.push(request.url())
+    })
+    await page.route('**/api/templates/wellness_coach?page=*', async route => {
+      const pageNumber = Number(new URL(route.request().url()).searchParams.get('page'))
+      if (pageNumber === delayedPage) { requested = true; await heldResponse }
+      await route.fulfill({ json: { templates: [{ slug: `personal-${pageNumber}`, name: `Unreviewed personal page ${pageNumber}`, nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 99, hasMore: true } })
+    })
+    await page.goto('/preview-your-business')
+    await page.getByLabel('Account email', { exact: false }).fill('saved@example.com')
+    await page.getByLabel('Public contact email').fill('hello@example.com')
+    await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
+    await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+    await page.getByRole('button', { name: 'Browse Custom Templates' }).click()
+    if (delayedPage === 2) await page.getByRole('button', { name: /Load More/ }).click()
+    await expect.poll(() => requested).toBe(true)
+    await page.getByRole('button', { name: 'Edit business details', exact: true }).click()
+    const saved = await page.evaluate(() => Object.fromEntries(['pb_biz_info', 'pb_matched', 'pb_style_prefs', 'pb_custom_theme', 'pb_catalog_revision', 'pb_inline_edits'].map(key => [key, sessionStorage.getItem(key)])))
+    await page.getByRole('button', { name: /Try with sample details/ }).click()
+    await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Vitality Path Coaching' })).toBeVisible()
+    await page.getByRole('button', { name: 'Choose another sample', exact: true }).click()
+    const writeCount = writes.length
+    await expect(page.getByText('3 samples available. These previews use fictional business details.')).toBeVisible()
+    const response = page.waitForResponse(value => new URL(value.url()).pathname === '/api/templates/wellness_coach' && new URL(value.url()).searchParams.get('page') === String(delayedPage))
+    release()
+    await (await response).finished()
+    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+    await expect(page.getByText('3 samples available. These previews use fictional business details.')).toBeVisible()
+    await expect(page.getByRole('button', { name: /Unreviewed personal|Load More|Loading\.\.\./ })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /Sample choice.*Open sample/ })).toHaveCount(3)
+    expect(writes).toHaveLength(writeCount)
+    expect(await page.evaluate(() => Object.fromEntries(['pb_biz_info', 'pb_matched', 'pb_style_prefs', 'pb_custom_theme', 'pb_catalog_revision', 'pb_inline_edits'].map(key => [key, sessionStorage.getItem(key)])))).toEqual(saved)
+  })
+}
+
+test('an older browse response cannot clear a newer request loading state for the same personal niche', async ({ page }) => {
+  await seedRealDraft(page)
+  const releases: (() => void)[] = []
+  await page.route('**/api/templates/wellness_coach?page=*', async route => {
+    const index = releases.length
+    await new Promise<void>(resolve => { releases.push(resolve) })
+    await route.fulfill({ json: { templates: [{ slug: `request-${index}`, name: index === 0 ? 'Stale browse result' : 'Current browse result', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 1, hasMore: false } })
+  })
+  await page.goto('/preview-your-business')
+  await page.getByLabel('Account email', { exact: false }).fill('saved@example.com')
+  await page.getByLabel('Public contact email').fill('hello@example.com')
+  const startBrowse = async () => {
+    await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
+    await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+    await page.getByRole('button', { name: 'Browse Custom Templates' }).click()
+  }
+  await startBrowse()
+  await expect.poll(() => releases.length).toBe(1)
+  await page.getByRole('button', { name: 'Edit business details', exact: true }).click()
+  await startBrowse()
+  await expect.poll(() => releases.length).toBe(2)
+  const firstResponse = page.waitForResponse(value => value.url().includes('/api/templates/wellness_coach?page='))
+  releases[0]()
+  await (await firstResponse).finished()
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))))
+  await expect(page.getByRole('button', { name: 'Loading...' })).toBeDisabled()
+  await expect(page.getByRole('button', { name: /Stale browse result/ })).toHaveCount(0)
+  const secondResponse = page.waitForResponse(value => value.url().includes('/api/templates/wellness_coach?page='))
+  releases[1]()
+  await (await secondResponse).finished()
+  await expect(page.getByRole('button', { name: /Current browse result/ })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Loading...' })).toHaveCount(0)
+})
+
 for (const leaveFlow of ['reset', 'unmount'] as const) {
   test(`obsolete queued checkpoints do not POST after ${leaveFlow}, and active saves are aborted`, async ({ page }) => {
     let releaseSaves!: () => void
