@@ -151,6 +151,7 @@ const PROSE_OPTIONS: { value: ProseStyle; label: string; desc: string }[] = [
 ]
 
 const COLOR_MOOD_OPTIONS: { value: ColorMood; label: string; preview: string }[] = [
+  { value: 'original', label: 'Original design colors', preview: '' },
   { value: 'dark-elegant', label: 'Dark & Elegant', preview: 'bg-gradient-to-r from-slate-900 to-slate-700' },
   { value: 'light-airy', label: 'Light & Airy', preview: 'bg-gradient-to-r from-sky-100 to-blue-50' },
   { value: 'rich-warm', label: 'Rich & Warm', preview: 'bg-gradient-to-r from-amber-700 to-orange-500' },
@@ -246,6 +247,7 @@ function scoreTemplate(
 
   // Color mood keyword matching
   const colorKeywords: Record<ColorMood, string[]> = {
+    original: [],
     'dark-elegant': ['dark', 'slate', 'charcoal', 'noir', 'midnight', 'deep'],
     'light-airy': ['light', 'soft', 'airy', 'pastel', 'white', 'cloud', 'clean'],
     'rich-warm': ['warm', 'amber', 'gold', 'terracotta', 'sunset', 'cozy'],
@@ -1189,6 +1191,7 @@ export default function PreviewYourBusinessClient() {
         {step === 'style' && (
           <StyleStep
             prefs={stylePreferences}
+            hasCustomTheme={customThemeActive}
             onChange={setStylePreferences}
             onBack={handleEditDetails}
             onNext={runMatching}
@@ -1461,11 +1464,13 @@ function InfoStep({
 
 function StyleStep({
   prefs,
+  hasCustomTheme,
   onChange,
   onBack,
   onNext,
 }: {
   prefs: StylePreferences
+  hasCustomTheme: boolean
   onChange: (prefs: Partial<StylePreferences>) => void
   onBack: () => void
   onNext: () => void
@@ -1549,21 +1554,25 @@ function StyleStep({
 
         {/* Color mood */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-1">Color mood</h2>
-          <p className="text-sm text-slate-400 mb-4">What palette speaks to you?</p>
+          <h2 className="text-xl font-bold text-white mb-1">Starting colors</h2>
+          <p className="text-sm text-slate-400 mb-4">Start with the design&apos;s original colors, or choose another palette. Check text and buttons in desktop and mobile previews after changing colors.</p>
+          {hasCustomTheme && <p className="text-sm text-cyan-200 mb-4">Your saved custom colors will still apply in the editor.</p>}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {COLOR_MOOD_OPTIONS.map((c) => (
               <button
                 key={c.value}
                 type="button"
                 onClick={() => onChange({ colorMood: c.value })}
+                aria-pressed={prefs.colorMood === c.value}
                 className={`rounded-xl border overflow-hidden transition-all ${
                   prefs.colorMood === c.value
                     ? 'border-cyan-400 ring-2 ring-cyan-400/40'
                     : 'border-white/10 hover:border-white/20'
                 }`}
               >
-                <div className={`h-12 ${c.preview}`} />
+                {c.value === 'original' ? (
+                  <div className="h-12 bg-slate-800 flex items-center justify-center text-xs text-slate-300">From your chosen design</div>
+                ) : <div className={`h-12 ${c.preview}`} />}
                 <div className="p-3 bg-white/5">
                   <span className="text-sm font-semibold text-white">{c.label}</span>
                 </div>
@@ -2050,6 +2059,7 @@ function EditorStep({
       {!demoRecord && !isSample && showColorPanel && (
         <div className="glass-panel rounded-xl p-4 mb-4">
           <h3 className="text-sm font-bold text-white mb-3">Color Presets</h3>
+          <p className="text-sm text-slate-300 mb-3">After changing colors, check text, buttons and menus on each page in desktop and mobile previews.</p>
           <div className="flex flex-wrap gap-3">
             {COLOR_PRESETS.map((p) => (
               <button

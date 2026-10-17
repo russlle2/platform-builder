@@ -24,6 +24,27 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals())
 
 describe('preview draft lifecycle', () => {
+  it('starts a new draft with original design colors and persists that explicit choice', async () => {
+    const { usePreviewStore: store } = await import('./previewStore')
+    expect(store.getState().stylePreferences.colorMood).toBe('original')
+    store.getState().setStylePreferences({ vibes: ['clean'] })
+    expect(JSON.parse(storage.get('pb_style_prefs')!).colorMood).toBe('original')
+    vi.resetModules()
+    const { usePreviewStore: restored } = await import('./previewStore')
+    expect(restored.getState().stylePreferences).toMatchObject({ colorMood: 'original', vibes: ['clean'] })
+  })
+
+  it.each(['dark-elegant', 'light-airy', 'rich-warm', 'cool-modern', 'nature-organic', 'vibrant-energy'])('preserves the saved %s palette and custom theme instead of applying the new default', async (colorMood) => {
+    const preferences = { colorMood, vibes: ['bold'], proseStyle: 'minimal', fontPreference: 'serif', layoutDensity: 'compact' }
+    const customTheme = JSON.stringify({ primary: '#123456', background: '#ffffff', text: '#123456', headingFont: 'Georgia, serif', bodyFont: 'Georgia, serif' })
+    storage.set('pb_style_prefs', JSON.stringify(preferences))
+    storage.set('pb_custom_theme', customTheme)
+    const { usePreviewStore: store } = await import('./previewStore')
+    expect(store.getState().stylePreferences).toEqual(preferences)
+    expect(storage.get('pb_style_prefs')).toBe(JSON.stringify(preferences))
+    expect(storage.get('pb_custom_theme')).toBe(customTheme)
+  })
+
   it('migrates only legacy shared email drafts without adding private identity to template values', async () => {
     const { accountEmail: _oldAccount, ...legacy } = real
     storage.set('pb_biz_info', JSON.stringify(legacy))
@@ -94,6 +115,7 @@ describe('preview draft lifecycle', () => {
     }
     store.getState().reset()
     expect(store.getState().businessInfo.businessName).toBe('')
+    expect(store.getState().stylePreferences.colorMood).toBe('original')
     expect(storage.has('pb_template_values')).toBe(false)
     expect(storage.has('pb_custom_theme')).toBe(false)
     expect(storage.get('pb_image_owner')).toBe('owner-secret')
@@ -109,7 +131,7 @@ describe('preview draft lifecycle', () => {
     storage.set('pb_matched', JSON.stringify({ templateSlug: '../../bad' }))
     const { usePreviewStore: store } = await import('./previewStore')
     expect(store.getState().businessInfo).toMatchObject({ businessName: 'Recovered Practice', email: '', niche: '', description: '' })
-    expect(store.getState().stylePreferences).toMatchObject({ vibes: ['warm'], fontPreference: 'sans-serif', colorMood: 'cool-modern' })
+    expect(store.getState().stylePreferences).toMatchObject({ vibes: ['warm'], fontPreference: 'sans-serif', colorMood: 'original' })
     expect(store.getState().matchedTemplate).toBeNull()
   })
 
