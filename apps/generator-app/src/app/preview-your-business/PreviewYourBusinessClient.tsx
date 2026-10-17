@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
 import { isValidPreviewEmail, validatePreviewInfo, type PreviewInfoErrors } from '@/lib/preview-intake'
-import { getFirstReviewedShowcaseTemplate } from '@/lib/templates/showcase-curation'
+import { getSampleTemplates } from '@/lib/templates/showcase-curation'
 import {
   type InlineEditMap,
   buildCustomizationScope,
@@ -287,6 +287,7 @@ function scoreTemplate(
 /* ================================================================== */
 
 export default function PreviewYourBusinessClient() {
+  const samplePracticeId = useId()
   const searchParams = useSearchParams()
   const router = useRouter()
   const sampleFromUrl = searchParams.get('sample') === '1'
@@ -318,6 +319,7 @@ export default function PreviewYourBusinessClient() {
 
   // ---- template fetching ----
   const [templates, setTemplates] = useState<ApiTemplate[]>([])
+  const activeTemplatesRef = useRef(new Map<string, ApiTemplate[]>())
   const [templatesLoading, setTemplatesLoading] = useState(false)
   const [templatesError, setTemplatesError] = useState<string | null>(null)
 
@@ -487,6 +489,7 @@ export default function PreviewYourBusinessClient() {
         ...t,
         nicheSlug: t.nicheSlug || niche,
       }))
+      activeTemplatesRef.current.set(niche, withNiche)
       setTemplates(withNiche)
       return withNiche
     } catch (error) {
@@ -504,6 +507,12 @@ export default function PreviewYourBusinessClient() {
       const ts = templateSlug || matchedTemplate?.templateSlug
       if (!ns || !ts) {
         setPreviewError('Choose a template with a valid niche and layout before previewing.')
+        setPreviewHtml(null)
+        setPreviewLoading(false)
+        return
+      }
+      if (isSample && !getSampleTemplates(ns, activeTemplatesRef.current.get(ns) || []).some((template) => template.slug === ts)) {
+        setPreviewError('This sample is no longer available. Choose another sample or start with your own details.')
         setPreviewHtml(null)
         setPreviewLoading(false)
         return
@@ -640,20 +649,24 @@ export default function PreviewYourBusinessClient() {
     setAlternativeTemplates([])
     setTemplatesError(null)
     let tpls = templates.filter((template) => template.nicheSlug === businessInfo.niche)
-    if (tpls.length === 0 && businessInfo.niche) {
+    if ((isSample || tpls.length === 0) && businessInfo.niche) {
       tpls = await fetchTemplatesForNiche(businessInfo.niche)
     }
 
     if (requestId !== matchingRequestIdRef.current) return
 
-    if (tpls.length === 0) {
-      setTemplatesError((current) => current || 'No published templates are available for this industry right now. Your business details are kept in this browser. Try again or choose another industry.')
+    const candidates = isSample ? getSampleTemplates(businessInfo.niche, tpls) : tpls
+    if (candidates.length === 0) {
+      setTemplatesError((current) => current || (isSample
+        ? 'No sample is available for this practice yet. Choose another sample practice or start with your own details.'
+        : 'No published templates are available for this industry right now. Your business details are kept in this browser. Try again or choose another industry.'))
       setTemplatesLoading(false)
       return
     }
 
-    // Score all templates with businessInfo for brand matching
-    const scored = tpls.map((t: ApiTemplate) => {
+    // Personalized matching retains the full catalog. Every sample selection,
+    // including URL choices and alternatives, uses the same eligible pool.
+    const scored = candidates.map((t: ApiTemplate) => {
       const withNiche = { ...t, nicheSlug: t.nicheSlug || businessInfo.niche }
       return { ...withNiche, ...scoreTemplate(withNiche, stylePreferences, businessInfo.niche, businessInfo) }
     })
@@ -664,7 +677,7 @@ export default function PreviewYourBusinessClient() {
     const requestedTemplate = nichePrefill === businessInfo.niche && templatePrefill
       ? scored.find((template) => template.slug === templatePrefill)
       : undefined
-    const reviewedSample = isSample ? getFirstReviewedShowcaseTemplate(businessInfo.niche, scored) : null
+    const reviewedSample = isSample ? getSampleTemplates(businessInfo.niche, scored)[0] : null
     const best = requestedTemplate || reviewedSample || scored[0]
     const resolvedNiche = best.nicheSlug || businessInfo.niche
     setMatchedTemplate({
@@ -676,7 +689,7 @@ export default function PreviewYourBusinessClient() {
       reason: requestedTemplate
         ? 'selected from the template gallery'
         : reviewedSample
-          ? 'a sample design reviewed on desktop and mobile'
+          ? 'a sample design for this practice'
         : nichePrefill === businessInfo.niche && templatePrefill
           ? `The style from your link is no longer available. We matched an available style: ${best.reason}`
           : best.reason,
@@ -708,6 +721,9 @@ export default function PreviewYourBusinessClient() {
   }, [loadPreview, templates, nichePrefill, templatePrefill, setStep, setMatchedTemplate, fetchTemplatesForNiche, persistBusinessDraft])
 
   const handleStartSample = useCallback((requestedNiche?: string) => {
+    previewRequestIdRef.current += 1
+    setPreviewHtml(null)
+    setPreviewLoading(false)
     invalidateLeadSaves()
     setSaveStatus('idle')
     setPendingPlansHref(null)
@@ -962,11 +978,21 @@ export default function PreviewYourBusinessClient() {
 
   /* ================ Open browse mode ================ */
   const openBrowse = useCallback(async () => {
-    markInfoSaved()
+    const { isSample, businessInfo } = usePreviewStore.getState()
+    if (!isSample) markInfoSaved()
     setStep('browse')
     setBrowseTemplates([])
+    setBrowseTotal(0)
+    setBrowseHasMore(false)
     setBrowsePage(1)
     setBrowseLoading(true)
+    if (isSample) {
+      const available = getSampleTemplates(businessInfo.niche, activeTemplatesRef.current.get(businessInfo.niche) || [])
+      setBrowseTemplates(available)
+      setBrowseTotal(available.length)
+      setBrowseLoading(false)
+      return
+    }
     try {
       const res = await fetch(`/api/templates/${businessInfo.niche}?page=1&limit=12&seed=${sessionSeed}`)
       if (res.ok) {
@@ -979,10 +1005,11 @@ export default function PreviewYourBusinessClient() {
       }
     } catch { /* ignore */ }
     setBrowseLoading(false)
-  }, [markInfoSaved, setStep, businessInfo.niche, sessionSeed])
+  }, [markInfoSaved, setStep, sessionSeed])
 
   /* ================ Load more browse templates ================ */
   const loadMoreBrowse = useCallback(async () => {
+    if (usePreviewStore.getState().isSample) return
     const nextPage = browsePage + 1
     setBrowseLoading(true)
     try {
@@ -1001,15 +1028,16 @@ export default function PreviewYourBusinessClient() {
   }, [browsePage, businessInfo.niche, sessionSeed])
 
   /* ================ Select a template from browse ================ */
-  const selectBrowseTemplate = useCallback((t: ApiTemplate) => {
+  const selectBrowseTemplate = useCallback((t: ApiTemplate, reason = 'manually selected') => {
     const resolvedNiche = t.nicheSlug || businessInfo.niche
+    if (usePreviewStore.getState().isSample && !getSampleTemplates(resolvedNiche, activeTemplatesRef.current.get(resolvedNiche) || []).some((template) => template.slug === t.slug)) return
     setMatchedTemplate({
       nicheSlug: resolvedNiche,
       templateSlug: t.slug,
       templateName: t.name,
       pages: t.pages,
       matchScore: 0,
-      reason: 'manually selected',
+      reason,
     })
     setStep('editor')
     loadPreview(resolvedNiche, t.slug)
@@ -1115,9 +1143,16 @@ export default function PreviewYourBusinessClient() {
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-300/40 bg-amber-950/30 p-5">
               <div>
                 <p className="font-semibold text-amber-100">Sample preview · fictional business details</p>
-                <p className="mt-1 text-sm text-slate-300">Explore the pages below. Your own draft is kept separately; add your details to customize or launch.</p>
+                <p className="mt-1 text-sm text-slate-300">Your own draft is kept separately. Choose a sample to explore, or use your details to customize and launch.</p>
               </div>
               <button type="button" onClick={handleEndSample} className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-slate-900">Use my business details</button>
+              <div className="flex w-full flex-wrap items-center gap-3">
+                <label htmlFor={samplePracticeId} className="text-sm text-slate-200">Sample practice</label>
+                <select id={samplePracticeId} value={businessInfo.niche} onChange={(event) => handleStartSample(event.target.value)} className="max-w-full rounded-lg border border-white/20 bg-slate-900 p-2 text-white">
+                  {NICHE_OPTIONS.map((option) => <option key={option.slug} value={option.slug}>{option.label}</option>)}
+                </select>
+                {matchedTemplate && <button type="button" onClick={openBrowse} className="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-cyan-200">Choose another sample</button>}
+              </div>
             </div>
           </div>
         )}
@@ -1198,6 +1233,7 @@ export default function PreviewYourBusinessClient() {
         {/* ============ STEP 3 — MATCHING ============ */}
         {step === 'matching' && (
           <MatchStep
+            isSample={isSample}
             matched={matchedTemplate}
             alternatives={alternativeTemplates}
             loading={templatesLoading}
@@ -1207,19 +1243,9 @@ export default function PreviewYourBusinessClient() {
             readiness={clientReadiness}
             onEdit={openEditor}
             onBrowse={openBrowse}
-            onSelectAlternative={(t) => {
-              const resolvedNiche = t.nicheSlug || businessInfo.niche
-              setMatchedTemplate({
-                nicheSlug: resolvedNiche,
-                templateSlug: t.slug,
-                templateName: t.name,
-                pages: t.pages,
-                matchScore: 0,
-                reason: 'alternative style selected',
-              })
-              markInfoSaved()
-              setStep('editor')
-              loadPreview(resolvedNiche, t.slug)
+            onSelectAlternative={(template) => {
+              if (!isSample) markInfoSaved()
+              selectBrowseTemplate(template, 'alternative style selected')
             }}
           />
         )}
@@ -1271,6 +1297,7 @@ export default function PreviewYourBusinessClient() {
         {/* ============ STEP 5 — BROWSE TEMPLATES ============ */}
         {step === 'browse' && (
           <BrowseStep
+            isSample={isSample}
             templates={browseTemplates}
             niche={businessInfo.niche}
             onSelect={selectBrowseTemplate}
@@ -1648,6 +1675,7 @@ function StyleStep({
 /* ================================================================== */
 
 function MatchStep({
+  isSample,
   matched,
   alternatives,
   loading,
@@ -1659,6 +1687,7 @@ function MatchStep({
   onBrowse,
   onSelectAlternative,
 }: {
+  isSample: boolean
   matched: MatchedTemplate | null
   alternatives: ApiTemplate[]
   loading: boolean
@@ -1675,16 +1704,16 @@ function MatchStep({
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 3 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
-          {loading ? 'Finding your match...' : matched?.templateSlug ? 'We found your template' : 'Choose an available template'}
+          {isSample ? (loading ? 'Loading your sample...' : 'Choose a sample') : loading ? 'Finding your match...' : matched?.templateSlug ? 'We found your template' : 'Choose an available template'}
         </h1>
         <p className="text-lg text-slate-300">
-          Based on your style preferences and business type.
+          {isSample ? 'Explore a design with fictional business details.' : 'Based on your style preferences and business type.'}
         </p>
       </div>
 
-      <div className="mb-8">
+      {!isSample && <div className="mb-8">
         <ClientReadinessPanel result={readiness} niche={matched?.nicheSlug} />
-      </div>
+      </div>}
 
       {loading ? (
         <div className="glass-panel rounded-2xl p-12 flex flex-col items-center justify-center gap-4">
@@ -2219,6 +2248,7 @@ function EditorStep({
 /* ================================================================== */
 
 function BrowseStep({
+  isSample,
   templates,
   niche,
   onSelect,
@@ -2228,6 +2258,7 @@ function BrowseStep({
   loading,
   onLoadMore,
 }: {
+  isSample: boolean
   templates: ApiTemplate[]
   niche: string
   onSelect: (t: ApiTemplate) => void
@@ -2243,33 +2274,35 @@ function BrowseStep({
     <section className="container-hvac py-8">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <span className="signal-chip">Browse Templates</span>
+          <span className="signal-chip">{isSample ? 'Choose a Sample' : 'Browse Templates'}</span>
           <h1 className="text-3xl md:text-4xl font-bold text-white mt-2">
-            {nicheLabel} Templates
+            {nicheLabel} {isSample ? 'Samples' : 'Templates'}
           </h1>
           <p className="text-slate-300 mt-1">
-            {total > 0 ? `${total} templates available.` : ''} Supported business fields will populate on compatible templates you choose.
+            {isSample
+              ? `${total} sample${total === 1 ? '' : 's'} available. These previews use fictional business details.`
+              : `${total > 0 ? `${total} templates available. ` : ''}Supported business fields will populate on compatible templates you choose.`}
           </p>
         </div>
         <button
           onClick={onBack}
           className="px-6 py-3 text-sm font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
         >
-          ← Back to Editor
+          {isSample ? '← Back to Sample' : '← Back to Editor'}
         </button>
       </div>
 
       {/* Info saved banner */}
-      <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4 mb-8 flex items-center gap-3">
+      {!isSample && <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4 mb-8 flex items-center gap-3">
         <span className="text-cyan-400 text-xl">💾</span>
         <p className="text-cyan-200 text-sm">
           <strong>Your info is saved.</strong> Compatible templates will reuse it in their supported business fields.
         </p>
-      </div>
+      </div>}
 
       {templates.length === 0 && !loading ? (
         <div className="glass-panel rounded-2xl p-12 text-center">
-          <p className="text-slate-300">No templates found for this niche.</p>
+          <p className="text-slate-300">{isSample ? 'No sample is available for this practice yet. Choose another sample practice or start with your own details.' : 'No templates found for this niche.'}</p>
         </div>
       ) : (
         <>
@@ -2294,7 +2327,7 @@ function BrowseStep({
                   <p className="text-sm text-slate-400 line-clamp-3">{t.snippet}</p>
                 )}
                 <span className="inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 group-hover:gap-2 transition-all">
-                  Preview with your info <span aria-hidden="true">→</span>
+                  {isSample ? 'Open sample' : 'Preview with your info'} <span aria-hidden="true">→</span>
                 </span>
               </button>
             ))}
@@ -2322,7 +2355,7 @@ function BrowseStep({
 
           {!hasMore && templates.length > 0 && !loading && (
             <p className="text-center text-sm text-slate-500 mt-8">
-              Showing all {templates.length} templates for this niche.
+              {isSample ? `Showing all ${templates.length} available samples for this practice.` : `Showing all ${templates.length} templates for this niche.`}
             </p>
           )}
         </>
