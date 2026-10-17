@@ -52,7 +52,7 @@ export default function ContactPage() {
             Get In Touch
           </h1>
           <p className="text-xl text-pure-white max-w-2xl mx-auto">
-            For website, billing, refund, or privacy questions, send a message below.
+            For wellness experiences, website services, billing, refund, or privacy questions, send a message below.
           </p>
         </div>
 

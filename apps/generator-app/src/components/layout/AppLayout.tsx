@@ -211,12 +211,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               Daily<span className="text-cyan-300">Clarity</span>
             </Link>
             <p className="mt-2 max-w-md text-xs leading-5 text-slate-400">
-              Professional websites and practical tools for independent service businesses.
+              Websites for independent businesses and wellness experiences from Palatka, Florida.
             </p>
           </div>
           <nav aria-label="Footer navigation">
             <ul className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-400">
               <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
+              <li><Link href="/wellness-experiences" className="hover:text-white">Wellness experiences</Link></li>
               <li><Link href="/help" className="hover:text-white">Help</Link></li>
               <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
               <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
