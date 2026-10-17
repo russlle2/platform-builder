@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { getFeaturedTemplatesForNiche, getNiches } from '@/lib/templates/niche-registry'
+import { getNichesWithSampleAvailability } from '@/lib/templates/niche-registry'
 
 // The launch catalog lives in a site-wide Netlify Blobs store. Reading it at
 // request time prevents a credential-less CI build from permanently baking an
@@ -33,11 +33,8 @@ const nicheAccentClasses: Record<string, { border: string; text: string; bg: str
 }
 
 export default async function HomePage() {
-  const niches = await getNiches()
-  const sampleAvailability = await Promise.all(niches.map(async (niche) =>
-    (await getFeaturedTemplatesForNiche(niche.slug)).length > 0,
-  ))
-  const sampleNiches = niches.filter((_, index) => sampleAvailability[index])
+  const niches = await getNichesWithSampleAvailability()
+  const sampleNiches = niches.filter((niche) => niche.sampleAvailable)
   const defaultSampleNiche = sampleNiches.find((niche) => niche.slug === 'wellness_coach')?.slug || sampleNiches[0]?.slug
   const sampleHref = defaultSampleNiche ? `/preview-your-business?sample=1&niche=${encodeURIComponent(defaultSampleNiche)}` : '/preview-your-business'
   const totalTemplates = niches.reduce((sum, n) => sum + n.templateCount, 0)
