@@ -134,14 +134,16 @@ export function LiveTemplateShowcase({
           Find the right look for your {nicheLabel.toLowerCase()} practice
         </h2>
         <p className="text-slate-300 text-lg">
-          Open a homepage preview, check its mobile layout, then make it yours. No email or payment needed to look around.
+          {templates.length > 0
+            ? 'Open a homepage preview, check its mobile layout, then make it yours. No email or payment needed to look around.'
+            : 'You can explore designs with your own business details or get help choosing a style.'}
         </p>
       </div>
 
       {templates.length === 0 ? (
         <div className="max-w-2xl mx-auto rounded-2xl border border-white/10 bg-slate-900/50 p-8 text-center space-y-4">
-          <p className="text-slate-200">We couldn&apos;t load the example styles right now.</p>
-          <p className="text-sm text-slate-400">You can still start your business details or contact us for help choosing a design.</p>
+          <p className="text-slate-200">No sample is available for this practice yet.</p>
+          <p className="text-sm text-slate-400">Start with your own details to explore available designs, or contact us for help choosing.</p>
           <div className="flex flex-wrap justify-center gap-5">
             <Link href={browseHref} className="text-cyan-200 underline underline-offset-4">Start your business details</Link>
             <Link href="/contact" className="text-slate-200 underline underline-offset-4">Get help choosing</Link>
