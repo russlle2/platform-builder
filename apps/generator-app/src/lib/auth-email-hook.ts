@@ -1,5 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
-import { getSafeRedirectPath } from '@/lib/safe-redirect'
+import { getSafeRedirectPath } from './safe-redirect'
 
 const STAGING_ORIGIN = 'https://dailyclarity-staging.netlify.app'
 const STAGING_PROJECT = 'yuviqftugmasjypkhrpo'

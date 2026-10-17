@@ -147,6 +147,8 @@ export default async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)).*)',
+    // The exact signed server-to-server hook has its own security headers and
+    // must not spend Supabase's five-second budget initializing middleware.
+    '/((?!api/auth/send-email$|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|txt|xml)).*)',
   ],
 }

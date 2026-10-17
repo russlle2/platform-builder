@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest, NextResponse } from 'next/server'
+import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server'
 
 const { updateSession } = vi.hoisted(() => ({ updateSession: vi.fn() }))
 vi.mock('@/lib/supabase/middleware', () => ({ updateSession }))
-import middleware from './middleware'
+import middleware, { config } from './middleware'
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -65,6 +66,14 @@ describe('dashboard authentication redirects', () => {
 
 // The server-to-server hook must keep its existing five-second delivery budget.
 describe('signed Auth email hook middleware boundary', () => {
+  it('excludes only the exact hook path from middleware execution', () => {
+    expect(unstable_doesMiddlewareMatch({ config, url: '/api/auth/send-email' })).toBe(false)
+    expect(unstable_doesMiddlewareMatch({ config, url: '/api/auth/send-email?probe=1' })).toBe(false)
+    for (const url of ['/api/auth/send-email-other', '/api/auth/send-email/child', '/api/auth/send-email/', '/dashboard', '/auth/callback']) {
+      expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true)
+    }
+  })
+
   it('does not make an Auth session round trip for the exact hook path', async () => {
     const response = await middleware(new NextRequest('https://dailyclarity-staging.netlify.app/api/auth/send-email'))
     expect(updateSession).not.toHaveBeenCalled()
