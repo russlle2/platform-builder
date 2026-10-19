@@ -2,7 +2,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import { stripTypeScriptTypes } from 'node:module'
-import { TARGET, digest, taskSlug, faultAlias, configuration, assertRuntime, assertPending, assertFailed, assertFixtureSite, validateJournal, assertArtifactSource, observation, orchestrate, createProviderAccess } from './staging-recovery-proof.mjs'
+import { TARGET, digest, taskSlug, faultAlias, configuration, assertRuntime, assertPending, assertFailed, assertFixtureSite, validateJournal, validateControlBundle, safeFailureCode, assertArtifactSource, observation, orchestrate, createProviderAccess } from './staging-recovery-proof.mjs'
 
 const SHA = 'a'.repeat(40), NOW = Date.parse('2026-10-16T12:00:00.000Z'), CREATED = '2026-10-16T11:55:00.000Z'
 const SESSION = 'cs_test_example123', EVENT = 'evt_example123', SUB = 'sub_example123', INTENT = '11111111-1111-4111-8111-111111111111', SITE = '22222222-2222-4222-8222-222222222222', ORDER = '33333333-3333-4333-8333-333333333333'
@@ -29,8 +29,18 @@ const recovered = () => {
   return s
 }
 function harness(operation, state = pending(), savedJournal = journal()) {
-  const calls = [], files = new Map(); let site = fixture(operation === 'retry' || savedJournal.phase === 'cleared' ? [] : [faultAlias(binding)])
-  return { calls, files, deps: { now: () => NOW, guard: async () => calls.push('guard'), snapshot: async () => structuredClone(state), lookup: async () => null, create: async body => { calls.push(['create', body]); return site }, site: async () => site, clear: async id => { calls.push(['clear', id]); site = fixture([]) }, retry: async id => calls.push(['retry', id]), loadJournal: async () => savedJournal, save: async (name, value) => { assert(!files.has(name)); files.set(name, structuredClone(value)); calls.push(['save', name]) } } }
+  const calls = [], files = new Map(); let site = fixture(operation === 'prepare' || operation === 'retry' || savedJournal.phase === 'cleared' ? [] : [faultAlias(binding)])
+  return { calls, files, deps: {
+    now: () => NOW, guard: async () => calls.push('guard'),
+    snapshot: async () => { calls.push('snapshot'); return structuredClone(state) },
+    lookup: async () => { calls.push('lookup'); return null },
+    create: async body => { calls.push(['create', body]); return site },
+    site: async id => { calls.push(['site', id]); return site },
+    setAlias: async id => { calls.push(['setAlias', id]); site = fixture(); return site },
+    clear: async id => { calls.push(['clear', id]); site = fixture([]) },
+    retry: async id => calls.push(['retry', id]), loadJournal: async () => savedJournal,
+    save: async (name, value) => { assert(!files.has(name)); files.set(name, structuredClone(value)); calls.push(['save', name]) },
+  } }
 }
 
 test('configuration pins protected workflow, target, exact SHA and private session commitment', () => {
@@ -52,12 +62,13 @@ test('alias site rejects another account, custom domain, alias set, reused deplo
   assertFixtureSite(fixture(), binding, { siteId: SITE, aliases: [faultAlias(binding)], empty: true })
   for (const patch of [{ account_id: 'other' }, { custom_domain: 'customer.example' }, { domain_aliases: [faultAlias(binding), 'customer.example'] }, { default_domain: 'other.netlify.app' }, { published_deploy: { id: 'exists' } }, { id: TARGET.siteId }]) assert.throws(() => assertFixtureSite({ ...fixture(), ...patch }, binding, { siteId: SITE, aliases: [faultAlias(binding)], empty: true }))
 })
-test('prepare creates alias atomically only after 404 and independent readback', async () => {
+test('prepare creates empty site, rechecks ownership and checkout, then records one alias PATCH before independent readback', async () => {
   const h = harness('prepare'); const result = await orchestrate(config('prepare'), h.deps)
   assert.equal(result.prepared, true); assert.equal(result.paymentAttempted, false)
-  assert.deepEqual(h.calls.find(c => Array.isArray(c) && c[0] === 'create')[1], { name: `platform-${taskSlug(binding)}`, domain_aliases: [faultAlias(binding)] })
+  assert.deepEqual(h.calls, ['guard', 'snapshot', 'lookup', 'snapshot', 'guard', ['save', 'creation-requested.json'], ['create', { name: `platform-${taskSlug(binding)}` }], ['save', 'fixture-created.json'], ['site', SITE], 'guard', 'snapshot', ['site', SITE], ['save', 'alias-requested.json'], ['setAlias', SITE], ['site', SITE], 'guard', 'snapshot', ['save', 'recovery-journal.json']])
   const text = JSON.stringify([...h.files]); assert(!text.includes(SESSION)); assert(!text.includes('private@example'))
-  assert(h.files.has('fixture-created.json')); assert(h.files.has('recovery-journal.json'))
+  assert(h.files.has('fixture-created.json')); assert(h.files.has('alias-requested.json')); assert(h.files.has('recovery-journal.json'))
+  assert.equal(validateControlBundle(h.files, { ...config('clear'), journalHash: result.journalHash }, source), h.files.get('recovery-journal.json'))
 })
 test('prepare never mutates existing deterministic site or races a processed checkout', async () => {
   const h = harness('prepare'); h.deps.lookup = async () => fixture()
@@ -70,6 +81,87 @@ test('ignored alias or ambiguous creation does not approve payment or blindly re
   await assert.rejects(orchestrate(config('prepare'), h.deps)); assert(h.files.has('fixture-created.json')); assert(!h.files.has('recovery-journal.json'))
   let creates = 0; const uncertain = harness('prepare'); uncertain.deps.create = async () => { creates++; throw Error('secret provider response') }
   await assert.rejects(orchestrate(config('prepare'), uncertain.deps)); assert.equal(creates, 1); assert(uncertain.files.has('creation-requested.json')); assert(!uncertain.files.has('recovery-journal.json'))
+})
+test('prepare rejects wrong or nonempty creation and readback identities before alias PATCH', async () => {
+  const invalid = [
+    { id: 'not-a-uuid' }, { id: TARGET.siteId }, { account_id: 'other' }, { account_slug: 'other' }, { name: 'another-site' },
+    { custom_domain: 'customer.example' }, { default_domain: 'other.netlify.app' }, { url: 'https://customer.example' },
+    { domain_aliases: [faultAlias(binding)] }, { domain_aliases: ['customer.example'] },
+    { published_deploy: { id: 'existing' } }, { build_settings: { repo_url: 'https://github.com/example/site' } },
+    { build_settings: { repo_path: 'some/repository' } }, { created_at: CREATED },
+  ]
+  for (const patch of invalid) for (const stage of ['create', 'readback']) {
+    const h = harness('prepare')
+    h.deps[stage === 'create' ? 'create' : 'site'] = async () => ({ ...fixture([]), ...patch })
+    await assert.rejects(orchestrate(config('prepare'), h.deps))
+    assert(!h.calls.some(c => Array.isArray(c) && c[0] === 'setAlias')); assert(!h.files.has('recovery-journal.json'))
+  }
+  const mismatch = harness('prepare'); mismatch.deps.site = async () => ({ ...fixture([]), id: ORDER })
+  await assert.rejects(orchestrate(config('prepare'), mismatch.deps), /fixture_identity/)
+  assert(!mismatch.calls.some(c => Array.isArray(c) && c[0] === 'setAlias'))
+})
+test('prepare rejects alias PATCH response or independent readback mismatches without prepared proof', async () => {
+  const invalid = [{ id: ORDER }, { id: TARGET.siteId }, { account_id: 'other' }, { account_slug: 'other' }, { name: 'another-site' }, { custom_domain: 'customer.example' }, { domain_aliases: [] }, { domain_aliases: [faultAlias(binding), 'customer.example'] }, { url: 'https://customer.example' }, { ssl_url: 'https://customer.example' }, { published_deploy: { id: 'existing' } }, { build_settings: { repo_url: 'https://github.com/example/site' } }]
+  for (const patch of invalid) for (const stage of ['patch', 'readback']) {
+    const h = harness('prepare'); let patched = false, writes = 0
+    h.deps.setAlias = async () => { patched = true; writes++; return stage === 'patch' ? { ...fixture(), ...patch } : fixture() }
+    h.deps.site = async () => !patched ? fixture([]) : stage === 'readback' ? { ...fixture(), ...patch } : fixture()
+    await assert.rejects(orchestrate(config('prepare'), h.deps))
+    assert.equal(writes, 1); assert(h.files.has('alias-requested.json')); assert(!h.files.has('recovery-journal.json'))
+  }
+})
+test('uncertain alias PATCH or failed checkpoint write never retries or approves payment', async () => {
+  const uncertain = harness('prepare'); let writes = 0
+  uncertain.deps.setAlias = async () => { writes++; throw Error('secret provider response') }
+  await assert.rejects(orchestrate(config('prepare'), uncertain.deps)); assert.equal(writes, 1)
+  assert(uncertain.files.has('alias-requested.json')); assert(!uncertain.files.has('recovery-journal.json'))
+  const blocked = harness('prepare'), save = blocked.deps.save
+  blocked.deps.save = async (name, value) => { if (name === 'alias-requested.json') throw Error('disk full'); await save(name, value) }
+  await assert.rejects(orchestrate(config('prepare'), blocked.deps))
+  assert(!blocked.calls.some(c => Array.isArray(c) && c[0] === 'setAlias')); assert(!blocked.files.has('recovery-journal.json'))
+})
+test('fresh unpaid checkout, reservation and runtime guards gate PATCH and final prepared proof', async () => {
+  for (const failedRead of [3, 4]) for (const change of [s => s.intents[0].created_at = '2026-10-16T10:00:00.000Z', s => s.reservations[0].reservation_expires_at = '2026-10-16T12:05:00.000Z', s => s.orders.push({}), s => s.intents[0].status = 'completed']) {
+    const h = harness('prepare'); let reads = 0
+    h.deps.snapshot = async () => { const s = pending(); if (++reads === failedRead) change(s); return s }
+    await assert.rejects(orchestrate(config('prepare'), h.deps)); assert(!h.files.has('recovery-journal.json'))
+    assert.equal(h.calls.filter(c => Array.isArray(c) && c[0] === 'setAlias').length, failedRead === 3 ? 0 : 1)
+  }
+  for (const failedGuard of [3, 4]) {
+    const h = harness('prepare'); let guards = 0
+    h.deps.guard = async () => { if (++guards === failedGuard) throw Error('runtime changed') }
+    await assert.rejects(orchestrate(config('prepare'), h.deps)); assert(!h.files.has('recovery-journal.json'))
+    assert.equal(h.calls.filter(c => Array.isArray(c) && c[0] === 'setAlias').length, failedGuard === 3 ? 0 : 1)
+  }
+  const changed = harness('prepare'); let reads = 0
+  changed.deps.site = async () => ++reads === 2 ? { ...fixture([]), published_deploy: { id: 'raced-deployment' } } : fixture([])
+  await assert.rejects(orchestrate(config('prepare'), changed.deps), /fixture_must_be_empty/)
+  assert(!changed.calls.some(c => Array.isArray(c) && c[0] === 'setAlias'))
+})
+test('checkpoint bundle binds exact source, fixture, alias request and time to the selected prepared journal', async () => {
+  const h = harness('prepare'), result = await orchestrate(config('prepare'), h.deps)
+  const cfg = { ...config('clear'), journalHash: result.journalHash }
+  for (const patch of [{ siteId: ORDER }, { binding: { ...binding, nonce: 'f'.repeat(24) } }, { source: { ...source, runId: '43' } }, { createdAt: CREATED }, { aliasRequestedAt: '2026-10-16T12:00:01.000Z' }, { aliasRequestedAt: CREATED }, { aliases: ['customer.example'] }, { prepared: true }, { aliasOutcome: 'confirmed' }, { extra: 'untrusted' }]) {
+    const files = structuredClone(h.files); files.set('alias-requested.json', { ...files.get('alias-requested.json'), ...patch })
+    assert.throws(() => validateControlBundle(files, cfg, source))
+  }
+  for (const name of ['creation-requested.json', 'fixture-created.json']) {
+    const files = structuredClone(h.files); files.set(name, { ...files.get(name), source: { ...source, runId: '43' } })
+    assert.throws(() => validateControlBundle(files, cfg, source), /checkpoint_identity/)
+  }
+  const partial = structuredClone(h.files); partial.delete('recovery-journal.json')
+  assert.throws(() => validateControlBundle(partial, cfg, source), /exact_journal_hash/)
+  const extra = structuredClone(h.files); extra.set('provider-secret.json', {})
+  assert.throws(() => validateControlBundle(extra, cfg, source), /journal_bundle/)
+  const legacy = new Map([['recovery-journal.json', journal()]])
+  assert.equal(validateControlBundle(legacy, { ...cfg, journalHash: digest(journal()) }, source), legacy.get('recovery-journal.json'))
+})
+test('safe diagnostics emit only internal allowlisted codes and never provider text or impersonated errors', () => {
+  try { assertFixtureSite(fixture([]), binding, { aliases: [faultAlias(binding)], empty: true }) }
+  catch (error) { assert.equal(safeFailureCode(error), 'fixture_domains') }
+  for (const error of [Error('secret provider response'), Object.assign(Error('Recovery control rejected: fixture_domains.'), { code: 'fixture_domains' }), { code: 'fixture_domains' }, null]) assert.equal(safeFailureCode(error), 'unclassified')
+  try { configuration({ ...env(), GITHUB_REF: 'refs/heads/other' }) }
+  catch (error) { assert.equal(safeFailureCode(error), 'unclassified') }
 })
 test('genuine alias failure binds signed test envelope and nonzero payment, independently of later billing status', () => {
   assert.equal(assertFailed(failed(), binding, journal(), EVENT, NOW).amountCents, 2999)
@@ -129,11 +221,15 @@ test('provider adapter keeps DB read-only, fixed origins, no redirects or raw pa
     return new Response(JSON.stringify(fixture()))
   }
   const access = createProviderAccess({ NETLIFY_AUTH_TOKEN: 'not-a-secret', INTERNAL_ADMIN_TOKEN: 'not-a-secret', STAGING_SUPABASE_SERVICE_ROLE_KEY: 'not-a-secret' }, config('prepare'), fetcher)
-  await access.snapshot(null); await access.create({ name: `platform-${taskSlug(binding)}`, domain_aliases: [faultAlias(binding)] }); await access.clear(SITE); await access.retry(EVENT)
+  await access.snapshot(null); await access.create({ name: `platform-${taskSlug(binding)}` }); await access.setAlias(SITE); await access.clear(SITE); await access.retry(EVENT)
   for (const request of requests) { assert.equal(request.init.redirect, 'error'); if (request.url.includes('.supabase.co')) { assert.equal(request.init.method, 'GET'); assert(!new URL(request.url).searchParams.get('select').split(',').includes('payload')) } }
   const mutations = requests.filter(r => r.init.method && r.init.method !== 'GET')
-  assert.deepEqual(mutations.map(r => r.init.method), ['POST', 'PATCH', 'POST'])
-  assert.deepEqual(JSON.parse(mutations[1].init.body), { domain_aliases: [] }); assert.equal(mutations[2].url, `https://${TARGET.hostname}/api/admin/stripe/fulfillment/retry`)
+  assert.deepEqual(mutations.map(r => r.init.method), ['POST', 'PATCH', 'PATCH', 'POST'])
+  assert.deepEqual(JSON.parse(mutations[0].init.body), { name: `platform-${taskSlug(binding)}` })
+  assert.equal(mutations[1].url, `https://api.netlify.com/api/v1/sites/${SITE}`)
+  assert.deepEqual(JSON.parse(mutations[1].init.body), { domain_aliases: [faultAlias(binding)] })
+  assert.deepEqual(JSON.parse(mutations[2].init.body), { domain_aliases: [] }); assert.equal(mutations[3].url, `https://${TARGET.hostname}/api/admin/stripe/fulfillment/retry`)
+  assert.throws(() => access.setAlias(TARGET.siteId)); assert.throws(() => access.setAlias('not-a-uuid'))
 })
 
 // Exercise the public wizard's actual normalization rather than copying its limit.

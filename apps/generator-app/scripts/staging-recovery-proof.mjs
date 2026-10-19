@@ -13,7 +13,12 @@ export const TARGET = Object.freeze({ repository: 'russlle2/platform-builder', w
 const SHA = /^[a-f0-9]{40}$/, HASH = /^[a-f0-9]{64}$/, UUID = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/, ID = /^[1-9][0-9]{0,15}$/
 const EVENT = /^evt_[A-Za-z0-9_]{6,255}$/, SESSION = /^cs_test_[A-Za-z0-9_]{6,255}$/, SUB = /^sub_[A-Za-z0-9_]{6,255}$/
 const FAULT = 'The deterministic Netlify site name is already bound to another domain.'
-const requireThat = (condition, code) => { if (!condition) throw new Error(`Recovery control rejected: ${code}.`) }
+class RecoveryControlError extends Error {
+  constructor(code) { super(`Recovery control rejected: ${code}.`); this.code = code }
+}
+const requireThat = (condition, code) => { if (!condition) throw new RecoveryControlError(code) }
+const SAFE_FAILURE_CODES = new Set(['creation_identity', 'fixture_identity', 'fixture_domains', 'fixture_url', 'fixture_created_at', 'fixture_must_be_empty', 'deterministic_site_already_exists', 'fresh_pending_checkout', 'reservation_expiry', 'checkout_already_processed', 'pending_session_changed', 'current_main_changed', 'staging_account_changed', 'runtime_not_ready', 'runtime_requirements', 'exact_staged_candidate', 'provider_http', 'provider_response_size', 'checkpoint_identity', 'checkpoint_shape', 'journal_bundle'])
+export const safeFailureCode = error => error instanceof RecoveryControlError && SAFE_FAILURE_CODES.has(error.code) ? error.code : 'unclassified'
 const exact = (value, keys) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).sort().join(',') === [...keys].sort().join(',')
 const canonical = value => value && typeof value === 'object' ? Array.isArray(value) ? value.map(canonical) : Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value
 export const digest = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(canonical(value))).digest('hex')
@@ -57,7 +62,7 @@ export function assertFixtureSite(site, binding, { siteId, aliases, createdAfter
   requireThat(UUID.test(site?.id ?? '') && (!siteId || site.id === siteId) && site.id !== TARGET.siteId && site.account_id === TARGET.accountId && site.account_slug === TARGET.accountSlug && site.name === name, 'fixture_identity')
   requireThat((site.default_domain == null || site.default_domain === host) && site.custom_domain == null && Array.isArray(site.domain_aliases) && same(site.domain_aliases, aliases), 'fixture_domains')
   for (const key of ['url', 'ssl_url']) {
-    let url; try { url = new URL(site[key]) } catch { throw new Error('Recovery control rejected: fixture_url.') }
+    let url; try { url = new URL(site[key]) } catch { throw new RecoveryControlError('fixture_url') }
     requireThat(['http:', 'https:'].includes(url.protocol) && url.hostname === host && !url.username && !url.password && !url.port && !url.search && !url.hash, 'fixture_url')
   }
   requireThat(iso(site.created_at) && (!createdAfter || Date.parse(site.created_at) >= Date.parse(createdAfter) - 30_000), 'fixture_created_at')
@@ -101,6 +106,24 @@ export function validateJournal(journal, config, source) {
   else requireThat(exact(journal.failure, FAILURE_KEYS) && ['eventIdHash', 'businessKeyHash', 'orderIdHash'].every(k => HASH.test(journal.failure[k] ?? '')) && journal.failure.eventType === 'checkout.session.completed' && iso(journal.failure.observedAt) && iso(journal.failure.eventCreatedAt) && Number.isSafeInteger(journal.failure.amountCents) && journal.failure.amountCents > 0 && /^[a-z]{3}$/.test(journal.failure.currency) && (journal.phase === 'clear_requested' ? journal.clearedAt === null : iso(journal.clearedAt)), 'cleared_journal')
   return journal
 }
+export function validateControlBundle(files, config, source) {
+  const allowed = ['creation-requested.json', 'fixture-created.json', 'alias-requested.json', 'recovery-journal.json', 'cleared-journal.json']
+  requireThat(files instanceof Map && files.size > 0 && files.size <= allowed.length && [...files.keys()].every(name => allowed.includes(name)), 'journal_bundle')
+  const journals = [...files].filter(([name, value]) => ['recovery-journal.json', 'cleared-journal.json'].includes(name) && digest(value) === config.journalHash).map(([, value]) => value)
+  requireThat(journals.length === 1, 'exact_journal_hash')
+  const journal = validateJournal(journals[0], config, source)
+  for (const name of ['creation-requested.json', 'fixture-created.json', 'alias-requested.json']) {
+    if (!files.has(name)) continue
+    const value = files.get(name)
+    const extra = name === 'creation-requested.json' ? ['creationOutcome'] : name === 'fixture-created.json' ? ['siteId'] : ['siteId', 'aliasRequestedAt', 'aliases', 'aliasOutcome']
+    requireThat(exact(value, ['version', 'binding', 'source', 'createdAt', 'prepared', ...extra]) && value.version === 1 && value.prepared === false, 'checkpoint_shape')
+    requireThat(same(value.binding, journal.binding) && same(value.source, journal.source) && value.createdAt === journal.createdAt, 'checkpoint_identity')
+    if (name === 'creation-requested.json') requireThat(value.creationOutcome === 'unconfirmed', 'checkpoint_shape')
+    else requireThat(value.siteId === journal.siteId, 'checkpoint_identity')
+    if (name === 'alias-requested.json') requireThat(value.aliasOutcome === 'unconfirmed' && same(value.aliases, [faultAlias(config.binding)]) && iso(value.aliasRequestedAt) && Date.parse(value.aliasRequestedAt) >= Date.parse(journal.createdAt) && Date.parse(value.aliasRequestedAt) <= Date.parse(journal.preparedAt), 'checkpoint_identity')
+  }
+  return journal
+}
 export function assertArtifactSource(run, artifact, config, env) {
   requireThat(String(run?.id) === env.SOURCE_RUN_ID && run.repository?.full_name === TARGET.repository && run.path === TARGET.workflow && run.head_branch === 'main' && run.head_sha === config.binding.releaseSha && run.event === 'workflow_dispatch' && run.status === 'completed' && ['success', 'failure', 'cancelled'].includes(run.conclusion), 'journal_producer')
   requireThat(String(artifact?.id) === env.SOURCE_ARTIFACT_ID && artifact.expired === false && artifact.name === `staging-recovery-journal-${run.id}-${run.run_attempt}` && artifact.workflow_run?.id === Number(env.SOURCE_RUN_ID) && artifact.workflow_run?.head_sha === run.head_sha && Number.isSafeInteger(artifact.size_in_bytes) && artifact.size_in_bytes > 0 && artifact.size_in_bytes <= 64 * 1024, 'journal_artifact')
@@ -141,11 +164,19 @@ export async function orchestrate(config, deps) {
     await deps.guard()
     const createdAt = new Date(deps.now()).toISOString()
     await deps.save('creation-requested.json', { version: 1, binding, source: config.source, createdAt, prepared: false, creationOutcome: 'unconfirmed' })
-    const site = await deps.create({ name: `platform-${taskSlug(binding)}`, domain_aliases: [faultAlias(binding)] })
+    const site = await deps.create({ name: `platform-${taskSlug(binding)}` })
     requireThat(UUID.test(site?.id ?? '') && site.id !== TARGET.siteId, 'creation_identity')
-    // Keep a bounded control checkpoint even when the provider ignores an alias.
+    // Establish new empty-site ownership before a separate alias-only update.
     await deps.save('fixture-created.json', { version: 1, binding, source: config.source, createdAt, siteId: site.id, prepared: false })
-    assertFixtureSite(site, binding, { aliases: [faultAlias(binding)], createdAfter: createdAt, empty: true })
+    assertFixtureSite(site, binding, { aliases: [], createdAfter: createdAt, empty: true })
+    assertFixtureSite(await deps.site(site.id), binding, { siteId: site.id, aliases: [], createdAfter: createdAt, empty: true })
+    await deps.guard()
+    assertPending(await deps.snapshot(null), binding, deps.now())
+    assertFixtureSite(await deps.site(site.id), binding, { siteId: site.id, aliases: [], createdAfter: createdAt, empty: true })
+    // A timeout is uncertain. This checkpoint never authorizes payment or resume.
+    await deps.save('alias-requested.json', { version: 1, binding, source: config.source, createdAt, siteId: site.id, prepared: false, aliasRequestedAt: new Date(deps.now()).toISOString(), aliases: [faultAlias(binding)], aliasOutcome: 'unconfirmed' })
+    const aliased = await deps.setAlias(site.id)
+    assertFixtureSite(aliased, binding, { siteId: site.id, aliases: [faultAlias(binding)], createdAfter: createdAt, empty: true })
     assertFixtureSite(await deps.site(site.id), binding, { siteId: site.id, aliases: [faultAlias(binding)], createdAfter: createdAt, empty: true })
     await deps.guard()
     assertPending(await deps.snapshot(null), binding, deps.now())
@@ -256,6 +287,7 @@ export function createProviderAccess(env, config, fetcher = fetch) {
     lookup: () => netlify(`sites/${encodeURIComponent(`platform-${taskSlug(config.binding)}.netlify.app`)}`, 'GET', undefined, true),
     site: id => { requireThat(UUID.test(id), 'site_id'); return netlify(`sites/${id}`) },
     create: body => netlify(`${TARGET.accountSlug}/sites`, 'POST', body),
+    setAlias: id => { requireThat(UUID.test(id) && id !== TARGET.siteId, 'alias_id'); return netlify(`sites/${id}`, 'PATCH', { domain_aliases: [faultAlias(config.binding)] }) },
     clear: id => { requireThat(UUID.test(id) && id !== TARGET.siteId, 'clear_id'); return netlify(`sites/${id}`, 'PATCH', { domain_aliases: [] }) },
   }
 }
@@ -290,18 +322,16 @@ export async function run(env = process.env) {
   deps.loadJournal = async () => {
     const source = await sourceIdentity(env, config)
     const names = await readdir(config.input)
-    requireThat(names.length <= 4 && names.every(name => ['creation-requested.json', 'fixture-created.json', 'recovery-journal.json', 'cleared-journal.json'].includes(name)), 'journal_bundle')
-    const journals = []
-    for (const name of names.filter(name => ['recovery-journal.json', 'cleared-journal.json'].includes(name))) {
+    requireThat(names.length <= 5 && names.every(name => ['creation-requested.json', 'fixture-created.json', 'alias-requested.json', 'recovery-journal.json', 'cleared-journal.json'].includes(name)), 'journal_bundle')
+    const files = new Map()
+    for (const name of names) {
       const file = path.join(config.input, name), info = await lstat(file)
       requireThat(info.isFile() && !info.isSymbolicLink() && info.nlink === 1 && info.size <= 16 * 1024, 'journal_file')
-      const candidate = JSON.parse(await readFile(file, 'utf8'))
-      if (digest(candidate) === config.journalHash) journals.push(candidate)
+      files.set(name, JSON.parse(await readFile(file, 'utf8')))
     }
-    requireThat(journals.length === 1, 'exact_journal_hash')
-    return validateJournal(journals[0], config, source)
+    return validateControlBundle(files, config, source)
   }
   const result = await orchestrate(config, deps)
   console.log(JSON.stringify(result))
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run().catch(() => { console.error('Staging recovery control stopped. No raw provider response or credentials were retained. Keep its control artifact; do not pay unless prepare completed and its independent alias readback succeeded.'); process.exitCode = 1 })
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run().catch(error => { console.error(`Staging recovery control stopped (${safeFailureCode(error)}). No raw provider response or credentials were retained. Keep its control artifact; do not pay unless prepare completed and its independent alias readback succeeded.`); process.exitCode = 1 })
