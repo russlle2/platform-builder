@@ -6,15 +6,15 @@ import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
 export const metadata: Metadata = {
   title: 'Watch a Build Walkthrough',
   description:
-    'See how DailyClarity Platform Builder guides wellness and practice owners from business info to a live, booking-ready website preview.',
+    'Explore five practice-specific website demos and a DailyClarity overview. See real previews, design choices, and personalization, with captions and transcripts.',
   alternates: { canonical: '/demo' },
   openGraph: {
     title: 'Watch a Build Walkthrough | DailyClarity',
     description:
-      'See how DailyClarity Platform Builder guides wellness and practice owners from business info to a live, booking-ready website preview.',
+      'Find the demo for your practice and see your website take shape with DailyClarity.',
     url: '/demo',
     type: 'website',
-    images: ['/og-image.png'],
+    images: [DEMO_HUB_ITEMS[0].posterSrc || '/og-image.png'],
   },
 }
 
@@ -40,8 +40,8 @@ export default function DemoHubPage() {
           <span className="signal-chip">DailyClarity Platform Builder</span>
           <h1 className="text-4xl md:text-5xl font-bold text-white">Watch a build walkthrough</h1>
           <p className="text-lg text-slate-300 max-w-2xl">
-            See how a guided site comes together — niche selection, your business details, live preview,
-            and pages structured for trust and booking.
+            Find your practice below, or start with the overview. See real website previews and the
+            choices that make a design feel like your business.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
@@ -60,7 +60,7 @@ export default function DemoHubPage() {
         </div>
 
         <div className="glass-panel rounded-2xl overflow-hidden border border-white/10">
-          <DemoVideoPlayer src={featured.videoSrc} title={featured.title} poster={featured.posterSrc} />
+          <DemoVideoPlayer src={featured.videoSrc} title={featured.title} poster={featured.posterSrc} captionsSrc={featured.captionsSrc} transcriptSrc={featured.transcriptSrc} />
           <div className="px-6 py-4 flex flex-wrap items-center justify-between gap-3 border-t border-white/10">
             <p className="text-sm text-slate-300">{featured.description}</p>
             <Link href={featured.href} className="text-sm font-semibold text-cyan-300 hover:text-cyan-200">
