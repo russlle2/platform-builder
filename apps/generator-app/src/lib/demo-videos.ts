@@ -5,7 +5,7 @@
 
 // Reused public filenames receive a stable release version so existing visitors
 // load the new picture, poster and accessible companions together.
-const DEMO_MEDIA_VERSION = '20261019-liam-v1'
+const DEMO_MEDIA_VERSION = '20261019-liam-v2'
 const versionedMedia = (path: string) => `${path}?v=${DEMO_MEDIA_VERSION}`
 
 export const PLATFORM_DEMO_VIDEO = versionedMedia('/demo-videos/platform-builder-walkthrough.mp4')
