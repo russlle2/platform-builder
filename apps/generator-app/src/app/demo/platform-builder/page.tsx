@@ -1,20 +1,20 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
-import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER } from '@/lib/demo-videos'
+import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER, PLATFORM_DEMO_CAPTIONS, PLATFORM_DEMO_TRANSCRIPT } from '@/lib/demo-videos'
 import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
 
 export const metadata: Metadata = {
   title: 'Platform Build Walkthrough',
   description:
-    'Watch how DailyClarity Platform Builder guides you from business info to a live, client-ready wellness website preview.',
+    'Watch your wellness website take shape: choose your practice, personalize a design, and explore the live preview. Includes captions and a transcript.',
   alternates: { canonical: '/demo/platform-builder' },
   openGraph: {
     title: 'Platform Build Walkthrough | DailyClarity',
     description:
-      'Watch how DailyClarity Platform Builder guides you from business info to a live, client-ready wellness website preview.',
+      'Choose your practice, personalize a design, and see your website before you commit.',
     url: '/demo/platform-builder',
     type: 'website',
-    images: ['/og-image.png'],
+    images: [PLATFORM_DEMO_POSTER],
   },
 }
 
@@ -29,8 +29,8 @@ export default function PlatformBuilderDemoPage() {
           <span className="signal-chip block w-fit">DailyClarity Platform Builder</span>
           <h1 className="text-4xl md:text-5xl font-bold text-white">Platform build walkthrough</h1>
           <p className="text-lg text-slate-300 max-w-2xl">
-            See the guided preview flow — business info, style match, live editing, and a site
-            structured for client booking and contact.
+            From your first design choice to a website that feels like your practice. See how your
+            details, style, and services come together in a real preview before you commit.
           </p>
         </div>
 
@@ -39,6 +39,8 @@ export default function PlatformBuilderDemoPage() {
             src={PLATFORM_DEMO_VIDEO}
             title="DailyClarity Platform Builder walkthrough"
             poster={PLATFORM_DEMO_POSTER}
+            captionsSrc={PLATFORM_DEMO_CAPTIONS}
+            transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
           />
         </div>
 
