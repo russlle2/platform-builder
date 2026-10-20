@@ -119,6 +119,19 @@ ambiguous errors stay unknown; raw output, paths, URLs and arbitrary provider
 messages are never saved. These diagnostics do not change upload behavior,
 authorize retries or establish that a provider defect has been corrected.
 
+The Next.js adapter temporarily swaps its CDN output into `.next` during
+`onPostBuild`, then restores the raw build directory during `onEnd`. A separate
+prebuilt upload must therefore select the fixed package `.netlify/static`
+directory explicitly. The controller checks that its complete file tree equals
+the source `public` tree plus built `.next/static` files mapped to `_next/static`.
+It requires the exact producer marker and all 24 sealed media files, rejects
+symlinks and unexpected files, and records only fixed identity/hash/count fields.
+The check runs after the credential-free build and again immediately before
+upload. The upload passes that fixed directory to the pinned CLI; generated
+routing, functions, edge functions, configuration equivalence and all remote
+health/media checks remain required. Raw server build output is never an
+acceptable static upload directory.
+
 The record produced by `prepare` is the immutable input to every subsequent
 operation. Later operation artifacts retain it unchanged alongside their own
 transition state; use the original producer when identifying that record. Review

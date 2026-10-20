@@ -15,7 +15,7 @@ export const CONTROLLER_CLOSURE = [
   'pnpm-workspace.yaml', '.npmrc', '.pnpmfile.cjs', '.node-version', '.nvmrc',
   'patches', 'packages', 'apps/generator-app/package.json',
   'apps/generator-app/.npmrc', 'apps/generator-app/.pnpmfile.cjs',
-  ...['demo-maintenance-release.json', 'demo-maintenance-contract.mjs', 'demo-maintenance-adapter-config.mjs', 'demo-maintenance-diagnostics.mjs', 'run-demo-maintenance.mjs', 'verify-demo-maintenance-media.mjs', 'netlify-target-contract.mjs', 'verify-release-ci.mjs', 'verify-auth-entrypoint.mjs'].map(p => `apps/generator-app/scripts/${p}`),
+  ...['demo-maintenance-release.json', 'demo-maintenance-contract.mjs', 'demo-maintenance-adapter-config.mjs', 'demo-maintenance-static-output.mjs', 'demo-maintenance-diagnostics.mjs', 'run-demo-maintenance.mjs', 'verify-demo-maintenance-media.mjs', 'netlify-target-contract.mjs', 'verify-release-ci.mjs', 'verify-auth-entrypoint.mjs'].map(p => `apps/generator-app/scripts/${p}`),
   'apps/generator-app/src/lib/templates/certified-catalog-contract.mjs',
 ]
 const SHA = /^[a-f0-9]{40}$/

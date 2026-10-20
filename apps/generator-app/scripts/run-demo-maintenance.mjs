@@ -8,6 +8,7 @@ import { assertReleaseCi } from './verify-release-ci.mjs'
 import { CERTIFIED_STORE } from '../src/lib/templates/certified-catalog-contract.mjs'
 import { classifyDemoUploadFailure } from './demo-maintenance-diagnostics.mjs'
 import { validateAdapterConfigurationProof, adapterFailurePhase } from './demo-maintenance-adapter-config.mjs'
+import { verifyAdapterStaticOutput } from './demo-maintenance-static-output.mjs'
 import { validateManifest, verifySource, verifyControllerCompatibility, validateCatalogue, validateRuntime, markerFor, validateBaseline, assertUnchanged, validateRecord, candidateTitle, parseArtifactSource, validateArtifactMetadata, validateQa, cleanBuildEnvironment, canonicalDigest, digest, MARKER } from './demo-maintenance-contract.mjs'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
@@ -16,11 +17,14 @@ const required = (ok, message) => { if (!ok) throw new Error(message) }
 const save = async (file, value) => { await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, `${JSON.stringify(value, null, 2)}\n`) }
 const confirms = { prepare: 'PREPARE DEMO DRAFT', 'verify-draft': 'VERIFY DEMO DRAFT', promote: 'PROMOTE DEMO DRAFT', rollback: 'ROLLBACK DEMO' }
 
-export function demoDraftArguments(siteId, title) {
+export function demoDraftArguments(siteId, title, source) {
   // CLI 27.4.2 rejects --context together with --no-build. Configuration still
   // resolves with CONTEXT=production from cleanBuildEnvironment; the separate
   // credential-free adapter build retains its explicit --context production.
-  return ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--no-build', '--filter', '@platform-builder/generator-app', '--site', siteId, '--message', title, '--json']
+  // Next's onEnd restores raw .next after the offline build. Its complete CDN
+  // output remains in .netlify/static; never upload the restored server output.
+  required(typeof source === 'string' && path.isAbsolute(source), 'Fixed source checkout is required for draft upload')
+  return ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--no-build', '--filter', '@platform-builder/generator-app', '--dir', path.join(source, 'apps/generator-app/.netlify/static'), '--site', siteId, '--message', title, '--json']
 }
 
 export function demoAdapterConfigurationArguments(source) {
@@ -158,6 +162,7 @@ export async function executeMaintenance(ctx, a) {
 
 export async function createAdapters(ctx, env, fetchImpl = fetch) {
   let buildConfigHash
+  let staticOutputProof
   let lastState
   const ghRoot = `https://api.github.com/repos/${env.GITHUB_REPOSITORY}`
   const boundedBytes = async (response, max) => {
@@ -292,14 +297,29 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
         throw error
       }
       buildConfigHash = adapterConfiguration.configSha256
-      return { configSha256: buildConfigHash, sourceSha: ctx.manifest.sourceSha, netlifyCli: '27.4.2', productionContext: true, adminCredentialsInherited: false, adapterConfiguration }
+      try {
+        staticOutputProof = await verifyAdapterStaticOutput(env.SOURCE_CHECKOUT, ctx.manifest, proof)
+      } catch {
+        const error = new Error('Adapter static output verification failed; no draft was requested')
+        error.maintenanceFailure = { category: 'static-output', phase: 'post-build' }
+        throw error
+      }
+      return { configSha256: buildConfigHash, sourceSha: ctx.manifest.sourceSha, netlifyCli: '27.4.2', productionContext: true, adminCredentialsInherited: false, adapterConfiguration, staticOutput: staticOutputProof }
     },
     async draft(title, onReturned) {
       required(buildConfigHash && digest(await readFile(path.join(env.SOURCE_CHECKOUT, 'apps/generator-app/netlify.toml'))) === buildConfigHash, 'Generated adapter configuration changed before upload')
+      try {
+        const current = await verifyAdapterStaticOutput(env.SOURCE_CHECKOUT, ctx.manifest, markerFor(ctx.manifest, ctx.controllerSha, ctx.manifestHash, ctx.producer))
+        required(staticOutputProof && canonicalDigest(current) === canonicalDigest(staticOutputProof), 'Adapter static output changed before upload')
+      } catch {
+        const error = new Error('Adapter static output changed or failed validation before upload')
+        error.maintenanceFailure = { category: 'static-output', phase: 'pre-upload' }
+        throw error
+      }
       const upload = { ...cleanBuildEnvironment(env, ctx.manifest), NETLIFY_AUTH_TOKEN: env.NETLIFY_AUTH_TOKEN }
       let raw
       try {
-        raw = execFileSync('pnpm', demoDraftArguments(env.NETLIFY_SITE_ID, title), { cwd: env.SOURCE_CHECKOUT, env: upload, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 12_000_000, timeout: 30 * 60_000 })
+        raw = execFileSync('pnpm', demoDraftArguments(env.NETLIFY_SITE_ID, title, env.SOURCE_CHECKOUT), { cwd: env.SOURCE_CHECKOUT, env: upload, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 12_000_000, timeout: 30 * 60_000 })
       } catch (cause) {
         const error = new Error('Draft upload did not complete; inspect the retained sanitized provider observation before further action')
         error.maintenanceFailure = { category: 'draft-upload', exitCode: Number.isSafeInteger(cause.status) ? cause.status : null, diagnostics: classifyDemoUploadFailure(cause) }
