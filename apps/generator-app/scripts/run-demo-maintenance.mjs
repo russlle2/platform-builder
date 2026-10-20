@@ -7,7 +7,8 @@ import { assertNetlifyTarget, assertNetlifyRuntimeEnvironment } from './netlify-
 import { assertReleaseCi } from './verify-release-ci.mjs'
 import { CERTIFIED_STORE } from '../src/lib/templates/certified-catalog-contract.mjs'
 import { classifyDemoUploadFailure } from './demo-maintenance-diagnostics.mjs'
-import { validateManifest, verifySource, verifyControllerCompatibility, stageAdapterConfiguration, validateCatalogue, validateRuntime, markerFor, validateBaseline, assertUnchanged, validateRecord, candidateTitle, parseArtifactSource, validateArtifactMetadata, validateQa, cleanBuildEnvironment, canonicalDigest, digest, MARKER } from './demo-maintenance-contract.mjs'
+import { validateAdapterConfigurationProof, adapterFailurePhase } from './demo-maintenance-adapter-config.mjs'
+import { validateManifest, verifySource, verifyControllerCompatibility, validateCatalogue, validateRuntime, markerFor, validateBaseline, assertUnchanged, validateRecord, candidateTitle, parseArtifactSource, validateArtifactMetadata, validateQa, cleanBuildEnvironment, canonicalDigest, digest, MARKER } from './demo-maintenance-contract.mjs'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
 const controllerRoot = path.resolve(scriptDir, '../../..')
@@ -20,6 +21,10 @@ export function demoDraftArguments(siteId, title) {
   // resolves with CONTEXT=production from cleanBuildEnvironment; the separate
   // credential-free adapter build retains its explicit --context production.
   return ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--no-build', '--filter', '@platform-builder/generator-app', '--site', siteId, '--message', title, '--json']
+}
+
+export function demoAdapterConfigurationArguments(source) {
+  return ['--package=netlify-cli@27.4.2', 'dlx', 'node', path.join(scriptDir, 'demo-maintenance-adapter-config.mjs'), source]
 }
 
 // Orchestration has no provider globals. Tests inject adapters and assert both
@@ -277,8 +282,17 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
         error.maintenanceFailure = { category: 'adapter-build', exitCode: Number.isSafeInteger(cause.status) ? cause.status : null }
         throw error
       }
-      buildConfigHash = await stageAdapterConfiguration(env.SOURCE_CHECKOUT)
-      return { configSha256: buildConfigHash, sourceSha: ctx.manifest.sourceSha, netlifyCli: '27.4.2', productionContext: true, adminCredentialsInherited: false }
+      let adapterConfiguration
+      try {
+        const raw = execFileSync('pnpm', demoAdapterConfigurationArguments(env.SOURCE_CHECKOUT), { cwd: env.SOURCE_CHECKOUT, env: clean, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 128_000, timeout: 5 * 60_000 })
+        adapterConfiguration = validateAdapterConfigurationProof(JSON.parse(raw.toString('utf8')))
+      } catch (cause) {
+        const error = new Error('Adapter configuration normalization or offline equivalence failed; no draft was requested')
+        error.maintenanceFailure = { category: 'adapter-config', phase: adapterFailurePhase(cause), exitCode: Number.isSafeInteger(cause.status) ? cause.status : null }
+        throw error
+      }
+      buildConfigHash = adapterConfiguration.configSha256
+      return { configSha256: buildConfigHash, sourceSha: ctx.manifest.sourceSha, netlifyCli: '27.4.2', productionContext: true, adminCredentialsInherited: false, adapterConfiguration }
     },
     async draft(title, onReturned) {
       required(buildConfigHash && digest(await readFile(path.join(env.SOURCE_CHECKOUT, 'apps/generator-app/netlify.toml'))) === buildConfigHash, 'Generated adapter configuration changed before upload')

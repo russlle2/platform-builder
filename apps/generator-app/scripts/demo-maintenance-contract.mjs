@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { mkdtemp, readFile, writeFile, rm, lstat, readdir } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, lstat, readdir } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { canonicalDigest, validateCertifiedPointer, validateCertification, PRODUCTION_NETLIFY_SITE_ID } from '../src/lib/templates/certified-catalog-contract.mjs'
@@ -15,7 +15,7 @@ export const CONTROLLER_CLOSURE = [
   'pnpm-workspace.yaml', '.npmrc', '.pnpmfile.cjs', '.node-version', '.nvmrc',
   'patches', 'packages', 'apps/generator-app/package.json',
   'apps/generator-app/.npmrc', 'apps/generator-app/.pnpmfile.cjs',
-  ...['demo-maintenance-release.json', 'demo-maintenance-contract.mjs', 'demo-maintenance-diagnostics.mjs', 'run-demo-maintenance.mjs', 'verify-demo-maintenance-media.mjs', 'netlify-target-contract.mjs', 'verify-release-ci.mjs', 'verify-auth-entrypoint.mjs'].map(p => `apps/generator-app/scripts/${p}`),
+  ...['demo-maintenance-release.json', 'demo-maintenance-contract.mjs', 'demo-maintenance-adapter-config.mjs', 'demo-maintenance-diagnostics.mjs', 'run-demo-maintenance.mjs', 'verify-demo-maintenance-media.mjs', 'netlify-target-contract.mjs', 'verify-release-ci.mjs', 'verify-auth-entrypoint.mjs'].map(p => `apps/generator-app/scripts/${p}`),
   'apps/generator-app/src/lib/templates/certified-catalog-contract.mjs',
 ]
 const SHA = /^[a-f0-9]{40}$/
@@ -57,21 +57,6 @@ export function validateManifest(m) {
     need((f.beforeBlob === null || SHA.test(f.beforeBlob)) && SHA.test(f.afterBlob) && HASH.test(f.sha256) && Number.isSafeInteger(f.bytes) && f.bytes > 0 && f.bytes < 40_000_000 && f.mode === '100644', 'Invalid reviewed file identity')
   }
   return m
-}
-
-// CLI27.4.2 saves plugin mutations here but deploy --no-build does not discover
-// that hidden file. Its normal monorepo discovery DOES select package netlify.toml.
-// Stage only those just-built bytes, never overwrite a reviewed source config.
-export async function stageAdapterConfiguration(source) {
-  const app = path.join(source, 'apps/generator-app')
-  const generated = path.join(app, '.netlify/netlify.toml')
-  const stat = await lstat(generated)
-  need(stat.isFile() && stat.size > 0 && stat.size < 2_000_000, 'Production adapter did not emit a bounded regular configuration')
-  const bytes = await readFile(generated)
-  const target = path.join(app, 'netlify.toml')
-  await writeFile(target, bytes, { flag: 'wx' })
-  need(digest(await readFile(target)) === digest(bytes), 'Generated adapter configuration copy differs')
-  return digest(bytes)
 }
 
 // No dependency installation or source script runs before this guard. Rebuild the
