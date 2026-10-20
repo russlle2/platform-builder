@@ -85,6 +85,13 @@ canonical JSON hash and embedded producer must match. Private environment values
 provider tokens and raw CLI output are excluded from public evidence; configuration
 and environment values are represented by hash commitments.
 
+An upload failure additionally records bounded, allowlisted diagnostics derived
+in memory from the pinned CLI's error output. Only fixed categories, numeric
+status/length information and allowlisted process codes are retained. Unknown or
+ambiguous errors stay unknown; raw output, paths, URLs and arbitrary provider
+messages are never saved. These diagnostics do not change upload behavior,
+authorize retries or establish that a provider defect has been corrected.
+
 The record produced by `prepare` is the immutable input to every subsequent
 operation. Later operation artifacts retain it unchanged alongside their own
 transition state; use the original producer when identifying that record. Review
