@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { assertNetlifyTarget, assertNetlifyRuntimeEnvironment } from './netlify-target-contract.mjs'
 import { assertReleaseCi } from './verify-release-ci.mjs'
 import { CERTIFIED_STORE } from '../src/lib/templates/certified-catalog-contract.mjs'
+import { classifyDemoUploadFailure } from './demo-maintenance-diagnostics.mjs'
 import { validateManifest, verifySource, verifyControllerCompatibility, stageAdapterConfiguration, validateCatalogue, validateRuntime, markerFor, validateBaseline, assertUnchanged, validateRecord, candidateTitle, parseArtifactSource, validateArtifactMetadata, validateQa, cleanBuildEnvironment, canonicalDigest, digest, MARKER } from './demo-maintenance-contract.mjs'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
@@ -287,7 +288,7 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
         raw = execFileSync('pnpm', demoDraftArguments(env.NETLIFY_SITE_ID, title), { cwd: env.SOURCE_CHECKOUT, env: upload, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 12_000_000, timeout: 30 * 60_000 })
       } catch (cause) {
         const error = new Error('Draft upload did not complete; inspect the retained sanitized provider observation before further action')
-        error.maintenanceFailure = { category: 'draft-upload', exitCode: Number.isSafeInteger(cause.status) ? cause.status : null }
+        error.maintenanceFailure = { category: 'draft-upload', exitCode: Number.isSafeInteger(cause.status) ? cause.status : null, diagnostics: classifyDemoUploadFailure(cause) }
         throw error
       }
       let parsed
