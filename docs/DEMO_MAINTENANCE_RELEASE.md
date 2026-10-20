@@ -21,6 +21,10 @@ checkout. A full Netlify Next.js adapter build includes static assets, functions
 edge functions and routing configuration. Backend source is unchanged; rebuilt
 backend binaries are not claimed to be byte-identical.
 
+The adapter build uses `--context production`. The subsequent prebuilt draft
+upload uses `--no-build` with `CONTEXT=production` in its clean environment;
+CLI 27.4.2 rejects an explicit `--context` flag when combined with `--no-build`.
+
 The new application SHA is distinct from the unchanged catalogue SHA. The public
 marker records both. The existing catalogue certificate is neither rewritten nor
 claimed to certify new application code. Runtime checks require the new app SHA,

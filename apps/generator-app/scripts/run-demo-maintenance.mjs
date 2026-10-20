@@ -14,6 +14,13 @@ const required = (ok, message) => { if (!ok) throw new Error(message) }
 const save = async (file, value) => { await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, `${JSON.stringify(value, null, 2)}\n`) }
 const confirms = { prepare: 'PREPARE DEMO DRAFT', 'verify-draft': 'VERIFY DEMO DRAFT', promote: 'PROMOTE DEMO DRAFT', rollback: 'ROLLBACK DEMO' }
 
+export function demoDraftArguments(siteId, title) {
+  // CLI 27.4.2 rejects --context together with --no-build. Configuration still
+  // resolves with CONTEXT=production from cleanBuildEnvironment; the separate
+  // credential-free adapter build retains its explicit --context production.
+  return ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--no-build', '--filter', '@platform-builder/generator-app', '--site', siteId, '--message', title, '--json']
+}
+
 // Orchestration has no provider globals. Tests inject adapters and assert both
 // absence of writes on failed gates and binding after ambiguous write failures.
 export async function executeMaintenance(ctx, a) {
@@ -277,7 +284,7 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
       const upload = { ...cleanBuildEnvironment(env, ctx.manifest), NETLIFY_AUTH_TOKEN: env.NETLIFY_AUTH_TOKEN }
       let raw
       try {
-        raw = execFileSync('pnpm', ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--no-build', '--context', 'production', '--filter', '@platform-builder/generator-app', '--site', env.NETLIFY_SITE_ID, '--message', title, '--json'], { cwd: env.SOURCE_CHECKOUT, env: upload, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 12_000_000, timeout: 30 * 60_000 })
+        raw = execFileSync('pnpm', demoDraftArguments(env.NETLIFY_SITE_ID, title), { cwd: env.SOURCE_CHECKOUT, env: upload, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 12_000_000, timeout: 30 * 60_000 })
       } catch (cause) {
         const error = new Error('Draft upload did not complete; inspect the retained sanitized provider observation before further action')
         error.maintenanceFailure = { category: 'draft-upload', exitCode: Number.isSafeInteger(cause.status) ? cause.status : null }

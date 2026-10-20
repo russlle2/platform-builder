@@ -4,7 +4,7 @@ import { readFile, mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
 import path from 'node:path'
 import os from 'node:os'
 import { validateManifest, validateRuntime, validateRecord, markerFor, candidateTitle, canonicalDigest, digest, assertUnchanged, cleanBuildEnvironment, parseArtifactSource, validateArtifactMetadata, validateQa, CONTROLLER_CLOSURE, assertControllerCompatibility, stageAdapterConfiguration } from './demo-maintenance-contract.mjs'
-import { executeMaintenance } from './run-demo-maintenance.mjs'
+import { executeMaintenance, demoDraftArguments } from './run-demo-maintenance.mjs'
 
 const manifestBytes = await readFile(new URL('./demo-maintenance-release.json', import.meta.url))
 const manifest = JSON.parse(manifestBytes)
@@ -100,6 +100,18 @@ test('separate upload discovers the exact generated routing configuration withou
     await assert.rejects(stageAdapterConfiguration(dir), /bounded regular/)
   } finally { await rm(dir, { recursive: true, force: true }) }
 })
+test('prebuilt draft upload uses compatible CLI flags and preserves production configuration context', () => {
+  const args = demoDraftArguments(baseline.siteId, 'Reviewed draft')
+  assert.ok(args.includes('--package=netlify-cli@27.4.2'))
+  assert.ok(args.includes('--no-build'))
+  // Netlify CLI rejects this combination before any upload. Do not solve it by
+  // rebuilding with provider credentials or publishing before draft verification.
+  for (const flag of ['--context', '--build', '--prod', '--prod-if-unlocked', '--trigger']) assert.ok(!args.includes(flag))
+  assert.equal(args[args.indexOf('--site') + 1], baseline.siteId)
+  assert.equal(args[args.indexOf('--message') + 1], 'Reviewed draft')
+  assert.equal(cleanBuildEnvironment({ NETLIFY_SITE_ID: baseline.siteId }, manifest).CONTEXT, 'production')
+})
+
 test('settings/catalogue/deployment mutation invalidates unchanged baseline guard', () => {
   assertUnchanged(baseline, baseline)
   for (const field of ['siteId', 'accountHash', 'settingsHash', 'environmentHash', 'projectRefHash', 'deploymentId', 'appSha']) assert.throws(() => assertUnchanged({ ...baseline, [field]: 'changed' }, baseline))
