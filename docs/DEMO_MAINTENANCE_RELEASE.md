@@ -25,6 +25,33 @@ The adapter build uses `--context production`. The subsequent prebuilt draft
 upload uses `--no-build` with `CONTEXT=production` in its clean environment;
 CLI 27.4.2 rejects an explicit `--context` flag when combined with `--no-build`.
 
+The separate commands also require a configuration handoff. CLI 27.4.2 saves its
+resolved adapter configuration with absolute filesystem paths; copying that TOML
+unchanged makes Linux paths resolve beneath the repository a second time. A fixed
+controller helper runs inside the same pinned CLI environment, using its existing
+TOML parser, serializer and offline config resolver. No dependency or lockfile is
+added to the source or controller checkout. Only reviewed config versions 25.2.6
+and 25.2.7 are accepted; their relevant resolver implementations were compared.
+
+The helper converts recognized filesystem fields to repository-relative values
+and omits the redundant repository-root base, preventing a second config lookup
+from selecting the original root config. It preserves the generated file and
+creates the package config exclusively, refusing to overwrite any existing file.
+It then requires the complete production-context resolved configuration to remain
+equivalent, including routing, headers, plugins, functions and environment. Only
+fixed resolver provenance labels are excluded from that comparison. Unexpected
+paths, different defaults, another selected config or any semantic change fail
+before upload. The build record retains the generated/staged/semantic hashes,
+actual config version and verification result; no configuration values or local
+paths are included. A helper failure retains only an allowlisted operation phase.
+
+Run the full offline integration locally with
+`pnpm --package=netlify-cli@27.4.2 dlx node --test apps/generator-app/scripts/demo-maintenance*.test.mjs`.
+Without that temporary CLI environment, the pure tests run and the optional pinned
+resolver integration is explicitly skipped. Every actual preparation invokes the
+helper and requires its independent offline equivalence proof before requesting a
+draft. This proof does not replace provider, draft-runtime or media verification.
+
 The new application SHA is distinct from the unchanged catalogue SHA. The public
 marker records both. The existing catalogue certificate is neither rewritten nor
 claimed to certify new application code. Runtime checks require the new app SHA,

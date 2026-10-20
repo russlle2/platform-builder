@@ -1,10 +1,8 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFile, mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
-import path from 'node:path'
-import os from 'node:os'
-import { validateManifest, validateRuntime, validateRecord, markerFor, candidateTitle, canonicalDigest, digest, assertUnchanged, cleanBuildEnvironment, parseArtifactSource, validateArtifactMetadata, validateQa, CONTROLLER_CLOSURE, assertControllerCompatibility, stageAdapterConfiguration } from './demo-maintenance-contract.mjs'
-import { executeMaintenance, demoDraftArguments } from './run-demo-maintenance.mjs'
+import { readFile } from 'node:fs/promises'
+import { validateManifest, validateRuntime, validateRecord, markerFor, candidateTitle, canonicalDigest, digest, assertUnchanged, cleanBuildEnvironment, parseArtifactSource, validateArtifactMetadata, validateQa, CONTROLLER_CLOSURE, assertControllerCompatibility } from './demo-maintenance-contract.mjs'
+import { executeMaintenance, demoDraftArguments, demoAdapterConfigurationArguments } from './run-demo-maintenance.mjs'
 
 const manifestBytes = await readFile(new URL('./demo-maintenance-release.json', import.meta.url))
 const manifest = JSON.parse(manifestBytes)
@@ -86,19 +84,13 @@ test('source build env cannot inherit GitHub, provider, payment or internal cred
   assert.equal(clean.NODE_OPTIONS, undefined)
   assert.equal(clean.GITHUB_SHA, undefined)
 })
-test('separate upload discovers the exact generated routing configuration without overwriting source', async () => {
-  const dir = await mkdtemp(path.join(os.tmpdir(), 'demo-config-test-'))
-  try {
-    const app = path.join(dir, 'apps/generator-app')
-    await mkdir(path.join(app, '.netlify'), { recursive: true })
-    const bytes = Buffer.from('[build]\npublish=".netlify/static"\n[[redirects]]\nfrom="/*"\nto="/.netlify/functions/server"\nstatus=200\n')
-    await writeFile(path.join(app, '.netlify/netlify.toml'), bytes)
-    assert.equal(await stageAdapterConfiguration(dir), digest(bytes))
-    assert.deepEqual(await readFile(path.join(app, 'netlify.toml')), bytes)
-    await assert.rejects(stageAdapterConfiguration(dir), /EEXIST/)
-    await writeFile(path.join(app, '.netlify/netlify.toml'), '')
-    await assert.rejects(stageAdapterConfiguration(dir), /bounded regular/)
-  } finally { await rm(dir, { recursive: true, force: true }) }
+test('adapter normalization runs only the fixed controller helper inside the pinned CLI environment', () => {
+  const args = demoAdapterConfigurationArguments('/reviewed/source')
+  assert.deepEqual(args.slice(0, 3), ['--package=netlify-cli@27.4.2', 'dlx', 'node'])
+  assert.match(args[3], /[/\\]scripts[/\\]demo-maintenance-adapter-config\.mjs$/)
+  assert.equal(args[4], '/reviewed/source')
+  assert.equal(args.length, 5)
+  assert(!args.includes('--shell-mode'))
 })
 test('prebuilt draft upload uses compatible CLI flags and preserves production configuration context', () => {
   const args = demoDraftArguments(baseline.siteId, 'Reviewed draft')
