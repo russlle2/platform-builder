@@ -21,9 +21,28 @@ checkout. A full Netlify Next.js adapter build includes static assets, functions
 edge functions and routing configuration. Backend source is unchanged; rebuilt
 backend binaries are not claimed to be byte-identical.
 
-The adapter build uses `--context production`. The subsequent prebuilt draft
-upload uses `--no-build` with `CONTEXT=production` in its clean environment;
-CLI 27.4.2 rejects an explicit `--context` flag when combined with `--no-build`.
+The adapter build uses `--context production`. Provider runtime context is
+separate from that build setting: a normal CLI draft is a deploy preview and
+does not receive production-only Functions environment variables. The reviewed
+uploader therefore creates an unpublished **production-context** deployment
+under a publication lock on the actual healthy baseline.
+
+The controller requires the baseline to be initially unlocked and Git builds
+stopped. It journals and acquires the lock, independently confirms it, then
+invokes a fixed helper inside CLI 27.4.2's pinned installation. The helper uses
+native, non-retried creation with `draft:false` and no branch, and refuses a
+candidate unless the provider reports production context, the exact site/title,
+and no publication. It preserves the returned ID before packaging or uploading.
+It uses the pinned CLI's existing packager, adapter config, routing parsers,
+functions/edge bundles and deploy-blobs upload; it neither rebuilds with
+credentials nor copies production secrets. The normal CLI's interactive
+production-unlock behavior is not invoked or modified.
+
+The existing production function cache must remain intact and inside the pinned
+packager's age window; otherwise preparation fails rather than silently repackaging
+with a different runtime. Baseline lock and unpublished candidate checks run
+around creation, blobs, package finalization and upload. The child checkpoint
+retains only fixed phases, bounded failure categories and sanitized identities.
 
 The separate commands also require a configuration handoff. CLI 27.4.2 saves its
 resolved adapter configuration with absolute filesystem paths; copying that TOML
@@ -69,28 +88,34 @@ run before dispatch; never duplicate an active or successful operation.
    lint, typecheck, unit tests, local public-route tests and the production adapter
    build. Capture the actual healthy production deployment and marker, unchanged
    catalogue pointer/certificate, hashed provider configuration/environment and
-   read-only Auth readiness. Require stopped Git builds. Create a production-context
-   draft without publishing it; verify provider identity, marker, runtime and all
-   24 media bytes. The record artifact is a result only after the run succeeds.
+   read-only Auth readiness. Require stopped Git builds and an initially unlocked
+   baseline. Acquire and retain its publication lock. Create a production-context
+   candidate without publishing it; verify provider identity, marker, runtime and
+   all 24 media bytes. The immutable record binds the acquired lock and runtime
+   context. It is a result only after the run succeeds.
 2. **verify-draft** (`VERIFY DEMO DRAFT`): supply the actual prepared record's
    `runId`, `runAttempt`, `artifactId`, `artifactDigest` and canonical `recordHash`
    in `record_source`. Verify live successful producer metadata and archive digest.
    Exercise all eight public routes at desktop/mobile widths and all six videos'
    play, seek, caption cues and transcript links. Fetch all 24 files and compare
-   exact hashes, sizes and content types. Save the actual QA artifact.
+   exact hashes, sizes and content types. Require the same baseline still locked
+   before and after verification. Save the actual QA artifact.
 3. **promote** (`PROMOTE DEMO DRAFT`): supply the same record and actual QA producer,
    artifact digest and canonical `qaHash` in `qa_source`. QA must be from a successful
    protected run, refer to the exact record/deployment and be less than 24 hours old.
    Recheck current main CI, provider baseline, catalogue, configuration and Auth.
-   Publish the **same ready draft ID** using the provider's restore operation.
+   Publish the **same ready candidate ID** using the provider's restore operation
+   while the baseline remains locked. Restore transfers that lock to the candidate.
    Verify actual published identity, public marker, runtime, Auth, all media bytes
-   and real desktop/mobile playback before reporting success.
+   and real desktop/mobile playback. Only then unlock the exact published candidate
+   and verify publication/marker again before reporting success.
 4. **rollback** (`ROLLBACK DEMO`): supply the original prepared record. Require the
    current published ID to be either that record's baseline or candidate; refuse
    an unrelated deployment. Recheck unchanged catalogue and provider configuration
-   and the immutable baseline marker. Restore the original ready deployment and
-   verify its runtime, marker and Auth. Candidate health and QA are deliberately
-   not prerequisites to recovery.
+   and the immutable baseline marker. If currently unlocked, acquire the lock on
+   the exact allowed published deployment. Restore the original ready deployment
+   under that lock, verify its runtime, marker and Auth, then unlock that baseline.
+   Candidate health and QA are deliberately not prerequisites to recovery.
 
 There are no checkout, payment, inbox or customer edits in this maintenance scope.
 The production-context draft has production service bindings: browser verification
@@ -105,6 +130,13 @@ and immutable `record.json`. Before and after a provider write, it records the
 requested phase and actual provider readback, including partial draft IDs. A failed
 write can still have changed provider state. Preserve the actual artifact and
 reconcile; do not blindly retry, assume no writes, or invent a passing record.
+An interrupted operation may leave the actual baseline or candidate locked. Do
+not automatically unlock it: first establish all returned candidate identities,
+upload completion, current publication and the exact retained operation. In
+particular, a failed preparation without a prepared record is not eligible for
+record-based promotion or rollback. Preserve its checkpoint and reconcile the
+owned lock separately before starting any new preparation. Never unlock while
+an upload or transition remains active or ambiguous.
 
 Artifact inputs accept exact identifiers, not a URL or local file. Their repository,
 workflow, main branch, successful run/attempt, job time interval, archive digest,
@@ -127,7 +159,7 @@ the source `public` tree plus built `.next/static` files mapped to `_next/static
 It requires the exact producer marker and all 24 sealed media files, rejects
 symlinks and unexpected files, and records only fixed identity/hash/count fields.
 The check runs after the credential-free build and again immediately before
-upload. The upload passes that fixed directory to the pinned CLI; generated
+upload. The helper passes that fixed directory to the pinned CLI packager; generated
 routing, functions, edge functions, configuration equivalence and all remote
 health/media checks remain required. Raw server build output is never an
 acceptable static upload directory.

@@ -15,7 +15,7 @@ export const CONTROLLER_CLOSURE = [
   'pnpm-workspace.yaml', '.npmrc', '.pnpmfile.cjs', '.node-version', '.nvmrc',
   'patches', 'packages', 'apps/generator-app/package.json',
   'apps/generator-app/.npmrc', 'apps/generator-app/.pnpmfile.cjs',
-  ...['demo-maintenance-release.json', 'demo-maintenance-contract.mjs', 'demo-maintenance-adapter-config.mjs', 'demo-maintenance-static-output.mjs', 'demo-maintenance-diagnostics.mjs', 'run-demo-maintenance.mjs', 'verify-demo-maintenance-media.mjs', 'netlify-target-contract.mjs', 'verify-release-ci.mjs', 'verify-auth-entrypoint.mjs'].map(p => `apps/generator-app/scripts/${p}`),
+  ...['demo-maintenance-release.json', 'demo-maintenance-contract.mjs', 'demo-maintenance-adapter-config.mjs', 'demo-maintenance-static-output.mjs', 'demo-maintenance-locked-upload.mjs', 'demo-maintenance-diagnostics.mjs', 'run-demo-maintenance.mjs', 'verify-demo-maintenance-media.mjs', 'netlify-target-contract.mjs', 'verify-release-ci.mjs', 'verify-auth-entrypoint.mjs'].map(p => `apps/generator-app/scripts/${p}`),
   'apps/generator-app/src/lib/templates/certified-catalog-contract.mjs',
 ]
 const SHA = /^[a-f0-9]{40}$/
@@ -133,12 +133,15 @@ export function assertUnchanged(current, baseline, { deploymentId = baseline.dep
   need(canonicalDigest(current.catalogue) === canonicalDigest(baseline.catalogue) && current.deploymentId === deploymentId && current.appSha === appSha, 'Production deployment or catalogue changed')
 }
 export function validateRecord(r, { manifest: m, manifestHash, controllerSha }) {
-  keys(r, ['version', 'kind', 'controllerSha', 'producer', 'manifestHash', 'sourceSha', 'sourceTreeSha', 'baseline', 'candidate', 'preparedAt'])
+  keys(r, ['version', 'kind', 'controllerSha', 'producer', 'manifestHash', 'sourceSha', 'sourceTreeSha', 'baseline', 'publicationLock', 'candidate', 'preparedAt'])
   need(r.version === 1 && r.kind === 'dailyclarity-demo-maintenance' && r.controllerSha === controllerSha && r.manifestHash === manifestHash && r.sourceSha === m.sourceSha && r.sourceTreeSha === m.sourceTreeSha && validTime(r.preparedAt), 'Maintenance record identity differs')
   keys(r.producer, ['runId', 'runAttempt'])
   need(decimal(r.producer.runId) && decimal(r.producer.runAttempt), 'Record producer invalid')
   validateBaseline(r.baseline, m)
-  keys(r.candidate, ['deploymentId', 'origin', 'markerHash', 'buildConfigHash', 'createdAt', 'title'])
+  keys(r.publicationLock, ['deploymentId', 'wasLocked', 'acquiredAt'])
+  need(r.publicationLock.deploymentId === r.baseline.deploymentId && r.publicationLock.wasLocked === false && validTime(r.publicationLock.acquiredAt) && Date.parse(r.publicationLock.acquiredAt) >= Date.parse(r.baseline.capturedAt) && Date.parse(r.publicationLock.acquiredAt) <= Date.parse(r.preparedAt), 'Publication lock proof differs from the prepared baseline')
+  keys(r.candidate, ['deploymentId', 'origin', 'markerHash', 'buildConfigHash', 'createdAt', 'title', 'runtimeContext'])
+  need(r.candidate.runtimeContext === 'production', 'Candidate must carry production runtime context')
   need(ID.test(r.candidate.deploymentId) && r.candidate.deploymentId !== r.baseline.deploymentId && validTime(r.candidate.createdAt) && HASH.test(r.candidate.markerHash) && HASH.test(r.candidate.buildConfigHash), 'Candidate deployment invalid')
   const url = new URL(r.candidate.origin)
   need(url.protocol === 'https:' && !url.username && !url.password && !url.port && url.pathname === '/' && !url.search && !url.hash && url.hostname.startsWith(`${r.candidate.deploymentId}--`) && url.hostname.endsWith('.netlify.app'), 'Candidate origin is not its immutable deployment hostname')
