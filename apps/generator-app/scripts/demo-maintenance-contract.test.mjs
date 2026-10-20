@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
+import path from 'node:path'
 import { validateManifest, validateRuntime, validateRecord, markerFor, candidateTitle, canonicalDigest, digest, assertUnchanged, cleanBuildEnvironment, parseArtifactSource, validateArtifactMetadata, validateQa, CONTROLLER_CLOSURE, assertControllerCompatibility } from './demo-maintenance-contract.mjs'
 import { executeMaintenance, demoDraftArguments, demoAdapterConfigurationArguments } from './run-demo-maintenance.mjs'
 
@@ -92,8 +93,9 @@ test('adapter normalization runs only the fixed controller helper inside the pin
   assert.equal(args.length, 5)
   assert(!args.includes('--shell-mode'))
 })
-test('prebuilt draft upload uses compatible CLI flags and preserves production configuration context', () => {
-  const args = demoDraftArguments(baseline.siteId, 'Reviewed draft')
+test('prebuilt draft upload selects verified CDN output and preserves production context', () => {
+  const source = path.resolve('reviewed-source')
+  const args = demoDraftArguments(baseline.siteId, 'Reviewed draft', source)
   assert.ok(args.includes('--package=netlify-cli@27.4.2'))
   assert.ok(args.includes('--no-build'))
   // Netlify CLI rejects this combination before any upload. Do not solve it by
@@ -101,6 +103,9 @@ test('prebuilt draft upload uses compatible CLI flags and preserves production c
   for (const flag of ['--context', '--build', '--prod', '--prod-if-unlocked', '--trigger']) assert.ok(!args.includes(flag))
   assert.equal(args[args.indexOf('--site') + 1], baseline.siteId)
   assert.equal(args[args.indexOf('--message') + 1], 'Reviewed draft')
+  assert.equal(args[args.indexOf('--dir') + 1], path.join(source, 'apps/generator-app/.netlify/static'))
+  assert.throws(() => demoDraftArguments(baseline.siteId, 'Reviewed draft'))
+  assert.throws(() => demoDraftArguments(baseline.siteId, 'Reviewed draft', 'relative-source'))
   assert.equal(cleanBuildEnvironment({ NETLIFY_SITE_ID: baseline.siteId }, manifest).CONTEXT, 'production')
 })
 
@@ -145,6 +150,14 @@ test('source rejection and changed baseline forbid creating draft', async () => 
   let count = 0
   const b = adapters({ snapshot: async () => ++count === 1 ? baseline : { ...baseline, settingsHash: 'changed' } })
   await assert.rejects(executeMaintenance(ctx, b)); assert(!b.calls.includes('draft'))
+})
+test('failed static output validation during build forbids draft request', async () => {
+  const a = adapters({ build: async () => { throw new Error('Static output differs') } })
+  await assert.rejects(executeMaintenance(ctx, a))
+  assert(!a.calls.includes('draft'))
+  assert(!a.calls.some(v => v.record))
+  assert.equal(a.calls.at(-1).state.phase, 'build-requested')
+  assert.equal(a.calls.at(-1).state.providerWriteAttempted, false)
 })
 test('failed draft retains observed partial identity without a prepared record', async () => {
   const a = adapters({ draft: async () => { throw new Error('ambiguous CLI failure') }, observe: async () => ({ publishedDeploymentId: baseline.deploymentId, matchingDrafts: [{ deploymentId: candidate.deploymentId, state: 'uploading' }] }) })
