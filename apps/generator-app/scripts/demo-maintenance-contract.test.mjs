@@ -14,18 +14,24 @@ const time = '2026-10-20T00:00:00.000Z'
 const catalogue = { pointerHash: hash, releaseSha: manifest.baselineSha, certificationHash: manifest.expectedBaselineCertificationHash, catalogHash: hash, manifestHash: hash, profile: 'rehab-certified', templates: 5486 }
 const ctx = { manifest, manifestHash: digest(manifestBytes), controllerSha, producer, operation: 'prepare', confirmation: 'PREPARE DEMO DRAFT' }
 const baseline = { siteId: '4a98d266-bb9f-44ab-bf27-30597d741705', hostname: 'dailyclarity.org', deploymentId: '1'.repeat(24), appSha: manifest.baselineSha, accountHash: hash, settingsHash: hash, environmentHash: hash, projectRefHash: hash, catalogue, markerHash: hash, runtime: { appSha: manifest.baselineSha, catalogueReleaseSha: manifest.baselineSha, certificationHash: manifest.expectedBaselineCertificationHash, schemaReady: true, templates: 5486, missingRequirements: 0 }, capturedAt: time }
-const candidate = { deploymentId: '2'.repeat(24), origin: `https://${'2'.repeat(24)}--fixture.netlify.app`, markerHash: canonicalDigest(markerFor(manifest, controllerSha, ctx.manifestHash, producer)), buildConfigHash: hash, createdAt: time, title: candidateTitle(manifest, producer) }
-const record = { version: 1, kind: 'dailyclarity-demo-maintenance', controllerSha, producer, manifestHash: ctx.manifestHash, sourceSha: manifest.sourceSha, sourceTreeSha: manifest.sourceTreeSha, baseline, candidate, preparedAt: time }
+const candidate = { deploymentId: '2'.repeat(24), origin: `https://${'2'.repeat(24)}--fixture.netlify.app`, markerHash: canonicalDigest(markerFor(manifest, controllerSha, ctx.manifestHash, producer)), buildConfigHash: hash, createdAt: time, title: candidateTitle(manifest, producer), runtimeContext: 'production' }
+const publicationLock = { deploymentId: baseline.deploymentId, wasLocked: false, acquiredAt: time }
+const record = { version: 1, kind: 'dailyclarity-demo-maintenance', controllerSha, producer, manifestHash: ctx.manifestHash, sourceSha: manifest.sourceSha, sourceTreeSha: manifest.sourceTreeSha, baseline, publicationLock, candidate, preparedAt: time }
 const clone = value => structuredClone(value)
-function adapters(overrides = {}) {
+function adapters({ initialLocked = false, initialPublished = baseline.deploymentId, ...overrides } = {}) {
   const calls = []
-  let published = baseline.deploymentId
+  let published = initialPublished
+  let locked = initialLocked
   const a = {
     calls, now: () => time,
     controllerGate: async () => { calls.push('controller') },
     recordControllerGate: async () => { calls.push('record-controller') },
     sourceGate: async () => { calls.push('source') },
     snapshot: async appSha => ({ ...baseline, deploymentId: published, appSha: appSha ?? null }),
+    publication: async () => ({ deploymentId: published, locked, observedAt: time }),
+    assertPublication: async (id, expected) => { assert.equal(published, id); assert.equal(locked, expected) },
+    lock: async id => { assert.equal(published, id); assert.equal(locked, false); calls.push(`lock:${id}`); locked = true },
+    unlock: async id => { assert.equal(published, id); assert.equal(locked, true); calls.push(`unlock:${id}`); locked = false },
     auth: async () => { calls.push('auth'); return { signInForm: true, emailSent: false } },
     writeState: async s => { calls.push({ state: clone(s) }) },
     build: async () => { calls.push('build') },
@@ -93,19 +99,18 @@ test('adapter normalization runs only the fixed controller helper inside the pin
   assert.equal(args.length, 5)
   assert(!args.includes('--shell-mode'))
 })
-test('prebuilt draft upload selects verified CDN output and preserves production context', () => {
+test('prebuilt upload uses only the reviewed helper with separate absolute request and journal', () => {
   const source = path.resolve('reviewed-source')
-  const args = demoDraftArguments(baseline.siteId, 'Reviewed draft', source)
-  assert.ok(args.includes('--package=netlify-cli@27.4.2'))
-  assert.ok(args.includes('--no-build'))
-  // Netlify CLI rejects this combination before any upload. Do not solve it by
-  // rebuilding with provider credentials or publishing before draft verification.
+  const request = path.resolve('request.json')
+  const checkpoint = path.resolve('checkpoint.json')
+  const args = demoDraftArguments(source, request, checkpoint)
+  assert.deepEqual(args.slice(0, 3), ['--package=netlify-cli@27.4.2', 'dlx', 'node'])
+  assert.match(args[3], /[/\\]scripts[/\\]demo-maintenance-locked-upload\.mjs$/)
+  assert.deepEqual(args.slice(4), [source, request, checkpoint])
   for (const flag of ['--context', '--build', '--prod', '--prod-if-unlocked', '--trigger']) assert.ok(!args.includes(flag))
-  assert.equal(args[args.indexOf('--site') + 1], baseline.siteId)
-  assert.equal(args[args.indexOf('--message') + 1], 'Reviewed draft')
-  assert.equal(args[args.indexOf('--dir') + 1], path.join(source, 'apps/generator-app/.netlify/static'))
-  assert.throws(() => demoDraftArguments(baseline.siteId, 'Reviewed draft'))
-  assert.throws(() => demoDraftArguments(baseline.siteId, 'Reviewed draft', 'relative-source'))
+  assert.throws(() => demoDraftArguments(source, request))
+  assert.throws(() => demoDraftArguments('relative-source', request, checkpoint))
+  assert.throws(() => demoDraftArguments(source, request, request))
   assert.equal(cleanBuildEnvironment({ NETLIFY_SITE_ID: baseline.siteId }, manifest).CONTEXT, 'production')
 })
 
@@ -171,7 +176,7 @@ test('promotion refuses missing QA before any restore', async () => {
   assert(!a.calls.some(v => typeof v === 'string' && v.startsWith('restore:')))
 })
 test('promotion restores the same draft and verifies media/auth/public marker', async () => {
-  const a = adapters()
+  const a = adapters({ initialLocked: true })
   const result = await executeMaintenance({ ...ctx, operation: 'promote', confirmation: 'PROMOTE DEMO DRAFT' }, a)
   assert.equal(result.phase, 'promoted')
   assert(a.calls.includes(`restore:${candidate.deploymentId}`))
@@ -180,9 +185,11 @@ test('promotion restores the same draft and verifies media/auth/public marker', 
   assert(a.calls.includes('public-marker'))
   assert.deepEqual(result.finalMedia, { checkedAt: time })
   assert.deepEqual(result.finalAuth, { signInForm: true, emailSent: false })
+  assert(a.calls.indexOf(`unlock:${candidate.deploymentId}`) > a.calls.indexOf('public-marker'))
+  assert.equal(result.finalPublication.locked, false)
 })
 test('ambiguous restore failure always retains observed actual publication', async () => {
-  const a = adapters({ restore: async () => { throw new Error('network after publication') }, observe: async () => ({ publishedDeploymentId: candidate.deploymentId, matchingDrafts: [] }) })
+  const a = adapters({ initialLocked: true, restore: async () => { throw new Error('network after publication') }, observe: async () => ({ publishedDeploymentId: candidate.deploymentId, matchingDrafts: [] }) })
   await assert.rejects(executeMaintenance({ ...ctx, operation: 'promote', confirmation: 'PROMOTE DEMO DRAFT' }, a))
   assert.equal(a.calls.at(-1).state.observation.publishedDeploymentId, candidate.deploymentId)
   assert.equal(a.calls.at(-1).state.phase, 'restore-observed')
@@ -196,4 +203,64 @@ test('rollback can restore baseline without healthy candidate runtime and refuse
   const b = adapters({ snapshot: async () => ({ ...baseline, deploymentId: '3'.repeat(24), appSha: null }) })
   await assert.rejects(executeMaintenance({ ...ctx, operation: 'rollback', confirmation: 'ROLLBACK DEMO' }, b))
   assert(!b.calls.some(v => typeof v === 'string' && v.startsWith('restore:')))
+})
+
+test('record requires a new owned baseline lock and actual production runtime context', () => {
+  for (const edit of [
+    r => { delete r.publicationLock },
+    r => { r.publicationLock.wasLocked = true },
+    r => { r.publicationLock.deploymentId = candidate.deploymentId },
+    r => { r.publicationLock.acquiredAt = '2026-10-19T23:00:00Z' },
+    r => { r.publicationLock.acquiredAt = '2026-10-20T01:00:00Z' },
+    r => { r.publicationLock.extra = true },
+    r => { r.candidate.runtimeContext = 'deploy-preview' },
+  ]) { const copy = clone(record); edit(copy); assert.throws(() => validateRecord(copy, ctx)) }
+})
+test('prepare refuses an existing lock and never unlocks after a partial upload', async () => {
+  const existing = adapters({ initialLocked: true })
+  await assert.rejects(executeMaintenance(ctx, existing))
+  assert(!existing.calls.includes('build') && !existing.calls.includes('draft'))
+  const partial = adapters({ draft: async (_title, onReturned) => { await onReturned({ deploymentId: candidate.deploymentId }); throw new Error('upload stopped') } })
+  await assert.rejects(executeMaintenance(ctx, partial))
+  assert.equal((await partial.publication()).locked, true)
+  assert.equal(partial.calls.at(-1).state.returnedCandidate.deploymentId, candidate.deploymentId)
+  assert(!partial.calls.some(v => typeof v === 'string' && v.startsWith('unlock:')))
+})
+test('lock failure forbids upload and retains actual publication observation', async () => {
+  const a = adapters({ lock: async () => { throw new Error('ambiguous lock request') } })
+  await assert.rejects(executeMaintenance(ctx, a))
+  assert(!a.calls.includes('draft'))
+  assert.equal(a.calls.at(-1).state.phase, 'publication-lock-requested')
+  assert.equal(a.calls.at(-1).state.lockObservation.deploymentId, baseline.deploymentId)
+  assert.equal(a.calls.at(-1).state.providerWriteAttempted, true)
+})
+test('draft QA requires retained lock and does not change publication', async () => {
+  const operation = { ...ctx, operation: 'verify-draft', confirmation: 'VERIFY DEMO DRAFT' }
+  const good = adapters({ initialLocked: true })
+  await executeMaintenance(operation, good)
+  assert.equal((await good.publication()).locked, true)
+  assert(good.calls.includes('write-qa'))
+  const bad = adapters()
+  await assert.rejects(executeMaintenance(operation, bad))
+  assert(!bad.calls.includes('media'))
+  const drift = adapters({ initialLocked: true, media: async () => { await drift.unlock(baseline.deploymentId); return { checkedAt: time } } })
+  await assert.rejects(executeMaintenance(operation, drift))
+  assert(!drift.calls.includes('write-qa'))
+})
+test('promotion refuses an unlocked baseline and retains lock when final checks fail', async () => {
+  const operation = { ...ctx, operation: 'promote', confirmation: 'PROMOTE DEMO DRAFT' }
+  const unlocked = adapters()
+  await assert.rejects(executeMaintenance(operation, unlocked))
+  assert(!unlocked.calls.some(v => typeof v === 'string' && v.startsWith('restore:')))
+  const failed = adapters({ initialLocked: true, media: async () => { throw new Error('public media failed') } })
+  await assert.rejects(executeMaintenance(operation, failed))
+  assert.deepEqual(await failed.publication(), { deploymentId: candidate.deploymentId, locked: true, observedAt: time })
+  assert(!failed.calls.some(v => typeof v === 'string' && v.startsWith('unlock:')))
+})
+test('rollback acquires lock on the published candidate and releases only the verified baseline', async () => {
+  const a = adapters({ initialPublished: candidate.deploymentId })
+  await executeMaintenance({ ...ctx, operation: 'rollback', confirmation: 'ROLLBACK DEMO' }, a)
+  assert(a.calls.indexOf(`lock:${candidate.deploymentId}`) < a.calls.indexOf(`restore:${baseline.deploymentId}`))
+  assert(a.calls.indexOf(`unlock:${baseline.deploymentId}`) > a.calls.indexOf('public-marker'))
+  assert.deepEqual(await a.publication(), { deploymentId: baseline.deploymentId, locked: false, observedAt: time })
 })

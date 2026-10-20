@@ -9,6 +9,7 @@ import { CERTIFIED_STORE } from '../src/lib/templates/certified-catalog-contract
 import { classifyDemoUploadFailure } from './demo-maintenance-diagnostics.mjs'
 import { validateAdapterConfigurationProof, adapterFailurePhase } from './demo-maintenance-adapter-config.mjs'
 import { verifyAdapterStaticOutput } from './demo-maintenance-static-output.mjs'
+import { validateLockedUploadCheckpoint } from './demo-maintenance-locked-upload.mjs'
 import { validateManifest, verifySource, verifyControllerCompatibility, validateCatalogue, validateRuntime, markerFor, validateBaseline, assertUnchanged, validateRecord, candidateTitle, parseArtifactSource, validateArtifactMetadata, validateQa, cleanBuildEnvironment, canonicalDigest, digest, MARKER } from './demo-maintenance-contract.mjs'
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
@@ -17,14 +18,10 @@ const required = (ok, message) => { if (!ok) throw new Error(message) }
 const save = async (file, value) => { await mkdir(path.dirname(file), { recursive: true }); await writeFile(file, `${JSON.stringify(value, null, 2)}\n`) }
 const confirms = { prepare: 'PREPARE DEMO DRAFT', 'verify-draft': 'VERIFY DEMO DRAFT', promote: 'PROMOTE DEMO DRAFT', rollback: 'ROLLBACK DEMO' }
 
-export function demoDraftArguments(siteId, title, source) {
-  // CLI 27.4.2 rejects --context together with --no-build. Configuration still
-  // resolves with CONTEXT=production from cleanBuildEnvironment; the separate
-  // credential-free adapter build retains its explicit --context production.
-  // Next's onEnd restores raw .next after the offline build. Its complete CDN
-  // output remains in .netlify/static; never upload the restored server output.
-  required(typeof source === 'string' && path.isAbsolute(source), 'Fixed source checkout is required for draft upload')
-  return ['--package=netlify-cli@27.4.2', 'dlx', 'netlify', 'deploy', '--no-build', '--filter', '@platform-builder/generator-app', '--dir', path.join(source, 'apps/generator-app/.netlify/static'), '--site', siteId, '--message', title, '--json']
+export function demoDraftArguments(source, request, checkpoint) {
+  for (const value of [source, request, checkpoint]) required(typeof value === 'string' && path.isAbsolute(value), 'Fixed absolute upload paths are required')
+  required(request !== checkpoint, 'Upload request and checkpoint must be separate')
+  return ['--package=netlify-cli@27.4.2', 'dlx', 'node', path.join(scriptDir, 'demo-maintenance-locked-upload.mjs'), source, request, checkpoint]
 }
 
 export function demoAdapterConfigurationArguments(source) {
@@ -45,6 +42,7 @@ export async function executeMaintenance(ctx, a) {
     preflight.phase = 'baseline-read'; await a.writeState(preflight)
     const baseline = await a.snapshot(manifest.baselineSha)
     validateBaseline(baseline, manifest)
+    await a.assertPublication(baseline.deploymentId, false)
     preflight.phase = 'baseline-auth'; await a.writeState(preflight)
     const auth = await a.auth()
     const state = { version: 1, operation, producer, controllerSha, manifestHash, phase: 'baseline-captured', baseline, baselineAuth: auth, providerWriteAttempted: false }
@@ -55,14 +53,25 @@ export async function executeMaintenance(ctx, a) {
     state.phase = 'build-completed'; await a.writeState(state)
     await a.controllerGate()
     assertUnchanged(await a.snapshot(manifest.baselineSha), baseline)
+    state.phase = 'publication-lock-requested'; state.providerWriteAttempted = true
+    await a.writeState(state)
+    try {
+      await a.lock(baseline.deploymentId)
+      state.publicationLock = { deploymentId: baseline.deploymentId, wasLocked: false, acquiredAt: a.now() }
+    } finally {
+      state.lockObservation = await a.publication()
+      await a.writeState(state)
+    }
+    await a.assertPublication(baseline.deploymentId, true)
     state.phase = 'draft-requested'; state.providerWriteAttempted = true
     await a.writeState(state)
     let candidate
     try {
-      candidate = await a.draft(candidateTitle(manifest, producer), async observed => {
-        state.returnedCandidate = observed
+      candidate = await a.draft(candidateTitle(manifest, producer), async (observed, upload) => {
+        if (observed) state.returnedCandidate = observed
+        if (upload) state.upload = upload
         await a.writeState(state)
-      })
+      }, baseline.deploymentId)
     } finally {
       // Always retain actual provider readback even when upload/CLI fails. This
       // record never calls a partially observed deployment prepared or healthy.
@@ -76,10 +85,12 @@ export async function executeMaintenance(ctx, a) {
       await a.writeState(state)
     }
     required(candidate && state.observation?.publishedDeploymentId === baseline.deploymentId, 'Draft preparation unexpectedly changed publication or returned no deployment')
-    const record = { version: 1, kind: 'dailyclarity-demo-maintenance', controllerSha, producer, manifestHash, sourceSha: manifest.sourceSha, sourceTreeSha: manifest.sourceTreeSha, baseline, candidate, preparedAt: a.now() }
+    await a.assertPublication(baseline.deploymentId, true)
+    const record = { version: 1, kind: 'dailyclarity-demo-maintenance', controllerSha, producer, manifestHash, sourceSha: manifest.sourceSha, sourceTreeSha: manifest.sourceTreeSha, baseline, publicationLock: state.publicationLock, candidate, preparedAt: a.now() }
     validateRecord(record, ctx)
     await a.candidate(record)
     assertUnchanged(await a.snapshot(manifest.baselineSha), baseline)
+    await a.assertPublication(baseline.deploymentId, true)
     await a.writeRecord(record)
     state.phase = 'prepared'; state.recordHash = canonicalDigest(record)
     await a.writeState(state)
@@ -93,12 +104,14 @@ export async function executeMaintenance(ctx, a) {
   const state = { version: 1, operation, producer, controllerSha, manifestHash, phase: 'record-verified', recordHash: canonicalDigest(record), baseline: record.baseline, providerWriteAttempted: false }
   await a.writeState(state)
   if (operation === 'verify-draft') {
+    await a.assertPublication(record.baseline.deploymentId, true)
     assertUnchanged(await a.snapshot(manifest.baselineSha), record.baseline)
     await a.candidate(record)
     const report = await a.media(record.candidate.origin, record)
     const qa = { version: 1, kind: 'dailyclarity-demo-maintenance-qa', controllerSha, producer, manifestHash, recordHash: canonicalDigest(record), sourceSha: manifest.sourceSha, deploymentId: record.candidate.deploymentId, report }
     await a.validateQa(qa, record)
     assertUnchanged(await a.snapshot(manifest.baselineSha), record.baseline)
+    await a.assertPublication(record.baseline.deploymentId, true)
     await a.writeQa(qa)
     state.phase = 'draft-verified'; state.qaHash = canonicalDigest(qa)
     await a.writeState(state)
@@ -108,6 +121,7 @@ export async function executeMaintenance(ctx, a) {
   if (operation === 'promote') {
     const qa = await a.loadQa()
     await a.validateQa(qa, record)
+    await a.assertPublication(record.baseline.deploymentId, true)
     await a.candidate(record)
     assertUnchanged(await a.snapshot(manifest.baselineSha), record.baseline)
     state.baselineAuth = await a.auth()
@@ -127,6 +141,22 @@ export async function executeMaintenance(ctx, a) {
     assertUnchanged(last, record.baseline, { deploymentId: last.deploymentId, appSha: last.appSha })
   }
   const target = operation === 'promote' ? record.candidate.deploymentId : record.baseline.deploymentId
+  // Restore transfers a held publication lock to the selected deployment. Keep
+  // it held through all final public checks, then restore the initially unlocked
+  // state. A failed/ambiguous transition must retain its lock and actual journal.
+  if (operation === 'rollback') {
+    const publication = await a.publication()
+    required(publication.deploymentId === last.deploymentId, 'Publication changed before rollback lock')
+    if (!publication.locked) {
+      state.phase = 'rollback-lock-requested'; state.providerWriteAttempted = true
+      await a.writeState(state)
+      try { await a.lock(last.deploymentId) } finally {
+        state.lockObservation = await a.publication()
+        await a.writeState(state)
+      }
+    }
+  }
+  await a.assertPublication(last.deploymentId, true)
   state.phase = 'restore-requested'; state.targetDeploymentId = target; state.providerWriteAttempted = true
   await a.writeState(state)
   try { await a.restore(target) } finally {
@@ -140,6 +170,7 @@ export async function executeMaintenance(ctx, a) {
     await a.writeState(state)
   }
   required(state.observation?.publishedDeploymentId === target, 'Selected immutable deployment is not published; retain the actual transition record')
+  await a.assertPublication(target, true)
   const appSha = operation === 'promote' ? manifest.sourceSha : manifest.baselineSha
   const finalSnapshot = await a.snapshot(appSha)
   assertUnchanged(finalSnapshot, record.baseline, { deploymentId: target, appSha })
@@ -154,6 +185,15 @@ export async function executeMaintenance(ctx, a) {
   state.finalAuth = await a.auth()
   await a.writeState(state)
   await a.publishedMarker(record, operation)
+  await a.assertPublication(target, true)
+  state.phase = 'publication-unlock-requested'
+  await a.writeState(state)
+  try { await a.unlock(target) } finally {
+    state.finalPublication = await a.publication()
+    await a.writeState(state)
+  }
+  await a.assertPublication(target, false)
+  await a.publishedMarker(record, operation)
   state.phase = operation === 'promote' ? 'promoted' : 'rolled-back'
   state.verifiedAt = a.now()
   await a.writeState(state)
@@ -163,6 +203,7 @@ export async function executeMaintenance(ctx, a) {
 export async function createAdapters(ctx, env, fetchImpl = fetch) {
   let buildConfigHash
   let staticOutputProof
+  let adapterConfigurationProof
   let lastState
   const ghRoot = `https://api.github.com/repos/${env.GITHUB_REPOSITORY}`
   const boundedBytes = async (response, max) => {
@@ -251,6 +292,27 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
     },
     sourceGate: () => verifySource(env.SOURCE_CHECKOUT, ctx.manifest),
     recordControllerGate: sha => verifyControllerCompatibility(controllerRoot, sha, ctx.controllerSha),
+    async publication() {
+      const s = await site()
+      const d = await readyDeploy(s.published_deploy.id)
+      required(d.context === 'production' && [true, false, null].includes(d.locked), 'Published deployment context or lock state is unknown')
+      return { deploymentId: d.id, locked: d.locked === true, observedAt: a.now() }
+    },
+    async assertPublication(id, locked) {
+      const current = await a.publication()
+      required(current.deploymentId === id && current.locked === locked, 'Published deployment or publication lock changed')
+      return current
+    },
+    async lock(id) {
+      await a.assertPublication(id, false)
+      await api(`deploys/${encodeURIComponent(id)}/lock`, { method: 'POST' })
+      await a.assertPublication(id, true)
+    },
+    async unlock(id) {
+      await a.assertPublication(id, true)
+      await api(`deploys/${encodeURIComponent(id)}/unlock`, { method: 'POST' })
+      await a.assertPublication(id, false)
+    },
     async snapshot(appSha) {
       const s = await site()
       const vars = await api(`accounts/${encodeURIComponent(s.account_slug)}/env?site_id=${encodeURIComponent(s.id)}`, { max: 1_000_000 })
@@ -297,6 +359,7 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
         throw error
       }
       buildConfigHash = adapterConfiguration.configSha256
+      adapterConfigurationProof = adapterConfiguration
       try {
         staticOutputProof = await verifyAdapterStaticOutput(env.SOURCE_CHECKOUT, ctx.manifest, proof)
       } catch {
@@ -306,7 +369,7 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
       }
       return { configSha256: buildConfigHash, sourceSha: ctx.manifest.sourceSha, netlifyCli: '27.4.2', productionContext: true, adminCredentialsInherited: false, adapterConfiguration, staticOutput: staticOutputProof }
     },
-    async draft(title, onReturned) {
+    async draft(title, onReturned, baselineDeploymentId) {
       required(buildConfigHash && digest(await readFile(path.join(env.SOURCE_CHECKOUT, 'apps/generator-app/netlify.toml'))) === buildConfigHash, 'Generated adapter configuration changed before upload')
       try {
         const current = await verifyAdapterStaticOutput(env.SOURCE_CHECKOUT, ctx.manifest, markerFor(ctx.manifest, ctx.controllerSha, ctx.manifestHash, ctx.producer))
@@ -316,31 +379,43 @@ export async function createAdapters(ctx, env, fetchImpl = fetch) {
         error.maintenanceFailure = { category: 'static-output', phase: 'pre-upload' }
         throw error
       }
-      const upload = { ...cleanBuildEnvironment(env, ctx.manifest), NETLIFY_AUTH_TOKEN: env.NETLIFY_AUTH_TOKEN }
-      let raw
+      await a.assertPublication(baselineDeploymentId, true)
+      const upload = { ...cleanBuildEnvironment(env, ctx.manifest), RUNNER_TEMP: env.RUNNER_TEMP, NETLIFY_AUTH_TOKEN: env.NETLIFY_AUTH_TOKEN }
+      const uploadRequest = path.join(path.dirname(output), 'locked-upload-request.json')
+      const uploadCheckpoint = path.join(path.dirname(output), 'locked-upload-checkpoint.json')
+      const requestValue = { version: 1, siteId: env.NETLIFY_SITE_ID, baselineDeploymentId, title, adapterConfiguration: adapterConfigurationProof, staticOutput: staticOutputProof }
+      await writeFile(uploadRequest, `${JSON.stringify(requestValue)}\n`, { flag: 'wx' })
+      let checkpoint
       try {
-        raw = execFileSync('pnpm', demoDraftArguments(env.NETLIFY_SITE_ID, title, env.SOURCE_CHECKOUT), { cwd: env.SOURCE_CHECKOUT, env: upload, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 12_000_000, timeout: 30 * 60_000 })
+        execFileSync('pnpm', demoDraftArguments(env.SOURCE_CHECKOUT, uploadRequest, uploadCheckpoint), { cwd: env.SOURCE_CHECKOUT, env: upload, stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 12_000_000, timeout: 30 * 60_000 })
       } catch (cause) {
         const error = new Error('Draft upload did not complete; inspect the retained sanitized provider observation before further action')
         error.maintenanceFailure = { category: 'draft-upload', exitCode: Number.isSafeInteger(cause.status) ? cause.status : null, diagnostics: classifyDemoUploadFailure(cause) }
         throw error
+      } finally {
+        // The child journals the returned ID before packaging/upload. Preserve
+        // that actual identity even when its later exit or stdout is ambiguous.
+        try { checkpoint = JSON.parse(await readFile(uploadCheckpoint, 'utf8')) } catch (error) { if (error.code !== 'ENOENT') throw error }
+        if (checkpoint) {
+          validateLockedUploadCheckpoint(checkpoint, requestValue)
+          await onReturned(checkpoint.candidate?.deploymentId ? { deploymentId: checkpoint.candidate.deploymentId, observedAt: a.now(), source: 'locked-uploader-checkpoint' } : null, checkpoint)
+        }
       }
-      let parsed
-      try { parsed = JSON.parse(raw.toString()) } catch { throw new Error('Draft CLI response could not be safely parsed') }
-      required(/^[a-zA-Z0-9_-]+$/.test(parsed.deploy_id ?? ''), 'Draft did not return a deployment identity')
-      await onReturned({ deploymentId: parsed.deploy_id, observedAt: a.now(), source: 'cli-returned-unverified' })
-      const d = await readyDeploy(parsed.deploy_id)
-      required(d.title === title, 'Draft does not carry this exact producer title')
-      return { deploymentId: d.id, origin: new URL(d.deploy_ssl_url).origin, markerHash: canonicalDigest(markerFor(ctx.manifest, ctx.controllerSha, ctx.manifestHash, ctx.producer)), buildConfigHash, createdAt: d.created_at, title }
+      validateLockedUploadCheckpoint(checkpoint, requestValue, { requireComplete: true })
+      await a.assertPublication(baselineDeploymentId, true)
+      const d = await readyDeploy(checkpoint.candidate.deploymentId)
+      required(d.title === title && d.context === 'production' && !d.published_at && d.id !== baselineDeploymentId, 'Candidate producer or production runtime context differs')
+      return { deploymentId: d.id, origin: new URL(d.deploy_ssl_url).origin, markerHash: canonicalDigest(markerFor(ctx.manifest, ctx.controllerSha, ctx.manifestHash, ctx.producer)), buildConfigHash, createdAt: d.created_at, title, runtimeContext: 'production' }
     },
     async observe(title) {
       const s = await site()
       const deployments = await api(`sites/${s.id}/deploys?per_page=100`)
-      return { observedAt: a.now(), publishedDeploymentId: s.published_deploy.id, matchingDrafts: deployments.filter(d => d.title === title && d.site_id === s.id).map(d => ({ deploymentId: d.id, state: d.state, createdAt: d.created_at })) }
+      return { observedAt: a.now(), publishedDeploymentId: s.published_deploy.id, publishedLocked: s.published_deploy.locked === true, matchingDrafts: deployments.filter(d => d.title === title && d.site_id === s.id).map(d => ({ deploymentId: d.id, state: d.state, context: d.context, createdAt: d.created_at })) }
     },
     async candidate(record) {
       const d = await readyDeploy(record.candidate.deploymentId)
-      required(d.title === record.candidate.title && new URL(d.deploy_ssl_url).origin === record.candidate.origin && d.created_at === record.candidate.createdAt, 'Candidate provider provenance changed')
+      await a.assertPublication(record.baseline.deploymentId, true)
+      required(d.context === 'production' && !d.published_at && d.title === record.candidate.title && new URL(d.deploy_ssl_url).origin === record.candidate.origin && d.created_at === record.candidate.createdAt, 'Candidate provider provenance or runtime context changed')
       required(canonicalDigest(await marker(record.candidate.origin)) === record.candidate.markerHash, 'Immutable candidate marker differs')
       await runtime(record.candidate.origin, record.sourceSha, record.baseline.catalogue)
       await readMedia(record.candidate.origin, ctx.manifest)
