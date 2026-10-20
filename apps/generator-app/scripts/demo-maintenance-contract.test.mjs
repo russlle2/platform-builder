@@ -1,0 +1,182 @@
+import test from 'node:test'
+import assert from 'node:assert/strict'
+import { readFile, mkdtemp, mkdir, writeFile, rm } from 'node:fs/promises'
+import path from 'node:path'
+import os from 'node:os'
+import { validateManifest, validateRuntime, validateRecord, markerFor, candidateTitle, canonicalDigest, digest, assertUnchanged, cleanBuildEnvironment, parseArtifactSource, validateArtifactMetadata, validateQa, CONTROLLER_CLOSURE, assertControllerCompatibility, stageAdapterConfiguration } from './demo-maintenance-contract.mjs'
+import { executeMaintenance } from './run-demo-maintenance.mjs'
+
+const manifestBytes = await readFile(new URL('./demo-maintenance-release.json', import.meta.url))
+const manifest = JSON.parse(manifestBytes)
+const hash = 'a'.repeat(64)
+const controllerSha = 'b'.repeat(40)
+const producer = { runId: '100', runAttempt: '1' }
+const time = '2026-10-20T00:00:00.000Z'
+const catalogue = { pointerHash: hash, releaseSha: manifest.baselineSha, certificationHash: manifest.expectedBaselineCertificationHash, catalogHash: hash, manifestHash: hash, profile: 'rehab-certified', templates: 5486 }
+const ctx = { manifest, manifestHash: digest(manifestBytes), controllerSha, producer, operation: 'prepare', confirmation: 'PREPARE DEMO DRAFT' }
+const baseline = { siteId: '4a98d266-bb9f-44ab-bf27-30597d741705', hostname: 'dailyclarity.org', deploymentId: '1'.repeat(24), appSha: manifest.baselineSha, accountHash: hash, settingsHash: hash, environmentHash: hash, projectRefHash: hash, catalogue, markerHash: hash, runtime: { appSha: manifest.baselineSha, catalogueReleaseSha: manifest.baselineSha, certificationHash: manifest.expectedBaselineCertificationHash, schemaReady: true, templates: 5486, missingRequirements: 0 }, capturedAt: time }
+const candidate = { deploymentId: '2'.repeat(24), origin: `https://${'2'.repeat(24)}--fixture.netlify.app`, markerHash: canonicalDigest(markerFor(manifest, controllerSha, ctx.manifestHash, producer)), buildConfigHash: hash, createdAt: time, title: candidateTitle(manifest, producer) }
+const record = { version: 1, kind: 'dailyclarity-demo-maintenance', controllerSha, producer, manifestHash: ctx.manifestHash, sourceSha: manifest.sourceSha, sourceTreeSha: manifest.sourceTreeSha, baseline, candidate, preparedAt: time }
+const clone = value => structuredClone(value)
+function adapters(overrides = {}) {
+  const calls = []
+  let published = baseline.deploymentId
+  const a = {
+    calls, now: () => time,
+    controllerGate: async () => { calls.push('controller') },
+    recordControllerGate: async () => { calls.push('record-controller') },
+    sourceGate: async () => { calls.push('source') },
+    snapshot: async appSha => ({ ...baseline, deploymentId: published, appSha: appSha ?? null }),
+    auth: async () => { calls.push('auth'); return { signInForm: true, emailSent: false } },
+    writeState: async s => { calls.push({ state: clone(s) }) },
+    build: async () => { calls.push('build') },
+    draft: async () => { calls.push('draft'); return candidate },
+    observe: async () => ({ observedAt: time, publishedDeploymentId: published, matchingDrafts: [] }),
+    candidate: async () => { calls.push('candidate') },
+    writeRecord: async r => { calls.push({ record: clone(r) }) },
+    loadRecord: async () => clone(record),
+    loadQa: async () => ({ bound: true }),
+    validateQa: async () => { calls.push('qa') },
+    media: async () => { calls.push('media'); return { checkedAt: time } },
+    writeQa: async () => { calls.push('write-qa') },
+    baselineDeployment: async () => { calls.push('baseline-deployment') },
+    restore: async id => { calls.push(`restore:${id}`); published = id },
+    publishedMarker: async () => { calls.push('public-marker') },
+    ...overrides,
+  }
+  return a
+}
+
+test('fixed manifest seals exactly 24 media files and six UI files', () => {
+  assert.equal(validateManifest(manifest).files.length, 30)
+  for (const edit of [m => m.files.pop(), m => { m.files[0].path = 'apps/generator-app/src/app/api/stripe/route.ts' }, m => { m.files[0].mode = '120000' }, m => { m.siteToken = 'secret' }]) {
+    const m = clone(manifest); edit(m); assert.throws(() => validateManifest(m))
+  }
+})
+test('prior main controller requires ancestry and the complete identical dependency closure', () => {
+  const entries = CONTROLLER_CLOSURE.map(path => ({ path, entry: `100644 blob ${controllerSha}\t${path}` }))
+  const input = { priorSha: 'c'.repeat(40), currentSha: controllerSha, ancestor: true, priorEntries: entries, currentEntries: entries }
+  assertControllerCompatibility(input)
+  assert.throws(() => assertControllerCompatibility({ ...input, ancestor: false }))
+  assert.throws(() => assertControllerCompatibility({ ...input, priorEntries: entries.slice(1) }))
+  for (const target of ['pnpm-lock.yaml', '.github/workflows/demo-maintenance.yml', 'apps/generator-app/scripts/verify-auth-entrypoint.mjs', 'apps/generator-app/scripts/demo-maintenance-release.json']) {
+    const priorEntries = clone(entries); priorEntries.find(x => x.path === target).entry = 'changed'
+    assert.throws(() => assertControllerCompatibility({ ...input, priorEntries }))
+  }
+})
+test('record admits separate app and original catalogue identities only', () => {
+  assert.equal(validateRecord(record, ctx).sourceSha, manifest.sourceSha)
+  for (const edit of [r => { r.baseline.catalogue.releaseSha = manifest.sourceSha }, r => { r.candidate.origin = 'https://dailyclarity.org' }, r => { r.candidate.origin = 'https://attacker.invalid' }, r => { r.candidate.markerHash = hash }, r => { r.baseline.siteId = 'other' }, r => { r.sourceSha = controllerSha }, r => { r.candidate.title += '-copied' }]) {
+    const r = clone(record); edit(r); assert.throws(() => validateRecord(r, ctx))
+  }
+})
+test('runtime requires new app SHA while old certificate and readiness remain unchanged', () => {
+  const ready = { deploymentSiteId: baseline.siteId, supabaseProjectRef: 'project', deploymentReleaseSha: manifest.sourceSha, supabaseSchemaReady: true, supabaseSchemaVersion: '20260903.4', bookingKitSchemaVersion: '20260925.2', checkoutReady: true, templateCheckoutReady: true, customBuildCheckoutReady: true, fulfillmentReady: true, emailReady: true, templateCatalogReady: true, missingRequirements: [], salesPaused: false, bookingKitSalesEnabled: false, templateCatalogProfile: 'rehab-certified', templateCatalogueReleaseSha: manifest.baselineSha, templateCertificationHash: catalogue.certificationHash, templateCatalogHash: hash, templateManifestHash: hash, publishedTemplateCount: 5486, expectedTemplateCount: 5486, templateCatalogIssues: [] }
+  const expected = { siteId: baseline.siteId, projectRef: 'project', appSha: manifest.sourceSha, catalogue }
+  assert.equal(validateRuntime(ready, expected).appSha, manifest.sourceSha)
+  for (const field of ['deploymentReleaseSha', 'templateCatalogueReleaseSha', 'templateCertificationHash', 'emailReady', 'supabaseSchemaReady', 'bookingKitSalesEnabled', 'publishedTemplateCount']) {
+    assert.throws(() => validateRuntime({ ...ready, [field]: field === 'bookingKitSalesEnabled' ? true : false }, expected))
+  }
+})
+test('source build env cannot inherit GitHub, provider, payment or internal credentials', () => {
+  const clean = cleanBuildEnvironment({ PATH: 'bin', HOME: '/runner', NEXT_PUBLIC_SUPABASE_URL: 'https://example.supabase.co', NETLIFY_SITE_ID: baseline.siteId, GITHUB_TOKEN: 'private', NETLIFY_AUTH_TOKEN: 'private', SUPABASE_SERVICE_ROLE_KEY: 'private', INTERNAL_ADMIN_TOKEN: 'private', STRIPE_SECRET_KEY: 'private', NODE_OPTIONS: '--import=hostile', GITHUB_SHA: controllerSha }, manifest)
+  assert.equal(clean.NEXT_PUBLIC_RELEASE_SHA, manifest.sourceSha)
+  assert.equal(clean.DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE, 'rehab-certified')
+  assert(!JSON.stringify(clean).includes('private'))
+  assert.equal(clean.NODE_OPTIONS, undefined)
+  assert.equal(clean.GITHUB_SHA, undefined)
+})
+test('separate upload discovers the exact generated routing configuration without overwriting source', async () => {
+  const dir = await mkdtemp(path.join(os.tmpdir(), 'demo-config-test-'))
+  try {
+    const app = path.join(dir, 'apps/generator-app')
+    await mkdir(path.join(app, '.netlify'), { recursive: true })
+    const bytes = Buffer.from('[build]\npublish=".netlify/static"\n[[redirects]]\nfrom="/*"\nto="/.netlify/functions/server"\nstatus=200\n')
+    await writeFile(path.join(app, '.netlify/netlify.toml'), bytes)
+    assert.equal(await stageAdapterConfiguration(dir), digest(bytes))
+    assert.deepEqual(await readFile(path.join(app, 'netlify.toml')), bytes)
+    await assert.rejects(stageAdapterConfiguration(dir), /EEXIST/)
+    await writeFile(path.join(app, '.netlify/netlify.toml'), '')
+    await assert.rejects(stageAdapterConfiguration(dir), /bounded regular/)
+  } finally { await rm(dir, { recursive: true, force: true }) }
+})
+test('settings/catalogue/deployment mutation invalidates unchanged baseline guard', () => {
+  assertUnchanged(baseline, baseline)
+  for (const field of ['siteId', 'accountHash', 'settingsHash', 'environmentHash', 'projectRefHash', 'deploymentId', 'appSha']) assert.throws(() => assertUnchanged({ ...baseline, [field]: 'changed' }, baseline))
+  assert.throws(() => assertUnchanged({ ...baseline, catalogue: { ...catalogue, pointerHash: 'f'.repeat(64) } }, baseline))
+})
+test('artifact sources require exact identity objects without executable paths', () => {
+  const source = { runId: '1', runAttempt: '2', artifactId: '3', artifactDigest: hash, recordHash: hash }
+  assert.deepEqual(parseArtifactSource(JSON.stringify(source), 'record'), source)
+  for (const bad of [{ ...source, path: '/tmp/evidence' }, { ...source, runId: 1 }, { ...source, artifactDigest: `sha256:${hash}` }, { ...source, runAttempt: '../1' }]) assert.throws(() => parseArtifactSource(JSON.stringify(bad), 'record'))
+})
+test('artifact metadata rejects expired, cross-run, PR and failed evidence', () => {
+  const source = { runId: '1', runAttempt: '2', artifactId: '3', artifactDigest: hash, recordHash: hash }
+  const run = { id: 1, run_attempt: 2, status: 'completed', conclusion: 'success', event: 'workflow_dispatch', path: '.github/workflows/demo-maintenance.yml', head_branch: 'main', head_sha: controllerSha, head_repository: { full_name: 'russlle2/platform-builder' }, run_started_at: time, updated_at: time }
+  const artifact = { id: 3, name: 'demo-maintenance-record-1-2', digest: `sha256:${hash}`, expired: false, expires_at: '2026-11-01T00:00:00Z', size_in_bytes: 1000, workflow_run: { id: 1, head_sha: controllerSha }, created_at: time }
+  const input = { run, artifact, source, kind: 'record', controllerSha, repository: 'russlle2/platform-builder', now: Date.parse(time) }
+  validateArtifactMetadata(input)
+  for (const delta of [{ run: { ...run, conclusion: 'failure' } }, { run: { ...run, run_attempt: 1 } }, { run: { ...run, event: 'pull_request' } }, { artifact: { ...artifact, expired: true } }, { artifact: { ...artifact, digest: `sha256:${'f'.repeat(64)}` } }, { artifact: { ...artifact, workflow_run: { id: 8, head_sha: controllerSha } } }]) assert.throws(() => validateArtifactMetadata({ ...input, ...delta }))
+})
+test('QA must bind exact record and fresh producer chronology, not only passed=true', () => {
+  let validations = 0
+  const report = { checkedAt: time, passed: true }
+  const qa = { version: 1, kind: 'dailyclarity-demo-maintenance-qa', controllerSha, producer, manifestHash: ctx.manifestHash, recordHash: canonicalDigest(record), sourceSha: manifest.sourceSha, deploymentId: candidate.deploymentId, report }
+  const config = { ...ctx, record, reportValidator: () => { validations++ }, now: Date.parse(time) }
+  validateQa(qa, config); assert.equal(validations, 1)
+  assert.throws(() => validateQa({ ...qa, recordHash: hash }, config))
+  assert.throws(() => validateQa(qa, { ...config, now: Date.parse(time) + 25 * 3600000 }))
+  assert.throws(() => validateQa(qa, { ...config, reportValidator: () => { throw new Error('incomplete actual playback') } }))
+})
+test('prepare persists healthy baseline before any write and validates candidate before record', async () => {
+  const a = adapters(); const result = await executeMaintenance(ctx, a)
+  assert.equal(result.sourceSha, manifest.sourceSha)
+  assert(a.calls.findIndex(v => v.state?.phase === 'baseline-captured') < a.calls.indexOf('draft'))
+  assert(a.calls.indexOf('candidate') < a.calls.findIndex(v => v.record))
+  assert.equal(a.calls.at(-1).state.phase, 'prepared')
+})
+test('source rejection and changed baseline forbid creating draft', async () => {
+  const a = adapters({ sourceGate: async () => { throw new Error('source changed') } })
+  await assert.rejects(executeMaintenance(ctx, a)); assert(!a.calls.includes('draft'))
+  let count = 0
+  const b = adapters({ snapshot: async () => ++count === 1 ? baseline : { ...baseline, settingsHash: 'changed' } })
+  await assert.rejects(executeMaintenance(ctx, b)); assert(!b.calls.includes('draft'))
+})
+test('failed draft retains observed partial identity without a prepared record', async () => {
+  const a = adapters({ draft: async () => { throw new Error('ambiguous CLI failure') }, observe: async () => ({ publishedDeploymentId: baseline.deploymentId, matchingDrafts: [{ deploymentId: candidate.deploymentId, state: 'uploading' }] }) })
+  await assert.rejects(executeMaintenance(ctx, a))
+  assert.equal(a.calls.at(-1).state.observation.matchingDrafts[0].deploymentId, candidate.deploymentId)
+  assert(!a.calls.some(v => v.record))
+})
+test('promotion refuses missing QA before any restore', async () => {
+  const a = adapters({ validateQa: async () => { throw new Error('no actual QA') } })
+  await assert.rejects(executeMaintenance({ ...ctx, operation: 'promote', confirmation: 'PROMOTE DEMO DRAFT' }, a))
+  assert(!a.calls.some(v => typeof v === 'string' && v.startsWith('restore:')))
+})
+test('promotion restores the same draft and verifies media/auth/public marker', async () => {
+  const a = adapters()
+  const result = await executeMaintenance({ ...ctx, operation: 'promote', confirmation: 'PROMOTE DEMO DRAFT' }, a)
+  assert.equal(result.phase, 'promoted')
+  assert(a.calls.includes(`restore:${candidate.deploymentId}`))
+  assert(!a.calls.includes('build') && !a.calls.includes('draft'))
+  assert(a.calls.indexOf('media') > a.calls.indexOf(`restore:${candidate.deploymentId}`))
+  assert(a.calls.includes('public-marker'))
+  assert.deepEqual(result.finalMedia, { checkedAt: time })
+  assert.deepEqual(result.finalAuth, { signInForm: true, emailSent: false })
+})
+test('ambiguous restore failure always retains observed actual publication', async () => {
+  const a = adapters({ restore: async () => { throw new Error('network after publication') }, observe: async () => ({ publishedDeploymentId: candidate.deploymentId, matchingDrafts: [] }) })
+  await assert.rejects(executeMaintenance({ ...ctx, operation: 'promote', confirmation: 'PROMOTE DEMO DRAFT' }, a))
+  assert.equal(a.calls.at(-1).state.observation.publishedDeploymentId, candidate.deploymentId)
+  assert.equal(a.calls.at(-1).state.phase, 'restore-observed')
+})
+test('rollback can restore baseline without healthy candidate runtime and refuses unrelated deploy', async () => {
+  const a = adapters()
+  const result = await executeMaintenance({ ...ctx, operation: 'rollback', confirmation: 'ROLLBACK DEMO' }, a)
+  assert.equal(result.phase, 'rolled-back')
+  assert(a.calls.includes(`restore:${baseline.deploymentId}`))
+  assert(a.calls.includes('baseline-deployment'))
+  const b = adapters({ snapshot: async () => ({ ...baseline, deploymentId: '3'.repeat(24), appSha: null }) })
+  await assert.rejects(executeMaintenance({ ...ctx, operation: 'rollback', confirmation: 'ROLLBACK DEMO' }, b))
+  assert(!b.calls.some(v => typeof v === 'string' && v.startsWith('restore:')))
+})

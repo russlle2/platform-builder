@@ -40,6 +40,9 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
+      - name: Demo maintenance release guards
+        run: node --test apps/generator-app/scripts/demo-maintenance*.test.mjs
+
       - name: Start dev server for e2e
         run: |
           pnpm --filter @platform-builder/generator-app dev > /tmp/server.log 2>&1 &
