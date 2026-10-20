@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getNiches } from '@/lib/templates/niche-registry'
+import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
+import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER, PLATFORM_DEMO_CAPTIONS, PLATFORM_DEMO_TRANSCRIPT } from '@/lib/demo-videos'
 
 // The launch catalog lives in a site-wide Netlify Blobs store. Reading it at
 // request time prevents a credential-less CI build from permanently baking an
@@ -137,6 +139,31 @@ export default async function HomePage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="container-hvac py-10 md:py-16" aria-labelledby="overview-heading">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="space-y-5">
+              <span className="signal-chip">See it come together</span>
+              <h2 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white">Your practice. Your style. Your website.</h2>
+              <p className="text-lg leading-relaxed text-slate-300">
+                Watch the overview to see how a design becomes a website with your business details,
+                services, and personality. Then explore a demo made for your type of practice.
+              </p>
+              <Link href="/demo" className="inline-flex min-h-11 items-center font-semibold text-cyan-300 underline underline-offset-4 hover:text-white">
+                Explore all five practice demos →
+              </Link>
+            </div>
+            <div className="glass-panel overflow-hidden rounded-2xl border border-white/10">
+              <DemoVideoPlayer
+                src={PLATFORM_DEMO_VIDEO}
+                title="DailyClarity website overview"
+                poster={PLATFORM_DEMO_POSTER}
+                captionsSrc={PLATFORM_DEMO_CAPTIONS}
+                transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
+              />
             </div>
           </div>
         </section>
