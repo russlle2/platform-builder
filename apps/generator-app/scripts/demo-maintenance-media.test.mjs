@@ -2,6 +2,8 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
+import { createServer } from 'node:http'
+import { gzipSync, brotliCompressSync, deflateSync } from 'node:zlib'
 import { mediaSpecification, assertDraftOrigin, assertMediaOrigin, browserReadAllowed, readMediaAsset, assertMediaReport } from './verify-demo-maintenance-media.mjs'
 
 const manifest = JSON.parse(readFileSync(new URL('./demo-maintenance-release.json', import.meta.url), 'utf8'))
@@ -64,6 +66,33 @@ test('asset reader checks actual bytes, MIME and sizes with manual redirects and
     new Response(Buffer.from('wrong bytes'), { headers: { 'content-type': 'text/plain' } }),
     new Response(Buffer.concat([body, body]), { headers: { 'content-type': 'text/plain' } }),
   ]) await assert.rejects(readMediaAsset(origin, file, 'test-version', async () => response))
+})
+
+test('real compressed HTTP transfers retain exact decoded byte and hash checks', async () => {
+  const body = Buffer.from('A longer captioned customer walkthrough transcript.\n'.repeat(100))
+  const file = { path: '/demo-videos/example.txt', bytes: body.length, sha256: createHash('sha256').update(body).digest('hex'), contentType: 'text/plain' }
+  let content = body, encoding = 'gzip'
+  const compressors = { gzip: gzipSync, br: brotliCompressSync, deflate: deflateSync }
+  const server = createServer((_request, response) => {
+    const coded = compressors[encoding](content)
+    response.writeHead(200, { 'content-type': 'text/plain', 'content-encoding': encoding, 'content-length': String(coded.length) })
+    response.end(coded)
+  })
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
+  const localOrigin = `http://127.0.0.1:${server.address().port}`
+  try {
+    for (encoding of Object.keys(compressors)) {
+      content = body
+      assert.notEqual(compressors[encoding](body).length, file.bytes)
+      assert.equal((await readMediaAsset(localOrigin, file, 'test-version')).sha256, file.sha256)
+      for (content of [Buffer.from('x'.repeat(body.length)), body.subarray(1), Buffer.concat([body, Buffer.from('x')])]) {
+        await assert.rejects(readMediaAsset(localOrigin, file, 'test-version'), /Media bytes differ|exceeds its sealed size/)
+      }
+    }
+  } finally {
+    server.closeAllConnections()
+    await new Promise(resolve => server.close(resolve))
+  }
 })
 
 function syntheticReportForContractTest() {

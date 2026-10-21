@@ -66,7 +66,12 @@ export async function readMediaAsset(origin, file, mediaVersion, fetchImpl = fet
   const contentType = (response.headers.get('content-type') ?? '').split(';')[0].trim().toLowerCase()
   must(contentType === file.contentType, `Incorrect media content type: ${file.path}`)
   const declared = response.headers.get('content-length')
-  must(declared === null || Number(declared) === file.bytes, `Incorrect declared media size: ${file.path}`)
+  const encoding = (response.headers.get('content-encoding') ?? 'identity').trim().toLowerCase()
+  must(['identity', 'gzip', 'deflate', 'br'].includes(encoding), `Unsupported media content encoding: ${file.path}`)
+  // Fetch decodes supported compression, but Content-Length describes the coded
+  // transfer. Always verify the decoded stream's exact sealed length and hash.
+  must(declared === null || (/^[0-9]+$/.test(declared) && Number.isSafeInteger(Number(declared)) && Number(declared) > 0 && Number(declared) <= 20_000_000), `Invalid declared media size: ${file.path}`)
+  must(declared === null || encoding !== 'identity' || Number(declared) === file.bytes, `Incorrect declared media size: ${file.path}`)
   must(response.body, `Media response has no body: ${file.path}`)
   const reader = response.body.getReader(), chunks = []
   let bytes = 0
