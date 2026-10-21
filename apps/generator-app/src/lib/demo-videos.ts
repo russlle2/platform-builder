@@ -5,7 +5,7 @@
 
 // Reused public filenames receive a stable release version so existing visitors
 // load the new picture, poster and accessible companions together.
-const DEMO_MEDIA_VERSION = '20261019-liam-v2'
+const DEMO_MEDIA_VERSION = '20261020-customer-walkthrough'
 const versionedMedia = (path: string) => `${path}?v=${DEMO_MEDIA_VERSION}`
 
 export const PLATFORM_DEMO_VIDEO = versionedMedia('/demo-videos/platform-builder-walkthrough.mp4')
@@ -61,7 +61,7 @@ export const DEMO_HUB_ITEMS: DemoHubItem[] = [
     id: 'platform-builder',
     title: 'Platform overview',
     description:
-      'Choose your practice, personalize a design, and see your website before you commit.',
+      'Follow the full customer journey in 3:47: preview, checkout, custom photos, publishing, enquiries, and your portal.',
     href: '/demo/platform-builder',
     videoSrc: PLATFORM_DEMO_VIDEO,
     posterSrc: PLATFORM_DEMO_POSTER,

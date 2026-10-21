@@ -108,6 +108,39 @@ export default async function HomePage() {
                 <Link href="/pricing" className="underline underline-offset-4 hover:text-white">Hosted plans from $20/month</Link>
               </div>
             </div>
+            <div id="customer-walkthrough" className="glass-panel overflow-hidden rounded-3xl border border-white/10 scroll-mt-28">
+              <div className="space-y-2 px-6 py-5">
+                <span className="signal-chip">Full walkthrough · 3:47</span>
+                <h2 className="text-2xl font-bold text-white">From first preview to your published website.</h2>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Follow an example business through setup, custom photos, publishing, enquiries, and its customer portal.
+                </p>
+              </div>
+              <DemoVideoPlayer
+                src={PLATFORM_DEMO_VIDEO}
+                title="DailyClarity complete customer walkthrough — 3 minutes 47 seconds"
+                poster={PLATFORM_DEMO_POSTER}
+                captionsSrc={PLATFORM_DEMO_CAPTIONS}
+                transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
+              />
+              <p className="px-6 py-4 text-xs text-slate-400">Example business and test checkout. No real charge in this demonstration.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="container-hvac py-10 md:py-16" aria-labelledby="overview-heading">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="space-y-5">
+              <span className="signal-chip">See it come together</span>
+              <h2 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white">Your practice. Your style. Your website.</h2>
+              <p className="text-lg leading-relaxed text-slate-300">
+                Explore a demo made for your type of practice, then try a sample website.
+                Add your own business details, services, and photos when you are ready.
+              </p>
+              <Link href="/demo" className="inline-flex min-h-11 items-center font-semibold text-cyan-300 underline underline-offset-4 hover:text-white">
+                Explore all five practice demos →
+              </Link>
+            </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
               <span className="text-xs uppercase tracking-[0.2em] text-cyan-300">Explore before you commit</span>
               <h2 className="text-3xl font-bold text-white">See a website for a practice like yours.</h2>
@@ -122,31 +155,6 @@ export default async function HomePage() {
               </form>
               <p className="text-sm text-slate-400">Then use your own details when you are ready. Your existing preview stays separate.</p>
               {hasTemplateCounts && <p className="border-t border-white/10 pt-4 text-xs text-slate-400">{totalTemplates.toLocaleString('en-US')} published templates across {niches.length} practice types.</p>}
-            </div>
-          </div>
-        </section>
-
-        <section className="container-hvac py-10 md:py-16" aria-labelledby="overview-heading">
-          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-            <div className="space-y-5">
-              <span className="signal-chip">See it come together</span>
-              <h2 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white">Your practice. Your style. Your website.</h2>
-              <p className="text-lg leading-relaxed text-slate-300">
-                Watch the overview to see how a design becomes a website with your business details,
-                services, and personality. Then explore a demo made for your type of practice.
-              </p>
-              <Link href="/demo" className="inline-flex min-h-11 items-center font-semibold text-cyan-300 underline underline-offset-4 hover:text-white">
-                Explore all five practice demos →
-              </Link>
-            </div>
-            <div className="glass-panel overflow-hidden rounded-2xl border border-white/10">
-              <DemoVideoPlayer
-                src={PLATFORM_DEMO_VIDEO}
-                title="DailyClarity website overview"
-                poster={PLATFORM_DEMO_POSTER}
-                captionsSrc={PLATFORM_DEMO_CAPTIONS}
-                transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
-              />
             </div>
           </div>
         </section>
