@@ -1,4 +1,4 @@
-import { NICHE_DEMO_VIDEO, NICHE_DEMO_POSTER, ACTIVE_DEMO_NICHES } from '@/lib/demo-videos'
+import { NICHE_DEMO_VIDEO, NICHE_DEMO_POSTER, NICHE_DEMO_CAPTIONS, NICHE_DEMO_TRANSCRIPT, ACTIVE_DEMO_NICHES, DEMO_HUB_ITEMS } from '@/lib/demo-videos'
 import { NICHE_META } from '@/lib/templates/niche-registry'
 import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
 import Link from 'next/link'
@@ -18,7 +18,7 @@ export async function generateMetadata({
   const meta = NICHE_META[niche]
   if (!meta) return { title: 'Demo', robots: { index: false, follow: false } }
   const title = `${meta.label} Build Walkthrough`
-  const description = `Watch a full ${meta.label.toLowerCase()} website build and customization walkthrough.`
+  const description = `See a ${meta.label.toLowerCase()} website take shape with your business details, design choices, and a live preview. Watch with captions or read the transcript.`
   return {
     title,
     description,
@@ -28,7 +28,7 @@ export async function generateMetadata({
       description,
       url: `/demo/${niche}`,
       type: 'website',
-      images: ['/og-image.png'],
+      images: [NICHE_DEMO_POSTER[niche] || '/og-image.png'],
     },
   }
 }
@@ -41,6 +41,7 @@ export default async function NicheDemoPage({
   const { niche } = await params
   const meta = NICHE_META[niche]
   const videoSrc = NICHE_DEMO_VIDEO[niche]
+  const demo = DEMO_HUB_ITEMS.find((item) => item.id === niche)
   if (!meta || !videoSrc) {
     notFound()
   }
@@ -61,8 +62,7 @@ export default async function NicheDemoPage({
             {meta.icon} {meta.label} build walkthrough
           </h1>
           <p className="text-lg text-slate-300 max-w-2xl">
-            See how a {meta.label.toLowerCase()} site comes together — template selection, your business
-            details, live preview, and launch-ready pages.
+            {demo?.description || `See how a ${meta.label.toLowerCase()} site comes together with your business details and a live preview.`}
           </p>
         </div>
 
@@ -71,6 +71,8 @@ export default async function NicheDemoPage({
             src={videoSrc}
             title={`${meta.label} build walkthrough`}
             poster={NICHE_DEMO_POSTER[niche]}
+            captionsSrc={NICHE_DEMO_CAPTIONS[niche]}
+            transcriptSrc={NICHE_DEMO_TRANSCRIPT[niche]}
           />
         </div>
 

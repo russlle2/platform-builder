@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { getNiches } from '@/lib/templates/niche-registry'
+import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
+import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER, PLATFORM_DEMO_CAPTIONS, PLATFORM_DEMO_TRANSCRIPT } from '@/lib/demo-videos'
 
 // The launch catalog lives in a site-wide Netlify Blobs store. Reading it at
 // request time prevents a credential-less CI build from permanently baking an
@@ -79,13 +81,12 @@ export default async function HomePage() {
       </div>
       <div className="relative z-10">
         {/* Hero */}
-        <section className="container-hvac py-20">
+        <section className="container-hvac py-12 md:py-20">
           <div className="hero-grid">
             <div className="space-y-8">
               <span className="signal-chip">DailyClarity Platform Builder</span>
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white">
                 Turn your wellness offer into a client-booking website.
-                <span className="block text-cyan-200">One guided flow. Live preview. Launch support built in.</span>
               </h1>
               <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
                 Preview a complete website with your real business info, edit the copy and images
@@ -106,6 +107,39 @@ export default async function HomePage() {
               <div className="flex flex-wrap gap-6 text-sm text-slate-300">
                 <span>Not a blank-canvas builder — a client-conversion launch system for wellness and service businesses.</span>
               </div>
+            </div>
+            <div id="customer-walkthrough" className="glass-panel overflow-hidden rounded-3xl border border-white/10 scroll-mt-28">
+              <div className="space-y-2 px-6 py-5">
+                <span className="signal-chip">Full walkthrough · 3:47</span>
+                <h2 className="text-2xl font-bold text-white">From first preview to your published website.</h2>
+                <p className="text-sm leading-relaxed text-slate-300">
+                  Follow an example business through setup, custom photos, publishing, enquiries, and its customer portal.
+                </p>
+              </div>
+              <DemoVideoPlayer
+                src={PLATFORM_DEMO_VIDEO}
+                title="DailyClarity complete customer walkthrough — 3 minutes 47 seconds"
+                poster={PLATFORM_DEMO_POSTER}
+                captionsSrc={PLATFORM_DEMO_CAPTIONS}
+                transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
+              />
+              <p className="px-6 py-4 text-xs text-slate-400">Example business and test checkout. No real charge in this demonstration.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="container-hvac py-10 md:py-16" aria-labelledby="overview-heading">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="space-y-5">
+              <span className="signal-chip">See it come together</span>
+              <h2 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white">Your practice. Your style. Your website.</h2>
+              <p className="text-lg leading-relaxed text-slate-300">
+                Explore a demo made for your type of practice, then build your own preview.
+                Add your own business details, services, and photos when you are ready.
+              </p>
+              <Link href="/demo" className="inline-flex min-h-11 items-center font-semibold text-cyan-300 underline underline-offset-4 hover:text-white">
+                Explore all five practice demos →
+              </Link>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
               <div className="flex items-center justify-between">
