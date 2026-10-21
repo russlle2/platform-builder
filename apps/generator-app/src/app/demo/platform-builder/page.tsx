@@ -4,14 +4,14 @@ import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER, PLATFORM_DEMO_CAPTIONS, PLAT
 import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
 
 export const metadata: Metadata = {
-  title: 'Platform Build Walkthrough',
+  title: 'Complete Customer Walkthrough',
   description:
-    'Watch your wellness website take shape: choose your practice, personalize a design, and explore the live preview. Includes captions and a transcript.',
+    'Watch the complete 3:47 customer walkthrough: preview, test checkout, site provisioning, custom photos, editing, publishing, enquiries, and your portal. Includes captions and a transcript.',
   alternates: { canonical: '/demo/platform-builder' },
   openGraph: {
-    title: 'Platform Build Walkthrough | DailyClarity',
+    title: 'Complete Customer Walkthrough | DailyClarity',
     description:
-      'Choose your practice, personalize a design, and see your website before you commit.',
+      'From the first preview to a published website, custom photos, enquiries, and your customer portal.',
     url: '/demo/platform-builder',
     type: 'website',
     images: [PLATFORM_DEMO_POSTER],
@@ -26,23 +26,26 @@ export default function PlatformBuilderDemoPage() {
           <Link href="/demo" className="text-sm text-slate-400 hover:text-white transition-colors">
             ← All demos
           </Link>
-          <span className="signal-chip block w-fit">DailyClarity Platform Builder</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white">Platform build walkthrough</h1>
+          <span className="signal-chip block w-fit">Full customer journey · 3:47</span>
+          <h1 className="text-4xl md:text-5xl font-bold text-white">From preview to published website</h1>
           <p className="text-lg text-slate-300 max-w-2xl">
-            From your first design choice to a website that feels like your practice. See how your
-            details, style, and services come together in a real preview before you commit.
+            Follow Willow and Coast Wellness through the whole process: choose a design, complete
+            a test checkout, upload custom photos, edit and publish the site, and manage enquiries
+            and billing from the customer portal.
           </p>
         </div>
 
         <div className="glass-panel rounded-2xl overflow-hidden border border-white/10">
           <DemoVideoPlayer
             src={PLATFORM_DEMO_VIDEO}
-            title="DailyClarity Platform Builder walkthrough"
+            title="DailyClarity complete customer walkthrough — 3 minutes 47 seconds"
             poster={PLATFORM_DEMO_POSTER}
             captionsSrc={PLATFORM_DEMO_CAPTIONS}
             transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
           />
         </div>
+
+        <p className="text-sm text-slate-400">This walkthrough uses an example business and a test checkout with no real charge.</p>
 
         <div className="flex flex-col sm:flex-row gap-4">
           <Link

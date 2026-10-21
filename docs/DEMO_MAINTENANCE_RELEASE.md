@@ -1,7 +1,10 @@
 # Reviewed demo maintenance release
 
-This release publishes six Liam-narrated videos, their captions, transcripts and
-posters, the shared player, demo pages and homepage player. It preserves the
+This release publishes the approved 3:47 customer walkthrough in the homepage
+hero and platform demo page, alongside the five existing Liam-narrated niche
+videos. It includes captions, transcripts and posters, the shared player and
+demo pages. The walkthrough shows custom-photo upload and publishing and clearly
+labels its example business and test checkout. It preserves the
 currently published application's backend source, dependency lockfile, deployment
 configuration and certified catalogue. It does not replace the planned full
 platform upgrade, which remains on `main` and still needs its normal release.
@@ -10,10 +13,27 @@ platform upgrade, which remains on `main` and still needs its normal release.
 
 `apps/generator-app/scripts/demo-maintenance-release.json` seals one source commit
 whose only parent is the deployed production source. The guard reconstructs the
-original PR #50 binary patch in a temporary Git index and requires the resulting
+reviewed media binary patch in a temporary Git index and requires the resulting
 entire tree, exact thirty changed paths, modes, blobs and local bytes to agree.
 There is no arbitrary source SHA input. Never merge this maintenance source branch
 into `main`: it deliberately omits pending platform changes from this deployment.
+
+The active source `7b058b23e96fa623971bea72b62f57b51a2d3a86` combines the
+original PR #50 media scope with the approved customer walkthrough. Its complete
+tree differs from the previously published maintenance source `a9ece0fc` in only
+seven files: the four platform media companions, homepage, platform demo page and
+shared media metadata. All twenty niche media files remain byte-identical. The
+sealed patch commit is this source commit itself, whose sole parent is the
+original certified `fafde2dc` baseline. The controller implementation, fixed
+thirty-path scope, backend, dependencies and release protections are unchanged.
+
+Before merging this manifest replacement, finish its review and PR CI, then use
+the existing successful preparation record from run `39375063369` with the
+current controller to perform the guarded rollback. Independently verify the
+restored certified baseline before merging. Replacing the manifest first would
+invalidate the old record's controller compatibility. Require the new merged
+main's CI and fresh preparation, draft QA and promotion evidence afterward.
+The previous demos may briefly appear between rollback and the new promotion.
 
 The maintenance controller is reviewed and merged into `main`, with successful CI
 for that exact main SHA. It builds the fixed source in a separate, credential-free
