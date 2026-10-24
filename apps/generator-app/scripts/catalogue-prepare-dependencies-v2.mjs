@@ -165,7 +165,7 @@ export async function fingerprintInstalledDependencies(repository, version) {
           requireThat(!line.includes(root) && ![...pathMappings.keys()].some((segment) => line.includes(segment)), 'generated wrapper embeds paths outside known fields')
           return line
         })
-        requireThat(nodePathLines === 2 && targetLines === 1, 'generated wrapper fields are incomplete')
+        requireThat(nodePathLines === 2 && targetLines === 1, `generated wrapper fields are incomplete: ${relative} (${nodePathLines},${targetLines})`)
         compared = Buffer.from(lines.join('\n'))
       }
       records.push({ path: normalized, kind: 'file', mode, bytes: compared.length, sha256: HASH(compared) })
@@ -184,12 +184,33 @@ export async function fingerprintInstalledDependencies(repository, version) {
   return { version: 2, fingerprintHash: digest(records), trackedLockHash: HASH(lock), entries: records.length, comparedBytes: bytes, excludedComponents: [...excluded].map(normalizePath).sort(), runtime: { node: process.version, platform: process.platform, arch: process.arch, libc: 'glibc', pnpm: '11.19.0' } }
 }
 
+const PRELOADED_COMPOSERS = [
+  'apps/generator-app/src/lib/template-preview-composition.ts',
+  'apps/generator-app/src/lib/customer-preview-document.ts',
+  'apps/generator-app/src/lib/customer-preview-editor-runtime.ts',
+]
+const REQUIRED_RUNTIME_MODULES = [
+  ...PRELOADED_COMPOSERS,
+  'packages/template-factory/src/legacy/customer-preview-adapter.ts',
+  'packages/template-factory/src/legacy/render.ts',
+  'node_modules/.pnpm/tsx@4.22.4/node_modules/tsx/dist/cjs/api/index.cjs',
+  'node_modules/.pnpm/tsx@4.22.4/node_modules/tsx/dist/esm/api/index.cjs',
+  'node_modules/.pnpm/@img+sharp-linux-x64@0.35.5/node_modules/@img/sharp-linux-x64/lib/sharp-linux-x64-0.35.5.node',
+]
+
+export function assertRuntimeProofCompleteness(result) {
+  requireThat(result?.version === 2 && result.node === process.version && result.directEdges === 29 && result.esmImports >= 30 && result.cjsResolutions >= 200 && /^[a-f0-9]{64}$/.test(result.fingerprintHash), 'runtime proof is incomplete')
+  requireThat(canonical(result.probeConfiguration) === canonical({ loader: 'tsx-cjs-and-esm', sequentialPreload: PRELOADED_COMPOSERS, defaultAdapterInvoked: true }), 'runtime probe configuration differs')
+  requireThat(Array.isArray(result.mandatoryModules) && canonical(result.mandatoryModules.map((entry) => entry.path)) === canonical(REQUIRED_RUNTIME_MODULES) && result.mandatoryModules.every((entry) => Object.keys(entry).sort().join(',') === 'path,sha256' && /^[a-f0-9]{64}$/.test(entry.sha256)), 'mandatory runtime module observation is missing')
+  requireThat(result.mandatoryModulesHash === digest(result.mandatoryModules), 'runtime module observations are unbound')
+}
+
 async function runtimeProof(root) {
   const env = Object.fromEntries(SAFE_ENV.filter((key) => Object.hasOwn(process.env, key)).map((key) => [key, process.env[key]]))
   const script = fileURLToPath(new URL('./catalogue-prepare-runtime-v2.mjs', import.meta.url))
   const { stdout } = await execute(process.execPath, ['--experimental-import-meta-resolve', script, root], { cwd: root, env, timeout: 60000, maxBuffer: 2 * 1024 * 1024 })
   const result = JSON.parse(stdout)
-  requireThat(result.version === 2 && result.node === process.version && result.directEdges === 29 && result.esmImports > 100 && result.cjsResolutions > 100 && /^[a-f0-9]{64}$/.test(result.fingerprintHash), 'runtime proof is incomplete')
+  assertRuntimeProofCompleteness(result)
   return result
 }
 

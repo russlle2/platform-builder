@@ -186,10 +186,23 @@ async function main() {
     return resolved
   }
   const require = createRequire(path.join(root, 'packages/template-factory/package.json'))
+  // The real tsx CLI registers both CJS and ESM paths; the app package is
+  // CommonJS while the factory is ESM. ESM-only registration is insufficient
+  // on Node 22's require(esm) bridge. Keep both package loaders in the proof.
+  const unregisterCjs = require('tsx/cjs/api').register()
   const { register } = require('tsx/esm/api')
   const unregister = register({ onImport: (url) => imports.add(url) })
+  const sequentialPreload = [
+    'apps/generator-app/src/lib/template-preview-composition.ts',
+    'apps/generator-app/src/lib/customer-preview-document.ts',
+    'apps/generator-app/src/lib/customer-preview-editor-runtime.ts',
+  ]
   let output
   try {
+    // The default adapter loads these pure modules concurrently. Prime their
+    // shared dependencies deterministically so first-loader parent observations
+    // do not depend on scheduling; then exercise the unchanged default adapter.
+    for (const relative of sequentialPreload) await import(pathToFileURL(path.join(root, relative)).href)
     const adapter = await import(pathToFileURL(path.join(root, 'packages/template-factory/src/legacy/customer-preview-adapter.ts')).href)
     const composers = await adapter.loadCustomerPreviewComposers()
     const editor = composers.getCustomerPreviewEditorScript('index.html')
@@ -201,12 +214,27 @@ async function main() {
     output = { editorHash: hash(editor), previewHash: hash(canonical(preview)), documentHash: hash(document), nativePngHash: hash(png), sharpVersions: sharp.versions }
   } finally {
     await unregister()
+    unregisterCjs()
     Module._resolveFilename = original
   }
   const esm = [...imports].map((url) => record(url.split('?')[0])).sort((a, b) => canonical(a).localeCompare(canonical(b)))
   const cjs = [...loaded.values()].sort((a, b) => canonical(a).localeCompare(canonical(b)))
-  const proof = { edges, esm, cjs, output }
-  console.log(canonical({ version: 2, node: process.version, fingerprintHash: hash(canonical(proof)), directEdges: edges.length, esmImports: esm.length, cjsResolutions: cjs.length, outputHash: hash(canonical(output)), compilerExecuted: false, browserChecksRepeated: false }))
+  const requiredPaths = [
+    ...sequentialPreload,
+    'packages/template-factory/src/legacy/customer-preview-adapter.ts',
+    'packages/template-factory/src/legacy/render.ts',
+    'node_modules/.pnpm/tsx@4.22.4/node_modules/tsx/dist/cjs/api/index.cjs',
+    'node_modules/.pnpm/tsx@4.22.4/node_modules/tsx/dist/esm/api/index.cjs',
+    'node_modules/.pnpm/@img+sharp-linux-x64@0.35.5/node_modules/@img/sharp-linux-x64/lib/sharp-linux-x64-0.35.5.node',
+  ]
+  const mandatoryModules = requiredPaths.map((relative) => {
+    const observed = [...esm, ...cjs].filter((entry) => entry.path === `<checkout>/${relative}`)
+    requireThat(observed.length > 0 && new Set(observed.map((entry) => entry.sha256)).size === 1, 'required runtime module is absent or changed')
+    return { path: relative, sha256: observed[0].sha256 }
+  })
+  const probeConfiguration = { loader: 'tsx-cjs-and-esm', sequentialPreload, defaultAdapterInvoked: true }
+  const proof = { probeConfiguration, mandatoryModules, edges, esm, cjs, output }
+  console.log(canonical({ version: 2, node: process.version, fingerprintHash: hash(canonical(proof)), directEdges: edges.length, esmImports: esm.length, cjsResolutions: cjs.length, outputHash: hash(canonical(output)), probeConfiguration, mandatoryModules, mandatoryModulesHash: hash(canonical(mandatoryModules)), compilerExecuted: false, browserChecksRepeated: false }))
 }
 
 main().catch(() => { console.error('Retained runtime proof failed; private runtime details suppressed'); process.exitCode = 1 })

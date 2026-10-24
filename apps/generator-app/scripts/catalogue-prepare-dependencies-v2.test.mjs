@@ -3,8 +3,9 @@ import assert from 'node:assert/strict'
 import { mkdtemp, mkdir, writeFile, readFile, rm, symlink, chmod, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
+import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { fingerprintInstalledDependencies, assertDependencyProofEnvironment } from './catalogue-prepare-dependencies-v2.mjs'
+import { fingerprintInstalledDependencies, assertDependencyProofEnvironment, assertRuntimeProofCompleteness } from './catalogue-prepare-dependencies-v2.mjs'
 
 const FAMILIES = ['next', '@next/env', '@next/swc-darwin-arm64', '@next/swc-darwin-x64', '@next/swc-linux-arm64-gnu', '@next/swc-linux-arm64-musl', '@next/swc-linux-x64-gnu', '@next/swc-linux-x64-musl', '@next/swc-win32-arm64-msvc', '@next/swc-win32-x64-msvc']
 const PROJECTS = ['', 'apps/client-template', 'apps/generator-app', 'packages/image-optimizer', 'packages/scripts', 'packages/template-factory', 'packages/ui-components', 'packages/utils']
@@ -131,4 +132,30 @@ test('complete installed comparison recognizes only the exact Next component par
     await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.29'), /unreviewed Next version/)
   })
   assert.equal((await fingerprintInstalledDependencies(newRoot, '15.5.28')).fingerprintHash, baseline.fingerprintHash)
+})
+
+test('runtime proof requires the actual adapter, both loaders, native binding and explicit preload observations', () => {
+  const preloads = [
+    'apps/generator-app/src/lib/template-preview-composition.ts',
+    'apps/generator-app/src/lib/customer-preview-document.ts',
+    'apps/generator-app/src/lib/customer-preview-editor-runtime.ts',
+  ]
+  const paths = [
+    ...preloads,
+    'packages/template-factory/src/legacy/customer-preview-adapter.ts',
+    'packages/template-factory/src/legacy/render.ts',
+    'node_modules/.pnpm/tsx@4.22.4/node_modules/tsx/dist/cjs/api/index.cjs',
+    'node_modules/.pnpm/tsx@4.22.4/node_modules/tsx/dist/esm/api/index.cjs',
+    'node_modules/.pnpm/@img+sharp-linux-x64@0.35.5/node_modules/@img/sharp-linux-x64/lib/sharp-linux-x64-0.35.5.node',
+  ]
+  const bind = (modules) => createHash('sha256').update(JSON.stringify(modules)).digest('hex')
+  const modules = paths.map((entry) => ({ path: entry, sha256: '1'.repeat(64) }))
+  const valid = { version: 2, node: process.version, directEdges: 29, esmImports: 37, cjsResolutions: 228, fingerprintHash: '2'.repeat(64), mandatoryModules: modules, mandatoryModulesHash: bind(modules), probeConfiguration: { loader: 'tsx-cjs-and-esm', sequentialPreload: preloads, defaultAdapterInvoked: true } }
+  assert.doesNotThrow(() => assertRuntimeProofCompleteness(valid))
+  for (let index = 0; index < modules.length; index++) {
+    const incomplete = modules.filter((_entry, position) => position !== index)
+    assert.throws(() => assertRuntimeProofCompleteness({ ...valid, mandatoryModules: incomplete, mandatoryModulesHash: bind(incomplete) }), /mandatory runtime module observation/)
+  }
+  assert.throws(() => assertRuntimeProofCompleteness({ ...valid, mandatoryModulesHash: '0'.repeat(64) }), /unbound/)
+  assert.throws(() => assertRuntimeProofCompleteness({ ...valid, probeConfiguration: { ...valid.probeConfiguration, defaultAdapterInvoked: false } }), /configuration differs/)
 })
