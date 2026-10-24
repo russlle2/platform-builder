@@ -21,7 +21,7 @@ export function DemoVideoPlayer({
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
 
   return (
-    <figure>
+    <figure className="dc-media-frame">
       {failedSrc === src ? (
         <div className="aspect-video flex flex-col items-center justify-center gap-4 bg-slate-950 px-6 py-8 text-center border-b border-white/10" role="status">
           <div className="w-16 h-16 rounded-2xl bg-cyan-500/15 border border-cyan-400/30 flex items-center justify-center text-2xl" aria-hidden="true">
@@ -35,7 +35,7 @@ export function DemoVideoPlayer({
           </div>
           <Link
             href="/preview-your-business"
-            className="px-6 py-3 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white border border-cyan-200/40"
+            className="cta-button px-6 py-3 text-sm"
           >
             Build My Preview
           </Link>
