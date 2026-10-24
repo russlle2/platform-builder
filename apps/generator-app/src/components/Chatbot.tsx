@@ -83,6 +83,12 @@ export default function Chatbot() {
         aria-expanded={isOpen}
         aria-controls="platform-help-dialog"
         onClick={() => setIsOpen(open => !open)}
+        onKeyDown={(event) => {
+          if (event.key === 'Escape' && isOpen) {
+            event.preventDefault()
+            close()
+          }
+        }}
         className="inline-flex min-h-12 items-center gap-2 rounded-full bg-teal-800 px-4 py-3 font-semibold text-white shadow-lg transition-colors hover:bg-teal-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-700"
       >
         <svg aria-hidden="true" className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

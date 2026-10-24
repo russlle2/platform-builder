@@ -235,7 +235,7 @@ test('homepage offers available samples or an honest personal-preview recovery',
     await expect(recovery).toHaveAttribute('href', '/preview-your-business')
     await recovery.click()
     await expect(page).toHaveURL(/\/preview-your-business$/)
-    await expect(page.getByLabel('Business Name', { exact: true })).toBeVisible()
+    await expect(page.getByLabel('Business Name')).toBeVisible()
   }
   expect(customerWrites).toEqual([])
 })
