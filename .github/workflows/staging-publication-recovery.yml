@@ -1,0 +1,105 @@
+name: Owned publication-lock fulfillment recovery rehearsal
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Prepare before card entry; clear after captured failure; inspect after recovery; retry only a stopped exact event'
+        required: true
+        type: choice
+        default: inspect
+        options: [prepare, inspect, clear, retry]
+      binding_json:
+        description: 'Strict JSON: releaseSha, certificationHash, stagingJournalHash, catalogHash, manifestHash, nonce (24 lowercase hex), intentId, sessionHash. No email or raw session ID.'
+        required: true
+        type: string
+      source_run_id:
+        description: 'Exact prior prepare/clear workflow run (not used for prepare)'
+        required: false
+        type: string
+      source_artifact_id:
+        description: 'Exact immutable control artifact ID (not used for prepare)'
+        required: false
+        type: string
+      source_journal_hash:
+        description: 'Reviewed canonical SHA-256 of the chosen recovery-journal.json or cleared-journal.json'
+        required: false
+        type: string
+      event_id:
+        description: 'Exact task-owned TEST checkout.session.completed event, independently observed after payment (not used for prepare)'
+        required: false
+        type: string
+      confirm:
+        description: 'PREPARE OWNED PUBLICATION FAULT, CLEAR OWNED PUBLICATION FAULT or RETRY OWNED RECOVERY EVENT; inspect needs no phrase'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+# Serialize against staged catalogue/deployment transitions as well as this control.
+concurrency:
+  group: dailyclarity-staging
+  cancel-in-progress: false
+
+jobs:
+  controlled-recovery:
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    environment: staging
+    timeout-minutes: 10
+    env:
+      OPERATION: ${{ inputs.operation }}
+      BINDING_JSON: ${{ inputs.binding_json }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SOURCE_ARTIFACT_ID: ${{ inputs.source_artifact_id }}
+      SOURCE_JOURNAL_HASH: ${{ inputs.source_journal_hash }}
+      EVENT_ID: ${{ inputs.event_id }}
+      CONFIRMATION: ${{ inputs.confirm }}
+      DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+      NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+      NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+      NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+      STAGING_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
+      STAGING_SUPABASE_URL: ${{ vars.STAGING_SUPABASE_URL }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Verify control guards with mocked providers only
+        run: node --test apps/generator-app/scripts/staging-publication-recovery.test.mjs
+      - name: Verify the exact saved journal producer before download
+        if: ${{ inputs.operation != 'prepare' }}
+        run: node apps/generator-app/scripts/staging-publication-recovery.mjs check-source
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+      - name: Download only the reviewed immutable control artifact
+        if: ${{ inputs.operation != 'prepare' }}
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.source_artifact_id }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/staging-publication-input
+          merge-multiple: true
+      - name: Perform only the explicitly selected owned-fixture operation
+        run: node apps/generator-app/scripts/staging-publication-recovery.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          STAGING_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}
+      - name: Retain sanitized control journals even after uncertain provider responses
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: staging-publication-journal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/staging-publication-output/*.json
+          if-no-files-found: warn
+          retention-days: 30
