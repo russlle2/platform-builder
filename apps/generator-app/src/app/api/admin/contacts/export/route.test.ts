@@ -171,6 +171,21 @@ describe('private owner contact CSV', () => {
     }
   })
 
+  it('preserves both known notice versions without treating draft preferences as verified consent', async () => {
+    tables.intake_contacts = [intake(1)]
+    tables.draft_profiles = [
+      draft(1, 'person-1@example.test', true),
+      draft(2, 'person-1@example.test', true, { noticeVersion: 'preview-followup-2026-10-24' }),
+    ]
+    const rows = await csvRows(await GET(request()))
+    expect(rows[0]).toMatchObject({
+      marketing_preference: 'opted_in_unverified',
+      marketing_preference_notice: 'preview-followup-2026-10-16;preview-followup-2026-10-24',
+      preference_draft_count: '2',
+    })
+    expect(Object.keys(rows[0])).not.toContain('campaign_eligible')
+  })
+
   it('never exports raw draft objects or unknown notice/timestamp content', async () => {
     tables.intake_contacts = [intake(1)]
     tables.draft_profiles = [draft(1, 'person-1@example.test', { private: 'SENSITIVE PREFERENCE VALUE' }, {

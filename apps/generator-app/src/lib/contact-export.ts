@@ -4,7 +4,7 @@ const PAGE_SIZE = 500
 const MAX_RECORDS = 10_000
 const MAX_REQUESTS = 128
 const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i
-const NOTICE_VERSION = 'preview-followup-2026-10-16'
+const NOTICE_VERSIONS = new Set(['preview-followup-2026-10-16', 'preview-followup-2026-10-24'])
 const DRAFT_COLUMNS = [
   'draft_id', 'email', 'updated_at',
   'marketing_opt_in:profile->communicationPreferences->marketingEmailOptIn',
@@ -125,8 +125,8 @@ function summarizePreferences(drafts: Row[]) {
   else if (choices.size === 1 && hasFalse) preference = 'opted_out_unverified'
   else if (hasTrue || hasFalse) preference = 'incomplete_unverified'
   else if ([...choices].some(value => value !== null && value !== undefined)) preference = 'invalid_unverified'
-  const notices = [...new Set(drafts.map(row => row.preference_notice === NOTICE_VERSION
-    ? NOTICE_VERSION : row.preference_notice == null ? 'not_recorded' : 'unrecognized'))].sort()
+  const notices = [...new Set(drafts.map(row => typeof row.preference_notice === 'string' && NOTICE_VERSIONS.has(row.preference_notice)
+    ? row.preference_notice : row.preference_notice == null ? 'not_recorded' : 'unrecognized'))].sort()
   return [
     preference,
     drafts.length ? 'browser_draft' : 'not_recorded',
