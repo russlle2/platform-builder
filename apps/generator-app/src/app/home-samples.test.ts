@@ -19,6 +19,12 @@ describe('homepage sample availability', () => {
       slug, ...meta, templateCount: 10, sampleAvailable: slug === 'private_practice_therapist',
     })))
     const html = renderToStaticMarkup(await HomePage())
+    const form = html.match(/<form[^>]*action="\/preview-your-business"[\s\S]*?<\/form>/)?.[0]
+    expect(form).toBeDefined()
+    expect(form).toContain('method="get"')
+    expect(form).toMatch(/<input[^>]*name="sample"[^>]*value="1"/)
+    expect(form).toMatch(/<select[^>]*name="niche"/)
+    expect(form).not.toMatch(/type="(?:email|tel)"/)
     expect(getNichesWithSampleAvailability).toHaveBeenCalledTimes(1)
     const picker = html.match(/<select[^>]*id="sample-practice"[\s\S]*?<\/select>/)?.[0]
     expect(picker).toContain('value="private_practice_therapist" selected=""')
