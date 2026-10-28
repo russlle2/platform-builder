@@ -370,6 +370,7 @@ async function preparePreview(page: Page) {
   await page
     .getByLabel('Business Name', { exact: false })
     .fill('Evening Aromatherapy')
+  await page.getByRole('button', { name: /Add contact details/ }).click()
   await page.getByRole('textbox', { name: /^Account email/ }).fill('private@example.com')
   await page.getByRole('textbox', { name: /^Public contact email/ }).fill('owner@example.com')
 }

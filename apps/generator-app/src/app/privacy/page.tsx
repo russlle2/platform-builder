@@ -28,7 +28,7 @@ export default function PrivacyPage() {
       <LegalSection title="2. Information we collect">
         <LegalList>
           <li>
-            <strong className="text-white">Information you provide:</strong> name, email address,
+            <strong className="dc-text-heading">Information you provide:</strong> name, email address,
             phone number, business details, website content, project instructions, uploaded
             files, support messages, and form submissions. When you continue through a personalized
             preview, we also save your business details, design preferences, template selection,
@@ -36,17 +36,17 @@ export default function PrivacyPage() {
             real-business lead records.
           </li>
           <li>
-            <strong className="text-white">Account and transaction information:</strong> account
+            <strong className="dc-text-heading">Account and transaction information:</strong> account
             identifiers, plan, purchase and subscription status, and payment-related references.
             Stripe processes card details; DailyClarity does not receive complete card numbers.
           </li>
           <li>
-            <strong className="text-white">Technical and usage information:</strong> IP address,
+            <strong className="dc-text-heading">Technical and usage information:</strong> IP address,
             browser and device information, timestamps, referring pages, application logs, and
             interactions needed to secure, operate, and improve the service.
           </li>
           <li>
-            <strong className="text-white">Cookies and similar technologies:</strong> essential
+            <strong className="dc-text-heading">Cookies and similar technologies:</strong> essential
             cookies support sign-in, security, and preferences. We may use analytics when
             configured to understand aggregate service usage.
           </li>
@@ -117,7 +117,7 @@ export default function PrivacyPage() {
         </p>
         <p>
           To make a privacy request, use our{' '}
-          <Link href="/contact" className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200">
+          <Link href="/contact" className="dc-text-accent underline underline-offset-4 hover:dc-text-accent">
             contact form
           </Link>{' '}
           and enter the email address associated with your information. We may need to verify

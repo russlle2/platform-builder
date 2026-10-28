@@ -112,6 +112,18 @@ describe('template checkout draft-image gate', () => {
     mocks.getTemplate.mockResolvedValue({ slug: 'serene' })
   })
 
+  it.each(['original', 'ocean-breeze'])('retains the requested %s palette in the durable fulfillment payload', async (colorScheme) => {
+    const { insertIntent } = checkoutLifecycle()
+    const customTheme = colorScheme === 'original'
+      ? null
+      : { primary: '#123456', background: '#ffffff', text: '#123456', headingFont: 'Georgia, serif', bodyFont: 'Georgia, serif' }
+    const response = await checkoutPost(requestWithImages([], { colorScheme, customTheme }))
+    expect(response.status).toBe(200)
+    expect(insertIntent).toHaveBeenCalledWith(expect.objectContaining({
+      payload: expect.objectContaining({ colorScheme, customTheme }),
+    }))
+  })
+
   it('pauses new paid sales before any Stripe or database action', async () => {
     vi.stubEnv('DAILYCLARITY_SALES_PAUSED', 'true')
     try {

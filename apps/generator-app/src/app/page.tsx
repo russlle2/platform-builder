@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import type { Metadata } from 'next'
 import { getNichesWithSampleAvailability } from '@/lib/templates/niche-registry'
+import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
+import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER, PLATFORM_DEMO_CAPTIONS, PLATFORM_DEMO_TRANSCRIPT, NICHE_DEMO_POSTER } from '@/lib/demo-videos'
 
 // The launch catalog lives in a site-wide Netlify Blobs store. Reading it at
 // request time prevents a credential-less CI build from permanently baking an
@@ -24,12 +27,12 @@ export const metadata: Metadata = {
 }
 
 const nicheAccentClasses: Record<string, { border: string; text: string; bg: string; glow: string }> = {
-  emerald: { border: 'border-emerald-400/30', text: 'text-emerald-300', bg: 'bg-emerald-500/10', glow: 'hover:shadow-emerald-500/20' },
-  violet: { border: 'border-violet-400/30', text: 'text-violet-300', bg: 'bg-violet-500/10', glow: 'hover:shadow-violet-500/20' },
-  cyan: { border: 'border-cyan-400/30', text: 'text-cyan-300', bg: 'bg-cyan-500/10', glow: 'hover:shadow-cyan-500/20' },
-  amber: { border: 'border-amber-400/30', text: 'text-amber-300', bg: 'bg-amber-500/10', glow: 'hover:shadow-amber-500/20' },
-  indigo: { border: 'border-indigo-400/30', text: 'text-indigo-300', bg: 'bg-indigo-500/10', glow: 'hover:shadow-indigo-500/20' },
-  rose: { border: 'border-rose-400/30', text: 'text-rose-300', bg: 'bg-rose-500/10', glow: 'hover:shadow-rose-500/20' },
+  emerald: { border: 'border-emerald-400/30', text: 'dc-text-success', bg: 'bg-emerald-500/10', glow: 'hover:shadow-emerald-500/20' },
+  violet: { border: 'border-violet-400/30', text: 'dc-text-violet', bg: 'bg-violet-500/10', glow: 'hover:shadow-violet-500/20' },
+  cyan: { border: 'border-cyan-400/30', text: 'dc-text-accent', bg: 'dc-bg-accent-soft', glow: 'hover:shadow-cyan-500/20' },
+  amber: { border: 'border-amber-400/30', text: 'dc-text-warm', bg: 'bg-amber-500/10', glow: 'hover:shadow-amber-500/20' },
+  indigo: { border: 'border-indigo-400/30', text: 'dc-text-violet', bg: 'bg-indigo-500/10', glow: 'hover:shadow-indigo-500/20' },
+  rose: { border: 'border-rose-400/30', text: 'dc-text-rose', bg: 'bg-rose-500/10', glow: 'hover:shadow-rose-500/20' },
 }
 
 export default async function HomePage() {
@@ -42,7 +45,7 @@ export default async function HomePage() {
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="dc-background-art pointer-events-none absolute inset-0 overflow-hidden">
         {/* Multi-industry gradient mesh */}
         <div className="absolute inset-0" style={{
           background: [
@@ -86,10 +89,10 @@ export default async function HomePage() {
           <div className="hero-grid">
             <div className="space-y-8">
               <span className="signal-chip">DailyClarity Platform Builder</span>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white">
-                Turn your wellness offer into a client-booking website.
+              <h1 className="dc-hero-title text-4xl sm:text-5xl xl:text-6xl font-semibold leading-tight dc-text-heading">
+                A welcoming website for the work you care about.
               </h1>
-              <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
+              <p className="text-lg md:text-2xl dc-text-body max-w-2xl">
                 Start with a design for your practice. See your words and images in place before
                 you pay, then launch with hosting and an editing portal for your business.
               </p>
@@ -99,32 +102,65 @@ export default async function HomePage() {
                 </Link>
                 <Link
                   href="/demo/platform-builder"
-                  className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
+                  className="dc-button-secondary px-8 py-4 text-lg"
                 >
                   Watch Demo
                 </Link>
               </div>
-              <div className="flex flex-wrap gap-6 text-sm text-slate-300">
+              <div className="flex flex-wrap gap-6 text-sm dc-text-body">
                 <span>No card needed to preview.</span>
-                <Link href="/pricing" className="underline underline-offset-4 hover:text-white">Hosted plans from $20/month</Link>
+                <Link href="/pricing" className="underline underline-offset-4 hover:dc-text-heading">Hosted plans from $20/month</Link>
               </div>
             </div>
+            <div id="customer-walkthrough" className="glass-panel overflow-hidden rounded-3xl border dc-border scroll-mt-28">
+              <div className="space-y-2 px-6 py-5">
+                <span className="signal-chip">Full walkthrough · 3:47</span>
+                <h2 className="text-2xl font-bold dc-text-heading">From first preview to your published website.</h2>
+                <p className="text-sm leading-relaxed dc-text-body">
+                  Follow an example business through setup, custom photos, publishing, enquiries, and its customer portal.
+                </p>
+              </div>
+              <DemoVideoPlayer
+                src={PLATFORM_DEMO_VIDEO}
+                title="DailyClarity complete customer walkthrough — 3 minutes 47 seconds"
+                poster={PLATFORM_DEMO_POSTER}
+                captionsSrc={PLATFORM_DEMO_CAPTIONS}
+                transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
+              />
+              <p className="px-6 py-4 text-xs dc-text-muted">Example business and test checkout. No real charge in this demonstration.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="container-hvac py-10 md:py-16" aria-labelledby="overview-heading">
+          <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
+            <div className="space-y-5">
+              <span className="signal-chip">See it come together</span>
+              <h2 id="overview-heading" className="text-3xl md:text-4xl font-bold dc-text-heading">Your practice. Your style. Your website.</h2>
+              <p className="text-lg leading-relaxed dc-text-body">
+                Explore a demo made for your type of practice, then try a sample website.
+                Add your own business details, services, and photos when you are ready.
+              </p>
+              <Link href="/demo" className="inline-flex min-h-11 items-center font-semibold dc-text-accent underline underline-offset-4 hover:dc-text-heading">
+                Explore all five practice demos →
+              </Link>
+            </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
-              <span className="text-xs uppercase tracking-[0.2em] text-cyan-300">Explore before you commit</span>
-              <h2 className="text-3xl font-bold text-white">See a website for a practice like yours.</h2>
-              <p className="text-slate-300">{sampleNiches.length > 0 ? 'Open an available sample with clearly labeled example details. No account or contact information needed.' : 'No sample is available right now. You can still start with your own business details.'}</p>
+              <span className="text-xs uppercase tracking-[0.2em] dc-text-accent">Explore before you commit</span>
+              <h2 className="text-3xl font-bold dc-text-heading">See a website for a practice like yours.</h2>
+              <p className="dc-text-body">{sampleNiches.length > 0 ? 'Open an available sample with clearly labeled example details. No account or contact information needed.' : 'No sample is available right now. You can still start with your own business details.'}</p>
               {sampleNiches.length > 0 ? (
                 <form action="/preview-your-business" method="get" className="space-y-4">
                   <input type="hidden" name="sample" value="1" />
-                  <label htmlFor="sample-practice" className="block text-sm font-semibold text-slate-200">Available sample practices</label>
-                  <select id="sample-practice" name="niche" defaultValue={defaultSampleNiche} className="w-full rounded-xl border border-white/20 bg-slate-900 px-4 py-3 text-white">
+                  <label htmlFor="sample-practice" className="block text-sm font-semibold dc-text-body">Available sample practices</label>
+                  <select id="sample-practice" name="niche" defaultValue={defaultSampleNiche} className="w-full rounded-xl dc-field px-4 py-3">
                     {sampleNiches.map((niche) => <option key={niche.slug} value={niche.slug}>{niche.label}</option>)}
                   </select>
                   <button type="submit" className="cta-button w-full">Try a sample website</button>
                 </form>
               ) : <Link href="/preview-your-business" className="cta-button block text-center">Start with my business details</Link>}
-              <p className="text-sm text-slate-400">Then use your own details when you are ready. Your existing preview stays separate.</p>
-              {hasTemplateCounts && <p className="border-t border-white/10 pt-4 text-xs text-slate-400">{totalTemplates.toLocaleString('en-US')} published templates across {niches.length} practice types.</p>}
+              <p className="text-sm dc-text-muted">Then use your own details when you are ready. Your existing preview stays separate.</p>
+              {hasTemplateCounts && <p className="border-t dc-border pt-4 text-xs dc-text-muted">{totalTemplates.toLocaleString('en-US')} published templates across {niches.length} practice types.</p>}
             </div>
           </div>
         </section>
@@ -133,7 +169,7 @@ export default async function HomePage() {
         <section className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Why this is different</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white max-w-4xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading max-w-4xl mx-auto">
               Built around the questions your next client will ask.
             </h2>
           </div>
@@ -178,8 +214,8 @@ export default async function HomePage() {
             ].map((item) => (
               <div key={item.title} className="card-mahogany space-y-4">
                 <span className="feature-icon">{item.icon}</span>
-                <h3 className="text-2xl font-bold text-bright-white">{item.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{item.copy}</p>
+                <h3 className="text-2xl font-bold dc-text-heading">{item.title}</h3>
+                <p className="dc-text-body leading-relaxed">{item.copy}</p>
               </div>
             ))}
           </div>
@@ -189,12 +225,12 @@ export default async function HomePage() {
         <section id="niches" className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Built for real wellness businesses</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
+            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">
               Templates shaped around how your clients decide
             </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-              Pick your practice to see conversion-focused templates designed for the way your
-              clients research, build trust, and book.
+            <p className="text-lg dc-text-body max-w-2xl mx-auto">
+              See a real example from each practice walkthrough, then explore the designs
+              and details that can help your visitors take the next step.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -204,22 +240,27 @@ export default async function HomePage() {
                 <Link
                   key={niche.slug}
                   href={`/${niche.slug}`}
-                  className={`card-mahogany space-y-4 hover:scale-[1.03] transition-all duration-300 group ${accent.glow} hover:shadow-2xl`}
+                  className="card-mahogany space-y-4 transition-all duration-300 group"
                 >
-                  <div className="flex items-center justify-between">
-                    <span className="text-4xl">{niche.icon}</span>
+                  {NICHE_DEMO_POSTER[niche.slug] && (
+                    <div className="dc-practice-poster">
+                      <Image src={NICHE_DEMO_POSTER[niche.slug]} alt="" fill sizes="(min-width: 1024px) 380px, (min-width: 768px) 45vw, 90vw" />
+                    </div>
+                  )}
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-xs dc-text-muted">From the practice walkthrough</span>
                     <span className={`text-xs font-bold px-3 py-1 rounded-full ${accent.bg} ${accent.text} border ${accent.border}`}>
                       {niche.templateCount > 0 ? `${niche.templateCount.toLocaleString('en-US')} templates` : 'Explore this practice'}
                     </span>
                   </div>
-                  <h3 className="text-2xl font-bold text-bright-white group-hover:scale-[1.01] transition-transform">
+                  <h3 className="text-2xl font-bold dc-text-heading group-hover:scale-[1.01] transition-transform">
                     {niche.label}
                   </h3>
-                  <p className="text-gray-300 leading-relaxed text-sm">
+                  <p className="dc-text-body leading-relaxed text-sm">
                     {niche.description}
                   </p>
                   <span className={`inline-flex items-center gap-1 text-sm font-semibold ${accent.text} group-hover:gap-2 transition-all`}>
-                    View example styles →
+                    Explore this practice →
                   </span>
                 </Link>
               )
@@ -231,7 +272,7 @@ export default async function HomePage() {
         <section className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Your path to launch</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
+            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">
               From details to a live site, one step at a time
             </h2>
           </div>
@@ -244,11 +285,11 @@ export default async function HomePage() {
               { step: '05', title: 'Manage in portal', copy: 'Manage future edits through your customer portal.' },
             ].map((item) => (
               <div key={item.step} className="glass-panel rounded-2xl p-6 space-y-3">
-                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-cyan-500/15 text-cyan-200 font-bold border border-cyan-400/30">
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full dc-bg-accent-soft dc-text-accent font-bold border border-cyan-400/30">
                   {item.step}
                 </span>
-                <h3 className="text-xl font-bold text-white">{item.title}</h3>
-                <p className="text-slate-200 text-sm leading-relaxed">{item.copy}</p>
+                <h3 className="text-xl font-bold dc-text-heading">{item.title}</h3>
+                <p className="dc-text-body text-sm leading-relaxed">{item.copy}</p>
               </div>
             ))}
           </div>
@@ -258,10 +299,10 @@ export default async function HomePage() {
         <section className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Early access</span>
-            <h2 className="text-4xl md:text-5xl font-bold text-white">
+            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">
               Take a closer look before you decide.
             </h2>
-            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+            <p className="text-lg dc-text-body max-w-2xl mx-auto">
               DailyClarity is in early access. Explore the working product, review the launch
               checklist, and check the plan details before making a commitment.
             </p>
@@ -273,9 +314,9 @@ export default async function HomePage() {
               { title: 'Know what you are buying', copy: 'Compare hosting, editing, optional managed services, and current billing terms.', href: '/pricing', action: 'Compare the plans' },
             ].map((item) => (
               <div key={item.title} className="card-mahogany space-y-3">
-                <h3 className="text-xl font-bold text-bright-white">{item.title}</h3>
-                <p className="text-gray-300 text-sm leading-relaxed">{item.copy}</p>
-                <Link href={item.href} className="inline-block text-sm font-semibold text-cyan-300 underline underline-offset-4 hover:text-white">{item.action} →</Link>
+                <h3 className="text-xl font-bold dc-text-heading">{item.title}</h3>
+                <p className="dc-text-body text-sm leading-relaxed">{item.copy}</p>
+                <Link href={item.href} className="inline-block text-sm font-semibold dc-text-accent underline underline-offset-4 hover:dc-text-heading">{item.action} →</Link>
               </div>
             ))}
           </div>
@@ -284,10 +325,10 @@ export default async function HomePage() {
         {/* CTA */}
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading mb-6">
               Your website should do more than look good.
             </h2>
-            <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg dc-text-body mb-8 max-w-2xl mx-auto">
               It should explain your offer, build trust, and move people toward the next step.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -296,7 +337,7 @@ export default async function HomePage() {
               </Link>
               <Link
                 href="/demo/platform-builder"
-                className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
+                className="px-8 py-4 text-lg font-bold dc-text-heading border dc-border rounded-lg hover:dc-surface-soft transition-all"
               >
                 Watch Demo
               </Link>

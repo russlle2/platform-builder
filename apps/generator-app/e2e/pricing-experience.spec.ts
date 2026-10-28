@@ -181,11 +181,63 @@ for (const [name, storedInfo] of [
   })
 }
 
-test('homepage sample choice carries the chosen practice without asking for contact details', async ({ page }) => {
+test('homepage offers available samples or an honest personal-preview recovery', async ({ page }) => {
+  const customerWrites: string[] = []
+  const customerWritePaths = new Set([
+    '/api/intake/contact',
+    '/api/profile/save-draft',
+    '/api/leads',
+    '/api/stripe/checkout',
+  ])
+  await page.route('**/api/**', route => {
+    const request = route.request()
+    const pathname = new URL(request.url()).pathname
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method()) && customerWritePaths.has(pathname)) {
+      customerWrites.push(pathname)
+      return route.fulfill({
+        status: 409,
+        json: { error: 'Homepage navigation must not create a customer record or checkout.' },
+      })
+    }
+    return route.continue()
+  })
   await page.goto('/')
-  await page.getByLabel('Your type of practice').selectOption('sound_bath')
-  await page.getByRole('button', { name: 'Try a sample website', exact: true }).click()
-  await expect(page).toHaveURL(/\/preview-your-business\?sample=1&niche=sound_bath/)
+
+  const picker = page.getByRole('combobox', { name: 'Available sample practices', exact: true })
+  const unavailable = page.getByText(
+    'No sample is available right now. You can still start with your own business details.',
+    { exact: true },
+  )
+  await expect.poll(async () => (await picker.count()) + (await unavailable.count())).toBe(1)
+
+  if (await picker.count()) {
+    await expect(picker).toBeVisible()
+    const choices = await picker.locator('option').evaluateAll(options =>
+      options.map(option => (option as HTMLOptionElement).value),
+    )
+    expect(choices.length).toBeGreaterThan(0)
+    expect(choices.every(value =>
+      ['private_practice_therapist', 'wellness_coach'].includes(value),
+    )).toBe(true)
+    // Exercise a change from the default when another eligible practice exists.
+    const current = await picker.inputValue()
+    const chosen = choices.find(value => value !== current) || choices[0]
+    await picker.selectOption(chosen)
+    await page.getByRole('button', { name: 'Try a sample website', exact: true }).click()
+    await expect(page).toHaveURL(
+      new RegExp(`/preview-your-business\\?sample=1&niche=${chosen}$`),
+    )
+  } else {
+    await expect(unavailable).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Try a sample website', exact: true })).toHaveCount(0)
+    await expect(page.locator('a[href*="sample=1"]')).toHaveCount(0)
+    const recovery = page.getByRole('link', { name: 'Start with my business details', exact: true })
+    await expect(recovery).toHaveAttribute('href', '/preview-your-business')
+    await recovery.click()
+    await expect(page).toHaveURL(/\/preview-your-business$/)
+    await expect(page.getByLabel('Business Name')).toBeVisible()
+  }
+  expect(customerWrites).toEqual([])
 })
 
 async function preparePaymentDraft(page: Page) {

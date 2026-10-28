@@ -107,10 +107,10 @@ export default function WellnessWebsiteChecklistPage() {
       <section className="container-hvac py-12 max-w-4xl mx-auto space-y-12">
         <div className="space-y-6">
           <span className="signal-chip">Free checklist</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold dc-text-heading leading-tight">
             Wellness website checklist: what to include before you launch
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl">
+          <p className="text-lg dc-text-body max-w-2xl">
             Use this list to audit a therapy, coaching, or healing practice site — whether you build with
             DailyClarity or another tool. The goal is the same: help visitors trust you and take the next step.
           </p>
@@ -121,17 +121,17 @@ export default function WellnessWebsiteChecklistPage() {
           {CHECKLIST_SECTIONS.map((section, index) => (
             <div key={section.title} className="glass-panel rounded-2xl p-8 space-y-4">
               <div className="flex items-start gap-4">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-500/20 text-violet-200 font-bold">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-500/20 dc-text-violet font-bold">
                   {index + 1}
                 </span>
                 <div>
-                  <h2 className="text-2xl font-bold text-white">{section.title}</h2>
-                  <p className="text-slate-400 mt-1">{section.intro}</p>
+                  <h2 className="text-2xl font-bold dc-text-heading">{section.title}</h2>
+                  <p className="dc-text-muted mt-1">{section.intro}</p>
                 </div>
               </div>
               <ul className="space-y-2 pl-14">
                 {section.items.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-slate-300">
+                  <li key={item} className="flex items-start gap-2 dc-text-body">
                     <span className="text-violet-400 mt-0.5 shrink-0">□</span>
                     {item}
                   </li>
@@ -142,8 +142,8 @@ export default function WellnessWebsiteChecklistPage() {
         </div>
 
         <div className="glass-panel rounded-2xl p-8 space-y-4 border border-cyan-400/20">
-          <h2 className="text-2xl font-bold text-white">Check your content in the preview wizard</h2>
-          <p className="text-slate-300 leading-relaxed">
+          <h2 className="text-2xl font-bold dc-text-heading">Check your content in the preview wizard</h2>
+          <p className="dc-text-body leading-relaxed">
             The “Your website details” panel in DailyClarity’s preview shows which practice details,
             contact information, service area, and design choices you’ve supplied. It helps you fill
             gaps in your introduction; it does not verify credentials, test booking, or predict enquiries.
@@ -151,14 +151,14 @@ export default function WellnessWebsiteChecklistPage() {
             and online visits to sound bath preparation and access needs. Use these questions and the checklist
             above to review your finished site before publishing.
           </p>
-          <Link href="/preview-your-business" className="text-cyan-300 font-semibold hover:underline">
+          <Link href="/preview-your-business" className="dc-text-accent font-semibold hover:underline">
             Build My Preview →
           </Link>
         </div>
 
         <div className="glass-panel rounded-3xl p-10 text-center space-y-6">
-          <h2 className="text-3xl font-bold text-white">Ready to build with structure included?</h2>
-          <p className="text-slate-300 max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold dc-text-heading">Ready to build with structure included?</h2>
+          <p className="dc-text-body max-w-xl mx-auto">
             Start a guided preview or watch how the platform assembles a wellness-ready site.
           </p>
           <SeoCtaGroup demoHref="/demo/platform-builder" demoLabel="Watch Demo" accent="violet" centered />
