@@ -34,6 +34,14 @@ Download the small `catalogue-preparation-provenance-RUN_ID-ATTEMPT` artifact an
 
 Next run the unchanged importer with `operation=check-transport`, the reported release ID and canary ID; require its own protected-token readback success. Then follow section 3 with `operation=import` and the reported manifest/certificate identities. Sections 4 onward, including fresh connected checks for the changed application and all production gates, still apply. The local Windows transfer instructions below remain the route for newly compiled output or unavailable retained artifacts.
 
+## Explicit V2 retention for the reviewed Next security patch
+
+The default `closure_version=1` retains the original strict dependency closure. It continues to reject changed manifests or lockfiles. For the reviewed Next 15.5.27 → 15.5.28 transition only, select `closure_version=2` explicitly in the same protected preparation workflow. This is a separately versioned retained-evidence migration, not new compiler/browser execution.
+
+V2 pins the original source commit and the exact old/new Git blobs for both application manifests and the lockfile. All other V1 factory, composer, data, configuration, resolution-union and certification-core checks remain in force. Unknown package changes, later Next versions and altered lock entries fail. The protected runner creates clean original/current worktrees, installs both frozen dependency sets with pnpm 11.19.0, compares all non-Next physical package bytes and resolution topology, and exercises the actual default composition loader. Probe/install children receive no provider secrets. The generated `catalogue-dependency-proof-v2.json` binds the workflow/run/attempt, exact source/final commit, verifier hashes and actual runner fingerprints. Current checkout dependencies are rechecked before and after preparation/upload.
+
+Original successful import, immutable artifact identities, original certificate and every library/browser-receipt byte remain the trust anchor. V2 does not recreate historical Windows runtime evidence or substitute the recovered Git-LF source. Full current customization, exact-main CI, actual connected staging/payment/delivery/recovery, protected approvals and production gates still apply. Provenance truthfully records `compilerExecuted:false`, `browserChecksRepeated:false`, and `customizationChecksRepeated:true`. A dependency proof or local sample is not publication approval. Restore the active demo-maintenance baseline before merging its changed dependency closure, as required by `DEMO_MAINTENANCE_RELEASE.md`.
+
 ## 1. Prove normal GitHub draft access first
 
 The standard GitHub Actions artifact REST API has no ordinary local-upload operation. Use supported `gh release create --draft` / `gh release upload` from the existing user login, then the protected importer uses its own short-lived `GITHUB_TOKEN`. Do not copy Actions runtime tokens or protected admin/provider credentials onto the laptop.

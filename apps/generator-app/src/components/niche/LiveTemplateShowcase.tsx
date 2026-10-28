@@ -69,7 +69,7 @@ export function LiveTemplateShowcase({
   nicheLabel,
   templates,
   totalCount,
-  headingClass = 'text-cyan-200',
+  headingClass = 'dc-text-accent',
 }: Props) {
   const [selected, setSelected] = useState<ShowcaseTemplate | null>(null)
   const [previewState, setPreviewState] = useState<'loading' | 'ready' | 'error'>('loading')
@@ -130,10 +130,10 @@ export function LiveTemplateShowcase({
     <section id="template-styles" className="container-hvac py-12 scroll-mt-24">
       <div className="text-center mb-10 space-y-3 max-w-3xl mx-auto">
         <span className="signal-chip">Explore the actual designs</span>
-        <h2 className="text-3xl md:text-4xl font-bold text-white">
+        <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">
           Find the right look for your {nicheLabel.toLowerCase()} practice
         </h2>
-        <p className="text-slate-300 text-lg">
+        <p className="dc-text-body text-lg">
           {templates.length > 0
             ? 'Open a homepage preview, check its mobile layout, then make it yours. No email or payment needed to look around.'
             : 'You can explore designs with your own business details or get help choosing a style.'}
@@ -141,12 +141,12 @@ export function LiveTemplateShowcase({
       </div>
 
       {templates.length === 0 ? (
-        <div className="max-w-2xl mx-auto rounded-2xl border border-white/10 bg-slate-900/50 p-8 text-center space-y-4">
-          <p className="text-slate-200">No sample is available for this practice yet.</p>
-          <p className="text-sm text-slate-400">Start with your own details to explore available designs, or contact us for help choosing.</p>
+        <div className="max-w-2xl mx-auto rounded-2xl border dc-border dc-surface p-8 text-center space-y-4">
+          <p className="dc-text-body">No sample is available for this practice yet.</p>
+          <p className="text-sm dc-text-muted">Start with your own details to explore available designs, or contact us for help choosing.</p>
           <div className="flex flex-wrap justify-center gap-5">
-            <Link href={browseHref} className="text-cyan-200 underline underline-offset-4">Start your business details</Link>
-            <Link href="/contact" className="text-slate-200 underline underline-offset-4">Get help choosing</Link>
+            <Link href={browseHref} className="dc-text-accent underline underline-offset-4">Start your business details</Link>
+            <Link href="/contact" className="dc-text-body underline underline-offset-4">Get help choosing</Link>
           </div>
         </div>
       ) : (
@@ -155,17 +155,17 @@ export function LiveTemplateShowcase({
             {templates.map((template) => (
               <article
                 key={template.slug}
-                className="flex min-w-0 flex-col rounded-2xl border border-white/10 bg-slate-900/50 shadow-lg shadow-black/20"
+                className="flex min-w-0 flex-col rounded-2xl border dc-border dc-surface shadow-lg shadow-black/20"
               >
                 <div className="p-5 flex-1 flex flex-col items-start gap-3 min-w-0">
-                  <span className={`max-w-full text-xs font-semibold px-3 py-1 rounded-full border border-white/15 bg-white/5 break-words ${headingClass}`}>
+                  <span className={`max-w-full text-xs font-semibold px-3 py-1 rounded-full border dc-border dc-surface-soft break-words ${headingClass}`}>
                     {layoutLabel(template.layoutFamily)}
                   </span>
-                  <h3 className="text-lg font-semibold text-white leading-snug break-words">
+                  <h3 className="text-lg font-semibold dc-text-heading leading-snug break-words">
                     {shortName(template.name)}
                   </h3>
                   {template.snippet && (
-                    <p className="text-sm text-slate-400 leading-relaxed line-clamp-2 break-words">
+                    <p className="text-sm dc-text-muted leading-relaxed line-clamp-2 break-words">
                       {snippetPreview(template.snippet)}
                     </p>
                   )}
@@ -180,7 +180,7 @@ export function LiveTemplateShowcase({
                       setPreviewHtml(null)
                       setSelected(template)
                     }}
-                    className="w-full rounded-xl border border-cyan-300/30 bg-cyan-400/10 px-4 py-3 text-sm font-semibold text-cyan-100 hover:bg-cyan-400/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
+                    className="w-full rounded-xl border border-cyan-300/30 dc-bg-accent-soft px-4 py-3 text-sm font-semibold dc-text-accent hover:dc-bg-accent-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-700"
                   >
                     Open homepage preview →
                   </button>
@@ -189,11 +189,11 @@ export function LiveTemplateShowcase({
             ))}
           </div>
           <div className="mt-8 text-center">
-            <Link href={browseHref} className={`inline-flex items-center gap-2 font-semibold ${headingClass} hover:text-white underline underline-offset-4`}>
+            <Link href={browseHref} className={`inline-flex items-center gap-2 font-semibold ${headingClass} hover:dc-text-heading underline underline-offset-4`}>
               Find a style with my business details →
             </Link>
             {totalCount > templates.length && (
-              <p className="mt-2 text-sm text-slate-400">
+              <p className="mt-2 text-sm dc-text-muted">
                 A few starting points from {totalCount.toLocaleString()} available designs.
               </p>
             )}
@@ -207,7 +207,7 @@ export function LiveTemplateShowcase({
         aria-describedby="style-preview-description"
         onCancel={() => setSelected(null)}
         onClose={() => setSelected(null)}
-        className="w-[calc(100%-1.5rem)] max-w-6xl max-h-[calc(100dvh-1.5rem)] m-auto rounded-2xl border border-slate-700 bg-slate-950 p-0 text-white shadow-2xl backdrop:bg-black/80"
+        className="dc-dark-dialog w-[calc(100%-1.5rem)] max-w-6xl max-h-[calc(100dvh-1.5rem)] m-auto rounded-2xl border border-slate-700 bg-slate-950 p-0 text-white shadow-2xl backdrop:bg-black/80"
       >
         <div className="sticky top-0 z-10 border-b border-slate-700 bg-slate-950 px-4 py-4 sm:px-6">
           <div className="flex items-start justify-between gap-4">

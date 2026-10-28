@@ -39,10 +39,10 @@ export default function WebsiteBuilderForTherapistsPage() {
       <section className="container-hvac py-12 max-w-4xl mx-auto space-y-12">
         <div className="space-y-6">
           <span className="signal-chip">Private practice therapists</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold dc-text-heading leading-tight">
             Website builder for therapists who need trust before the first call
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl">
+          <p className="text-lg dc-text-body max-w-2xl">
             Generic website builders give you pages. DailyClarity gives you a guided launch for private practice
             therapy — with templates shaped around how clients actually choose a therapist online.
           </p>
@@ -56,15 +56,15 @@ export default function WebsiteBuilderForTherapistsPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {DIFFERENTIATORS.map((item) => (
             <div key={item.title} className="card-mahogany space-y-3">
-              <h2 className="text-xl font-bold text-white">{item.title}</h2>
-              <p className="text-slate-300 text-sm leading-relaxed">{item.body}</p>
+              <h2 className="text-xl font-bold dc-text-heading">{item.title}</h2>
+              <p className="dc-text-body text-sm leading-relaxed">{item.body}</p>
             </div>
           ))}
         </div>
 
         <div className="glass-panel rounded-2xl p-8 space-y-4">
-          <h2 className="text-2xl font-bold text-white">What your therapy site should cover</h2>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300">
+          <h2 className="text-2xl font-bold dc-text-heading">What your therapy site should cover</h2>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 dc-text-body">
             {[
               'Specialties and who you help',
               'Approach and therapeutic style',
@@ -74,18 +74,18 @@ export default function WebsiteBuilderForTherapistsPage() {
               'Local and mobile-friendly contact',
             ].map((item) => (
               <li key={item} className="flex items-start gap-2">
-                <span className="text-amber-400 mt-1">✓</span>
+                <span className="dc-text-warm mt-1">✓</span>
                 {item}
               </li>
             ))}
           </ul>
-          <p className="text-slate-400 text-sm">
+          <p className="dc-text-muted text-sm">
             Explore{' '}
-            <Link href="/private_practice_therapist" className="text-amber-300 hover:underline">
+            <Link href="/private_practice_therapist" className="dc-text-warm hover:underline">
               therapist landing page
             </Link>{' '}
             or{' '}
-            <Link href="/preview-your-business?niche=private_practice_therapist" className="text-amber-300 hover:underline">
+            <Link href="/preview-your-business?niche=private_practice_therapist" className="dc-text-warm hover:underline">
               start your preview
             </Link>
             .
@@ -93,8 +93,8 @@ export default function WebsiteBuilderForTherapistsPage() {
         </div>
 
         <div className="glass-panel rounded-3xl p-10 text-center space-y-6">
-          <h2 className="text-3xl font-bold text-white">Preview your practice site in minutes</h2>
-          <p className="text-slate-300 max-w-xl mx-auto">
+          <h2 className="text-3xl font-bold dc-text-heading">Preview your practice site in minutes</h2>
+          <p className="dc-text-body max-w-xl mx-auto">
             Add your practice details, match a template, and see a live preview before you purchase.
           </p>
           <SeoCtaGroup

@@ -262,35 +262,35 @@ export default function PricingClient() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
             <div className="space-y-6">
               <span className="signal-chip">Pricing</span>
-              <h1 className="text-5xl md:text-6xl font-bold text-bright-white">
+              <h1 className="text-4xl md:text-5xl font-semibold dc-text-heading">
                 See the product first. Then choose the plan that fits.
               </h1>
-              <p className="text-xl text-slate-200 max-w-xl">
+              <p className="text-xl dc-text-body max-w-xl">
                 Explore the platform, build an editable preview with your own details, and compare
                 the published scope of each plan before checkout.
                 {trialDays !== null && trialDays > 0 && (
-                  <span className="block mt-2 text-cyan-200">
+                  <span className="block mt-2 dc-text-accent">
                     {trialDays}-day free trial — card required, cancel anytime before billing starts.
                   </span>
                 )}
               </p>
-              <div className="flex flex-wrap gap-6 text-sm text-slate-300">
+              <div className="flex flex-wrap gap-6 text-sm dc-text-body">
                 <span>Preview before payment</span>
                 <span>{bookingKitFunnel ? 'Website scope shown before checkout' : 'Plan scope shown side by side'}</span>
                 <span>Secure Stripe checkout</span>
               </div>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
-              <h2 className="text-2xl font-bold text-white">What you can check before checkout</h2>
-              <ul className="space-y-3 text-slate-200">
+              <h2 className="text-2xl font-bold dc-text-heading">What you can check before checkout</h2>
+              <ul className="space-y-3 dc-text-body">
                 <li>A video walkthrough and a sample website you can explore</li>
                 <li>A template preview populated with your business details</li>
                 <li>{bookingKitFunnel ? 'Included website features and the separate custom-build option' : 'Included features and managed services compared side by side'}</li>
                 <li>Current prices, plan scope, and where to review trial terms</li>
               </ul>
-              <div className="flex items-center justify-between text-sm text-slate-300">
+              <div className="flex items-center justify-between text-sm dc-text-body">
                 <span>No sales call required</span>
-                <span className="text-cyan-200">Start with a preview</span>
+                <span className="dc-text-accent">Start with a preview</span>
               </div>
             </div>
           </div>
@@ -299,19 +299,19 @@ export default function PricingClient() {
         <section className="container-hvac pb-12">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Built for</p>
-              <p className="text-3xl font-bold text-white">Wellness</p>
-              <p className="text-sm text-slate-300">Therapy, coaching, sound, scent &amp; integrative care</p>
+              <p className="text-xs uppercase tracking-[0.3em] dc-text-muted">Built for</p>
+              <p className="text-3xl font-bold dc-text-heading">Wellness</p>
+              <p className="text-sm dc-text-body">Therapy, coaching, sound, scent &amp; integrative care</p>
             </div>
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Try first</p>
-              <p className="text-3xl font-bold text-white">Your preview</p>
-              <p className="text-sm text-slate-300">Review your content and template before choosing</p>
+              <p className="text-xs uppercase tracking-[0.3em] dc-text-muted">Try first</p>
+              <p className="text-3xl font-bold dc-text-heading">Your preview</p>
+              <p className="text-sm dc-text-body">Review your content and template before choosing</p>
             </div>
             <div className="stat-card">
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Compare clearly</p>
-              <p className="text-3xl font-bold text-white">Published scope</p>
-              <p className="text-sm text-slate-300">Current prices, inclusions, and billing terms</p>
+              <p className="text-xs uppercase tracking-[0.3em] dc-text-muted">Compare clearly</p>
+              <p className="text-3xl font-bold dc-text-heading">Published scope</p>
+              <p className="text-sm dc-text-body">Current prices, inclusions, and billing terms</p>
             </div>
           </div>
         </section>
@@ -334,12 +334,12 @@ export default function PricingClient() {
             ))}
           </div>
           {checkoutError && (
-            <div className="text-center text-red-200 mt-6" role="alert">
+            <div className="text-center dc-text-error mt-6" role="alert">
               <p>{checkoutError}</p>
               {checkoutRecoveryUrl && (
                 <Link
                   href={checkoutRecoveryUrl}
-                  className="inline-block mt-3 font-semibold text-cyan-200 underline hover:text-cyan-100"
+                  className="inline-block mt-3 font-semibold dc-text-accent underline hover:dc-text-accent"
                 >
                   {checkoutRecoveryLabel}
                 </Link>
@@ -347,44 +347,44 @@ export default function PricingClient() {
               {checkoutUncertain && (
                 <div className="mt-3 space-y-3">
                   {checkoutReference && <p className="break-all text-sm">Reference: {checkoutReference}</p>}
-                  <p><Link href="/contact" className="font-semibold text-cyan-200 underline">Contact support about this attempt</Link></p>
-                  <p><Link href="/dashboard" className="text-cyan-200 underline">Check your account</Link></p>
+                  <p><Link href="/contact" className="font-semibold dc-text-accent underline">Contact support about this attempt</Link></p>
+                  <p><Link href="/dashboard" className="dc-text-accent underline">Check your account</Link></p>
                 </div>
               )}
             </div>
           )}
-          <p className="text-center text-slate-300 mt-6 text-sm">
+          <p className="text-center dc-text-body mt-6 text-sm">
             Monthly plans renew until canceled. Cancel through your billing portal or contact support.{' '}
-            <Link href="/refund-policy" className="text-cyan-300 underline underline-offset-4">Cancellation and refund details</Link>
+            <Link href="/refund-policy" className="dc-text-accent underline underline-offset-4">Cancellation and refund details</Link>
           </p>
-          <p className="text-center text-slate-400 text-sm mt-6">
+          <p className="text-center dc-text-muted text-sm mt-6">
             Need help choosing?{' '}
-            <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">
+            <Link href="/contact" className="dc-text-accent hover:dc-text-accent underline">
               Contact us before checkout
             </Link>
           </p>
         </section>
 
         <section id="custom-build" className="container-hvac pb-16">
-          <div className="rounded-3xl border border-amber-300/35 bg-gradient-to-br from-amber-500/15 via-slate-900/80 to-cyan-500/10 p-8 md:p-10">
+          <div className="rounded-3xl border dc-border dc-pricing-highlight p-8 md:p-10">
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-8 items-center">
               <div>
-                <span className="inline-flex px-3 py-1 rounded-full bg-amber-400/15 border border-amber-300/30 text-amber-200 text-xs font-bold uppercase tracking-[0.2em]">
+                <span className="inline-flex px-3 py-1 rounded-full bg-amber-400/15 border border-amber-300/30 dc-text-warm text-xs font-bold uppercase tracking-[0.2em]">
                   One-time custom build
                 </span>
-                <h2 className="text-3xl md:text-4xl font-bold text-white mt-5">
+                <h2 className="text-3xl md:text-4xl font-bold dc-text-heading mt-5">
                   Want a website designed around your exact instructions?
                 </h2>
-                <p className="text-slate-200 mt-4 max-w-3xl leading-relaxed">
+                <p className="dc-text-body mt-4 max-w-3xl leading-relaxed">
                   Send a detailed brief with no payment. We agree the scope, inclusions and timing
                   before you choose whether to continue to the $500 checkout.
                 </p>
-                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-sm text-slate-300">
+                <div className="flex flex-wrap gap-x-6 gap-y-2 mt-5 text-sm dc-text-body">
                   <span>Detailed design brief</span>
                   <span>Custom functionality request</span>
                   <span>No monthly plan required</span>
                 </div>
-                <p className="mt-4 text-sm leading-relaxed text-slate-300">
+                <p className="mt-4 text-sm leading-relaxed dc-text-body">
                   The payment covers the accepted website scope. Domains, paid plugins,
                   third-party subscriptions, and expanded application work are separate.
                   Include specific functionality, hosting and revision needs in your scope review.
@@ -392,10 +392,10 @@ export default function PricingClient() {
               </div>
               <div className="lg:text-right min-w-[230px]">
                 <div className="flex lg:justify-end items-baseline gap-2">
-                  <span className="text-5xl font-bold text-white">$500</span>
-                  <span className="text-slate-300">one time</span>
+                  <span className="text-5xl font-bold dc-text-heading">$500</span>
+                  <span className="dc-text-body">one time</span>
                 </div>
-                <p className="text-sm text-amber-200 mt-2 mb-5">Charged immediately only when you choose checkout</p>
+                <p className="text-sm dc-text-warm mt-2 mb-5">Charged immediately only when you choose checkout</p>
                 <Link href="/custom-build" className="cta-button inline-flex justify-center">
                   Request a scope review
                 </Link>
@@ -406,22 +406,22 @@ export default function PricingClient() {
 
         {!bookingKitFunnel && <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-6 sm:p-10">
-            <h2 className="text-3xl font-bold text-white mb-2">Compare plans</h2>
-            <p className="text-slate-300 mb-8 max-w-2xl">
+            <h2 className="text-3xl font-bold dc-text-heading mb-2">Compare plans</h2>
+            <p className="dc-text-body mb-8 max-w-2xl">
               Both plans include the website tools shown below. The
-              <strong className="text-white"> Security + Ads</strong> plan adds one done-for-you
+              <strong className="dc-text-heading"> Security + Ads</strong> plan adds one done-for-you
               service bundle managed by our team. SSL and managed hosting are included in both plans.
             </p>
-            <div className="grid grid-cols-[1.6fr_repeat(2,1fr)] gap-x-6 gap-y-3 text-sm text-slate-200">
-              <p className="text-slate-400 uppercase tracking-[0.3em] text-xs">Feature</p>
-              <p className="text-cyan-200 uppercase tracking-[0.3em] text-xs">Basic · $20</p>
-              <p className="text-amber-200 uppercase tracking-[0.3em] text-xs">Security + Ads · $80</p>
+            <div className="grid grid-cols-[1.6fr_repeat(2,1fr)] gap-x-6 gap-y-3 text-sm dc-text-body">
+              <p className="dc-text-muted uppercase tracking-[0.3em] text-xs">Feature</p>
+              <p className="dc-text-accent uppercase tracking-[0.3em] text-xs">Basic · $20</p>
+              <p className="dc-text-warm uppercase tracking-[0.3em] text-xs">Security + Ads · $80</p>
 
               {AUTOMATED_FEATURES.map((feature) => (
                 <FragmentRow key={feature} label={feature} basic="Included" premium="Included" />
               ))}
 
-              <p className="col-span-3 pt-3 text-slate-400 uppercase tracking-[0.3em] text-xs">
+              <p className="col-span-3 pt-3 dc-text-muted uppercase tracking-[0.3em] text-xs">
                 Done for you (managed by our team)
               </p>
               {MANAGED_FEATURES.map((feature) => (
@@ -434,13 +434,13 @@ export default function PricingClient() {
         <section className="container-hvac pb-20">
           <div className="glass-panel rounded-3xl p-10">
             <div className="max-w-3xl">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-cyan-200">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] dc-text-accent">
                 Explore the product
               </p>
-              <h2 className="mt-3 text-3xl font-bold text-white">
+              <h2 className="mt-3 text-3xl font-bold dc-text-heading">
                 What we can substantiate today
               </h2>
-              <p className="mt-4 leading-relaxed text-slate-300">
+              <p className="mt-4 leading-relaxed dc-text-body">
                 DailyClarity is in early access. We are keeping customer outcome claims off this
                 page until they are permissioned, measured, and useful enough to evaluate fairly.
                 In the meantime, you can inspect the product directly.
@@ -462,8 +462,8 @@ export default function PricingClient() {
                 },
               ].map((item) => (
                 <div key={item.title} className="card-mahogany mt-6 space-y-3">
-                  <h3 className="text-xl font-semibold text-white">{item.title}</h3>
-                  <p className="leading-relaxed text-slate-300">{item.copy}</p>
+                  <h3 className="text-xl font-semibold dc-text-heading">{item.title}</h3>
+                  <p className="leading-relaxed dc-text-body">{item.copy}</p>
                 </div>
               ))}
             </div>
@@ -473,7 +473,7 @@ export default function PricingClient() {
         {/* FAQ Section */}
         <section className="container-hvac py-16">
           <div className="glass-panel rounded-3xl p-6 sm:p-12">
-            <h2 className="text-4xl font-bold text-bright-white mb-8 text-center">
+            <h2 className="text-4xl font-bold dc-text-heading mb-8 text-center">
               Frequently Asked Questions
             </h2>
             <div className="max-w-3xl mx-auto space-y-6">
@@ -534,10 +534,10 @@ export default function PricingClient() {
         {/* Final CTA */}
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-bright-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold dc-text-heading mb-6">
               See your business in the product before you choose
             </h2>
-            <p className="text-xl text-pure-white mb-8 max-w-2xl mx-auto">
+            <p className="text-xl dc-text-body mb-8 max-w-2xl mx-auto">
               Build an editable preview, explore compatible templates, and return here when the
               product and plan scope feel right.
             </p>
@@ -554,9 +554,9 @@ export default function PricingClient() {
 function FragmentRow({ label, basic, premium }: { label: string; basic: string; premium: string }) {
   return (
     <>
-      <p className="text-slate-300">{label}</p>
-      <p className={basic === '—' ? 'text-slate-500' : 'text-slate-100'}>{basic}</p>
-      <p className={premium === '—' ? 'text-slate-500' : 'text-emerald-200'}>{premium}</p>
+      <p className="dc-text-body">{label}</p>
+      <p className={basic === '—' ? 'dc-text-muted' : 'dc-text-heading'}>{basic}</p>
+      <p className={premium === '—' ? 'dc-text-muted' : 'dc-text-success'}>{premium}</p>
     </>
   )
 }
@@ -591,28 +591,28 @@ function PricingCard({
     >
       {/* Badge */}
       {tier.badge && (
-        <div className="mx-auto mb-4 w-fit max-w-full px-4 py-1 bg-cyan-500 text-slate-900 text-sm font-bold rounded-full text-center">
+        <div className="mx-auto mb-4 w-fit max-w-full px-4 py-1 dc-plan-badge dc-text-accent text-sm font-bold rounded-full text-center">
           {tier.badge}
         </div>
       )}
 
       {/* Header */}
       <div className="text-center space-y-4 mb-6">
-        <h3 className="text-2xl font-bold text-bright-white">{tier.name}</h3>
+        <h3 className="text-2xl font-bold dc-text-heading">{tier.name}</h3>
         <div className="space-y-1">
           <div className="flex items-baseline justify-center gap-2">
-            <span className="text-5xl font-bold text-bright-white">
+            <span className="text-5xl font-bold dc-text-heading">
               ${displayPrice}
             </span>
-            {isPeriodic && <span className="text-gray-400 text-lg">/month</span>}
+            {isPeriodic && <span className="dc-text-muted text-lg">/month</span>}
           </div>
           {!isPeriodic && (
-            <p className="text-sm text-gray-400">One-time payment</p>
+            <p className="text-sm dc-text-muted">One-time payment</p>
           )}
         </div>
-        <p className="text-gray-300">{tier.description}</p>
+        <p className="dc-text-body">{tier.description}</p>
         {trialDays !== null && trialDays > 0 && (
-          <p className="text-sm text-cyan-300">{trialDays}-day free trial, then billed monthly</p>
+          <p className="text-sm dc-text-accent">{trialDays}-day free trial, then billed monthly</p>
         )}
       </div>
 
@@ -621,7 +621,7 @@ function PricingCard({
         {tier.features.map((feature, index) => (
           <li key={index} className="flex items-start gap-3">
             <svg
-              className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5"
+              className="w-5 h-5 dc-text-success flex-shrink-0 mt-0.5"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -631,13 +631,13 @@ function PricingCard({
                 clipRule="evenodd"
               />
             </svg>
-            <span className="text-gray-300 text-sm">{feature}</span>
+            <span className="dc-text-body text-sm">{feature}</span>
           </li>
         ))}
       </ul>
 
       {tier.managedService && (
-        <p className="mb-6 text-sm leading-relaxed text-slate-300">
+        <p className="mb-6 text-sm leading-relaxed dc-text-body">
           Advertising spend and third-party fees are separate unless agreed in writing.
           Contact us before checkout if you need a specific campaign scope or cadence.
         </p>
@@ -651,8 +651,8 @@ function PricingCard({
         aria-busy={isSubmitting && !checkoutUncertain}
         className={`block w-full text-center px-6 py-3 rounded-lg font-bold transition-all ${
           tier.highlight
-            ? 'bg-cyan-400 hover:bg-cyan-300 text-slate-900 shadow-lg hover:shadow-xl'
-            : 'bg-white/10 hover:bg-white/20 text-white'
+            ? 'dc-button-primary shadow-lg hover:shadow-xl'
+            : 'dc-button-secondary'
         } ${checkoutDisabled ? 'opacity-70 cursor-not-allowed' : ''}`}
       >
         {isSubmitting
@@ -663,14 +663,14 @@ function PricingCard({
             ? `Start ${trialDays}-day trial`
             : 'Choose Plan'}
       </button>
-      <p className="text-center text-xs text-slate-300 mt-3">
+      <p className="text-center text-xs dc-text-body mt-3">
         {checkoutReady
           ? 'Secure Stripe checkout. Available card and wallet options are shown there.'
           : 'Choose a template and add your business details before payment.'}
       </p>
-      <p className="text-center text-xs text-slate-400 mt-3">
+      <p className="text-center text-xs dc-text-muted mt-3">
         Need help choosing?{' '}
-        <Link href="/contact" className="text-cyan-300 hover:text-cyan-200 underline">
+        <Link href="/contact" className="dc-text-accent hover:dc-text-accent underline">
           Contact us before checkout
         </Link>
       </p>
@@ -683,7 +683,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   const answerId = useId()
 
   return (
-    <div className="border-b border-white/10 pb-6">
+    <div className="border-b dc-border pb-6">
       <button
         type="button"
         aria-expanded={isOpen}
@@ -691,12 +691,12 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between text-left group"
       >
-        <h3 className="text-xl font-semibold text-bright-white group-hover:text-blue-400 transition-colors">
+        <h3 className="text-xl font-semibold dc-text-heading group-hover:dc-text-accent transition-colors">
           {question}
         </h3>
         <svg
           aria-hidden="true"
-          className={`w-6 h-6 text-gray-400 transition-transform ${
+          className={`w-6 h-6 dc-text-muted transition-transform ${
             isOpen ? 'rotate-180' : ''
           }`}
           fill="none"
@@ -711,7 +711,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
           />
         </svg>
       </button>
-      <p id={answerId} hidden={!isOpen} className="mt-4 text-gray-300 leading-relaxed">{answer}</p>
+      <p id={answerId} hidden={!isOpen} className="mt-4 dc-text-body leading-relaxed">{answer}</p>
     </div>
   )
 }

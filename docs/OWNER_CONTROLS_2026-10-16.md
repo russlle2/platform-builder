@@ -4,11 +4,11 @@ This follows the first experience audit and PR #40. It addresses practical custo
 
 ## Account and public contact email
 
-The personalized preview now asks separately for an account email and a public website contact email. An explicit “Use account email” action lets someone choose the same address. New account addresses are not silently copied into public website fields.
+The personalized preview asks separately for an account email and a public website contact email. Since the [24 October wizard follow-up](WIZARD_UX_2026-10-24.md), these are optional while exploring and required before plans/checkout. An explicit “Use account email” action lets someone choose the same address. New account addresses are not silently copied into public website fields.
 
 The private address is used for draft follow-up, Stripe checkout, ownership, receipts, welcome messages, and enquiry notifications. It is sent to checkout as a separate `accountEmail` field. Public `EMAIL` values remain the website’s contact information. Reserved account-email fields are stripped from incoming public template values. Fulfillment uses the saved checkout intent’s private address rather than allowing public content or a changed Stripe address to replace the account recipient.
 
-Older drafts and checkout requests with no account-email field keep their original shared-address behavior. An explicitly empty or invalid new field fails validation rather than falling back. Sample browsing remains separate from the visitor’s real draft. Public contact edits in the authenticated customer portal do not transfer ownership or change notification delivery.
+Older drafts and checkout requests with no account-email field keep their original shared-address behavior. An explicitly empty or invalid new field fails checkout validation rather than falling back. Sample browsing remains separate from the visitor’s real draft. Public contact edits in the authenticated customer portal do not transfer ownership or change notification delivery.
 
 Visitor confirmation emails now use the public website email for Reply-To. The private account/notification address must not leak through that header. Platform contact requests keep their existing configured recipient behavior.
 

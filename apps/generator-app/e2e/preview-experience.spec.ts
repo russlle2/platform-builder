@@ -11,6 +11,11 @@ const ownMatch = { nicheSlug: 'wellness_coach', templateSlug: 'saved-layout', te
 const ownTheme = { primary: '#123456', background: '#ffffff', text: '#123456', headingFont: 'Georgia, serif', bodyFont: 'Georgia, serif' }
 const ownPin = { niche: 'wellness_coach', template: 'saved-layout', catalogRevision: { contractVersion: 3, designId: 'design_real', contentPresetId: 'content_real', themePresetId: 'theme_real', qualityReceipt: 'receipt_real' } }
 
+async function openContactDetails(page: Page) {
+  const toggle = page.getByRole('button', { name: /Add contact details/ })
+  if (await toggle.getAttribute('aria-expanded') === 'false') await toggle.click()
+}
+
 async function seedRealDraft(page: Page) {
   await page.addInitScript(({ info, match, theme, pin }) => {
     if (sessionStorage.getItem('preview_experience_seeded')) return
@@ -29,6 +34,10 @@ async function seedRealDraft(page: Page) {
 }
 
 test.beforeEach(async ({ page }) => {
+  // Keep every write in this browser suite local to an explicit fixture.
+  await page.route('**/api/**', route => ['GET', 'HEAD', 'OPTIONS'].includes(route.request().method())
+    ? route.continue()
+    : route.fulfill({ status: 503, json: { error: 'No write fixture is configured for this request.' } }))
   await page.route('**/api/templates/*?all=true', (route) => {
     const niche = new URL(route.request().url()).pathname.split('/')[3]
     return route.fulfill({ json: { templates: [
@@ -113,6 +122,7 @@ test('real details and style are saved for follow-up before any purchase, with a
   const promotions = page.getByRole('checkbox', { name: /Email me DailyClarity news and offers/ })
   await expect(promotions).not.toBeChecked()
   await page.getByLabel('Business Name').fill('My New Studio')
+  await openContactDetails(page)
   await page.getByLabel('Account email', { exact: false }).fill('private@mynewstudio.example')
   await expect(page.getByLabel('Public contact email')).toHaveValue('')
   await page.getByLabel('Public contact email').fill('hello@mynewstudio.example')
@@ -120,17 +130,22 @@ test('real details and style are saved for follow-up before any purchase, with a
   await page.getByLabel('Tagline', { exact: true }).fill('My authentic tagline')
   await promotions.check()
   await page.getByLabel('Public contact email').press('Enter')
+  await expect(page.getByRole('button', { name: 'Original design colors', exact: false })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.getByRole('button', { name: 'Cool & Modern', exact: true })).toHaveAttribute('aria-pressed', 'false')
+  await page.getByRole('button', { name: 'Nature & Organic', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Nature & Organic', exact: true })).toHaveAttribute('aria-pressed', 'true')
+  await page.getByRole('button', { name: 'Original design colors', exact: false }).click()
   await expect.poll(() => profiles.length).toBe(1)
   expect(profiles[0]).toMatchObject({ email: 'private@mynewstudio.example', profile: { businessInfo: {
     businessName: 'My New Studio', tagline: 'My authentic tagline', accountEmail: 'private@mynewstudio.example', email: 'hello@mynewstudio.example',
   } } })
-  expect(profiles[0].profile.communicationPreferences).toMatchObject({ marketingEmailOptIn: true, noticeVersion: 'preview-followup-2026-10-16' })
+  expect(profiles[0].profile.communicationPreferences).toMatchObject({ marketingEmailOptIn: true, noticeVersion: 'preview-followup-2026-10-24' })
   expect(profiles[0].profile.funnel.stage).toBe('business-details')
   await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
   await expect.poll(() => profiles.length).toBe(2)
   expect(profiles[1].profile.matchedTemplate.templateSlug).toBe('sample-layout')
   expect(profiles[1].profile.funnel.stage).toBe('style-match')
-  expect(profiles[1].profile.stylePreferences).toHaveProperty('colorMood')
+  expect(profiles[1].profile.stylePreferences.colorMood).toBe('original')
   expect(contacts).toHaveLength(1)
   expect(contacts[0].email).toBe('private@mynewstudio.example')
   expect(checkoutRequests).toBe(0)
@@ -142,20 +157,53 @@ test('real details and style are saved for follow-up before any purchase, with a
   expect(previews.length).toBeGreaterThan(0)
   expect(JSON.stringify(previews)).not.toContain('private@mynewstudio.example')
   expect(previews[0].values).not.toHaveProperty('accountEmail')
+  expect(previews[0]).toMatchObject({ colorScheme: 'original', customTheme: null })
   await page.getByRole('button', { name: 'Choose a launch plan' }).click()
   await expect(page).toHaveURL(/\/pricing\?template=sample-layout&niche=aromatherapy/)
+  expect(new URL(page.url()).searchParams.get('color')).toBe('original')
   expect(profiles[2].profile.funnel.stage).toBe('plans')
   expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('pb_template_values')!).EMAIL)).toBe('hello@mynewstudio.example')
   expect(page.url()).not.toContain('mynewstudio.example')
   await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
   await expect.poll(() => checkoutRequests).toBe(1)
-  expect(checkout).toMatchObject({ accountEmail: 'private@mynewstudio.example', customerValues: { EMAIL: 'hello@mynewstudio.example', email: 'hello@mynewstudio.example' } })
+  expect(checkout).toMatchObject({ colorScheme: 'original', customTheme: null, accountEmail: 'private@mynewstudio.example', customerValues: { EMAIL: 'hello@mynewstudio.example', email: 'hello@mynewstudio.example' } })
   expect(checkout?.customerValues).not.toHaveProperty('accountEmail')
   expect(JSON.stringify(checkout?.customerValues)).not.toContain('private@mynewstudio.example')
 })
 
+test('a saved palette and custom colors survive reload, preview and checkout after the new default', async ({ page }) => {
+  await seedRealDraft(page)
+  const previews: Record<string, any>[] = []
+  let checkout: Record<string, any> | undefined
+  page.on('request', (request) => {
+    if (/\/api\/templates\/.*\/preview$/.test(request.url())) previews.push(request.postDataJSON())
+  })
+  await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
+  await page.route('**/api/stripe/checkout', (route) => {
+    checkout = route.request().postDataJSON()
+    return route.fulfill({ status: 409, json: { error: 'Checkout fixture captured.' } })
+  })
+  await page.goto('/preview-your-business')
+  await page.reload()
+  await page.getByRole('button', { name: 'Resume preview' }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Saved Studio' })).toBeVisible()
+  expect(previews.at(-1)).toMatchObject({ colorScheme: 'ocean-breeze', customTheme: ownTheme })
+  expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('pb_style_prefs')!).colorMood)).toBe('cool-modern')
+  expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('pb_custom_theme')!))).toEqual(ownTheme)
+  await page.getByRole('button', { name: 'Choose a launch plan' }).click()
+  await page.getByLabel('Account email', { exact: false }).fill('private@savedstudio.example')
+  await page.getByLabel('Public contact email').fill('hello@savedstudio.example')
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  await expect(page).toHaveURL(/\/pricing\?template=saved-layout/)
+  expect(new URL(page.url()).searchParams.get('color')).toBe('ocean-breeze')
+  await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
+  await expect.poll(() => checkout).toBeTruthy()
+  expect(checkout).toMatchObject({ colorScheme: 'ocean-breeze', customTheme: ownTheme })
+})
+
 test('publishing the account address requires an explicit copy, and later account edits do not silently change public contact', async ({ page }) => {
   await page.goto('/preview-your-business?niche=aromatherapy')
+  await openContactDetails(page)
   await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
   await expect(page.getByLabel('Public contact email')).toHaveValue('')
   await page.getByRole('button', { name: 'Use account email', exact: true }).click()
@@ -184,6 +232,7 @@ test('failed lead storage leaves the preview usable and offers a successful retr
   await page.route('**/api/profile/save-draft', (route) => route.fulfill({ status: fail ? 503 : 200, json: fail ? { error: 'Temporarily unavailable' } : { ok: true } }))
   await page.goto('/preview-your-business?niche=aromatherapy')
   await page.getByLabel('Business Name').fill('My New Studio')
+  await openContactDetails(page)
   await page.getByLabel('Account email', { exact: false }).fill('hello@mynewstudio.example')
   await page.getByLabel('Public contact email').fill('hello@mynewstudio.example')
   await page.getByLabel('Public contact email').press('Enter')
@@ -318,6 +367,7 @@ for (const delayedPage of [1, 2]) {
       await route.fulfill({ json: { templates: [{ slug: `personal-${pageNumber}`, name: `Unreviewed personal page ${pageNumber}`, nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 99, hasMore: true } })
     })
     await page.goto('/preview-your-business')
+    await openContactDetails(page)
     await page.getByLabel('Account email', { exact: false }).fill('saved@example.com')
     await page.getByLabel('Public contact email').fill('hello@example.com')
     await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
@@ -353,6 +403,7 @@ test('an older browse response cannot clear a newer request loading state for th
     await route.fulfill({ json: { templates: [{ slug: `request-${index}`, name: index === 0 ? 'Stale browse result' : 'Current browse result', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 1, hasMore: false } })
   })
   await page.goto('/preview-your-business')
+  await openContactDetails(page)
   await page.getByLabel('Account email', { exact: false }).fill('saved@example.com')
   await page.getByLabel('Public contact email').fill('hello@example.com')
   const startBrowse = async () => {
@@ -400,6 +451,7 @@ for (const leaveFlow of ['reset', 'unmount'] as const) {
     })
     await page.goto('/preview-your-business?niche=aromatherapy')
     await page.getByLabel('Business Name').fill('Previous Studio')
+    await openContactDetails(page)
     await page.getByLabel('Account email', { exact: false }).fill('previous@example.com')
     await page.getByLabel('Public contact email').fill('previous@example.com')
     await page.getByLabel('Public contact email').press('Enter')
@@ -424,6 +476,7 @@ for (const leaveFlow of ['reset', 'unmount'] as const) {
 
     if (leaveFlow === 'reset') {
       await page.getByLabel('Business Name').fill('New Studio')
+      await openContactDetails(page)
       await page.getByLabel('Account email', { exact: false }).fill('previous@example.com')
       await page.getByLabel('Public contact email').fill('previous@example.com')
       await page.getByLabel('Public contact email').press('Enter')
@@ -500,3 +553,176 @@ test('opening plans saves one checkpoint despite repeated submits and resumes af
   await expect(page).toHaveURL(/\/pricing\?/)
   expect(plansRequests).toBe(2)
 })
+
+async function startMinimalPreview(page: Page) {
+  await page.goto('/preview-your-business?niche=wellness_coach')
+  await page.getByLabel('Business Name', { exact: false }).fill('Aster Practice')
+  await page.getByLabel('What do you offer?', { exact: false }).fill('Small group workshops and individual sessions.')
+  await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
+}
+
+test('style direction reacts to colors, fonts, tone and spacing without submitting private details', async ({ page }) => {
+  const writes: string[] = []
+  page.on('request', request => { if (/\/api\/(intake\/contact|profile\/save-draft|stripe\/checkout)/.test(request.url())) writes.push(request.url()) })
+  await startMinimalPreview(page)
+  const illustration = page.getByRole('figure', { name: 'Style direction preview' })
+  await expect(illustration).toHaveAttribute('data-color-scheme', 'original')
+  await expect(illustration).toContainText('Aster Practice')
+  await expect(illustration).toContainText('Small group workshops and individual sessions.')
+  await page.getByRole('button', { name: 'Nature & Organic', exact: true }).click()
+  await expect(illustration).toHaveAttribute('data-color-scheme', 'sage-garden')
+  await expect(illustration).toHaveCSS('background-color', 'rgb(15, 26, 20)')
+  await page.getByRole('button').filter({ has: page.getByText('Serif', { exact: true }) }).click()
+  await page.getByRole('button').filter({ has: page.getByText('Spacious', { exact: true }) }).click()
+  await page.getByRole('button').filter({ has: page.getByText('Conversational', { exact: true }) }).click()
+  await expect(illustration).toHaveAttribute('data-font-variation', 'source-serif')
+  await expect(illustration).toHaveAttribute('data-structure-variation', 'elegant-serif')
+  await expect(illustration).toContainText('Let’s talk')
+  await expect(illustration).toContainText('Small group workshops and individual sessions.')
+  await page.setViewportSize({ width: 390, height: 844 })
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  expect(writes).toEqual([])
+})
+
+test('a personal preview needs no email but plans require private and public addresses before checkout', async ({ page }) => {
+  const writes: string[] = []
+  const previews: Record<string, any>[] = []
+  let checkout: Record<string, any> | undefined
+  page.on('request', request => {
+    if (/\/api\/(intake\/contact|profile\/save-draft)/.test(request.url())) writes.push(request.url())
+    if (/\/preview$/.test(new URL(request.url()).pathname)) previews.push(request.postDataJSON())
+  })
+  await page.route('**/api/platform/config', route => route.fulfill({ json: { trialDays: 0 } }))
+  await page.route('**/api/stripe/checkout', route => { checkout = route.request().postDataJSON(); return route.fulfill({ status: 409, json: { error: 'Fixture only.' } }) })
+  await startMinimalPreview(page)
+  await page.getByRole('button', { name: 'Light & Airy', exact: true }).click()
+  await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+  await page.getByRole('button', { name: 'Customize This Template', exact: true }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Aster Practice' })).toBeVisible()
+  expect(writes).toEqual([])
+  expect(previews.at(-1)).toMatchObject({ colorScheme: 'arctic-frost', fontVariation: 'inter', structureVariation: 'rounded-soft' })
+  await page.getByRole('button', { name: 'Choose a launch plan', exact: true }).click()
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  await expect(page.getByText('Enter a valid account email address.')).toBeVisible()
+  await expect(page.getByText('Enter a valid public contact email address.')).toBeVisible()
+  expect(checkout).toBeUndefined()
+  expect(writes).toEqual([])
+  await page.getByLabel('Account email', { exact: false }).fill('private@aster.example')
+  await page.getByLabel('Public contact email', { exact: false }).fill('hello@aster.example')
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  await expect(page).toHaveURL(/\/pricing\?template=sample-layout&niche=wellness_coach/)
+  expect(new URL(page.url()).searchParams.get('color')).toBe('arctic-frost')
+  await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
+  await expect.poll(() => checkout).toBeTruthy()
+  expect(checkout).toMatchObject({ colorScheme: 'arctic-frost', accountEmail: 'private@aster.example', customerValues: { BUSINESS_NAME: 'Aster Practice', EMAIL: 'hello@aster.example' } })
+  expect(JSON.stringify(checkout?.customerValues)).not.toContain('private@aster.example')
+})
+
+test('Customize opens the editor immediately and a delayed failed preview can retry successfully', async ({ page }) => {
+  let finish: () => void = () => {}
+  const pending = new Promise<void>(resolve => { finish = resolve })
+  let first = true
+  await page.route('**/api/templates/*/*/preview', async route => {
+    if (first) { first = false; await pending; return route.fulfill({ status: 503, json: { error: 'Preview temporarily unavailable.' } }) }
+    return route.fulfill({ json: { html: '<!doctype html><html><body><h1>Recovered preview</h1></body></html>', css: '', variationCSS: '' } })
+  })
+  await startMinimalPreview(page)
+  await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+  await page.getByRole('button', { name: 'Customize This Template', exact: true }).click()
+  await expect(page.getByRole('status', { name: 'Loading website preview' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Customize This Template', exact: true })).toHaveCount(0)
+  finish()
+  await expect(page.getByRole('alert').filter({ hasText: 'Preview temporarily unavailable.' })).toBeVisible()
+  await page.getByRole('button', { name: 'Retry preview', exact: true }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Recovered preview' })).toBeVisible()
+})
+
+test('Browse distinguishes an unavailable catalogue from no matches and recovers without losing details', async ({ page }) => {
+  let fail = true
+  await page.route('**/api/templates/*?page=1&limit=12&seed=*', route => route.fulfill(fail ? { status: 503, json: { error: 'Unavailable' } } : { json: { templates: [{ slug: 'recovered-layout', name: 'Recovered choice', nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 1, hasMore: false } }))
+  await startMinimalPreview(page)
+  await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+  await page.getByRole('button', { name: 'Browse Custom Templates', exact: true }).click()
+  await expect(page.getByRole('alert').filter({ hasText: 'We could not load the templates.' })).toBeVisible()
+  await expect(page.getByText('No templates found for this niche.', { exact: true })).toHaveCount(0)
+  fail = false
+  await page.getByRole('button', { name: 'Retry loading templates', exact: true }).click()
+  await page.getByRole('button', { name: /Recovered choice/ }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Aster Practice' })).toBeVisible()
+  expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem('pb_biz_info')!).businessName)).toBe('Aster Practice')
+})
+
+test('failed browse pagination retains current choices and retries the same next page', async ({ page }) => {
+  let fail = true
+  const requestedPages: string[] = []
+  await page.route('**/api/templates/*?page=*&limit=12&seed=*', route => {
+    const requested = new URL(route.request().url()).searchParams.get('page')!
+    requestedPages.push(requested)
+    if (requested === '2' && fail) return route.fulfill({ status: 503, json: { error: 'Unavailable' } })
+    return route.fulfill({ json: { templates: [{ slug: `layout-${requested}`, name: `Choice ${requested}`, nicheSlug: 'wellness_coach', pages: ['index.html'], snippet: '' }], total: 2, hasMore: requested === '1' } })
+  })
+  await startMinimalPreview(page)
+  await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+  await page.getByRole('button', { name: 'Browse Custom Templates', exact: true }).click()
+  await page.getByRole('button', { name: /Load More/ }).click()
+  await expect(page.getByRole('alert').filter({ hasText: 'We could not load more templates.' })).toBeVisible()
+  await expect(page.getByRole('button', { name: /Choice 1/ })).toBeVisible()
+  fail = false
+  await page.getByRole('button', { name: 'Retry loading templates', exact: true }).click()
+  await expect(page.getByRole('button', { name: /Choice 2/ })).toBeVisible()
+  expect(requestedPages).toEqual(['1', '2', '2'])
+})
+
+test('a stalled browse request times out with a usable retry instead of trapping the visitor', async ({ page }) => {
+  let release: () => void = () => {}
+  let requested = false
+  const pending = new Promise<void>(resolve => { release = resolve })
+  await page.clock.install()
+  await page.route('**/api/templates/*?page=1&limit=12&seed=*', async route => {
+    requested = true
+    await pending
+    await route.fulfill({ json: { templates: [], total: 0, hasMore: false } }).catch(() => {})
+  })
+  await startMinimalPreview(page)
+  await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+  await page.getByRole('button', { name: 'Browse Custom Templates', exact: true }).click()
+  await expect.poll(() => requested).toBe(true)
+  await page.clock.fastForward(21000)
+  await expect(page.getByRole('alert').filter({ hasText: 'We could not load the templates.' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Retry loading templates', exact: true })).toBeEnabled()
+  release()
+})
+
+for (const earlierSave of ['completed', 'delayed']) {
+  test(`continuing without an account email retires a ${earlierSave} older remote-save status`, async ({ page }) => {
+    let release: () => void = () => {}
+    const pending = new Promise<void>(resolve => { release = resolve })
+    const profiles: Record<string, any>[] = []
+    await page.route('**/api/profile/save-draft', async route => {
+      profiles.push(route.request().postDataJSON())
+      if (earlierSave === 'delayed') await pending
+      await route.fulfill({ json: { ok: true } }).catch(() => {})
+    })
+    await page.goto('/preview-your-business?niche=wellness_coach')
+    await page.getByLabel('Business Name').fill('Earlier saved practice')
+    await openContactDetails(page)
+    await page.getByLabel('Account email', { exact: false }).fill('private@earlier.example')
+    await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
+    await expect.poll(() => profiles.length).toBe(1)
+    const saved = page.getByText('Business details saved for your preview and DailyClarity follow-up.')
+    if (earlierSave === 'completed') await expect(saved).toBeVisible()
+    await page.getByRole('button', { name: 'Edit business details', exact: true }).click()
+    await page.getByLabel('Business Name').fill('New local-only practice')
+    await page.getByLabel('Account email', { exact: false }).fill('')
+    await page.getByRole('button', { name: /Continue to Style Preferences/ }).click()
+    await expect(saved).toHaveCount(0)
+    release()
+    await page.getByRole('button', { name: /Find My Perfect Template/ }).click()
+    await page.getByRole('button', { name: 'Customize This Template', exact: true }).click()
+    await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'New local-only practice' })).toBeVisible()
+    await expect(saved).toHaveCount(0)
+    await expect(page.getByText(/could not save your details/)).toHaveCount(0)
+    expect(profiles).toHaveLength(1)
+    expect(profiles[0].profile.businessInfo.businessName).toBe('Earlier saved practice')
+  })
+}

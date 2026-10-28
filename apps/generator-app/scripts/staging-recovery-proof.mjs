@@ -13,7 +13,63 @@ export const TARGET = Object.freeze({ repository: 'russlle2/platform-builder', w
 const SHA = /^[a-f0-9]{40}$/, HASH = /^[a-f0-9]{64}$/, UUID = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/, ID = /^[1-9][0-9]{0,15}$/
 const EVENT = /^evt_[A-Za-z0-9_]{6,255}$/, SESSION = /^cs_test_[A-Za-z0-9_]{6,255}$/, SUB = /^sub_[A-Za-z0-9_]{6,255}$/
 const FAULT = 'The deterministic Netlify site name is already bound to another domain.'
-const requireThat = (condition, code) => { if (!condition) throw new Error(`Recovery control rejected: ${code}.`) }
+class RecoveryControlError extends Error {
+  constructor(code) { super(`Recovery control rejected: ${code}.`); this.code = code }
+}
+const requireThat = (condition, code) => { if (!condition) throw new RecoveryControlError(code) }
+const SAFE_FAILURE_CODES = new Set(['creation_identity', 'fixture_identity', 'fixture_domains', 'fixture_url', 'fixture_created_at', 'fixture_must_be_empty', 'deterministic_site_already_exists', 'fresh_pending_checkout', 'reservation_expiry', 'checkout_already_processed', 'pending_session_changed', 'current_main_changed', 'staging_account_changed', 'runtime_not_ready', 'runtime_requirements', 'exact_staged_candidate', 'provider_http', 'provider_transport', 'provider_response_read', 'provider_response_json', 'provider_response_size', 'retry_dispatch_unconfirmed', 'checkpoint_identity', 'checkpoint_shape', 'journal_bundle'])
+export const safeFailureCode = error => error instanceof RecoveryControlError && SAFE_FAILURE_CODES.has(error.code) ? error.code : 'unclassified'
+// Labels describe fixed call sites, never a URL, provider message or task identity.
+const REQUEST_PHASES = new Set(['runtime_status', 'release_marker', 'platform_config', 'current_main', 'staging_site', 'checkout_intent', 'slug_reservation', 'checkout_order', 'checkout_portal', 'checkout_event', 'fixture_lookup', 'fixture_create', 'fixture_readback', 'fixture_alias_update', 'fixture_alias_clear', 'fulfillment_retry'])
+const REQUEST_CATEGORIES = new Set(['bad_request', 'unauthorized', 'payment_required', 'forbidden', 'not_found', 'conflict', 'unprocessable_content', 'rate_limited', 'server_error', 'unexpected_redirect', 'unexpected_status', 'transport_failure', 'response_read_failed', 'invalid_json', 'response_too_large'])
+const ALIAS_CATEGORIES = new Set(['unrecognized', 'provider_reported_alias_ownership', 'provider_reported_alias_characters'])
+const requestDiagnostics = new WeakMap()
+const httpCategory = status => ({ 400: 'bad_request', 401: 'unauthorized', 402: 'payment_required', 403: 'forbidden', 404: 'not_found', 409: 'conflict', 422: 'unprocessable_content', 429: 'rate_limited' })[status] ?? (status >= 500 && status <= 599 ? 'server_error' : status >= 300 && status <= 399 ? 'unexpected_redirect' : 'unexpected_status')
+function requestFailure(code, phase, status, category, providerCategory) {
+  requireThat(REQUEST_PHASES.has(phase) && REQUEST_CATEGORIES.has(category) && (providerCategory === undefined || ALIAS_CATEGORIES.has(providerCategory)), 'request_diagnostic')
+  const error = new RecoveryControlError(code)
+  requestDiagnostics.set(error, Object.freeze({ phase, status: Number.isInteger(status) && status >= 100 && status <= 599 ? status : null, category, ...(providerCategory === undefined ? {} : { providerCategory }) }))
+  return error
+}
+export const safeProviderDiagnostic = error => requestDiagnostics.get(error) ?? null
+export function safeFailureMessage(error) {
+  const detail = safeProviderDiagnostic(error)
+  const diagnostic = detail ? `; request=${detail.phase}; status=${detail.status ?? 'none'}; category=${detail.category}${detail.providerCategory ? `; provider_category=${detail.providerCategory}` : ''}` : ''
+  return `Staging recovery control stopped (${safeFailureCode(error)}${diagnostic}). No raw provider response or credentials were retained. Keep its control artifact; do not pay unless prepare completed and its independent alias readback succeeded.`
+}
+async function aliasFailureCategory(response, phase) {
+  if (response.status !== 422 || !['fixture_alias_update', 'fixture_alias_clear'].includes(phase)) return undefined
+  let reader, timer
+  try {
+    reader = response.body.getReader()
+    const value = await Promise.race([
+      (async () => {
+        const chunks = []; let size = 0
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          size += value.byteLength
+          if (size > 4096) return null
+          chunks.push(value)
+        }
+        return JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(Buffer.concat(chunks)))
+      })(),
+      new Promise(resolve => { timer = setTimeout(() => resolve(null), 1000) }),
+    ])
+    // Exact documented message/observed schema only; no raw text is retained.
+    // These describe what the provider reported, not a verified root cause.
+    if ((exact(value, ['message']) || (exact(value, ['code', 'message']) && Number.isInteger(value.code))) && value.message === 'domain_aliases is owned by another account') return 'provider_reported_alias_ownership'
+    if (exact(value, ['errors']) && exact(value.errors, ['domain_aliases']) && same(value.errors.domain_aliases, ['has invalid characters'])) return 'provider_reported_alias_characters'
+  } catch { /* A diagnostic read cannot replace the original HTTP failure. */ }
+  finally {
+    clearTimeout(timer)
+    if (reader) {
+      try { void reader.cancel().catch(() => {}) } catch { /* no provider text */ }
+      try { reader.releaseLock() } catch { /* a timed-out read may still settle */ }
+    }
+  }
+  return 'unrecognized'
+}
 const exact = (value, keys) => value && typeof value === 'object' && !Array.isArray(value) && Object.keys(value).sort().join(',') === [...keys].sort().join(',')
 const canonical = value => value && typeof value === 'object' ? Array.isArray(value) ? value.map(canonical) : Object.fromEntries(Object.keys(value).sort().map(key => [key, canonical(value[key])])) : value
 export const digest = value => createHash('sha256').update(typeof value === 'string' ? value : JSON.stringify(canonical(value))).digest('hex')
@@ -57,7 +113,7 @@ export function assertFixtureSite(site, binding, { siteId, aliases, createdAfter
   requireThat(UUID.test(site?.id ?? '') && (!siteId || site.id === siteId) && site.id !== TARGET.siteId && site.account_id === TARGET.accountId && site.account_slug === TARGET.accountSlug && site.name === name, 'fixture_identity')
   requireThat((site.default_domain == null || site.default_domain === host) && site.custom_domain == null && Array.isArray(site.domain_aliases) && same(site.domain_aliases, aliases), 'fixture_domains')
   for (const key of ['url', 'ssl_url']) {
-    let url; try { url = new URL(site[key]) } catch { throw new Error('Recovery control rejected: fixture_url.') }
+    let url; try { url = new URL(site[key]) } catch { throw new RecoveryControlError('fixture_url') }
     requireThat(['http:', 'https:'].includes(url.protocol) && url.hostname === host && !url.username && !url.password && !url.port && !url.search && !url.hash, 'fixture_url')
   }
   requireThat(iso(site.created_at) && (!createdAfter || Date.parse(site.created_at) >= Date.parse(createdAfter) - 30_000), 'fixture_created_at')
@@ -101,6 +157,24 @@ export function validateJournal(journal, config, source) {
   else requireThat(exact(journal.failure, FAILURE_KEYS) && ['eventIdHash', 'businessKeyHash', 'orderIdHash'].every(k => HASH.test(journal.failure[k] ?? '')) && journal.failure.eventType === 'checkout.session.completed' && iso(journal.failure.observedAt) && iso(journal.failure.eventCreatedAt) && Number.isSafeInteger(journal.failure.amountCents) && journal.failure.amountCents > 0 && /^[a-z]{3}$/.test(journal.failure.currency) && (journal.phase === 'clear_requested' ? journal.clearedAt === null : iso(journal.clearedAt)), 'cleared_journal')
   return journal
 }
+export function validateControlBundle(files, config, source) {
+  const allowed = ['creation-requested.json', 'fixture-created.json', 'alias-requested.json', 'recovery-journal.json', 'cleared-journal.json']
+  requireThat(files instanceof Map && files.size > 0 && files.size <= allowed.length && [...files.keys()].every(name => allowed.includes(name)), 'journal_bundle')
+  const journals = [...files].filter(([name, value]) => ['recovery-journal.json', 'cleared-journal.json'].includes(name) && digest(value) === config.journalHash).map(([, value]) => value)
+  requireThat(journals.length === 1, 'exact_journal_hash')
+  const journal = validateJournal(journals[0], config, source)
+  for (const name of ['creation-requested.json', 'fixture-created.json', 'alias-requested.json']) {
+    if (!files.has(name)) continue
+    const value = files.get(name)
+    const extra = name === 'creation-requested.json' ? ['creationOutcome'] : name === 'fixture-created.json' ? ['siteId'] : ['siteId', 'aliasRequestedAt', 'aliases', 'aliasOutcome']
+    requireThat(exact(value, ['version', 'binding', 'source', 'createdAt', 'prepared', ...extra]) && value.version === 1 && value.prepared === false, 'checkpoint_shape')
+    requireThat(same(value.binding, journal.binding) && same(value.source, journal.source) && value.createdAt === journal.createdAt, 'checkpoint_identity')
+    if (name === 'creation-requested.json') requireThat(value.creationOutcome === 'unconfirmed', 'checkpoint_shape')
+    else requireThat(value.siteId === journal.siteId, 'checkpoint_identity')
+    if (name === 'alias-requested.json') requireThat(value.aliasOutcome === 'unconfirmed' && same(value.aliases, [faultAlias(config.binding)]) && iso(value.aliasRequestedAt) && Date.parse(value.aliasRequestedAt) >= Date.parse(journal.createdAt) && Date.parse(value.aliasRequestedAt) <= Date.parse(journal.preparedAt), 'checkpoint_identity')
+  }
+  return journal
+}
 export function assertArtifactSource(run, artifact, config, env) {
   requireThat(String(run?.id) === env.SOURCE_RUN_ID && run.repository?.full_name === TARGET.repository && run.path === TARGET.workflow && run.head_branch === 'main' && run.head_sha === config.binding.releaseSha && run.event === 'workflow_dispatch' && run.status === 'completed' && ['success', 'failure', 'cancelled'].includes(run.conclusion), 'journal_producer')
   requireThat(String(artifact?.id) === env.SOURCE_ARTIFACT_ID && artifact.expired === false && artifact.name === `staging-recovery-journal-${run.id}-${run.run_attempt}` && artifact.workflow_run?.id === Number(env.SOURCE_RUN_ID) && artifact.workflow_run?.head_sha === run.head_sha && Number.isSafeInteger(artifact.size_in_bytes) && artifact.size_in_bytes > 0 && artifact.size_in_bytes <= 64 * 1024, 'journal_artifact')
@@ -141,11 +215,19 @@ export async function orchestrate(config, deps) {
     await deps.guard()
     const createdAt = new Date(deps.now()).toISOString()
     await deps.save('creation-requested.json', { version: 1, binding, source: config.source, createdAt, prepared: false, creationOutcome: 'unconfirmed' })
-    const site = await deps.create({ name: `platform-${taskSlug(binding)}`, domain_aliases: [faultAlias(binding)] })
+    const site = await deps.create({ name: `platform-${taskSlug(binding)}` })
     requireThat(UUID.test(site?.id ?? '') && site.id !== TARGET.siteId, 'creation_identity')
-    // Keep a bounded control checkpoint even when the provider ignores an alias.
+    // Establish new empty-site ownership before a separate alias-only update.
     await deps.save('fixture-created.json', { version: 1, binding, source: config.source, createdAt, siteId: site.id, prepared: false })
-    assertFixtureSite(site, binding, { aliases: [faultAlias(binding)], createdAfter: createdAt, empty: true })
+    assertFixtureSite(site, binding, { aliases: [], createdAfter: createdAt, empty: true })
+    assertFixtureSite(await deps.site(site.id), binding, { siteId: site.id, aliases: [], createdAfter: createdAt, empty: true })
+    await deps.guard()
+    assertPending(await deps.snapshot(null), binding, deps.now())
+    assertFixtureSite(await deps.site(site.id), binding, { siteId: site.id, aliases: [], createdAfter: createdAt, empty: true })
+    // A timeout is uncertain. This checkpoint never authorizes payment or resume.
+    await deps.save('alias-requested.json', { version: 1, binding, source: config.source, createdAt, siteId: site.id, prepared: false, aliasRequestedAt: new Date(deps.now()).toISOString(), aliases: [faultAlias(binding)], aliasOutcome: 'unconfirmed' })
+    const aliased = await deps.setAlias(site.id)
+    assertFixtureSite(aliased, binding, { siteId: site.id, aliases: [faultAlias(binding)], createdAfter: createdAt, empty: true })
     assertFixtureSite(await deps.site(site.id), binding, { siteId: site.id, aliases: [faultAlias(binding)], createdAfter: createdAt, empty: true })
     await deps.guard()
     assertPending(await deps.snapshot(null), binding, deps.now())
@@ -206,30 +288,38 @@ export async function orchestrate(config, deps) {
 }
 
 export function createProviderAccess(env, config, fetcher = fetch) {
-  const jsonRequest = async (url, init = {}, optional404 = false) => {
-    const response = await fetcher(url, { ...init, redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(25_000) })
-    if (optional404 && response.status === 404) return null
-    requireThat(response.ok, 'provider_http')
-    const raw = await response.text(); requireThat(Buffer.byteLength(raw) <= 256 * 1024, 'provider_response_size')
-    return JSON.parse(raw)
+  const request = async (phase, url, init = {}) => {
+    try { return await fetcher(url, { ...init, redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(25_000) }) }
+    catch { throw requestFailure('provider_transport', phase, null, 'transport_failure') }
   }
-  const netlify = (resource, method = 'GET', body, optional404 = false) => jsonRequest(`https://api.netlify.com/api/v1/${resource}`, { method, headers: { authorization: `Bearer ${env.NETLIFY_AUTH_TOKEN}`, accept: 'application/json', ...(body ? { 'content-type': 'application/json' } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) }, optional404)
-  const rows = async (table, select, filters) => {
+  const jsonRequest = async (phase, url, init = {}, optional404 = false) => {
+    const response = await request(phase, url, init)
+    if (optional404 && response.status === 404) return null
+    if (!response.ok) throw requestFailure('provider_http', phase, response.status, httpCategory(response.status), await aliasFailureCategory(response, phase))
+    let raw
+    try { raw = await response.text() }
+    catch { throw requestFailure('provider_response_read', phase, response.status, 'response_read_failed') }
+    if (Buffer.byteLength(raw) > 256 * 1024) throw requestFailure('provider_response_size', phase, response.status, 'response_too_large')
+    try { return JSON.parse(raw) }
+    catch { throw requestFailure('provider_response_json', phase, response.status, 'invalid_json') }
+  }
+  const netlify = (phase, resource, method = 'GET', body, optional404 = false) => jsonRequest(phase, `https://api.netlify.com/api/v1/${resource}`, { method, headers: { authorization: `Bearer ${env.NETLIFY_AUTH_TOKEN}`, accept: 'application/json', ...(body ? { 'content-type': 'application/json' } : {}) }, ...(body ? { body: JSON.stringify(body) } : {}) }, optional404)
+  const rows = async (phase, table, select, filters) => {
     const params = new URLSearchParams({ select, ...filters, limit: '2' })
-    const result = await jsonRequest(`https://${TARGET.projectRef}.supabase.co/rest/v1/${table}?${params}`, { method: 'GET', headers: { authorization: `Bearer ${env.STAGING_SUPABASE_SERVICE_ROLE_KEY}`, apikey: env.STAGING_SUPABASE_SERVICE_ROLE_KEY, accept: 'application/json' } })
+    const result = await jsonRequest(phase, `https://${TARGET.projectRef}.supabase.co/rest/v1/${table}?${params}`, { method: 'GET', headers: { authorization: `Bearer ${env.STAGING_SUPABASE_SERVICE_ROLE_KEY}`, apikey: env.STAGING_SUPABASE_SERVICE_ROLE_KEY, accept: 'application/json' } })
     requireThat(Array.isArray(result) && result.length <= 2, 'database_response')
     return result
   }
   const snapshot = async eventId => {
     const slug = taskSlug(config.binding)
-    const intents = await rows('checkout_intents', 'id,slug,plan,status,stripe_session_id,created_at,catalog_revision:payload->catalogRevision', { slug: `eq.${slug}` })
+    const intents = await rows('checkout_intent', 'checkout_intents', 'id,slug,plan,status,stripe_session_id,created_at,catalog_revision:payload->catalogRevision', { slug: `eq.${slug}` })
     requireThat(intents.length === 1 && intents[0].id === config.binding.intentId && SESSION.test(intents[0].stripe_session_id ?? ''), 'intent_lookup')
     const session = intents[0].stripe_session_id
     const [reservations, orders, portals, events] = await Promise.all([
-      rows('site_slugs', 'slug,status,reserved_for,reservation_expires_at,netlify_site_id,site_url,custom_domain', { slug: `eq.${slug}` }),
-      rows('orders', 'id,slug,stripe_session_id,stripe_subscription_id,status,amount_cents,currency,first_payment_amount_cents,first_payment_received_at', { or: `(slug.eq.${slug},stripe_session_id.eq.${session})` }),
-      rows('portal_sites', 'slug,status,checkout_intent_id:data->>checkout_intent_id,stripe_session_id:data->>stripe_session_id,netlify_site_id:data->>netlify_site_id,provisioning_succeeded:data->provisioning_succeeded,provisioning_error:data->>provisioning_error', { slug: `eq.${slug}` }),
-      rows('stripe_webhook_events', 'event_id,event_type,livemode,business_key,status,attempts,created_at,last_error,payload_event_id:payload->>id,payload_event_type:payload->>type,payload_livemode:payload->livemode,payload_created:payload->created,session_id:payload->data->object->>id,checkout_intent_id:payload->data->object->metadata->>checkoutIntentId,slug:payload->data->object->metadata->>slug,checkout_type:payload->data->object->metadata->>checkoutType,payment_status:payload->data->object->>payment_status,amount_total:payload->data->object->amount_total,subscription_id:payload->data->object->>subscription', eventId ? { event_id: `eq.${eventId}` } : { 'payload->data->object->>id': `eq.${session}` }),
+      rows('slug_reservation', 'site_slugs', 'slug,status,reserved_for,reservation_expires_at,netlify_site_id,site_url,custom_domain', { slug: `eq.${slug}` }),
+      rows('checkout_order', 'orders', 'id,slug,stripe_session_id,stripe_subscription_id,status,amount_cents,currency,first_payment_amount_cents,first_payment_received_at', { or: `(slug.eq.${slug},stripe_session_id.eq.${session})` }),
+      rows('checkout_portal', 'portal_sites', 'slug,status,checkout_intent_id:data->>checkout_intent_id,stripe_session_id:data->>stripe_session_id,netlify_site_id:data->>netlify_site_id,provisioning_succeeded:data->provisioning_succeeded,provisioning_error:data->>provisioning_error', { slug: `eq.${slug}` }),
+      rows('checkout_event', 'stripe_webhook_events', 'event_id,event_type,livemode,business_key,status,attempts,created_at,last_error,payload_event_id:payload->>id,payload_event_type:payload->>type,payload_livemode:payload->livemode,payload_created:payload->created,session_id:payload->data->object->>id,checkout_intent_id:payload->data->object->metadata->>checkoutIntentId,slug:payload->data->object->metadata->>slug,checkout_type:payload->data->object->metadata->>checkoutType,payment_status:payload->data->object->>payment_status,amount_total:payload->data->object->amount_total,subscription_id:payload->data->object->>subscription', eventId ? { event_id: `eq.${eventId}` } : { 'payload->data->object->>id': `eq.${session}` }),
     ])
     return { intents, reservations, orders, portals, events }
   }
@@ -237,11 +327,11 @@ export function createProviderAccess(env, config, fetcher = fetch) {
     now: () => Date.now(), snapshot,
     guard: async () => {
       const [runtime, proof, publicConfig, mainBranch, stagingSite] = await Promise.all([
-        jsonRequest(`https://${TARGET.hostname}/api/integrations/status`, { headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}` } }),
-        jsonRequest(`https://${TARGET.hostname}/__dailyclarity_release.json`),
-        jsonRequest(`https://${TARGET.hostname}/api/platform/config`),
-        jsonRequest(`https://api.github.com/repos/${TARGET.repository}/branches/main`, { headers: { authorization: `Bearer ${env.GITHUB_TOKEN}`, accept: 'application/vnd.github+json' } }),
-        netlify(`sites/${TARGET.siteId}`),
+        jsonRequest('runtime_status', `https://${TARGET.hostname}/api/integrations/status`, { headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}` } }),
+        jsonRequest('release_marker', `https://${TARGET.hostname}/__dailyclarity_release.json`),
+        jsonRequest('platform_config', `https://${TARGET.hostname}/api/platform/config`),
+        jsonRequest('current_main', `https://api.github.com/repos/${TARGET.repository}/branches/main`, { headers: { authorization: `Bearer ${env.GITHUB_TOKEN}`, accept: 'application/vnd.github+json' } }),
+        netlify('staging_site', `sites/${TARGET.siteId}`),
       ])
       requireThat(mainBranch?.commit?.sha === config.binding.releaseSha, 'current_main_changed')
       assertNetlifyTarget(stagingSite, { environment: 'staging', configuredSiteId: TARGET.siteId, expectedSiteId: TARGET.siteId, expectedHostname: TARGET.hostname, expectedAccountSlug: TARGET.accountSlug })
@@ -250,13 +340,14 @@ export function createProviderAccess(env, config, fetcher = fetch) {
     },
     retry: async eventId => {
       requireThat(EVENT.test(eventId), 'retry_event')
-      const response = await fetcher(`https://${TARGET.hostname}/api/admin/stripe/fulfillment/retry`, { method: 'POST', headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}`, 'content-type': 'application/json' }, body: JSON.stringify({ eventId }), redirect: 'error', cache: 'no-store', signal: AbortSignal.timeout(25_000) })
-      requireThat(response.status === 202, 'retry_dispatch_unconfirmed')
+      const response = await request('fulfillment_retry', `https://${TARGET.hostname}/api/admin/stripe/fulfillment/retry`, { method: 'POST', headers: { authorization: `Bearer ${env.INTERNAL_ADMIN_TOKEN}`, 'content-type': 'application/json' }, body: JSON.stringify({ eventId }) })
+      if (response.status !== 202) throw requestFailure('retry_dispatch_unconfirmed', 'fulfillment_retry', response.status, httpCategory(response.status))
     },
-    lookup: () => netlify(`sites/${encodeURIComponent(`platform-${taskSlug(config.binding)}.netlify.app`)}`, 'GET', undefined, true),
-    site: id => { requireThat(UUID.test(id), 'site_id'); return netlify(`sites/${id}`) },
-    create: body => netlify(`${TARGET.accountSlug}/sites`, 'POST', body),
-    clear: id => { requireThat(UUID.test(id) && id !== TARGET.siteId, 'clear_id'); return netlify(`sites/${id}`, 'PATCH', { domain_aliases: [] }) },
+    lookup: () => netlify('fixture_lookup', `sites/${encodeURIComponent(`platform-${taskSlug(config.binding)}.netlify.app`)}`, 'GET', undefined, true),
+    site: id => { requireThat(UUID.test(id), 'site_id'); return netlify('fixture_readback', `sites/${id}`) },
+    create: body => netlify('fixture_create', `${TARGET.accountSlug}/sites`, 'POST', body),
+    setAlias: id => { requireThat(UUID.test(id) && id !== TARGET.siteId, 'alias_id'); return netlify('fixture_alias_update', `sites/${id}`, 'PATCH', { domain_aliases: [faultAlias(config.binding)] }) },
+    clear: id => { requireThat(UUID.test(id) && id !== TARGET.siteId, 'clear_id'); return netlify('fixture_alias_clear', `sites/${id}`, 'PATCH', { domain_aliases: [] }) },
   }
 }
 async function githubJson(env, resource) {
@@ -290,18 +381,16 @@ export async function run(env = process.env) {
   deps.loadJournal = async () => {
     const source = await sourceIdentity(env, config)
     const names = await readdir(config.input)
-    requireThat(names.length <= 4 && names.every(name => ['creation-requested.json', 'fixture-created.json', 'recovery-journal.json', 'cleared-journal.json'].includes(name)), 'journal_bundle')
-    const journals = []
-    for (const name of names.filter(name => ['recovery-journal.json', 'cleared-journal.json'].includes(name))) {
+    requireThat(names.length <= 5 && names.every(name => ['creation-requested.json', 'fixture-created.json', 'alias-requested.json', 'recovery-journal.json', 'cleared-journal.json'].includes(name)), 'journal_bundle')
+    const files = new Map()
+    for (const name of names) {
       const file = path.join(config.input, name), info = await lstat(file)
       requireThat(info.isFile() && !info.isSymbolicLink() && info.nlink === 1 && info.size <= 16 * 1024, 'journal_file')
-      const candidate = JSON.parse(await readFile(file, 'utf8'))
-      if (digest(candidate) === config.journalHash) journals.push(candidate)
+      files.set(name, JSON.parse(await readFile(file, 'utf8')))
     }
-    requireThat(journals.length === 1, 'exact_journal_hash')
-    return validateJournal(journals[0], config, source)
+    return validateControlBundle(files, config, source)
   }
   const result = await orchestrate(config, deps)
   console.log(JSON.stringify(result))
 }
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run().catch(() => { console.error('Staging recovery control stopped. No raw provider response or credentials were retained. Keep its control artifact; do not pay unless prepare completed and its independent alias readback succeeded.'); process.exitCode = 1 })
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) run().catch(error => { console.error(safeFailureMessage(error)); process.exitCode = 1 })

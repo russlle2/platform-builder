@@ -39,10 +39,10 @@ export default function WebsiteBuilderForWellnessCoachesPage() {
       <section className="container-hvac py-12 max-w-4xl mx-auto space-y-12">
         <div className="space-y-6">
           <span className="signal-chip">Wellness coaches</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+          <h1 className="text-4xl md:text-5xl font-bold dc-text-heading leading-tight">
             Website builder for wellness coaches who sell programs, not just inspiration
           </h1>
-          <p className="text-lg text-slate-300 max-w-2xl">
+          <p className="text-lg dc-text-body max-w-2xl">
             Broad builders let you make something beautiful. DailyClarity is narrower: guided templates for
             coaches who need clarity, credibility, and a path to a discovery call.
           </p>
@@ -56,15 +56,15 @@ export default function WebsiteBuilderForWellnessCoachesPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {DIFFERENTIATORS.map((item) => (
             <div key={item.title} className="card-mahogany space-y-3">
-              <h2 className="text-xl font-bold text-white">{item.title}</h2>
-              <p className="text-slate-300 text-sm leading-relaxed">{item.body}</p>
+              <h2 className="text-xl font-bold dc-text-heading">{item.title}</h2>
+              <p className="dc-text-body text-sm leading-relaxed">{item.body}</p>
             </div>
           ))}
         </div>
 
         <div className="glass-panel rounded-2xl p-8 space-y-4">
-          <h2 className="text-2xl font-bold text-white">Built for how coaching buyers decide</h2>
-          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-slate-300">
+          <h2 className="text-2xl font-bold dc-text-heading">Built for how coaching buyers decide</h2>
+          <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 dc-text-body">
             {[
               'Clear transformation outcome on the hero',
               'Programs and package comparison',
@@ -79,13 +79,13 @@ export default function WebsiteBuilderForWellnessCoachesPage() {
               </li>
             ))}
           </ul>
-          <p className="text-slate-400 text-sm">
+          <p className="dc-text-muted text-sm">
             See{' '}
-            <Link href="/wellness_coach" className="text-rose-300 hover:underline">
+            <Link href="/wellness_coach" className="dc-text-rose hover:underline">
               wellness coach templates
             </Link>{' '}
             or use our{' '}
-            <Link href="/wellness-website-checklist" className="text-rose-300 hover:underline">
+            <Link href="/wellness-website-checklist" className="dc-text-rose hover:underline">
               wellness website checklist
             </Link>
             .
@@ -93,7 +93,7 @@ export default function WebsiteBuilderForWellnessCoachesPage() {
         </div>
 
         <div className="glass-panel rounded-3xl p-10 text-center space-y-6">
-          <h2 className="text-3xl font-bold text-white">Build your coaching preview</h2>
+          <h2 className="text-3xl font-bold dc-text-heading">Build your coaching preview</h2>
           <SeoCtaGroup
             demoHref="/demo/wellness_coach"
             demoLabel="Watch Coaching Demo"
