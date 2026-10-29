@@ -96,6 +96,8 @@ export default function TemplateCustomizePage({
   const portalSlug = searchParams.get('portalSlug')
   const [params, setParams] = useState<{ niche: string; slug: string } | null>(null)
   const [publishStatus, setPublishStatus] = useState<'idle' | 'saving' | 'done' | 'error'>('idle')
+  const [publishError, setPublishError] = useState<string | null>(null)
+  const publishAttemptRef = useRef<{ id: string; payload: string } | null>(null)
   const [template, setTemplate] = useState<TemplateData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -549,33 +551,36 @@ export default function TemplateCustomizePage({
   const publishToLiveSite = useCallback(async () => {
     if (!portalSlug) return
     setPublishStatus('saving')
+    setPublishError(null)
     try {
       // Use the customer portal API (portal-token authenticated) instead of
       // the admin-only /api/portal/site route.
       const token = getStoredPortalToken(portalSlug) || ''
+      const payload = {
+        slug: portalSlug, customerValues: values, inlineEdits,
+        imageSwaps: imageSwapsRef.current, colorScheme, fontVariation,
+        structureVariation, customTheme,
+      }
+      const serialized = JSON.stringify(payload)
+      if (publishAttemptRef.current?.payload !== serialized) {
+        publishAttemptRef.current = { id: crypto.randomUUID(), payload: serialized }
+      }
       const res = await fetch('/api/portal/customer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'x-portal-token': token } : {}),
         },
-        body: JSON.stringify({
-          slug: portalSlug,
-          token,
-          customerValues: values,
-          inlineEdits,
-          imageSwaps: imageSwapsRef.current,
-          colorScheme,
-          fontVariation,
-          structureVariation,
-          customTheme,
-        }),
+        body: JSON.stringify({ ...payload, token, operationId: publishAttemptRef.current.id }),
       })
       const data = await res.json()
+      if (data.code === 'publish_failed') publishAttemptRef.current = null
       if (!res.ok) throw new Error((data as { error?: string }).error || 'Publish failed')
+      if (data.republished === true) publishAttemptRef.current = null
       setPublishStatus('done')
-    } catch {
+    } catch (error) {
       setPublishStatus('error')
+      setPublishError(error instanceof Error ? error.message : 'Publication could not be confirmed. Please check your account before trying again.')
     }
   }, [portalSlug, values, inlineEdits, colorScheme, fontVariation, structureVariation, customTheme])
 
@@ -681,6 +686,7 @@ export default function TemplateCustomizePage({
             onPageSeoChange={handlePageSeoChange}
             portalSlug={portalSlug}
             publishStatus={publishStatus}
+            publishError={publishError}
             onPublishLive={publishToLiveSite}
           />
         )}
@@ -1038,6 +1044,7 @@ function PreviewStep({
   onPageSeoChange,
   portalSlug,
   publishStatus,
+  publishError,
   onPublishLive,
 }: {
   template: TemplateData
@@ -1068,6 +1075,7 @@ function PreviewStep({
   onPageSeoChange: (field: PageSeoField, updated: string) => boolean
   portalSlug: string | null
   publishStatus: 'idle' | 'saving' | 'done' | 'error'
+  publishError: string | null
   onPublishLive: () => void
 }) {
   const [showSeoPanel, setShowSeoPanel] = useState(false)
@@ -1149,6 +1157,8 @@ function PreviewStep({
           </Link>
         </div>
       </div>
+
+      {publishError && <p role="alert" className="mb-4 text-sm text-amber-200">{publishError}</p>}
 
       <CustomerImageLibrary
         owner={portalSlug || undefined}

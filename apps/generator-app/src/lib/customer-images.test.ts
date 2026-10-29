@@ -1,13 +1,17 @@
+import sharp from 'sharp'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const storageMocks = vi.hoisted(() => ({
   list: vi.fn(),
   download: vi.fn(),
   upload: vi.fn(),
+  rpc: vi.fn(),
+  remove: vi.fn(),
 }))
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: vi.fn(() => ({
+    rpc: storageMocks.rpc,
     storage: {
       from: vi.fn(() => storageMocks),
     },
@@ -19,6 +23,8 @@ import {
   migrateImagesToSiteSlug,
   normalizeOwnedStoragePath,
   rewriteImageSwapUrls,
+  storeCustomerImage,
+  deleteCustomerImage,
 } from './customer-images'
 
 const DRAFT_OWNER = 'draft-123e4567-e89b-42d3-a456-426614174000'
@@ -31,6 +37,11 @@ beforeEach(() => {
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'service-role-test-key'
   storageMocks.list.mockResolvedValue({ data: [], error: null })
   storageMocks.upload.mockResolvedValue({ data: {}, error: null })
+  storageMocks.remove.mockResolvedValue({ data: [], error: null })
+  storageMocks.rpc.mockImplementation(async (name: string) => ({ error: null, data:
+    name === 'customer_service_entitlement' ? { allowed: true, tier: 'paid' }
+      : name === 'reserve_customer_image' ? { state: 'reserved' } : true,
+  }))
 })
 
 afterEach(() => {
@@ -140,5 +151,45 @@ describe('rewriteImageSwapUrls', () => {
         updated: SOURCE_URL.replace(`/${DRAFT_OWNER}/`, `/${SITE_SLUG}/`),
       }],
     })
+  })
+})
+
+
+describe('image upload allowance boundaries', () => {
+  async function file() {
+    const buffer = await sharp({ create: { width: 1, height: 1, channels: 3, background: '#ffffff' } }).png().toBuffer()
+    return { name: 'photo.png', size: buffer.length, type: 'image/png', arrayBuffer: vi.fn().mockResolvedValue(buffer) } as unknown as File
+  }
+  it('rejects inactive billing before reading or processing the upload', async () => {
+    const input = await file()
+    storageMocks.rpc.mockResolvedValue({ data: { allowed: false }, error: null })
+    await expect(storeCustomerImage(SITE_SLUG, input)).rejects.toMatchObject({ code: 'billing_suspended' })
+    expect(input.arrayBuffer).not.toHaveBeenCalled()
+    expect(storageMocks.upload).not.toHaveBeenCalled()
+  })
+  it('reserves actual optimized bytes before Storage and confirms only after success', async () => {
+    const stored = await storeCustomerImage(SITE_SLUG, await file())
+    expect(storageMocks.rpc.mock.calls.map(([name]) => name)).toEqual(['customer_service_entitlement', 'reserve_customer_image', 'confirm_customer_image'])
+    expect(storageMocks.rpc).toHaveBeenCalledWith('reserve_customer_image', { p_owner: SITE_SLUG, p_path: stored.path, p_bytes: stored.size })
+    expect(storageMocks.rpc.mock.invocationCallOrder[1]).toBeLessThan(storageMocks.upload.mock.invocationCallOrder[0])
+    expect(storageMocks.upload.mock.invocationCallOrder[0]).toBeLessThan(storageMocks.rpc.mock.invocationCallOrder[2])
+  })
+  it('does not write an image when authoritative storage is full', async () => {
+    storageMocks.rpc.mockImplementation(async (name: string) => ({ error: null, data:
+      name === 'customer_service_entitlement' ? { allowed: true, tier: 'paid' } : { state: 'limited' },
+    }))
+    await expect(storeCustomerImage(SITE_SLUG, await file())).rejects.toMatchObject({ code: 'image_storage_limit' })
+    expect(storageMocks.upload).not.toHaveBeenCalled()
+  })
+  it('keeps a reservation after uncertain upload failure', async () => {
+    storageMocks.upload.mockResolvedValue({ data: null, error: { message: 'connection lost' } })
+    await expect(storeCustomerImage(SITE_SLUG, await file())).rejects.toThrow('connection lost')
+    expect(storageMocks.rpc.mock.calls.map(([name]) => name)).toEqual(['customer_service_entitlement', 'reserve_customer_image'])
+  })
+  it('allows explicit image deletion to free allowance only after Storage success', async () => {
+    await deleteCustomerImage(SITE_SLUG, `${SITE_SLUG}/photo.webp`)
+    expect(storageMocks.remove).toHaveBeenCalledWith([`${SITE_SLUG}/photo.webp`])
+    expect(storageMocks.rpc).toHaveBeenCalledWith('release_deleted_customer_image', { p_owner: SITE_SLUG, p_path: `${SITE_SLUG}/photo.webp` })
+    expect(storageMocks.remove.mock.invocationCallOrder[0]).toBeLessThan(storageMocks.rpc.mock.invocationCallOrder[0])
   })
 })

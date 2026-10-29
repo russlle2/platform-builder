@@ -187,6 +187,8 @@ export async function GET(req: NextRequest) {
     supabaseProjectRef,
     supabaseSchemaVersion: launchSchema.schemaVersion,
     bookingKitSchemaVersion: launchSchema.kitSchemaVersion,
+    billingLifecycleSchemaVersion: launchSchema.billingSchemaVersion,
+    siteUsageSchemaVersion: launchSchema.usageSchemaVersion,
     supabaseSchemaReady: launchSchema.ready,
     publishedTemplateCount,
     templateCatalogReady,

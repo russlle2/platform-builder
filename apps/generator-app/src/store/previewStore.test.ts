@@ -103,6 +103,40 @@ describe('preview draft lifecycle', () => {
     expect(reloaded.getState().isSample).toBe(false)
   })
 
+  it('keeps reviewed locality on its exact template revision across reloads without leaking account email', async () => {
+    const { usePreviewStore: store } = await import('./previewStore')
+    store.getState().setBusinessInfo(real)
+    store.getState().setMatchedTemplate(realMatch)
+    store.getState().setTemplateFieldValues('revision-one', {
+      CITY: 'Albany', STATE: 'New York', PRACTITIONER_NAME: 'Jane & Joe', PHONE: '+1 555 0100',
+      ACCOUNT_EMAIL: 'do-not-publish@example.com',
+    })
+    expect(store.getState().businessInfo.ownerName).toBe('Jane & Joe')
+    expect(store.getState().getFieldValues('revision-one')).toMatchObject({ CITY: 'Albany', STATE: 'New York', OWNER_NAME: 'Jane & Joe', PRACTITIONER_NAME: 'Jane & Joe' })
+    expect(JSON.stringify(store.getState().getFieldValues('revision-one'))).not.toContain('do-not-publish@example.com')
+    expect(store.getState().getFieldValues('revision-two')).not.toHaveProperty('CITY')
+    vi.resetModules()
+    const { usePreviewStore: restored } = await import('./previewStore')
+    expect(restored.getState().getFieldValues('revision-one')).toHaveProperty('CITY', 'Albany')
+    restored.getState().setBusinessInfo({ businessName: 'Another Practice' })
+    expect(restored.getState().getFieldValues('revision-one')).not.toHaveProperty('CITY')
+  })
+
+  it('isolates reviewed values from samples and clears them on template changes', async () => {
+    const { usePreviewStore: store } = await import('./previewStore')
+    store.getState().setBusinessInfo(real)
+    store.getState().setMatchedTemplate(realMatch)
+    store.getState().setTemplateFieldValues('revision-one', { CITY: 'Albany' })
+    store.getState().startSample(sample)
+    store.getState().setTemplateFieldValues('revision-one', { CITY: 'Fictional City' })
+    expect(store.getState().getFieldValues('revision-one')).not.toHaveProperty('CITY')
+    store.getState().endSample()
+    expect(store.getState().getFieldValues('revision-one')).toHaveProperty('CITY', 'Albany')
+    store.getState().setMatchedTemplate({ ...realMatch, templateSlug: 'another-layout' })
+    expect(store.getState().getFieldValues('revision-one')).not.toHaveProperty('CITY')
+    expect(storage.has('pb_template_profile_values')).toBe(false)
+  })
+
   it('clears checkout and preview customizations without clearing portal or image ownership', async () => {
     const { usePreviewStore: store } = await import('./previewStore')
     store.getState().setBusinessInfo(real)

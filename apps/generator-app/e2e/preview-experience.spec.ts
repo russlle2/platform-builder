@@ -49,7 +49,7 @@ test.beforeEach(async ({ page }) => {
     const body = route.request().postDataJSON()
     return route.fulfill({ json: {
       html: `<!doctype html><html><head><title>Preview</title></head><body><h1>${body.values.BUSINESS_NAME}</h1><p>Original words</p><p>${body.page}</p><a href="mailto:${body.values.EMAIL}">${body.values.EMAIL}</a></body></html>`,
-      css: '', variationCSS: '',
+      css: '', variationCSS: '', fields: [{ name: 'BUSINESS_NAME', required: true }, { name: 'EMAIL', type: 'email', required: true }],
       catalogRevision: { contractVersion: 3, designId: 'design_sample', contentPresetId: 'content_sample', themePresetId: 'theme_sample', qualityReceipt: 'receipt_sample' },
     } })
   })
@@ -537,7 +537,7 @@ test('opening plans saves one checkpoint despite repeated submits and resumes af
   await page.getByRole('button', { name: 'Choose a launch plan' }).click()
   await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
   await page.getByLabel('Public contact email').fill('hello@example.com')
-  await page.getByRole('heading', { name: 'Confirm your email addresses before plans' }).locator('..').locator('..').evaluate(form => {
+  await page.getByRole('heading', { name: 'Review website details before plans' }).locator('..').locator('..').evaluate(form => {
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
     form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }))
   })
@@ -726,3 +726,76 @@ for (const earlierSave of ['completed', 'delayed']) {
     expect(profiles[0].profile.businessInfo.businessName).toBe('Earlier saved practice')
   })
 }
+
+test('selected design details and pending review edits are previewed before plans and preserved at checkout', async ({ page }) => {
+  const previews: Record<string, any>[] = []
+  let checkout: Record<string, any> | undefined
+  const fields = [
+    { name: 'BUSINESS_NAME', required: true }, { name: 'EMAIL', type: 'email', required: true },
+    { name: 'CITY', required: true, default: 'Your City' }, { name: 'STATE', required: true, default: 'Your State' },
+    { name: 'PHONE', type: 'tel', required: true }, { name: 'SERVICES', required: true },
+    { name: 'TAGLINE', required: true, default: 'A gentle place to begin.' },
+  ]
+  await seedRealDraft(page)
+  await page.route('**/api/templates/*/*/preview', (route) => {
+    const body = route.request().postDataJSON()
+    previews.push(body)
+    return route.fulfill({ json: {
+      html: `<!doctype html><html><body><h1>${body.values.BUSINESS_NAME}</h1><p>${body.values.CITY || 'Your City'}, ${body.values.STATE || 'Your State'}</p><p>${body.values.PHONE || ''}</p><p>${body.values.SERVICES || ''}</p></body></html>`,
+      css: '', variationCSS: '', fields, catalogRevision: ownPin.catalogRevision,
+    } })
+  })
+  await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
+  await page.route('**/api/stripe/checkout', (route) => {
+    checkout = route.request().postDataJSON()
+    return route.fulfill({ status: 409, json: { error: 'Fixture only.' } })
+  })
+  await page.goto('/preview-your-business')
+  await page.getByRole('button', { name: 'Resume preview' }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Saved Studio' })).toBeVisible()
+  expect(checkout).toBeUndefined()
+  await page.getByRole('button', { name: 'Choose a launch plan', exact: true }).click()
+  await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
+  await page.getByLabel('Public contact email', { exact: false }).fill('hello@example.com')
+  await page.getByRole('button', { name: 'Update preview', exact: true }).click()
+  await expect(page.getByText('Enter city used by this design.')).toBeVisible()
+  await expect(page.getByLabel('Tagline', { exact: false })).toHaveCount(0)
+  await page.getByLabel('City', { exact: false }).fill('Albany')
+  await page.getByLabel('State / region', { exact: false }).fill('New York')
+  await page.getByLabel('Phone', { exact: false }).fill('+1 555 0100')
+  await page.getByLabel('Services', { exact: false }).fill('Sound baths')
+  await page.getByRole('button', { name: 'Update preview', exact: true }).click()
+  await expect(page.getByText('Preview updated. Review your website below, then continue to plans.')).toBeVisible()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByText('Albany, New York')).toBeVisible()
+  await expect(page).toHaveURL(/\/preview-your-business$/)
+  await page.getByRole('button', { name: 'index', exact: true }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByText('Albany, New York')).toBeVisible()
+  expect(previews.at(-1)?.values).toMatchObject({ CITY: 'Albany', STATE: 'New York', PHONE: '+1 555 0100', SERVICES: 'Sound baths' })
+  expect(JSON.stringify(previews)).not.toContain('private@example.com')
+  // The editor's top CTA must not bypass unsaved review-form values after an
+  // earlier successful apply. The form is the only way forward while open.
+  await page.getByLabel('City', { exact: false }).fill('Boston')
+  await page.getByLabel('State / region', { exact: false }).fill('Massachusetts')
+  await page.getByLabel('Account email', { exact: false }).fill('updated-private@example.com')
+  await expect(page.getByRole('button', { name: 'Choose a launch plan', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Continue to plans', exact: true })).toHaveCount(0)
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByText('Albany, New York')).toBeVisible()
+  expect(checkout).toBeUndefined()
+  await page.getByRole('button', { name: 'Update preview', exact: true }).click()
+  await expect(page.getByText('Preview updated. Review your website below, then continue to plans.')).toBeVisible()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByText('Boston, Massachusetts')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Choose a launch plan', exact: true })).toHaveCount(0)
+  // A private inbox change needs no public-preview regeneration, but must be
+  // the address sent with checkout rather than an older persisted address.
+  await page.getByLabel('Account email', { exact: false }).fill('final-private@example.com')
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  await expect(page).toHaveURL(/\/pricing\?template=saved-layout/)
+  await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
+  await expect.poll(() => checkout).toBeTruthy()
+  expect(checkout?.customerValues).toMatchObject({ CITY: 'Boston', STATE: 'Massachusetts', PHONE: '+1 555 0100', SERVICES: 'Sound baths' })
+  expect(checkout?.accountEmail).toBe('final-private@example.com')
+  for (const privateAddress of ['private@example.com', 'updated-private@example.com', 'final-private@example.com']) {
+    expect(JSON.stringify(previews)).not.toContain(privateAddress)
+    expect(JSON.stringify(checkout?.customerValues)).not.toContain(privateAddress)
+  }
+})

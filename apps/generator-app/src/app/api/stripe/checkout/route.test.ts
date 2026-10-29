@@ -115,7 +115,37 @@ describe('template checkout draft-image gate', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    mocks.getTemplate.mockResolvedValue({ slug: 'serene' })
+    mocks.getTemplate.mockResolvedValue({ slug: 'serene', fields: [] })
+  })
+
+  it('rejects an incomplete pinned template profile before any Stripe or database write', async () => {
+    mocks.getTemplate.mockResolvedValue({ slug: 'serene', fields: [
+      { name: 'CITY', type: 'text', required: true, default: 'Your City' },
+      { name: 'PRACTITIONER_NAME', type: 'text', required: true },
+    ] })
+    const response = await checkoutPost(requestWithImages([], { reviewed: true }))
+    expect(response.status).toBe(409)
+    expect(await response.json()).toMatchObject({ code: 'template_profile_incomplete', fields: [
+      expect.objectContaining({ name: 'CITY' }), expect.objectContaining({ name: 'PRACTITIONER_NAME' }),
+    ] })
+    expect(mocks.createStripeClient).not.toHaveBeenCalled()
+    expect(mocks.supabaseFrom).not.toHaveBeenCalled()
+  })
+
+  it('accepts legitimate defaults and complete aliases without changing customer text', async () => {
+    mocks.getTemplate.mockResolvedValue({ slug: 'serene', fields: [
+      { name: 'PRACTITIONER_NAME', required: true },
+      { name: 'TAGLINE', required: true, default: 'A gentle place to begin.' },
+      { name: 'BOOKING_URL', type: 'url', required: true },
+    ] })
+    const state = checkoutLifecycle()
+    const response = await checkoutPost(requestWithImages([], { customerValues: {
+      BUSINESS_NAME: 'Jane & Joe', EMAIL: 'hello@example.com', OWNER_NAME: 'Jane', BOOKING_URL: '/contact.html',
+    } }))
+    expect(response.status).toBe(200)
+    expect(state.insertIntent).toHaveBeenCalledWith(expect.objectContaining({ payload: expect.objectContaining({
+      customerValues: expect.objectContaining({ BUSINESS_NAME: 'Jane & Joe' }),
+    }) }))
   })
 
   it.each(['original', 'ocean-breeze'])('retains the requested %s palette in the durable fulfillment payload', async (colorScheme) => {
@@ -220,7 +250,7 @@ describe('template checkout draft-image gate', () => {
       },
     })
     mocks.getTemplate.mockResolvedValue({
-      slug: 'serene',
+      slug: 'serene', fields: [],
       validation: { contractVersion: 3 },
       designId: 'design_shared',
       contentPresetId: 'content_serene',
@@ -545,6 +575,28 @@ describe('template checkout draft-image gate', () => {
     expect(response.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.maxAge).toBe(0)
     expect(state.createSession).toHaveBeenCalledTimes(1)
     expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('validates the stored profile when explicitly resuming, rather than different complete current details', async () => {
+    const state = await preparedAttempt()
+    mocks.getTemplate.mockResolvedValue({ slug: 'serene', fields: [{ name: 'CITY', required: true, default: 'Your City' }] })
+    const response = await checkoutPost(state.request({ resumePreviousCheckout: true, customerValues: {
+      BUSINESS_NAME: 'Example Wellness', EMAIL: 'owner@example.com', CITY: 'Albany',
+    } }))
+    expect(response.status).toBe(409)
+    expect(await response.json()).toMatchObject({ code: 'checkout_previous_profile_incomplete', recoveryUrl: '/contact' })
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('keeps a completed prior purchase reachable when the current draft lacks newly required details', async () => {
+    const state = await preparedAttempt()
+    mocks.getTemplate.mockResolvedValue({ slug: 'serene', fields: [{ name: 'CITY', required: true, default: 'Your City' }] })
+    state.retrieveSession.mockResolvedValue({ ...state.session, status: 'complete', payment_status: 'paid' })
+    const response = await checkoutPost(state.request())
+    expect(response.status).toBe(200)
+    expect(await response.json()).toHaveProperty('url', 'https://dailyclarity.org/success?session_id=cs_lifecycle')
+    expect(state.createSession).toHaveBeenCalledTimes(1)
   })
 
   it('releases only the owned pending reservation after verified expiration and requires a new click', async () => {

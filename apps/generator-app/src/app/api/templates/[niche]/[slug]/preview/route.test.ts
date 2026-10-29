@@ -78,6 +78,7 @@ describe('template preview route', () => {
     expect(body.variationCSS).toContain('--dc-theme-color_bg: #0B1628 !important')
     expect(body.variationCSS).toContain('--dc-theme-color_cta: #0EA5E9 !important')
     expect(body.catalogRevision).toEqual(catalogRevision)
+    expect(body.fields).toEqual([{ name: 'BUSINESS_NAME', type: 'text' }, { name: 'TAGLINE', type: 'text' }])
     expect(registry.getTemplateAtCatalogRevision).toHaveBeenCalledWith(
       'wellness',
       'compiled',
