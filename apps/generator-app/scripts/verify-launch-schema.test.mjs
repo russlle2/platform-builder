@@ -6,13 +6,13 @@ const scriptUrl = new URL('./verify-launch-schema.mjs', import.meta.url).href
 const launchRpc = 'https://stagingref.supabase.co/rest/v1/rpc/launch_schema_readiness'
 const kitRpc = 'https://stagingref.supabase.co/rest/v1/rpc/booking_kit_schema_version'
 
-function verify({ launch = { ready: true, schemaVersion: '20260903.4' }, kit = '20260925.2', status = 200, env = {} } = {}) {
+function verify({ launch = { ready: true, schemaVersion: '20260903.4' }, kit = '20260925.2', status = 200, additive = { ready: true, schemaVersion: '20261029.1' }, env = {} } = {}) {
   const program = `
     const calls = [];
     globalThis.fetch = async (url, options) => {
       calls.push(url);
       if (options.method !== 'POST' || options.headers.apikey !== 'fixture-secret') throw new Error('Unexpected probe contract');
-      return new Response(JSON.stringify(url.endsWith('launch_schema_readiness') ? ${JSON.stringify(launch)} : ${JSON.stringify(kit)}), { status: ${status} });
+      return new Response(JSON.stringify(url.endsWith('launch_schema_readiness') ? ${JSON.stringify(launch)} : url.endsWith('booking_kit_schema_version') ? ${JSON.stringify(kit)} : ${JSON.stringify(additive)}), { status: ${status} });
     };
     try { await import(${JSON.stringify(scriptUrl)}); }
     catch (error) { console.error(error.message); process.exitCode = 1; }
@@ -30,7 +30,7 @@ function verify({ launch = { ready: true, schemaVersion: '20260903.4' }, kit = '
 test('deployment schema gate accepts the latest migration and checks both RPCs', () => {
   const result = verify()
   assert.equal(result.status, 0, result.stderr)
-  assert.deepEqual(result.calls, [launchRpc, kitRpc])
+  assert.deepEqual(result.calls, [launchRpc, kitRpc, 'https://stagingref.supabase.co/rest/v1/rpc/billing_lifecycle_schema_readiness', 'https://stagingref.supabase.co/rest/v1/rpc/site_usage_schema_readiness'])
   assert.match(result.stdout, /schemas 20260903\.4 and 20260925\.2/)
 })
 
@@ -73,4 +73,10 @@ test('deployment schema gate fails closed without a configured credential', () =
   assert.match(result.stderr, /Missing: SUPABASE_SERVICE_ROLE_KEY\./)
   assert.doesNotMatch(result.stderr, /fixture-secret|stagingref\.supabase\.co/)
   assert.deepEqual(result.calls, [])
+})
+
+test('deployment schema gate rejects missing additive billing/usage contracts', () => {
+  const result = verify({ additive: { ready: false, schemaVersion: '20261029.1' } })
+  assert.equal(result.status, 1)
+  assert.match(result.stderr, /billing_lifecycle_schema_readiness must be ready/)
 })

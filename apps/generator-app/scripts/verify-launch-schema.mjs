@@ -51,4 +51,14 @@ const kitResponse = await fetch(`${url}/rest/v1/rpc/booking_kit_schema_version`,
 if (!kitResponse.ok || await kitResponse.json() !== '20260925.2') {
   throw new Error('Booking Kit and durable payment-evidence migration must be applied before deploying this worker.')
 }
-console.log(`[schema-gate] Supabase ${actualRef} is ready at schemas ${readiness.schemaVersion} and 20260925.2.`)
+for (const rpc of ['billing_lifecycle_schema_readiness', 'site_usage_schema_readiness']) {
+  const response = await fetch(`${url}/rest/v1/rpc/${rpc}`, {
+    method: 'POST', headers: { apikey: serviceKey, authorization: `Bearer ${serviceKey}`, 'content-type': 'application/json' },
+    body: '{}', signal: AbortSignal.timeout(15_000),
+  })
+  const result = response.ok ? await response.json() : null
+  if (result?.ready !== true || result?.schemaVersion !== '20261029.1') {
+    throw new Error(`${rpc} must be ready at 20261029.1 before deploying billing and usage controls.`)
+  }
+}
+console.log(`[schema-gate] Supabase ${actualRef} is ready at schemas ${readiness.schemaVersion} and 20260925.2; billing and usage 20261029.1.`)

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { sendContactNotification, sendContactConfirmation } from '@/lib/email'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
+import {
+  contactUsageOperation, reserveSiteUsage, finishSiteUsage, releaseSiteUsage,
+  UsageGuardError, type UsageOperation,
+} from '@/lib/site-usage'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -162,6 +166,13 @@ export async function POST(req: NextRequest) {
       return json({ error: 'Origin is not authorized for this site.' }, 403)
     }
 
+    let usage: UsageOperation | null = null
+    if (normalizedSlug) {
+      usage = contactUsageOperation(normalizedSlug, { name, email, phone, message }, body.requestId)
+      const claim = await reserveSiteUsage(supabase, usage)
+      if (claim.state === 'completed') return json(claim.body, claim.status, allowedOrigin)
+    }
+
     // Store the contact message before reporting success to the visitor.
     const { data: insertedMessage, error: insertError } = await supabase
       .from('contact_messages')
@@ -176,6 +187,11 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (insertError || !insertedMessage) {
+      // These PostgreSQL errors reject the statement before any email is sent.
+      // Connection/transport uncertainty keeps its reservation until reviewed.
+      if (usage && typeof insertError?.code === 'string' && /^(22|23|42|P0)[A-Z0-9]{3}$/.test(insertError.code)) {
+        await releaseSiteUsage(supabase, usage)
+      }
       throw insertError
     }
 
@@ -266,11 +282,23 @@ export async function POST(req: NextRequest) {
       console.error('[contact] notification status update failed:', statusError)
     }
 
-    return json({
+    const result = {
       ok: true,
       deliveryStatus: ownerNotificationStatus === 'sent' ? 'sent' : 'stored_for_review',
-    }, 200, allowedOrigin)
+    }
+    if (usage) await finishSiteUsage(supabase, usage, 200, result)
+    return json(result, 200, allowedOrigin)
   } catch (error) {
+    if (error instanceof UsageGuardError) {
+      if (error.code === 'usage_limit_reached') return json({
+        error: "This contact form has reached its monthly allowance. Please use the business's published contact details.",
+        code: 'contact_limit_reached', resetAt: error.resetAt,
+      }, 429, allowedOrigin)
+      if (error.code === 'usage_operation_pending') return json({
+        error: 'This message is already being processed. Please wait before trying again.', code: 'contact_processing',
+      }, 409, allowedOrigin)
+      return json({ error: 'This contact form is temporarily unavailable. Please try again later.', code: 'contact_unavailable' }, 503, allowedOrigin)
+    }
     console.error('[contact] handler error:', error)
     return json({ error: 'Unable to process your message.' }, 500, allowedOrigin)
   }

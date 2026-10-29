@@ -44,10 +44,17 @@ export interface MatchedTemplate {
 
 export type PreviewStep = 'info' | 'style' | 'matching' | 'editor' | 'browse'
 
+interface TemplateProfileValues {
+  scope: string
+  identity: string
+  values: Record<string, string>
+}
+
 interface PreviewDraft {
   businessInfo: BusinessInfo
   stylePreferences: StylePreferences
   matchedTemplate: MatchedTemplate | null
+  templateProfileValues: TemplateProfileValues | null
   infoSaved: boolean
   marketingEmailOptIn: boolean
 }
@@ -64,6 +71,7 @@ interface PreviewState {
   businessInfo: BusinessInfo
   stylePreferences: StylePreferences
   matchedTemplate: MatchedTemplate | null
+  templateProfileValues: TemplateProfileValues | null
 
   /* Persisted flag — once info is saved, auto-populate on every template */
   infoSaved: boolean
@@ -82,7 +90,8 @@ interface PreviewState {
   endSample: () => void
 
   /* Derived: values map for template hydration */
-  getFieldValues: () => Record<string, string>
+  getFieldValues: (scope?: string) => Record<string, string>
+  setTemplateFieldValues: (scope: string, values: Record<string, string>) => void
 }
 
 /* ------------------------------------------------------------------ */
@@ -183,6 +192,28 @@ function restoreMatch(): MatchedTemplate | null {
   }
 }
 
+const PROFILE_VALUES_KEY = 'pb_template_profile_values'
+const CORE_PROFILE_FIELDS: Record<string, keyof BusinessInfo> = {
+  BUSINESS_NAME: 'businessName', PRACTICE_NAME: 'businessName', BRAND_NAME: 'businessName', STUDIO_NAME: 'businessName',
+  OWNER_NAME: 'ownerName', PRACTITIONER_NAME: 'ownerName', COACH_NAME: 'ownerName', FACILITATOR_NAME: 'ownerName',
+  EMAIL: 'email', CONTACT_EMAIL: 'email', PHONE: 'phone', PHONE_NUMBER: 'phone', CONTACT_PHONE: 'phone',
+  ADDRESS: 'address', STREET_ADDRESS: 'address', TAGLINE: 'tagline', DESCRIPTION: 'description', SERVICES: 'services',
+}
+function businessIdentity(info: BusinessInfo): string {
+  return JSON.stringify([info.businessName, info.niche])
+}
+function restoreProfileValues(): TemplateProfileValues | null {
+  const value = loadFromStorage<TemplateProfileValues | null>(PROFILE_VALUES_KEY, null)
+  if (!value || typeof value.scope !== 'string' || typeof value.identity !== 'string'
+    || !value.values || typeof value.values !== 'object' || Array.isArray(value.values)) return null
+  return { scope: value.scope, identity: value.identity, values: safeProfileValues(value.values) }
+}
+function safeProfileValues(value: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(value).slice(0, 256)
+    .filter(([key, item]) => /^[A-Za-z0-9_]+$/.test(key) && key.replace(/_/g, '').toLowerCase() !== 'accountemail' && typeof item === 'string')
+    .map(([key, item]) => [key.toUpperCase(), item.replace(/\0/g, '').slice(0, 5000)]))
+}
+
 /* ------------------------------------------------------------------ */
 /* Store                                                               */
 /* ------------------------------------------------------------------ */
@@ -194,6 +225,7 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
   businessInfo: restoreBusinessInfo(),
   stylePreferences: restorePreferences(),
   matchedTemplate: restoreMatch(),
+  templateProfileValues: restoreProfileValues(),
   infoSaved: loadFromStorage<unknown>('pb_info_saved', false) === true,
   marketingEmailOptIn: loadFromStorage<unknown>('pb_marketing_email_opt_in', false) === true,
 
@@ -203,20 +235,23 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
     const previous = get().businessInfo
     const next = { ...previous, ...info }
     const nicheChanged = next.niche !== previous.niche
+    const identityChanged = businessIdentity(next) !== businessIdentity(previous)
     if (!get().isSample) {
       saveToStorage('pb_biz_info', next)
       if (nicheChanged) saveToStorage('pb_matched', null)
+      if (identityChanged) removeFromStorage(PROFILE_VALUES_KEY)
     }
-    set({ businessInfo: next, ...(nicheChanged ? { matchedTemplate: null } : {}) })
+    set({ businessInfo: next, ...(nicheChanged ? { matchedTemplate: null } : {}), ...(identityChanged ? { templateProfileValues: null } : {}) })
   },
 
   replaceBusinessInfo: (info) => {
     removeFromStorage(PREVIEW_SAMPLE_STORAGE_KEY)
     saveToStorage('pb_biz_info', info)
+    removeFromStorage(PROFILE_VALUES_KEY)
     saveToStorage('pb_matched', null)
     saveToStorage('pb_info_saved', false)
     saveToStorage('pb_style_prefs', defaultStylePreferences)
-    set({ businessInfo: info, stylePreferences: defaultStylePreferences, matchedTemplate: null, infoSaved: false, step: 'info', isSample: false, savedDraft: null })
+    set({ businessInfo: info, templateProfileValues: null, stylePreferences: defaultStylePreferences, matchedTemplate: null, infoSaved: false, step: 'info', isSample: false, savedDraft: null })
   },
 
   setStylePreferences: (prefs) => {
@@ -226,8 +261,33 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
   },
 
   setMatchedTemplate: (match) => {
-    if (!get().isSample) saveToStorage('pb_matched', match)
-    set({ matchedTemplate: match })
+    const previous = get().matchedTemplate
+    const changed = previous?.nicheSlug !== match?.nicheSlug || previous?.templateSlug !== match?.templateSlug
+    if (!get().isSample) {
+      saveToStorage('pb_matched', match)
+      if (changed) removeFromStorage(PROFILE_VALUES_KEY)
+    }
+    set({ matchedTemplate: match, ...(changed ? { templateProfileValues: null } : {}) })
+  },
+
+  setTemplateFieldValues: (scope, values) => {
+    if (get().isSample) return
+    const next = { ...get().businessInfo }
+    const extra: Record<string, string> = {}
+    for (const [key, value] of Object.entries(safeProfileValues(values))) {
+      const property = CORE_PROFILE_FIELDS[key]
+      if (property) next[property] = value
+      else extra[key] = value
+    }
+    const previous = get().templateProfileValues
+    const identity = businessIdentity(next)
+    const templateProfileValues = {
+      scope, identity,
+      values: { ...(previous?.scope === scope && previous.identity === identity ? previous.values : {}), ...extra },
+    }
+    saveToStorage('pb_biz_info', next)
+    saveToStorage(PROFILE_VALUES_KEY, templateProfileValues)
+    set({ businessInfo: next, templateProfileValues })
   },
 
   setMarketingEmailOptIn: (enabled) => {
@@ -246,6 +306,7 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
       businessInfo: current.businessInfo,
       stylePreferences: current.stylePreferences,
       matchedTemplate: current.matchedTemplate,
+      templateProfileValues: current.templateProfileValues,
       infoSaved: current.infoSaved,
       marketingEmailOptIn: current.marketingEmailOptIn,
     }
@@ -255,6 +316,7 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
       businessInfo: info,
       stylePreferences: { ...defaultStylePreferences, vibes: ['warm', 'earthy'], colorMood: 'nature-organic' },
       matchedTemplate: null,
+      templateProfileValues: null,
       infoSaved: false,
       isSample: true,
       savedDraft,
@@ -277,7 +339,7 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
       'pb_custom_theme', 'pb_inline_edits',
       'pb_inline_edits_legacy_migrated_v1', 'pb_image_swaps',
       'pb_image_swaps_legacy_migrated_v1',
-      PREVIEW_SAMPLE_STORAGE_KEY,
+      PREVIEW_SAMPLE_STORAGE_KEY, PROFILE_VALUES_KEY,
     ]) removeFromStorage(key)
     for (const key of ['pb_inline_edits_by_scope_v1', 'pb_image_swaps_by_scope_v1']) {
       const scopes = loadFromStorage<Record<string, unknown> | null>(key, null)
@@ -292,6 +354,7 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
       businessInfo: { ...defaultBusinessInfo },
       stylePreferences: { ...defaultStylePreferences, vibes: [] },
       matchedTemplate: null,
+      templateProfileValues: null,
       infoSaved: false,
       isSample: false,
       savedDraft: null,
@@ -299,8 +362,10 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
     })
   },
 
-  getFieldValues: () => {
-    const b = get().businessInfo
+  getFieldValues: (scope) => {
+    const state = get()
+    const b = state.businessInfo
+    const profile = state.templateProfileValues
     return {
       BUSINESS_NAME: b.businessName,
       PRACTICE_NAME: b.businessName,
@@ -333,6 +398,7 @@ export const usePreviewStore = create<PreviewState>((set, get) => ({
       address: b.address,
       tagline: b.tagline,
       description: b.description,
+      ...(!state.isSample && scope && profile?.scope === scope && profile.identity === businessIdentity(b) ? profile.values : {}),
     }
   },
 }))

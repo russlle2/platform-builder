@@ -1,3 +1,4 @@
+import './hosting-entitlements.pglite.test.mjs'
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
@@ -24,7 +25,9 @@ test('every committed migration replays in order on an empty application databas
         id text primary key, name text, public boolean,
         file_size_limit bigint, allowed_mime_types text[]
       );
-      create table storage.objects (id uuid primary key, bucket_id text);
+      create table storage.objects (id uuid primary key, bucket_id text, name text, metadata jsonb);
+      grant usage on schema storage to service_role;
+      grant select on storage.objects to service_role;
     `)
     const migrations = (await readdir(directory)).filter(name => name.endsWith('.sql')).sort()
     assert.ok(migrations.length >= 14)
@@ -34,6 +37,10 @@ test('every committed migration replays in order on an empty application databas
       } catch (cause) {
         throw new Error(`Clean migration replay failed at ${name}`, { cause })
       }
+    }
+    assert.deepEqual((await db.query('select public.billing_lifecycle_schema_readiness() as readiness')).rows[0].readiness, { ready: true, schemaVersion: '20261029.1' })
+    if (migrations.includes('20261029183330_enforce_site_usage_allowances.sql')) {
+      assert.deepEqual((await db.query('select public.site_usage_schema_readiness() as readiness')).rows[0].readiness, { ready: true, schemaVersion: '20261029.1' })
     }
     // The staged additive measurement migration can be safely reapplied.
     await db.exec(await readFile(`${directory}/20260925072106_booking_kit_measurement.sql`, 'utf8'))

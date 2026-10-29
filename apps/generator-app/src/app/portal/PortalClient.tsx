@@ -19,6 +19,8 @@ import {
   storePortalToken,
 } from '@/lib/portal-token-client'
 import { getPlan } from '@/lib/plans'
+import { UsageAllowanceCard } from '@/components/portal/UsageAllowanceCard'
+import type { SiteUsageStatus } from '@/lib/usage-allowances'
 
 const normalizeSlug = (value: string) =>
   value
@@ -82,6 +84,7 @@ export default function PortalClient() {
   const [slug, setSlug] = useState(initialSlug)
   const [token, setToken] = useState('')
   const [site, setSite] = useState<Site | null>(null)
+  const [usage, setUsage] = useState<SiteUsageStatus | null>(null)
   const [publicUrl, setPublicUrl] = useState<string | null>(null)
   const [status, setStatus] = useState<'idle' | 'loading' | 'saving' | 'error'>(
     'idle',
@@ -95,6 +98,7 @@ export default function PortalClient() {
   const [publishNote, setPublishNote] = useState('')
   const requestId = useRef(0)
   const saving = useRef(false)
+  const publishAttempt = useRef<{ id: string; payload: string } | null>(null)
   const dirty =
     Boolean(site) && JSON.stringify(form) !== JSON.stringify(savedForm)
   const busy = status === 'loading' || status === 'saving'
@@ -109,6 +113,8 @@ export default function PortalClient() {
       setLookup(normalized)
       setToken(credential)
       setSite(null)
+      setUsage(null)
+      publishAttempt.current = null
       setForm(emptyForm)
       setSavedForm(emptyForm)
       setPublicUrl(null)
@@ -135,6 +141,7 @@ export default function PortalClient() {
         ) {
           const loaded = result.site as Site
           setSite(loaded)
+          setUsage(result.usage || null)
           setForm(detailsFor(loaded.data))
           setSavedForm(detailsFor(loaded.data))
         } else setPublicUrl(safeSiteUrl(result.site?.public?.siteUrl))
@@ -255,6 +262,10 @@ export default function PortalClient() {
       description: submitted.description,
       services: submitted.services,
     }
+    const payload = JSON.stringify({ slug: site.slug, customerValues })
+    if (publishAttempt.current?.payload !== payload) {
+      publishAttempt.current = { id: crypto.randomUUID(), payload }
+    }
     try {
       const response = await fetch('/api/portal/customer', {
         method: 'POST',
@@ -262,9 +273,13 @@ export default function PortalClient() {
           'Content-Type': 'application/json',
           ...(token ? { 'x-portal-token': token } : {}),
         },
-        body: JSON.stringify({ slug: site.slug, customerValues }),
+        body: JSON.stringify({ slug: site.slug, customerValues, operationId: publishAttempt.current.id }),
       })
       const result = await response.json().catch(() => ({}))
+      if (result.usage) setUsage(result.usage)
+      // Only a definite failure before provider submission is safe to retry
+      // with a new reference. A lost or uncertain response retains its ID.
+      if (result.code === 'publish_failed') publishAttempt.current = null
       if (!response.ok && !result.saved)
         throw new Error(
           typeof result.error === 'string'
@@ -273,12 +288,18 @@ export default function PortalClient() {
         )
       setSavedForm(submitted)
       setStatus('idle')
-      if (!response.ok || result.code === 'publish_failed') {
+      if (result.code === 'publish_pending') {
+        setPublishState('pending')
+        setPublishNote('Your changes are saved, but publication could not be confirmed. Contact support to verify the existing attempt before publishing again.')
+      } else if (!response.ok || result.code === 'publish_failed') {
         setPublishState('failed')
         setPublishNote(
           'Your changes are saved, but your live website has not been updated. Retry publishing below.',
         )
       } else if (result.republished === true) {
+        // A received success completes this attempt. A later explicit publish
+        // must not replay this receipt after another editor changes the site.
+        publishAttempt.current = null
         setPublishState('published')
         setPublishNote('Saved and published to your live site.')
       } else {
@@ -779,6 +800,7 @@ export default function PortalClient() {
                     Manage your subscription, invoices, and payment method
                     through your signed-in account.
                   </p>
+                  <UsageAllowanceCard usage={usage} />
                   <Link
                     href={`/dashboard?site=${encodeURIComponent(site.slug)}#billing`}
                     onClick={guardNavigation}

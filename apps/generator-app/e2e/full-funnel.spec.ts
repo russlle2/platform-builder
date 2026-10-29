@@ -85,10 +85,34 @@ test.describe('Full purchase funnel (test mode)', () => {
       return raw ? JSON.parse(raw)?.primary : null
     })).toBe('#0ea5e9')
 
-    await Promise.all([
-      page.waitForURL(/\/pricing(?:\?|$)/),
-      plansButton.click(),
-    ])
+    await plansButton.click()
+    // Real designs can require details that the quick preview intentionally
+    // leaves optional. Complete that visible review before entering plans.
+    const detailsHeading = page.getByRole('heading', { name: 'Review website details before plans' })
+    await expect.poll(async () => await detailsHeading.isVisible() || new URL(page.url()).pathname === '/pricing', { timeout: 30000 }).toBe(true)
+    if (await detailsHeading.isVisible()) {
+      const detailsForm = page.locator('form').filter({ has: detailsHeading })
+      const fixtureValues: Record<string, string> = {
+        PRACTITIONER_NAME: 'Alex Morgan', OWNER_NAME: 'Alex Morgan',
+        PHONE: testPhone, PHONE_NUMBER: testPhone, CONTACT_PHONE: testPhone,
+        CITY: 'Albany', STATE: 'New York', ADDRESS: 'Albany, New York',
+        SERVICES: 'Personal aromatherapy consultations',
+        TAGLINE: 'A welcoming space for your wellbeing.',
+        DESCRIPTION: 'Personal aromatherapy consultations in Albany.',
+        BOOKING_URL: '/contact.html', CONTACT_URL: '/contact.html',
+        CTA_LABEL: 'Contact us', WEBSITE: 'https://example.com',
+      }
+      const requiredInputs = detailsForm.locator('input[name]')
+      for (const input of await requiredInputs.all()) {
+        const name = await input.getAttribute('name')
+        expect(name && fixtureValues[name], `A real value is required for the selected design's ${name} field.`).toBeTruthy()
+        await input.fill(fixtureValues[name!])
+      }
+      await detailsForm.getByRole('button', { name: 'Update preview', exact: true }).click()
+      await expect(detailsForm.getByRole('status')).toContainText('Preview updated', { timeout: 25000 })
+      await detailsForm.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+    }
+    await expect(page).toHaveURL(/\/pricing(?:\?|$)/, { timeout: 30000 })
     // Plans are reached after the explicit save checkpoint. Read the real
     // destination so the provisioning simulation receives the selected layout
     // and style variations used by the customer-facing handoff.

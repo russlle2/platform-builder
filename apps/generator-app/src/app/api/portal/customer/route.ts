@@ -24,6 +24,10 @@ import {
   preparePortalCustomizationUpdate,
   type CustomerSiteData,
 } from '@/lib/customer-site-state'
+import {
+  usageOperation, reserveSiteUsage, finishSiteUsage, releaseSiteUsage,
+  readSiteUsage, UsageGuardError,
+} from '@/lib/site-usage'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -90,7 +94,7 @@ async function isAuthorizedPortalOwner(
   return isAuthenticatedPortalOwnerForSlug(serviceClient, row.slug)
 }
 
-async function republishSite(slug: string, data: SiteData): Promise<boolean> {
+async function republishSite(slug: string, data: SiteData, onProviderStart?: () => void): Promise<boolean> {
   const siteId = data.netlify_site_id
   if (!process.env.NETLIFY_ACCESS_TOKEN || !siteId || !data.site_url || !data.niche || !data.template) return false
   const deployFiles = await buildDeployFiles({
@@ -109,6 +113,7 @@ async function republishSite(slug: string, data: SiteData): Promise<boolean> {
     allowSearchIndexing: data.allowSearchIndexing !== false,
   })
   if (!deployFiles) return false
+  onProviderStart?.()
   await deploySiteFiles(siteId, deployFiles)
   return true
 }
@@ -173,6 +178,7 @@ export async function GET(req: NextRequest) {
   return NextResponse.json({
     site: toAuthenticatedPortalSite(data as PortalSiteRow),
     authenticated: true,
+    usage: await readSiteUsage(supabase, slug).catch(() => null),
   })
 }
 
@@ -194,6 +200,9 @@ export async function POST(req: NextRequest) {
   if (!update.ok) return NextResponse.json({ error: update.error }, { status: 400 })
 
   if (!supabase) {
+    if (process.env.NODE_ENV === 'production') {
+      return NextResponse.json({ error: 'Usage verification is temporarily unavailable.', code: 'usage_unavailable' }, { status: 503 })
+    }
     const local = await readLocalSite(slug)
     if (!verifyPortalTokenHash(
       token || '',
@@ -258,6 +267,17 @@ export async function POST(req: NextRequest) {
     )
   }
 
+  const operation = usageOperation(slug, 'publish', update, body.operationId)
+  try {
+    const claim = await reserveSiteUsage(supabase, operation)
+    if (claim.state === 'completed') return NextResponse.json(claim.body, { status: claim.status })
+  } catch (problem) {
+    if (problem instanceof UsageGuardError) return NextResponse.json({
+      error: problem.message, code: problem.code, resetAt: problem.resetAt,
+    }, { status: problem.status })
+    return NextResponse.json({ error: 'Usage verification is temporarily unavailable.', code: 'usage_unavailable' }, { status: 503 })
+  }
+
   const { data: mergedResult, error } = await supabase.rpc('merge_portal_site_data', {
     p_slug: slug,
     p_customer_values: update.customerValues,
@@ -265,33 +285,42 @@ export async function POST(req: NextRequest) {
   })
 
   if (error || !mergedResult || typeof mergedResult !== 'object' || Array.isArray(mergedResult)) {
+    // No publication has been attempted yet.
+    await releaseSiteUsage(supabase, operation)
     return NextResponse.json({ error: 'Unable to save site.' }, { status: 500 })
   }
   const mergedData = mergedResult as SiteData
 
   let republished = false
   let publishError: string | null = null
+  let providerAttempted = false
   try {
-    republished = await republishSite(slug, mergedData)
+    republished = await republishSite(slug, mergedData, () => { providerAttempted = true })
+    if (!republished) await releaseSiteUsage(supabase, operation)
   } catch (err) {
     console.error('[portal/customer] republish failed:', err)
     publishError = err instanceof Error ? err.message : 'Publish failed'
+    if (!providerAttempted) await releaseSiteUsage(supabase, operation)
   }
 
   if (mergedData.netlify_site_id && !republished) {
-    return NextResponse.json(
-      {
-        error: 'Your changes were saved, but the live publish failed. Please retry.',
+    const result = {
+        error: providerAttempted
+          ? 'Your changes were saved, but publication could not be confirmed. Please contact support so we can verify the existing attempt before another publish.'
+          : 'Your changes were saved, but the live publish did not start. Please retry.',
         saved: true,
         republished: false,
-        code: 'publish_failed',
+        code: providerAttempted ? 'publish_pending' : 'publish_failed',
         ...(process.env.NODE_ENV === 'development' && publishError ? { detail: publishError } : {}),
-      },
-      { status: 502 },
-    )
+    }
+    // An uncertain provider result must keep the publication slot occupied.
+    // A successful retry of this request cannot start another Netlify deploy.
+    return NextResponse.json(result, { status: 502 })
   }
 
-  return NextResponse.json({ ok: true, republished })
+  const result = { ok: true, republished }
+  if (republished) await finishSiteUsage(supabase, operation, 200, result)
+  return NextResponse.json({ ...result, usage: await readSiteUsage(supabase, slug).catch(() => null) })
 }
 
 interface OwnedPortalRow extends PortalSiteRow {

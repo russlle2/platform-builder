@@ -14,7 +14,7 @@ import {
   sanitizeCustomerValues,
 } from '@/lib/site-deploy'
 import { getTemplateAtCatalogRevision } from '@/lib/templates/niche-registry'
-import { buildCheckoutTemplateState } from '@/lib/customer-site-state'
+import { buildCheckoutTemplateState, type PersistedTemplateCustomization } from '@/lib/customer-site-state'
 import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
 import { stripeCheckoutExperience } from '@/lib/stripe-checkout-experience'
 import { readBoundedJson } from '@/lib/bounded-json'
@@ -27,6 +27,7 @@ import { normalizeSiteSlug, validateSiteSlug } from '@/lib/site-slug'
 import { UPLOAD_SESSION_COOKIE, verifyUploadSessionValue } from '@/lib/upload-session'
 import { normalizeAccountEmail, omitAccountEmailFields } from '@/lib/account-email'
 import { isDefinitiveCheckoutRejection, uncertainCheckoutResponse } from '@/lib/checkout-creation-error'
+import { readProfileFields, reviewTemplateProfile } from '@/lib/template-profile-review'
 import { CHECKOUT_ATTEMPT_COOKIE, CHECKOUT_ATTEMPT_MAX_AGE, createCheckoutAttempt, verifyCheckoutAttempt, inspectCheckoutAttempt, type ExistingCheckoutIntent } from '@/lib/checkout-resume'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
@@ -183,6 +184,29 @@ export async function POST(req: NextRequest) {
             { status: 400 },
           )
     }
+    const attemptCookie = req.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.value
+    const priorIntentId = verifyCheckoutAttempt(attemptCookie)
+    if ((attemptCookie && !priorIntentId) || (body.resumePreviousCheckout === true && !priorIntentId)) {
+      return forgetAttempt(NextResponse.json({
+        error: 'Your earlier checkout could not be identified. Check your account before starting again.',
+        code: 'checkout_resume_unavailable', recoveryUrl: '/dashboard',
+      }, { status: 409 }))
+    }
+    const profileFields = readProfileFields(selectedTemplate.fields)
+    if (!profileFields) return NextResponse.json({
+      error: 'This design’s website details are temporarily unavailable. Reload the preview before checkout.',
+      code: 'template_profile_unavailable', recoveryUrl: '/preview-your-business', retrySafe: true,
+    }, { status: 503 })
+    // A new purchase must be complete before any Stripe request. A returning
+    // attempt is reconciled first so already-completed purchases remain usable.
+    if (!priorIntentId) {
+      const issues = reviewTemplateProfile(profileFields, safeCustomerValues)
+      if (issues.length) return NextResponse.json({
+        error: 'Complete the details used by this design in your preview before checkout.',
+        code: 'template_profile_incomplete', fields: issues,
+        recoveryUrl: '/preview-your-business',
+      }, { status: 409 })
+    }
     const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
     const cookieImageOwner = verifyUploadSessionValue(
       req.cookies.get(UPLOAD_SESSION_COOKIE)?.value,
@@ -257,14 +281,6 @@ export async function POST(req: NextRequest) {
       imageOwner: imageSession.imageOwner,
     })
     const catalogRevision = checkoutPayload.catalogRevision
-    const attemptCookie = req.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.value
-    const priorIntentId = verifyCheckoutAttempt(attemptCookie)
-    if ((attemptCookie && !priorIntentId) || (body.resumePreviousCheckout === true && !priorIntentId)) {
-      return forgetAttempt(NextResponse.json({
-        error: 'Your earlier checkout could not be identified. Check your account before starting again.',
-        code: 'checkout_resume_unavailable', recoveryUrl: '/dashboard',
-      }, { status: 409 }))
-    }
     if (priorIntentId) {
       // Reads only until Stripe independently confirms terminal expiration.
       // Unknown state must never become permission to start another purchase.
@@ -284,9 +300,24 @@ export async function POST(req: NextRequest) {
         if (state === 'complete') {
           return forgetAttempt(NextResponse.json({ url: `${origin}/success?session_id=${encodeURIComponent(previousSession.id)}` }))
         }
-        if (state === 'open') return NextResponse.json({ url: previousSession.url }, {
-          headers: { 'Cache-Control': 'private, no-store' },
-        })
+        if (state === 'open') {
+          const saved = prior.payload as Partial<PersistedTemplateCustomization> | null
+          if (!saved || typeof saved.template !== 'string' || typeof saved.niche !== 'string') {
+            return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+          }
+          const priorTemplate = await getTemplateAtCatalogRevision(saved.niche, saved.template, saved.catalogRevision)
+          const priorFields = priorTemplate && readProfileFields(priorTemplate.fields)
+          if (!priorFields) return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+          const issues = reviewTemplateProfile(priorFields, omitAccountEmailFields(sanitizeCustomerValues(saved.customerValues)))
+          if (issues.length) return NextResponse.json({
+            code: 'checkout_previous_profile_incomplete',
+            error: 'Your earlier checkout is missing details used by its design. Contact support to close that checkout before starting again.',
+            recoveryUrl: '/contact',
+          }, { status: 409, headers: { 'Cache-Control': 'private, no-store' } })
+          return NextResponse.json({ url: previousSession.url }, {
+            headers: { 'Cache-Control': 'private, no-store' },
+          })
+        }
         if (state === 'changed') return NextResponse.json({
           code: 'checkout_draft_changed',
           error: 'Your earlier checkout is still open with different details. Resume that checkout, or contact support before starting another.',

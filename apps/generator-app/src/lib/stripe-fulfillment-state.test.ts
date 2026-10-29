@@ -24,6 +24,11 @@ function createSupabase(portalApplied: boolean) {
   }))
   const supabase = {
     from: vi.fn((table: string) => {
+      if (table === 'portal_sites') {
+        const query = { select: vi.fn(), eq: vi.fn(), maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }) }
+        query.select.mockReturnValue(query); query.eq.mockReturnValue(query)
+        return query
+      }
       if (table !== 'orders') throw new Error(`Unexpected table: ${table}`)
       return ordersQuery
     }),

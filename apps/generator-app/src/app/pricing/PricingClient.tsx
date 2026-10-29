@@ -172,6 +172,14 @@ export default function PricingClient() {
         setCheckoutRecoveryUrl('/dashboard')
         setCheckoutRecoveryLabel('Check your account before starting again')
       }
+      if (data?.code === 'template_profile_incomplete' || data?.code === 'template_profile_unavailable') {
+        setCheckoutRecoveryUrl('/preview-your-business')
+        setCheckoutRecoveryLabel('Review your website details')
+      }
+      if (data?.code === 'checkout_previous_profile_incomplete') {
+        setCheckoutRecoveryUrl('/contact')
+        setCheckoutRecoveryLabel('Contact support about the earlier checkout')
+      }
       if (data?.code === 'checkout_creation_uncertain') {
         setCheckoutUncertain(true)
         setCheckoutReference(typeof data.reference === 'string' ? data.reference : null)
