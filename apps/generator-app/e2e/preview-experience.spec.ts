@@ -514,15 +514,19 @@ test('a delayed plans checkpoint cannot navigate or restore a handoff after retu
   await expect(page.getByLabel('Business Name')).toHaveValue('Saved Studio')
   await expect(page).toHaveURL(/\/preview-your-business$/)
   await expect(page.getByRole('button', { name: 'Continue to plans', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Continue with reviewed details', exact: true })).toHaveCount(0)
 })
 
-test('opening plans saves one checkpoint despite repeated submits and resumes after a clear save failure', async ({ page }) => {
+test('opening plans deduplicates submits and revalidates changed emails after a save failure', async ({ page }) => {
   let releasePlans!: () => void
   const heldPlans = new Promise<void>(resolve => { releasePlans = resolve })
   let plansRequests = 0
+  const plansProfiles: Record<string, any>[] = []
   await page.route('**/api/profile/save-draft', async route => {
-    if (route.request().postDataJSON().profile.funnel.stage === 'plans') {
+    const body = route.request().postDataJSON()
+    if (body.profile.funnel.stage === 'plans') {
       plansRequests++
+      plansProfiles.push(body)
       if (plansRequests === 1) {
         await heldPlans
         await route.fulfill({ status: 503, json: { error: 'Draft save unavailable.' } })
@@ -548,12 +552,120 @@ test('opening plans saves one checkpoint despite repeated submits and resumes af
   await expect(page.getByRole('button', { name: 'Choose a launch plan', exact: true })).toHaveCount(0)
   releasePlans()
   const retry = page.getByRole('button', { name: 'Continue to plans', exact: true })
+  // The outage fallback is only for the unchanged, already reviewed details.
+  const fallback = page.getByRole('button', { name: 'Continue with reviewed details', exact: true })
+  await expect(fallback).toBeVisible()
+  await expect(retry).toHaveCount(1)
   await expect(retry).toBeEnabled()
   await expect(page.getByText(/could not save your details/)).toBeVisible()
   await expect(page.getByLabel('Account email', { exact: false })).toHaveValue('private@example.com')
   await expect(page.getByLabel('Public contact email')).toHaveValue('hello@example.com')
+  await page.getByLabel('Account email', { exact: false }).fill('invalid@')
+  await expect(fallback).toHaveCount(0)
+  await retry.click()
+  await expect(page.getByText('Enter a valid account email address.', { exact: true })).toBeVisible()
+  await expect(page).toHaveURL(/\/preview-your-business$/)
+  expect(plansRequests).toBe(1)
+
+  await page.getByLabel('Account email', { exact: false }).fill('updated-private@example.com')
+  await page.getByLabel('Public contact email').fill('invalid@')
+  await retry.click()
+  await expect(page.getByText('Enter a valid public contact email address.', { exact: true })).toBeVisible()
+  await expect(page).toHaveURL(/\/preview-your-business$/)
+  expect(plansRequests).toBe(1)
+
+  await page.getByLabel('Public contact email').fill('updated-public@example.com')
   await retry.click()
   await expect(page).toHaveURL(/\/pricing\?/)
+  expect(plansRequests).toBe(2)
+  expect(plansProfiles[1]).toMatchObject({
+    email: 'updated-private@example.com',
+    profile: { businessInfo: {
+      accountEmail: 'updated-private@example.com', email: 'updated-public@example.com',
+    } },
+  })
+})
+
+for (const nextStep of ['continue', 'change template'] as const) {
+test(`draft-save outage recovery can ${nextStep} without reusing a stale selection`, async ({ page }) => {
+  let plansRequests = 0
+  let checkout: Record<string, any> | undefined
+  await page.route('**/api/profile/save-draft', route => {
+    if (route.request().postDataJSON().profile.funnel.stage === 'plans') plansRequests++
+    return route.fulfill({ status: 503, json: { error: 'Draft save unavailable.' } })
+  })
+  await page.route('**/api/platform/config', route => route.fulfill({ json: { trialDays: 0 } }))
+  await page.route('**/api/stripe/checkout', route => {
+    checkout = route.request().postDataJSON()
+    return route.fulfill({ status: 409, json: { error: 'Fixture only.' } })
+  })
+  await seedRealDraft(page)
+  await page.goto('/preview-your-business')
+  await page.getByRole('button', { name: 'Resume preview' }).click()
+  await page.getByRole('button', { name: 'Choose a launch plan' }).click()
+  await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
+  await page.getByLabel('Public contact email').fill('hello@example.com')
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  const fallback = page.getByRole('button', { name: 'Continue with reviewed details', exact: true })
+  await expect(fallback).toBeVisible()
+  if (nextStep === 'change template') {
+    await page.evaluate(() => window.history.pushState(null, '', '/preview-your-business?niche=wellness_coach&template=different-layout'))
+    await expect(page.getByLabel('Business Name')).toHaveValue('Saved Studio')
+    await expect(fallback).toHaveCount(0)
+    expect(plansRequests).toBe(1)
+    expect(checkout).toBeUndefined()
+    return
+  }
+  await fallback.click()
+  await expect(page).toHaveURL(/\/pricing\?template=saved-layout/)
+  expect(plansRequests).toBe(1)
+  await page.getByRole('button', { name: 'Choose Plan', exact: true }).first().click()
+  await expect.poll(() => checkout).toBeTruthy()
+  expect(checkout).toMatchObject({ accountEmail: 'private@example.com', customerValues: { EMAIL: 'hello@example.com' } })
+  expect(JSON.stringify(checkout?.customerValues)).not.toContain('private@example.com')
+})
+}
+
+test('outage fallback expires when reviewed profile fields or the catalogue revision change', async ({ page }) => {
+  let revision = ownPin.catalogRevision
+  let plansRequests = 0
+  await page.route('**/api/templates/*/*/preview', route => {
+    const body = route.request().postDataJSON()
+    return route.fulfill({ json: {
+      html: `<!doctype html><html><body><h1>${body.values.BUSINESS_NAME}</h1><p>${body.values.CITY || 'Your City'}</p></body></html>`,
+      css: '', variationCSS: '', catalogRevision: revision,
+      fields: [{ name: 'BUSINESS_NAME', required: true }, { name: 'EMAIL', type: 'email', required: true }, { name: 'CITY', required: true, default: 'Your City' }],
+    } })
+  })
+  await page.route('**/api/profile/save-draft', route => {
+    if (route.request().postDataJSON().profile.funnel.stage === 'plans') plansRequests++
+    return route.fulfill({ status: 503, json: { error: 'Draft save unavailable.' } })
+  })
+  await seedRealDraft(page)
+  await page.goto('/preview-your-business')
+  await page.getByRole('button', { name: 'Resume preview' }).click()
+  await page.getByRole('button', { name: 'Choose a launch plan' }).click()
+  await page.getByLabel('Account email', { exact: false }).fill('private@example.com')
+  await page.getByLabel('Public contact email').fill('hello@example.com')
+  await page.getByLabel('City', { exact: false }).fill('Albany')
+  await page.getByRole('button', { name: 'Update preview', exact: true }).click()
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  const fallback = page.getByRole('button', { name: 'Continue with reviewed details', exact: true })
+  await expect(fallback).toBeVisible()
+  await page.getByLabel('City', { exact: false }).fill('Boston')
+  await expect(fallback).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Continue to plans', exact: true })).toHaveCount(0)
+  expect(plansRequests).toBe(1)
+  await page.getByRole('button', { name: 'Update preview', exact: true }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByText('Boston', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  await expect(fallback).toBeVisible()
+  expect(plansRequests).toBe(2)
+  revision = { ...ownPin.catalogRevision, qualityReceipt: 'receipt_new_revision' }
+  await page.getByRole('button', { name: 'index', exact: true }).click()
+  await expect(fallback).toHaveCount(0)
+  await expect.poll(() => page.evaluate(() => JSON.parse(sessionStorage.getItem('pb_catalog_revision')!).catalogRevision.qualityReceipt)).toBe('receipt_new_revision')
+  await expect(page).toHaveURL(/\/preview-your-business$/)
   expect(plansRequests).toBe(2)
 })
 

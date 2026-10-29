@@ -428,6 +428,7 @@ export default function PreviewYourBusinessClient() {
     plansRequestRef.current += 1
     plansInFlightRef.current = false
     setOpeningPlans(false)
+    setPendingPlansHref(null)
   }, [])
 
   const invalidateLeadSaves = useCallback(() => {
@@ -555,6 +556,9 @@ export default function PreviewYourBusinessClient() {
   /* ================ Load live preview ================ */
   const loadPreview = useCallback(
     async (nicheSlug?: string, templateSlug?: string, page = 'index.html') => {
+      // A refreshed preview may change its template, revision or required
+      // details. Retire both pending navigation and the prior reviewed fallback.
+      cancelPlansHandoff()
       const requestId = ++previewRequestIdRef.current
       const { businessInfo, stylePreferences, matchedTemplate, isSample } = usePreviewStore.getState()
       const ns = nicheSlug || matchedTemplate?.nicheSlug || businessInfo.niche
@@ -693,6 +697,7 @@ export default function PreviewYourBusinessClient() {
       }
     },
     [
+      cancelPlansHandoff,
       getFieldValues,
       customThemeActive,
       customColors,
@@ -838,9 +843,8 @@ export default function PreviewYourBusinessClient() {
     const selection = JSON.stringify([nichePrefill, templatePrefill])
     if (appliedSelectionRef.current === selection) return
     appliedSelectionRef.current = selection
+    cancelPlansHandoff()
     if (businessInfo.niche !== nichePrefill) {
-      cancelPlansHandoff()
-      setPendingPlansHref(null)
       setBusinessInfo({ niche: nichePrefill })
       setTemplates([])
       setAlternativeTemplates([])
@@ -1038,6 +1042,7 @@ export default function PreviewYourBusinessClient() {
 
   /* ================ Open browse mode ================ */
   const openBrowse = useCallback(async () => {
+    cancelPlansHandoff()
     if (!usePreviewStore.getState().isSample) markInfoSaved()
     setStep('browse')
     const { state: { isSample, businessInfo }, isCurrent } = beginBrowseRequest()
@@ -1072,7 +1077,7 @@ export default function PreviewYourBusinessClient() {
     } catch {
       if (isCurrent()) setBrowseError('We could not load the templates. Your business details are still in this tab. Please retry.')
     } finally { clearTimeout(timeout); if (isCurrent()) setBrowseLoading(false) }
-  }, [markInfoSaved, setStep, sessionSeed, beginBrowseRequest])
+  }, [markInfoSaved, setStep, sessionSeed, beginBrowseRequest, cancelPlansHandoff])
 
   /* ================ Load more browse templates ================ */
   const loadMoreBrowse = useCallback(async () => {
@@ -1146,7 +1151,7 @@ export default function PreviewYourBusinessClient() {
   }, [profileMetadata, setTemplateFieldValues, loadPreview, currentPage])
 
   const handleCheckoutEmail = useCallback(async (accountEmail: string, email: string, href: string) => {
-    if (plansInFlightRef.current || usePreviewStore.getState().isSample || !profileMetadata?.fields || !isValidPreviewEmail(accountEmail) || !isValidPreviewEmail(email)) return
+    if (plansInFlightRef.current || previewLoading || previewError || !previewHtml || usePreviewStore.getState().isSample || !profileMetadata?.fields || !isValidPreviewEmail(accountEmail) || !isValidPreviewEmail(email)) return
     if (reviewTemplateProfile(profileMetadata.fields, { ...getFieldValues(profileMetadata.scope), EMAIL: email.trim() }).length) return
     plansInFlightRef.current = true
     setOpeningPlans(true)
@@ -1170,7 +1175,7 @@ export default function PreviewYourBusinessClient() {
       setOpeningPlans(false)
       setPendingPlansHref(href)
     }
-  }, [getFieldValues, router, setBusinessInfo, persistBusinessDraft, profileMetadata])
+  }, [getFieldValues, router, setBusinessInfo, persistBusinessDraft, profileMetadata, previewLoading, previewError, previewHtml])
 
   const handleEditDetails = useCallback(() => {
     cancelPlansHandoff()
@@ -1254,7 +1259,7 @@ export default function PreviewYourBusinessClient() {
                   ? 'Business details saved for your preview and DailyClarity follow-up.'
                   : 'We could not save your details yet. They are still in this tab.'}</p>
               {saveStatus === 'error' && <button type="button" onClick={() => { void persistBusinessDraft(step) }} className="rounded-lg px-3 py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4">Retry saving</button>}
-              {pendingPlansHref && saveStatus !== 'saving' && <button type="button" onClick={() => router.push(pendingPlansHref)} className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white">Continue to plans</button>}
+              {pendingPlansHref && saveStatus !== 'saving' && <button type="button" onClick={() => router.push(pendingPlansHref)} className="rounded-lg border border-white/20 px-3 py-2 text-sm text-white">Continue with reviewed details</button>}
             </div>
           </div>
         )}
@@ -1355,6 +1360,7 @@ export default function PreviewYourBusinessClient() {
             contactEmail={businessInfo.email}
             accountEmail={businessInfo.accountEmail}
             onCheckoutEmail={handleCheckoutEmail}
+            onReviewChange={cancelPlansHandoff}
             openingPlans={openingPlans}
             readiness={clientReadiness}
             previewHtml={previewHtml}
@@ -1954,6 +1960,7 @@ function EditorStep({
   contactEmail,
   accountEmail,
   onCheckoutEmail,
+  onReviewChange,
   openingPlans,
   readiness,
   previewHtml,
@@ -1989,6 +1996,7 @@ function EditorStep({
   contactEmail: string
   accountEmail: string
   onCheckoutEmail: (accountEmail: string, email: string, href: string) => void
+  onReviewChange: () => void
   openingPlans: boolean
   readiness: ReturnType<typeof computeClientReadiness>
   previewHtml: string | null
@@ -2225,18 +2233,18 @@ function EditorStep({
           <p className="mt-2 text-sm text-slate-300">Keep your account inbox private and choose what visitors see. You will review pricing before any payment.</p>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             <Field label="Account email" inputRef={accountEmailRef} type="email" autoComplete="email" maxLength={320} required value={privateEmail}
-              onChange={setPrivateEmail} error={emailErrors.accountEmail} help="For sign-in, receipts and DailyClarity follow-up. Not added to your website." />
+              onChange={(value) => { onReviewChange(); setPrivateEmail(value) }} error={emailErrors.accountEmail} help="For sign-in, receipts and DailyClarity follow-up. Not added to your website." />
             <Field label="Public contact email" inputRef={checkoutEmailRef} type="email" autoComplete="off" maxLength={320} required value={email}
-              onChange={setEmail} error={emailErrors.email} help="Published in supported contact fields on your website." />
+              onChange={(value) => { onReviewChange(); setEmail(value) }} error={emailErrors.email} help="Published in supported contact fields on your website." />
           </div>
-          <button type="button" disabled={!isValidPreviewEmail(privateEmail)} onClick={() => setEmail(privateEmail.trim())}
+          <button type="button" disabled={!isValidPreviewEmail(privateEmail)} onClick={() => { onReviewChange(); setEmail(privateEmail.trim()) }}
             className="mt-2 rounded-lg px-2 py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50">Use account email</button>
           {reviewFields.length > 0 && <TemplateProfileReview fields={reviewFields} values={reviewValues} issues={profileIssues}
-            onChange={(name, value) => setReviewValues((previous) => ({ ...previous, [name]: value }))} />}
+            onChange={(name, value) => { onReviewChange(); setReviewValues((previous) => ({ ...previous, [name]: value })) }} />}
           {profileApplyError && <p role="alert" className="mt-3 text-red-300">{profileApplyError}</p>}
           {reviewFields.length > 0 && appliedProfileSignature === JSON.stringify([reviewValues, email.trim()]) && <p role="status" className="mt-3 text-emerald-200">Preview updated. Review your website below, then continue to plans.</p>}
           <div className="mt-4 flex flex-wrap items-end gap-3">
-            <button type="submit" aria-busy={openingPlans || applyingProfile} className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold text-slate-950">{openingPlans ? 'Opening plans…' : applyingProfile ? 'Updating preview…' : reviewFields.length > 0 && appliedProfileSignature !== JSON.stringify([reviewValues, email.trim()]) ? 'Update preview' : 'Continue to plans'}</button>
+            <button type="submit" disabled={previewLoading} aria-busy={openingPlans || applyingProfile} className="rounded-lg bg-cyan-500 px-5 py-3 font-semibold text-slate-950">{openingPlans ? 'Opening plans…' : applyingProfile ? 'Updating preview…' : reviewFields.length > 0 && appliedProfileSignature !== JSON.stringify([reviewValues, email.trim()]) ? 'Update preview' : 'Continue to plans'}</button>
             <button type="button" onClick={() => setShowCheckoutEmail(false)} className="rounded-lg px-4 py-3 text-sm text-slate-300 underline underline-offset-4">Keep exploring</button>
           </div>
           </fieldset>
