@@ -36,6 +36,7 @@ test.describe('Full purchase funnel (test mode)', () => {
     // STEP 3: Fill Step 1 (business info)
     await page.getByRole('button', { name: 'Aromatherapy' }).click()
     await page.getByLabel('Business Name').fill(testBusinessName)
+    await page.getByRole('button', { name: /Add contact details/ }).click()
     await page.getByRole('textbox', { name: /^Account email/ }).fill(testEmail)
     await page.getByRole('textbox', { name: /^Public contact email/ }).fill(publicEmail)
     await page.getByRole('button', { name: /Add more business details/ }).click()

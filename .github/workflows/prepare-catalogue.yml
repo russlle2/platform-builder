@@ -3,6 +3,12 @@ name: Prepare an exact-main certified catalogue transport
 on:
   workflow_dispatch:
     inputs:
+      closure_version:
+        description: 'Explicit retained-evidence contract: V1 unchanged dependencies; V2 exact reviewed Next patch and fresh paired dependency proof'
+        required: true
+        default: '1'
+        type: choice
+        options: ['1', '2']
       expected_release_sha:
         description: 'Reviewed full main SHA with successful push CI; must still be current main'
         required: true
@@ -50,6 +56,7 @@ jobs:
       contents: write # Create an unpublished transport using this job's own identity.
       actions: read
     env:
+      PREPARATION_CLOSURE_VERSION: ${{ inputs.closure_version }}
       GITHUB_TOKEN: ${{ github.token }}
       EXPECTED_RELEASE_SHA: ${{ inputs.expected_release_sha }}
       SOURCE_SHA: ${{ inputs.source_sha }}
@@ -68,6 +75,7 @@ jobs:
           node-version: '22'
       - name: Keep all source and preparation artifacts outside the clean checkout
         run: |
+          echo "DEPENDENCY_PROOF_V2=$RUNNER_TEMP/catalogue-dependency-proof-v2.json" >> "$GITHUB_ENV"
           echo "SOURCE_BUNDLE=$RUNNER_TEMP/original-catalogue" >> "$GITHUB_ENV"
           echo "SOURCE_PROVENANCE_DIR=$RUNNER_TEMP/original-import-provenance" >> "$GITHUB_ENV"
           echo "RELEASE_BUNDLE=$RUNNER_TEMP/prepared-catalogue" >> "$GITHUB_ENV"
@@ -80,6 +88,9 @@ jobs:
           corepack enable
           corepack install
           pnpm install --frozen-lockfile
+      - name: Prove the explicitly reviewed V2 dependency migration using fresh isolated installations
+        if: ${{ inputs.closure_version == '2' }}
+        run: node apps/generator-app/scripts/catalogue-prepare-proof-v2.mjs prove
       - name: Require current exact main CI, retained compiler closure and immutable original import provenance
         run: node apps/generator-app/scripts/prepare-catalogue-transport.mjs source-check
       - name: Download the exact original candidate without changing its bytes
@@ -108,6 +119,7 @@ jobs:
         with:
           name: catalogue-preparation-provenance-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
+            ${{ env.DEPENDENCY_PROOF_V2 }}
             ${{ env.PREPARATION_REPORT }}
             ${{ env.HANDOFF_REPORT }}
           if-no-files-found: warn

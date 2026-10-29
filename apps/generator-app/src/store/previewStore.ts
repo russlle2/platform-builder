@@ -22,7 +22,7 @@ export interface BusinessInfo {
 
 export type VibeOption = 'warm' | 'bold' | 'clean' | 'luxurious' | 'earthy' | 'playful'
 export type ProseStyle = 'professional' | 'conversational' | 'storytelling' | 'minimal' | 'authoritative'
-export type ColorMood = 'dark-elegant' | 'light-airy' | 'rich-warm' | 'cool-modern' | 'nature-organic' | 'vibrant-energy'
+export type ColorMood = 'original' | 'dark-elegant' | 'light-airy' | 'rich-warm' | 'cool-modern' | 'nature-organic' | 'vibrant-energy'
 
 export interface StylePreferences {
   vibes: VibeOption[]          // pick up to 3
@@ -106,7 +106,7 @@ const defaultBusinessInfo: BusinessInfo = {
 const defaultStylePreferences: StylePreferences = {
   vibes: [],
   proseStyle: 'professional',
-  colorMood: 'cool-modern',
+  colorMood: 'original',
   fontPreference: 'sans-serif',
   layoutDensity: 'balanced',
 }
@@ -162,7 +162,7 @@ function restorePreferences(): StylePreferences {
       : [],
     proseStyle: ['professional', 'conversational', 'storytelling', 'minimal', 'authoritative'].includes(raw.proseStyle || '')
       ? raw.proseStyle! : defaultStylePreferences.proseStyle,
-    colorMood: ['dark-elegant', 'light-airy', 'rich-warm', 'cool-modern', 'nature-organic', 'vibrant-energy'].includes(raw.colorMood || '')
+    colorMood: ['original', 'dark-elegant', 'light-airy', 'rich-warm', 'cool-modern', 'nature-organic', 'vibrant-energy'].includes(raw.colorMood || '')
       ? raw.colorMood! : defaultStylePreferences.colorMood,
     fontPreference: ['serif', 'sans-serif', 'mixed'].includes(raw.fontPreference || '')
       ? raw.fontPreference! : defaultStylePreferences.fontPreference,

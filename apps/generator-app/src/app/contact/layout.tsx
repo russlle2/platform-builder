@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 
-const description = 'Contact DailyClarity for help with website previews, plans, launches, or an existing account.'
+const description = 'Contact DailyClarity about wellness experiences, website services, or help with an existing account.'
 
 export const metadata: Metadata = {
   title: 'Contact',

@@ -12,52 +12,52 @@ export const dynamic = 'force-dynamic'
 /* ---------- Accent color lookup for Tailwind classes ---------- */
 const accentMap: Record<string, { badge: string; heading: string; btn: string; glow: string; border: string; chip: string }> = {
   emerald: {
-    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-400/35',
-    heading: 'text-emerald-200',
-    btn: 'from-emerald-500 to-green-600 border-emerald-200/40 hover:from-emerald-400 hover:to-green-500',
+    badge: 'bg-emerald-500/15 dc-text-success border-emerald-400/35',
+    heading: 'dc-text-success',
+    btn: 'dc-button-secondary',
     glow: 'rgba(16,185,129,0.4)',
     border: 'border-emerald-400/20',
-    chip: 'bg-emerald-500/10 text-emerald-300 border-emerald-400/30',
+    chip: 'bg-emerald-500/10 dc-text-success border-emerald-400/30',
   },
   violet: {
-    badge: 'bg-violet-500/15 text-violet-300 border-violet-400/35',
-    heading: 'text-violet-200',
-    btn: 'from-violet-500 to-purple-600 border-violet-200/40 hover:from-violet-400 hover:to-purple-500',
+    badge: 'bg-violet-500/15 dc-text-violet border-violet-400/35',
+    heading: 'dc-text-violet',
+    btn: 'dc-button-secondary',
     glow: 'rgba(139,92,246,0.4)',
     border: 'border-violet-400/20',
-    chip: 'bg-violet-500/10 text-violet-300 border-violet-400/30',
+    chip: 'bg-violet-500/10 dc-text-violet border-violet-400/30',
   },
   cyan: {
-    badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-400/35',
-    heading: 'text-cyan-200',
-    btn: 'from-cyan-500 to-blue-600 border-cyan-200/40 hover:from-cyan-400 hover:to-blue-500',
+    badge: 'dc-bg-accent-soft dc-text-accent border-cyan-400/35',
+    heading: 'dc-text-accent',
+    btn: 'dc-button-secondary',
     glow: 'rgba(34,211,238,0.4)',
     border: 'border-cyan-400/20',
-    chip: 'bg-cyan-500/10 text-cyan-300 border-cyan-400/30',
+    chip: 'dc-bg-accent-soft dc-text-accent border-cyan-400/30',
   },
   amber: {
-    badge: 'bg-amber-500/15 text-amber-300 border-amber-400/35',
-    heading: 'text-amber-200',
-    btn: 'from-amber-500 to-orange-600 border-amber-200/40 hover:from-amber-400 hover:to-orange-500',
+    badge: 'bg-amber-500/15 dc-text-warm border-amber-400/35',
+    heading: 'dc-text-warm',
+    btn: 'dc-button-secondary',
     glow: 'rgba(245,158,11,0.4)',
     border: 'border-amber-400/20',
-    chip: 'bg-amber-500/10 text-amber-300 border-amber-400/30',
+    chip: 'bg-amber-500/10 dc-text-warm border-amber-400/30',
   },
   indigo: {
-    badge: 'bg-indigo-500/15 text-indigo-300 border-indigo-400/35',
-    heading: 'text-indigo-200',
-    btn: 'from-indigo-500 to-blue-600 border-indigo-200/40 hover:from-indigo-400 hover:to-blue-500',
+    badge: 'bg-indigo-500/15 dc-text-violet border-indigo-400/35',
+    heading: 'dc-text-violet',
+    btn: 'dc-button-secondary',
     glow: 'rgba(99,102,241,0.4)',
     border: 'border-indigo-400/20',
-    chip: 'bg-indigo-500/10 text-indigo-300 border-indigo-400/30',
+    chip: 'bg-indigo-500/10 dc-text-violet border-indigo-400/30',
   },
   rose: {
-    badge: 'bg-rose-500/15 text-rose-300 border-rose-400/35',
-    heading: 'text-rose-200',
-    btn: 'from-rose-500 to-pink-600 border-rose-200/40 hover:from-rose-400 hover:to-pink-500',
+    badge: 'bg-rose-500/15 dc-text-rose border-rose-400/35',
+    heading: 'dc-text-rose',
+    btn: 'dc-button-secondary',
     glow: 'rgba(244,63,94,0.4)',
     border: 'border-rose-400/20',
-    chip: 'bg-rose-500/10 text-rose-300 border-rose-400/30',
+    chip: 'bg-rose-500/10 dc-text-rose border-rose-400/30',
   },
 }
 
@@ -301,20 +301,19 @@ function NicheActionLinks({
       <div className={`flex flex-col sm:flex-row gap-4 ${wrap}`}>
         <Link
           href={`/preview-your-business?niche=${encodeURIComponent(niche)}`}
-          className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
+          className="px-8 py-4 text-lg font-bold rounded-lg dc-button-primary shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
         >
           Build My Preview
         </Link>
         <Link
           href={`/demo/${niche}`}
-          className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border text-center ${colors.btn}`}
-          style={{ boxShadow: `0 0 30px ${colors.glow}` }}
+          className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-center ${colors.btn}`}
         >
           Watch {metaLabel} Demo
         </Link>
         <Link
           href="/pricing"
-          className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all text-center"
+          className="px-8 py-4 text-lg font-bold dc-text-heading border dc-border rounded-lg hover:dc-surface-soft transition-all text-center"
         >
           See Pricing
         </Link>
@@ -370,7 +369,7 @@ function NicheBackground({ niche }: { niche: string }) {
   if (!gradient || !orbs) return null
 
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+    <div className="dc-background-art absolute inset-0 pointer-events-none overflow-hidden">
       {/* Real photographic background — subtle overlay */}
       {bgImage && (
         <>
@@ -378,8 +377,8 @@ function NicheBackground({ niche }: { niche: string }) {
             className="absolute inset-0 bg-cover bg-center bg-no-repeat"
             style={{ backgroundImage: `url(${bgImage.url})` }}
           />
-          <div className="absolute inset-0 bg-slate-900/85" />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-transparent to-slate-900/90" />
+          <div className="dc-photo-wash absolute inset-0" />
+          <div className="dc-photo-wash absolute inset-0" />
         </>
       )}
       <div className="absolute inset-0" style={{ background: gradient }} />
@@ -642,13 +641,13 @@ export default async function NicheLandingPage({
               <span className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold uppercase tracking-[0.25em] border ${colors.chip}`}>
                 {meta.icon} {meta.label} Templates
               </span>
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white">
-                {copy.headline}
+              <h1 className="text-4xl md:text-5xl font-semibold leading-tight dc-text-heading">
+                {copy.headline}{' '}
                 <span className={`block ${colors.heading}`}>
                   {templateCount > 0 ? `${templateCount.toLocaleString()} templates to explore.` : 'Find a style for your practice.'}
                 </span>
               </h1>
-              <p className="text-lg md:text-2xl text-slate-200 max-w-2xl">
+              <p className="text-lg md:text-2xl dc-text-body max-w-2xl">
                 {copy.subheadline}
               </p>
               <NicheActionLinks niche={niche} metaLabel={meta.label} colors={colors} />
@@ -657,12 +656,12 @@ export default async function NicheLandingPage({
             {/* Stats panel */}
             <div className="glass-panel rounded-3xl p-8 space-y-6">
               <div className="flex items-center justify-between">
-                <span className="text-sm uppercase tracking-[0.3em] text-slate-400">{meta.label} Studio</span>
+                <span className="text-sm uppercase tracking-[0.3em] dc-text-muted">{meta.label} Studio</span>
                 <span className={`text-xs ${colors.heading}`}>Example styles</span>
               </div>
               <div className="space-y-4">
                 {copy.benefits.map((item) => (
-                  <div key={item} className="flex items-center gap-3 text-slate-200">
+                  <div key={item} className="flex items-center gap-3 dc-text-body">
                     <span className={`w-2 h-2 rounded-full ${colors.badge.split(' ')[0].replace('/15', '/60')}`} />
                     <span>{item}</span>
                   </div>
@@ -670,12 +669,12 @@ export default async function NicheLandingPage({
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="stat-card">
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Templates</p>
-                  <p className="text-3xl font-bold text-white">{templateCount}</p>
+                  <p className="text-xs uppercase tracking-[0.3em] dc-text-muted">Templates</p>
+                  <p className="text-3xl font-bold dc-text-heading">{templateCount}</p>
                 </div>
                 <div className="stat-card">
-                  <p className="text-xs uppercase tracking-[0.3em] text-slate-400">Preview</p>
-                  <p className="text-xl font-bold text-white">Before purchase</p>
+                  <p className="text-xs uppercase tracking-[0.3em] dc-text-muted">Preview</p>
+                  <p className="text-xl font-bold dc-text-heading">Before purchase</p>
                 </div>
               </div>
             </div>
@@ -693,13 +692,13 @@ export default async function NicheLandingPage({
         {/* Pain points */}
         <section className="container-hvac py-12">
           <div className="max-w-3xl mx-auto text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Sound familiar?</h2>
+            <h2 className="text-2xl md:text-3xl font-bold dc-text-heading">Sound familiar?</h2>
           </div>
           <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
             {copy.painPoints.map((point) => (
               <li
                 key={point}
-                className={`rounded-xl px-5 py-4 border ${colors.border} bg-white/5 text-slate-300 text-sm leading-relaxed`}
+                className={`rounded-xl px-5 py-4 border ${colors.border} dc-surface-soft dc-text-body text-sm leading-relaxed`}
               >
                 {point}
               </li>
@@ -711,10 +710,10 @@ export default async function NicheLandingPage({
         {/* Trust builders */}
         <section className="container-hvac py-12">
           <div className="glass-panel rounded-3xl p-8 md:p-10 max-w-4xl mx-auto space-y-6">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Built for {meta.label.toLowerCase()} professionals like you</h2>
+            <h2 className="text-2xl md:text-3xl font-bold dc-text-heading">Built for {meta.label.toLowerCase()} professionals like you</h2>
             <ul className="space-y-4">
               {copy.trustBuilders.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-slate-200">
+                <li key={item} className="flex items-start gap-3 dc-text-body">
                   <span className={`mt-2 w-2 h-2 shrink-0 rounded-full ${colors.badge.split(' ')[0].replace('/15', '/60')}`} />
                   <span>{item}</span>
                 </li>
@@ -726,16 +725,16 @@ export default async function NicheLandingPage({
         {/* Conversion job */}
         <section className="container-hvac py-16">
           <div className="glass-panel rounded-3xl p-10 md:p-12 space-y-6 max-w-4xl">
-            <h2 className="text-3xl md:text-4xl font-bold text-white">{copy.conversionJob.title}</h2>
-            <p className="text-lg text-slate-300 leading-relaxed">{copy.conversionJob.body}</p>
+            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">{copy.conversionJob.title}</h2>
+            <p className="text-lg dc-text-body leading-relaxed">{copy.conversionJob.body}</p>
           </div>
         </section>
 
         {/* Funnel cards */}
         <section className="container-hvac py-16">
           <div className="mb-10">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">Your {meta.label.toLowerCase()} client funnel</h2>
-            <p className="text-slate-300 text-lg max-w-2xl">
+            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading mb-3">Your {meta.label.toLowerCase()} client funnel</h2>
+            <p className="dc-text-body text-lg max-w-2xl">
               Each section of your site plays a role — built to guide visitors toward booking or contact, step by step.
             </p>
           </div>
@@ -743,8 +742,8 @@ export default async function NicheLandingPage({
             {copy.funnelSteps.map((step, index) => (
               <div key={step.title} className={`card-mahogany space-y-3 ${index === copy.funnelSteps.length - 1 && copy.funnelSteps.length % 3 !== 0 ? 'lg:col-span-1' : ''}`}>
                 <span className={`text-sm font-semibold ${colors.heading}`}>Step {index + 1}</span>
-                <h3 className="text-xl font-bold text-white">{step.title}</h3>
-                <p className="text-slate-300 leading-relaxed">{step.description}</p>
+                <h3 className="text-xl font-bold dc-text-heading">{step.title}</h3>
+                <p className="dc-text-body leading-relaxed">{step.description}</p>
               </div>
             ))}
           </div>
@@ -757,14 +756,13 @@ export default async function NicheLandingPage({
               <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider border ${colors.chip}`}>
                 Walkthrough
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white">Watch this niche build happen</h2>
+              <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">Watch this niche build happen</h2>
             </div>
-            <p className="text-lg text-slate-300 max-w-2xl">{copy.demoBlurb}</p>
+            <p className="text-lg dc-text-body max-w-2xl">{copy.demoBlurb}</p>
             <Link
               href={`/demo/${niche}`}
-              className={`inline-flex px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
-              style={{ boxShadow: `0 0 30px ${colors.glow}` }}
-            >
+              className={`inline-flex px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 ${colors.btn}`}
+                >
               Watch {meta.label} Demo →
             </Link>
           </div>
@@ -774,8 +772,8 @@ export default async function NicheLandingPage({
         <section className="container-hvac py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Sections included in your site</h2>
-              <p className="text-slate-300 text-lg">
+              <h2 className="text-3xl md:text-4xl font-bold dc-text-heading mb-4">Sections included in your site</h2>
+              <p className="dc-text-body text-lg">
                 Templates are structured for {meta.label.toLowerCase()} practices — core pages and blocks you can customize in the preview wizard.
               </p>
             </div>
@@ -783,7 +781,7 @@ export default async function NicheLandingPage({
               {copy.sectionsIncluded.map((item) => (
                 <li
                   key={item}
-                  className={`flex items-start gap-3 rounded-xl px-4 py-3 border ${colors.border} bg-white/5 text-slate-200`}
+                  className={`flex items-start gap-3 rounded-xl px-4 py-3 border ${colors.border} dc-surface-soft dc-text-body`}
                 >
                   <span className={`mt-1.5 w-2 h-2 shrink-0 rounded-full ${colors.badge.split(' ')[0].replace('/15', '/60')}`} />
                   <span>{item}</span>
@@ -797,8 +795,8 @@ export default async function NicheLandingPage({
         <section className="container-hvac py-16">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="glass-panel rounded-2xl p-8">
-              <h2 className="text-3xl font-bold text-white mb-4">How it works</h2>
-              <p className="text-slate-300 mb-6">
+              <h2 className="text-3xl font-bold dc-text-heading mb-4">How it works</h2>
+              <p className="dc-text-body mb-6">
                 Enter your details, match a layout, preview live, and launch — one guided flow.
               </p>
               <Link
@@ -827,8 +825,8 @@ export default async function NicheLandingPage({
             ].map((item) => (
               <div key={item.step} className="card-mahogany space-y-3">
                 <span className={`text-sm ${colors.heading}`}>{item.step}</span>
-                <h3 className="text-2xl font-bold text-white">{item.title}</h3>
-                <p className="text-slate-200">{item.copy}</p>
+                <h3 className="text-2xl font-bold dc-text-heading">{item.title}</h3>
+                <p className="dc-text-body">{item.copy}</p>
               </div>
             ))}
           </div>
@@ -838,17 +836,17 @@ export default async function NicheLandingPage({
         <section className="container-hvac py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="glass-panel rounded-2xl p-10 space-y-6">
-              <div className="text-5xl">{meta.icon}</div>
-              <h2 className="text-3xl font-bold text-white">{copy.objection}</h2>
-              <p className="text-slate-300 text-lg">
+              <div className="feature-icon" aria-hidden="true">{meta.icon}</div>
+              <h2 className="text-3xl font-bold dc-text-heading">{copy.objection}</h2>
+              <p className="dc-text-body text-lg">
                 Published templates are designed for mobile viewing and structured to guide visitors
                 toward booking and contact. Review the live preview for the exact pages and fields included.
               </p>
             </div>
             <div className="card-mahogany space-y-6 flex flex-col justify-center">
-              <p className="text-6xl font-bold text-white">{templateCount}</p>
-              <p className="text-xl text-slate-200">{copy.proof}</p>
-              <p className="text-slate-400">
+              <p className="text-6xl font-bold dc-text-heading">{templateCount}</p>
+              <p className="text-xl dc-text-body">{copy.proof}</p>
+              <p className="dc-text-muted">
                 Each template features unique layout families, voice styles, and page structures.
                 Pick one, personalize it in minutes, preview it live, and launch.
               </p>
@@ -867,8 +865,8 @@ export default async function NicheLandingPage({
             ].map((card) => (
               <div key={card.title} className="card-mahogany text-center space-y-4 hover:scale-105 transition-transform">
                 <div className="text-4xl">{card.icon}</div>
-                <h3 className="text-2xl font-bold text-bright-white">{card.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{card.description}</p>
+                <h3 className="text-2xl font-bold dc-text-heading">{card.title}</h3>
+                <p className="dc-text-body leading-relaxed">{card.description}</p>
               </div>
             ))}
           </div>
@@ -877,10 +875,10 @@ export default async function NicheLandingPage({
         {/* CTA */}
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-bold dc-text-heading mb-4">
               {copy.ctaHeadline}
             </h2>
-            <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
+            <p className="text-lg dc-text-body mb-8 max-w-2xl mx-auto">
               {copy.ctaUrgency} Add your business details once, browse the currently published layouts with your supported fields,
               and launch when you are ready. No commitment until you purchase.
             </p>
