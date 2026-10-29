@@ -1,6 +1,7 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { NextRequest } from 'next/server'
 import Stripe from 'stripe'
+import { CHECKOUT_ATTEMPT_COOKIE } from '@/lib/checkout-resume'
 
 const mocks = vi.hoisted(() => ({
   createStripeClient: vi.fn(),
@@ -24,6 +25,7 @@ vi.mock('@/lib/templates/niche-registry', () => ({
 vi.mock('@/lib/stripe-runtime', () => ({
   TEMPLATE_CHECKOUT_TYPE: 'template_subscription',
   getTemplateFulfillmentConfigIssues: vi.fn(() => []),
+  configuredStripeLivemode: () => false,
 }))
 
 const OWNER_A = 'draft-123e4567-e89b-42d3-a456-426614174000'
@@ -60,6 +62,7 @@ function requestWithImages(owners: string[], overrides: Record<string, unknown> 
 }
 
 function checkoutLifecycle() {
+  const loadIntent = vi.fn().mockResolvedValue({ data: null, error: null })
   const insertIntent = vi.fn().mockResolvedValue({ error: null })
   const insertSlug = vi.fn().mockResolvedValue({ error: null })
   const intentStatusFilter = vi.fn().mockResolvedValue({ error: null })
@@ -76,7 +79,7 @@ function checkoutLifecycle() {
   }
   const deleteSlug = vi.fn(() => slugDeletion)
   mocks.supabaseFrom.mockImplementation((table: string) => {
-    if (table === 'checkout_intents') return { insert: insertIntent, update: updateIntent }
+    if (table === 'checkout_intents') return { insert: insertIntent, update: updateIntent, select: () => ({ eq: () => ({ maybeSingle: loadIntent }) }) }
     if (table === 'site_slugs') return { insert: insertSlug, delete: deleteSlug }
     throw new Error(`Unexpected table ${table}`)
   })
@@ -85,14 +88,16 @@ function checkoutLifecycle() {
     recurring: { interval: 'month', interval_count: 1 }, unit_amount: 2_000, currency: 'usd',
   })
   const createSession = vi.fn().mockResolvedValue({ id: 'cs_lifecycle', url: 'https://checkout.stripe.test/session' })
+  const retrieveSession = vi.fn()
   mocks.createStripeClient.mockReturnValue({
-    prices: { retrieve: retrievePrice }, checkout: { sessions: { create: createSession } },
+    prices: { retrieve: retrievePrice }, checkout: { sessions: { create: createSession, retrieve: retrieveSession } },
   })
-  return { insertIntent, insertSlug, updateIntent, intentStatusFilter, deleteSlug, deletedSlugFilters, retrievePrice, createSession }
+  return { insertIntent, insertSlug, updateIntent, intentStatusFilter, deleteSlug, deletedSlugFilters, retrievePrice, createSession, loadIntent, retrieveSession }
 }
 
 describe('template checkout draft-image gate', () => {
   beforeAll(async () => {
+    process.env.PORTAL_TOKEN_SECRET = 'test-checkout-cookie-secret-32-characters'
     process.env.STRIPE_SECRET_KEY = 'sk_test_checkout'
     process.env.STRIPE_PRICE_BASIC = 'price_basic'
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://project.supabase.co'
@@ -101,6 +106,7 @@ describe('template checkout draft-image gate', () => {
   })
 
   afterAll(() => {
+    delete process.env.PORTAL_TOKEN_SECRET
     delete process.env.STRIPE_SECRET_KEY
     delete process.env.STRIPE_PRICE_BASIC
     delete process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -475,4 +481,106 @@ describe('template checkout draft-image gate', () => {
     expect(persistedStatus).toBe('completed')
     expect(state.deleteSlug).not.toHaveBeenCalled()
   })
+  async function preparedAttempt(initialOverrides: Record<string, unknown> = {}) {
+    const state = checkoutLifecycle()
+    const first = await checkoutPost(requestWithImages([], initialOverrides))
+    expect(first.status).toBe(200)
+    const cookie = first.cookies.get(CHECKOUT_ATTEMPT_COOKIE)!
+    expect(cookie.httpOnly).toBe(true)
+    expect(cookie.sameSite).toBe('lax')
+    const intent = { ...state.insertIntent.mock.calls[0][0], status: 'session_created', stripe_session_id: 'cs_lifecycle' }
+    state.loadIntent.mockResolvedValue({ data: intent, error: null })
+    const session = {
+      id: 'cs_lifecycle', status: 'open', payment_status: 'unpaid', mode: 'subscription', livemode: false,
+      url: 'https://checkout.stripe.com/c/pay/cs_lifecycle', client_reference_id: intent.id,
+      metadata: state.createSession.mock.calls[0][0].metadata,
+    }
+    state.retrieveSession.mockResolvedValue(session)
+    const request = (overrides: Record<string, unknown> = {}) => {
+      const req = requestWithImages([], { ...initialOverrides, ...overrides })
+      req.cookies.set(CHECKOUT_ATTEMPT_COOKIE, cookie.value)
+      return req
+    }
+    return { ...state, intent, session, request }
+  }
+
+  it('resumes the original unpaid session after returning from Stripe without another intent, reservation or subscription', async () => {
+    const state = await preparedAttempt()
+    const response = await checkoutPost(state.request())
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ url: state.session.url })
+    expect(state.retrieveSession).toHaveBeenCalledWith('cs_lifecycle')
+    expect(state.insertIntent).toHaveBeenCalledTimes(1)
+    expect(state.insertSlug).toHaveBeenCalledTimes(1)
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('resumes a draft whose template-matching requested slug was automatically made unique', async () => {
+    const state = await preparedAttempt({ slug: 'serene' })
+    expect(state.intent.slug).not.toBe('serene')
+    const response = await checkoutPost(state.request())
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ url: state.session.url })
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+  })
+
+  it('requires explicit selection to resume an earlier checkout after draft changes', async () => {
+    const state = await preparedAttempt()
+    const changed = { customerValues: { BUSINESS_NAME: 'Changed Wellness', EMAIL: 'owner@example.com' } }
+    const blocked = await checkoutPost(state.request(changed))
+    expect(blocked.status).toBe(409)
+    expect(await blocked.json()).toMatchObject({ code: 'checkout_draft_changed', previousBusinessName: 'Example Wellness', previousPlan: 'Basic' })
+    const resumed = await checkoutPost(state.request({ ...changed, resumePreviousCheckout: true }))
+    expect(await resumed.json()).toEqual({ url: state.session.url })
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('sends a completed free trial to its original success page instead of creating another subscription', async () => {
+    const state = await preparedAttempt()
+    state.retrieveSession.mockResolvedValue({ ...state.session, status: 'complete', payment_status: 'no_payment_required', url: null })
+    const response = await checkoutPost(state.request())
+    expect(await response.json()).toEqual({ url: 'https://dailyclarity.org/success?session_id=cs_lifecycle' })
+    expect(response.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.maxAge).toBe(0)
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('releases only the owned pending reservation after verified expiration and requires a new click', async () => {
+    const state = await preparedAttempt()
+    state.retrieveSession.mockResolvedValue({ ...state.session, status: 'expired', url: null })
+    const response = await checkoutPost(state.request())
+    expect(response.status).toBe(409)
+    expect(await response.json()).toMatchObject({ code: 'checkout_expired', retrySafe: true })
+    expect(state.deletedSlugFilters).toEqual([['slug', 'example-site'], ['reserved_for', state.intent.id], ['status', 'checkout_pending']])
+    expect(response.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.maxAge).toBe(0)
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['provider failure', 'wrong binding', 'missing stored session'])('preserves the existing attempt when resume is uncertain: %s', async reason => {
+    const state = await preparedAttempt()
+    if (reason === 'provider failure') state.retrieveSession.mockRejectedValue(new Error('Network failed'))
+    if (reason === 'wrong binding') state.retrieveSession.mockResolvedValue({ ...state.session, client_reference_id: 'foreign' })
+    if (reason === 'missing stored session') state.loadIntent.mockResolvedValue({ data: { ...state.intent, stripe_session_id: null }, error: null })
+    const response = await checkoutPost(state.request())
+    expect(response.status).toBe(409)
+    expect(await response.json()).toMatchObject({ code: 'checkout_creation_uncertain', reference: state.intent.id })
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+    expect(state.insertIntent).toHaveBeenCalledTimes(1)
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('never accepts a client-supplied intent or an unowned resume action', async () => {
+    const state = checkoutLifecycle()
+    const request = requestWithImages([], { resumePreviousCheckout: true, intentId: 'foreign', sessionId: 'cs_foreign' })
+    request.cookies.set(CHECKOUT_ATTEMPT_COOKIE, 'forged')
+    const response = await checkoutPost(request)
+    expect(response.status).toBe(409)
+    expect(await response.json()).toMatchObject({ code: 'checkout_resume_unavailable' })
+    expect(state.loadIntent).not.toHaveBeenCalled()
+    expect(state.retrieveSession).not.toHaveBeenCalled()
+    expect(state.createSession).not.toHaveBeenCalled()
+  })
+
 })
