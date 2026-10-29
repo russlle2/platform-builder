@@ -250,6 +250,36 @@ async function preparePaymentDraft(page: Page) {
   await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toHaveCount(2)
 }
 
+test('changed draft shows the earlier purchase details and requires explicit resume', async ({ page }) => {
+  const requests: Array<Record<string, unknown>> = []
+  let resumed = false
+  await page.route('**/checkout-resume-fixture', async route => {
+    resumed = true
+    await route.fulfill({ status: 204 })
+  })
+  await page.route('**/api/stripe/checkout', async route => {
+    const body = route.request().postDataJSON() as Record<string, unknown>
+    requests.push(body)
+    if (body.resumePreviousCheckout === true) return route.fulfill({ json: { url: '/checkout-resume-fixture' } })
+    return route.fulfill({ status: 409, json: {
+      code: 'checkout_draft_changed',
+      error: 'Your earlier checkout is still open with different details. Resume that checkout, or contact support before starting another.',
+      previousBusinessName: 'Earlier Studio', previousPlan: 'Basic', recoveryUrl: '/contact',
+    } })
+  })
+  await preparePaymentDraft(page)
+  await page.getByRole('button', { name: 'Choose Plan', exact: true }).last().click()
+  const alert = page.getByRole('alert').filter({ hasText: 'Your earlier checkout is still open' })
+  await expect(alert).toContainText('Earlier checkout: Earlier Studio — Basic')
+  await expect(alert.getByRole('link', { name: 'Contact support to change the earlier checkout' })).toHaveAttribute('href', '/contact')
+  expect(requests).toHaveLength(1)
+  expect(requests[0].resumePreviousCheckout).toBe(false)
+  await alert.getByRole('button', { name: 'Resume earlier checkout' }).click({ noWaitAfter: true })
+  await expect.poll(() => resumed).toBe(true)
+  expect(requests).toHaveLength(2)
+  expect(requests[1].resumePreviousCheckout).toBe(true)
+})
+
 test('all plans share a synchronous checkout guard, recover on rejection, and remain busy after redirect starts', async ({ page }) => {
   let requests = 0
   let releaseFailure!: () => void

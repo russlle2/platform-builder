@@ -35,6 +35,7 @@ export default function PricingClient() {
   const [checkoutRecoveryLabel, setCheckoutRecoveryLabel] = useState('Return to your preview')
   const [checkoutUncertain, setCheckoutUncertain] = useState(false)
   const [checkoutReference, setCheckoutReference] = useState<string | null>(null)
+  const [previousCheckout, setPreviousCheckout] = useState<{ planKey: string; businessName: string; plan: string } | null>(null)
   const checkoutInFlightRef = useRef(false)
   const [trialDays, setTrialDays] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
@@ -67,7 +68,7 @@ export default function PricingClient() {
     }
   }, [slug, template, niche, searchParams])
 
-  const startCheckout = useCallback(async (planKey: string) => {
+  const startCheckout = useCallback(async (planKey: string, resumePreviousCheckout = false) => {
     // React state alone cannot stop two clicks in the same event turn.
     if (checkoutInFlightRef.current) return
     checkoutInFlightRef.current = true
@@ -80,6 +81,7 @@ export default function PricingClient() {
       setCheckoutRecoveryUrl(null)
       setCheckoutUncertain(false)
       setCheckoutReference(null)
+      setPreviousCheckout(null)
 
       // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
@@ -137,6 +139,7 @@ export default function PricingClient() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planKey,
+          resumePreviousCheckout,
           accountEmail,
           slug: ctx.slug,
           template: ctx.template,
@@ -153,6 +156,22 @@ export default function PricingClient() {
         }),
       })
       const data = await response.json().catch(() => null)
+      if (data?.code === 'checkout_draft_changed') {
+        setPreviousCheckout({
+          planKey, businessName: typeof data.previousBusinessName === 'string' ? data.previousBusinessName : '',
+          plan: typeof data.previousPlan === 'string' ? data.previousPlan : 'Previous plan',
+        })
+        setCheckoutError(data.error)
+        setCheckoutRecoveryUrl('/contact')
+        setCheckoutRecoveryLabel('Contact support to change the earlier checkout')
+        checkoutInFlightRef.current = false
+        setIsSubmitting(null)
+        return
+      }
+      if (data?.code === 'checkout_resume_unavailable') {
+        setCheckoutRecoveryUrl('/dashboard')
+        setCheckoutRecoveryLabel('Check your account before starting again')
+      }
       if (data?.code === 'checkout_creation_uncertain') {
         setCheckoutUncertain(true)
         setCheckoutReference(typeof data.reference === 'string' ? data.reference : null)
@@ -336,6 +355,15 @@ export default function PricingClient() {
           {checkoutError && (
             <div className="text-center dc-text-error mt-6" role="alert">
               <p>{checkoutError}</p>
+              {previousCheckout && (
+                <div className="mt-3 space-y-2">
+                  <p>Earlier checkout: {previousCheckout.businessName} — {previousCheckout.plan}</p>
+                  <button type="button" className="cta-button" disabled={isSubmitting !== null}
+                    onClick={() => void startCheckout(previousCheckout.planKey, true)}>
+                    Resume earlier checkout
+                  </button>
+                </div>
+              )}
               {checkoutRecoveryUrl && (
                 <Link
                   href={checkoutRecoveryUrl}
