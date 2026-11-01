@@ -371,6 +371,8 @@ export default function PreviewYourBusinessClient() {
     importUrl?: string
   }>({ heading: 'inherit', body: 'inherit' })
   const [customThemeReady, setCustomThemeReady] = useState(false)
+  const wizardRef = useRef<HTMLElement>(null)
+  const previousStepRef = useRef<PreviewStep | null>(null)
   const [customThemeActive, setCustomThemeActive] = useState(false)
   const [showColorPanel, setShowColorPanel] = useState(false)
   const [showFontPanel, setShowFontPanel] = useState(false)
@@ -882,6 +884,23 @@ export default function PreviewYourBusinessClient() {
   }, [])
 
   useEffect(() => {
+    if (!customThemeReady) return
+    const previousStep = previousStepRef.current
+    previousStepRef.current = step
+    // Leave initial loading and browser history restoration alone. Only a
+    // step transition should move the customer's reading/keyboard position.
+    if (previousStep === null || previousStep === step) return
+    const heading = wizardRef.current?.querySelector<HTMLElement>('h1')
+    if (!heading) return
+    heading.tabIndex = -1
+    heading.style.scrollMarginTop = '6rem'
+    heading.focus({ preventScroll: true })
+    // An immediate transition also respects reduced-motion preferences and
+    // keeps the heading below the fixed site navigation.
+    heading.scrollIntoView({ block: 'start', behavior: 'instant' })
+  }, [customThemeReady, step])
+
+  useEffect(() => {
     if (isSample) return
     const niche = matchedTemplate?.nicheSlug || businessInfo.niche
     const template = matchedTemplate?.templateSlug
@@ -1206,7 +1225,7 @@ export default function PreviewYourBusinessClient() {
   }
 
   return (
-    <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
+    <main ref={wizardRef} className="relative min-h-screen pt-24 pb-20 overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0" style={{
