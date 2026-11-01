@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   validate-and-deploy:
-    if: ${{ inputs.confirm == 'STAGE' }}
+    if: ${{ inputs.confirm == 'STAGE' && github.ref == 'refs/heads/main' && github.repository == 'russlle2/platform-builder' }}
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -70,6 +70,7 @@ jobs:
             echo "Refusing staging publication: environment sentinel mismatch." >&2
             exit 1
           fi
+          node apps/generator-app/scripts/netlify-build-guard.mjs write-staging-marker
           pnpm --package=netlify-cli@27.4.2 dlx netlify deploy \
             --filter @platform-builder/generator-app \
             --build \
@@ -82,6 +83,10 @@ jobs:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
           DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          STAGING_BUILD_CONFIRMATION: ${{ inputs.confirm }}
           NEXT_PUBLIC_RELEASE_SHA: ${{ github.sha }}
 
       - name: Attest the published staging commit and database binding

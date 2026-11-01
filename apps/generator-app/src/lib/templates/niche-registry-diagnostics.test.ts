@@ -101,3 +101,25 @@ it('identifies a malformed manifest root without treating it as an empty invento
   expect(result.ready).toBe(false)
   expect(result.diagnostics.cause).toBe('manifest-malformed')
 })
+
+
+it('keeps sample availability empty when a valid catalog lacks reviewed identities, without losing counts', async () => {
+  vi.stubEnv('DAILY_CLARITY_TEMPLATE_CATALOG_PROFILE', 'launch')
+  const manifest = approvedManifest()
+  // Featured metadata cannot populate intentionally empty promotional groups.
+  for (const entry of manifest.aromatherapy) entry.featured = true
+  const original = JSON.stringify(manifest)
+  store.get.mockResolvedValue(manifest)
+  const { getNichesWithSampleAvailability } = await import('./niche-registry')
+  const niches = await getNichesWithSampleAvailability()
+  expect(niches.reduce((total, niche) => total + niche.templateCount, 0)).toBe(60)
+  // This approved launch fixture contains none of the retained reviewed IDs.
+  // Published counts or featured flags must not become sample availability.
+  expect(niches.every(niche => !niche.sampleAvailable)).toBe(true)
+  for (const slug of ['aromatherapy', 'holistic_medicine', 'sound_bath']) {
+    expect(niches.find(niche => niche.slug === slug)).toMatchObject({ sampleAvailable: false })
+    expect(niches.find(niche => niche.slug === slug)!.templateCount).toBeGreaterThan(0)
+  }
+  expect(JSON.stringify(manifest)).toBe(original)
+  expect(store.get).toHaveBeenCalledTimes(1)
+})

@@ -39,6 +39,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
+      <div className="site-shell">
       <a
         href="#main-content"
         className="skip-link"
@@ -80,7 +81,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="hidden xl:flex space-x-1 items-center">
               <Link
                 href="/"
-                className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200"
+                className="whitespace-nowrap px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.1em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200"
               >
                 Home
               </Link>
@@ -98,7 +99,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   aria-expanded={templatesOpen}
                   aria-controls="desktop-templates-menu"
                   onClick={() => setTemplatesOpen((open) => !open)}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200 flex items-center gap-1"
+                  className="whitespace-nowrap px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.1em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200 flex items-center gap-1"
                 >
                   Templates
                   <svg
@@ -134,7 +135,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
               <Link
                 href="/preview-your-business"
-                className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-amber-200 hover:text-white hover:bg-amber-500/20 transition-all duration-200 border border-amber-300/35"
+                className="whitespace-nowrap px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.1em] text-amber-200 hover:text-white hover:bg-amber-500/20 transition-all duration-200 border border-amber-300/35"
               >
                 Preview Your Business
               </Link>
@@ -147,7 +148,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200"
+                  className="whitespace-nowrap px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.1em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200"
                 >
                   {item.label}
                 </Link>
@@ -182,18 +183,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             onKeyDown={handleMobileKeyDown}
           >
             <div className="px-4 py-2 space-y-1">
-              <Link href="/" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Home</Link>
+              <Link href="/" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm text-slate-200 hover:text-white">Home</Link>
               <div className="px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-400 font-semibold">Templates</div>
               {nicheLinks.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className="block px-6 py-2 text-sm text-slate-200 hover:text-white">
+                <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className="block min-h-11 px-6 py-3 text-sm text-slate-200 hover:text-white">
                   {item.label}
                 </Link>
               ))}
-              <Link href="/demo/platform-builder" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Watch Demo</Link>
-              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Pricing</Link>
-              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">My websites</Link>
-              <Link href="/contact" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Contact</Link>
-              <Link href="/preview-your-business" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm font-semibold text-amber-300 hover:text-white">Preview Your Business</Link>
+              <Link href="/demo/platform-builder" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm text-slate-200 hover:text-white">Watch Demo</Link>
+              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm text-slate-200 hover:text-white">Pricing</Link>
+              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm text-slate-200 hover:text-white">My websites</Link>
+              <Link href="/contact" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm text-slate-200 hover:text-white">Contact</Link>
+              <Link href="/preview-your-business" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm font-semibold text-amber-300 hover:text-white">Preview Your Business</Link>
             </div>
           </div>
         )}
@@ -215,8 +216,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </p>
           </div>
           <nav aria-label="Footer navigation">
-            <ul className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-400">
+            <ul className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-400 [&_a]:inline-flex [&_a]:min-h-11 [&_a]:items-center">
               <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
+              <li><Link href="/wellness-experiences" className="hover:text-white">Wellness experiences</Link></li>
               <li><Link href="/help" className="hover:text-white">Help</Link></li>
               <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
               <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
@@ -229,6 +231,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           &copy; {new Date().getFullYear()} DailyClarity. All rights reserved.
         </div>
       </footer>
+      </div>
       <LeadCaptureModal />
     </>
   );

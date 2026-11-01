@@ -43,6 +43,7 @@ import {
 import { ensureManualServiceTask, notifyManualServiceOwner } from '@/lib/stripe-manual-service'
 import { preparePortalCustomizationUpdate } from '@/lib/customer-site-state'
 import { normalizeAccountEmail } from '@/lib/account-email'
+import { reconcileHostingEntitlement } from '@/lib/customer-service-entitlement'
 import {
   STRIPE_FULFILLMENT_LEASE_MS,
   STRIPE_FULFILLMENT_MAX_ATTEMPTS,
@@ -219,6 +220,7 @@ export async function handleCheckoutCompleted(
   supabase: SupabaseClient,
   session: Stripe.Checkout.Session,
   paymentEventCreated?: number,
+  entitlementStripe?: Stripe,
 ) {
   const meta = session.metadata || {}
   const slug = meta.slug
@@ -322,13 +324,6 @@ export async function handleCheckoutCompleted(
 
   const normalizedSlug = normalizeSlug(slug)
 
-  // ── Step 1: Reserve slug ──────────────────────────────────────────────────
-  await reserveSlug(supabase, slug, checkoutIntentId || session.id)
-
-  const portalCredentials = createPortalAccessCredentials(session.id)
-  if (!portalCredentials) throw new Error('Portal token signing is not configured.')
-  const portalAccessToken = portalCredentials.token
-
   // Load durable progress before repeating any external work.
   const { data: priorPortal, error: priorPortalError } = await supabase
     .from('portal_sites')
@@ -337,6 +332,23 @@ export async function handleCheckoutCompleted(
     .maybeSingle()
   if (priorPortalError) throw new Error(`portal_lookup:${priorPortalError.message}`)
   const priorData = (priorPortal?.data || {}) as Record<string, unknown>
+  // Reject a different checkout before even touching the slug reservation.
+  const incomingIdentity: Record<string, unknown> = {
+    checkout_intent_id: checkoutIntentId, stripe_session_id: session.id,
+    stripe_customer_id: stripeCustomerId, stripe_subscription_id: stripeSubscriptionId,
+  }
+  for (const key of Object.keys(incomingIdentity)) {
+    const previous = priorData[key]
+    if (typeof previous === 'string' && previous && previous !== incomingIdentity[key]) {
+      throw new Error('Portal checkout identity mismatch.')
+    }
+  }
+  // ── Step 1: Reserve slug ──────────────────────────────────────────────────
+  await reserveSlug(supabase, slug, checkoutIntentId || session.id)
+  const portalCredentials = createPortalAccessCredentials(session.id)
+  if (!portalCredentials) throw new Error('Portal token signing is not configured.')
+  const portalAccessToken = portalCredentials.token
+
   const staging = process.env.DAILYCLARITY_ENVIRONMENT === 'staging'
   const canReusePriorSite =
     priorData.checkout_intent_id === checkoutIntentId ||
@@ -563,6 +575,7 @@ export async function handleCheckoutCompleted(
       : 'fulfillment_failed',
   })
   if (orderError) throw new Error(`order_upsert:${orderError.message}`)
+  if (entitlementStripe) await reconcileHostingEntitlement(supabase, entitlementStripe, normalizedSlug)
   if (session.payment_status === 'paid' && typeof session.amount_total === 'number' && session.amount_total > 0) {
     const { error: paymentError } = await supabase.rpc('record_order_payment', {
       p_subscription_id: stripeSubscriptionId,
@@ -859,6 +872,7 @@ async function updatePortalBillingState(
     p_event_id: eventId || null,
   })
   if (orderError) throw new Error(`subscription_order_update:${orderError.message}`)
+  return slug
 }
 
 async function handleSubscriptionEvent(
@@ -891,10 +905,11 @@ async function handleSubscriptionEvent(
     : typeof legacyPeriodEnd === 'number'
       ? legacyPeriodEnd
       : null
-  await updatePortalBillingState(supabase, subscription.id, subscription.status, {
+  const slug = await updatePortalBillingState(supabase, subscription.id, subscription.status, {
     cancel_at_period_end: subscription.cancel_at_period_end,
     current_period_end: currentPeriodEnd,
   }, eventCreated, eventId)
+  if (slug) await reconcileHostingEntitlement(supabase, stripe, slug)
 }
 
 async function handleInvoiceEvent(
@@ -922,10 +937,11 @@ async function handleInvoiceEvent(
 
   // Invoice payment state is evidence, not subscription entitlement. A late
   // manually-paid invoice must never reactivate an already-canceled portal.
-  await updatePortalBillingState(supabase, subscriptionId, subscription.status, {
+  const slug = await updatePortalBillingState(supabase, subscriptionId, subscription.status, {
     latest_invoice_id: invoice.id,
     latest_invoice_paid: paid,
   }, eventCreated, eventId, checkoutType !== TEMPLATE_CHECKOUT_TYPE)
+  if (slug) await reconcileHostingEntitlement(supabase, stripe, slug)
   if (paid && invoice.amount_paid > 0 && checkoutType === TEMPLATE_CHECKOUT_TYPE) {
     const { error: paymentError } = await supabase.rpc('record_order_payment', {
       p_subscription_id: subscriptionId,
@@ -1002,7 +1018,7 @@ export async function processStripeEvent(
         checkoutType === TEMPLATE_CHECKOUT_TYPE &&
         isCheckoutPaymentReady(session)
       ) {
-        await handleCheckoutCompleted(supabase, session, event.created)
+        await handleCheckoutCompleted(supabase, session, event.created, stripe)
       }
       break
     }

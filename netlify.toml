@@ -2,7 +2,10 @@
   # Monorepo: install from repo root so workspace:* deps resolve (do not set base to apps/generator-app).
   # Netlify auto-detects pnpm from pnpm-lock.yaml — no corepack needed.
   base = "/"
-  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+  # Git builds must not publish an uncertified app over the live catalogue.
+  # Build hooks ignore this first guard, so the production command also checks.
+  ignore = "node ./apps/generator-app/scripts/netlify-build-guard.mjs ignore"
+  command = "node apps/generator-app/scripts/netlify-build-guard.mjs build && pnpm install --frozen-lockfile && pnpm run generator:build"
   publish = "apps/generator-app/.next"
 
 [build.environment]
@@ -15,7 +18,7 @@
   included_files = ["node_modules/.pnpm/*sharp*/node_modules/@img/**"]
 
 [context.production]
-  command = "pnpm install --frozen-lockfile && pnpm run generator:build"
+  command = "node apps/generator-app/scripts/netlify-build-guard.mjs build && pnpm install --frozen-lockfile && pnpm run generator:build"
 
 [context.deploy-preview]
   command = "pnpm install --frozen-lockfile && pnpm run generator:build"

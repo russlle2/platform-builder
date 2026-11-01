@@ -301,13 +301,13 @@ function NicheActionLinks({
       <div className={`flex flex-col sm:flex-row gap-4 ${wrap}`}>
         <Link
           href={`/preview-your-business?niche=${encodeURIComponent(niche)}`}
-          className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
+          className="cta-button text-center"
         >
           Build My Preview
         </Link>
         <Link
           href={`/demo/${niche}`}
-          className={`px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border text-center ${colors.btn}`}
+          className="dc-button-secondary px-8 py-4 text-lg text-center"
           style={{ boxShadow: `0 0 30px ${colors.glow}` }}
         >
           Watch {metaLabel} Demo
@@ -762,7 +762,7 @@ export default async function NicheLandingPage({
             <p className="text-lg text-slate-300 max-w-2xl">{copy.demoBlurb}</p>
             <Link
               href={`/demo/${niche}`}
-              className={`inline-flex px-8 py-4 text-lg font-bold rounded-lg transition-all duration-300 text-white bg-gradient-to-r shadow-lg hover:shadow-xl hover:scale-105 border ${colors.btn}`}
+              className="cta-button text-center"
               style={{ boxShadow: `0 0 30px ${colors.glow}` }}
             >
               Watch {meta.label} Demo →

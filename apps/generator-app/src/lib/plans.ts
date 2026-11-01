@@ -16,6 +16,8 @@
  * alias for `security_ads`.
  */
 
+import { PAID_SITE_ALLOWANCE, TRIAL_SITE_ALLOWANCE } from './usage-allowances'
+
 export type PlanKey = 'basic' | 'security_ads'
 
 export interface Plan {
@@ -49,11 +51,12 @@ export const PLANS: Record<PlanKey, Plan> = {
       'Your selected template, personalized and published',
       'Hosted subdomain + SSL included',
       'Live preview and self-serve portal editing',
-      'Edit supported text and images after launch',
-      'Contact forms with email notifications',
-      'Secure cloud storage and database',
+      `${PAID_SITE_ALLOWANCE.publishes} website publish attempts per calendar month`,
+      `${PAID_SITE_ALLOWANCE.contacts} contact submissions with email notifications per calendar month`,
+      `Secure database and ${PAID_SITE_ALLOWANCE.imageBytes / 1048576} MiB image storage (${PAID_SITE_ALLOWANCE.imageObjects} images)`,
       'Stripe-secured DailyClarity billing portal',
-      'Free-trial terms shown before checkout when offered',
+      'Included allowances; no automatic overage charges',
+      `When offered, trials include ${TRIAL_SITE_ALLOWANCE.publishes} publishes and ${TRIAL_SITE_ALLOWANCE.contacts} contacts per calendar month, plus ${TRIAL_SITE_ALLOWANCE.imageBytes / 1048576} MiB / ${TRIAL_SITE_ALLOWANCE.imageObjects} images`,
     ],
   },
   security_ads: {

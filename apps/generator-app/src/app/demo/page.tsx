@@ -46,7 +46,7 @@ export default function DemoHubPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/preview-your-business"
-              className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg border border-cyan-200/40 text-center"
+              className="cta-button text-center"
             >
               Build My Preview
             </Link>

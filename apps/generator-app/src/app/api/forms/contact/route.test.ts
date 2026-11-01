@@ -4,6 +4,7 @@ import { NextRequest } from 'next/server'
 const mocks = vi.hoisted(() => ({
   createClient: vi.fn(),
   from: vi.fn(),
+  rpc: vi.fn(),
   rateLimit: vi.fn(),
   notifyOwner: vi.fn(),
   confirmVisitor: vi.fn(),
@@ -101,7 +102,9 @@ beforeEach(() => {
   queries = []
   insertFails = false
   mocks.from.mockImplementation(from)
-  mocks.createClient.mockReturnValue({ from: mocks.from })
+  mocks.createClient.mockReturnValue({ from: mocks.from, rpc: mocks.rpc })
+  mocks.rpc.mockImplementation(async (name: string) => ({ data: name === 'reserve_site_usage'
+    ? { state: 'reserved', limit: 200, used: 1, resetAt: '2099-01-01T00:00:00Z' } : true, error: null }))
   mocks.rateLimit.mockReturnValue(true)
   mocks.notifyOwner.mockImplementation(async () => {
     expect(messages).toHaveLength(1)
@@ -283,6 +286,43 @@ describe('invalid contact inputs and delivery failures', () => {
     expect(response.status).toBe(503)
     expect(await response.json()).toEqual({ error: 'Contact submissions are temporarily unavailable. Please try again later.' })
     expect(mocks.createClient).not.toHaveBeenCalled()
+    expect(mocks.notifyOwner).not.toHaveBeenCalled()
+  })
+})
+
+
+describe('contact allowance and retry protection', () => {
+  it.each([
+    [{ state: 'limited', resetAt: '2099-01-01T00:00:00Z' }, 429],
+    [{ state: 'ineligible', reason: 'billing_inactive' }, 503],
+    [{ state: 'pending' }, 409], [{ state: 'invalid' }, 503],
+  ])('does not insert or send when the claim is %j', async (claim, status) => {
+    mocks.rpc.mockResolvedValueOnce({ data: claim, error: null })
+    const response = await submit({ slug: 'alpha-site' })
+    expect(response.status).toBe(status)
+    expect(JSON.stringify(await response.json())).not.toContain('billing')
+    expect(messages).toHaveLength(0)
+    expect(mocks.notifyOwner).not.toHaveBeenCalled()
+    expect(mocks.confirmVisitor).not.toHaveBeenCalled()
+  })
+  it('replays a completed request without another message or email', async () => {
+    mocks.rpc.mockResolvedValueOnce({ data: { state: 'completed', status: 200, body: { ok: true, deliveryStatus: 'sent' } }, error: null })
+    expect(await (await submit({ slug: 'alpha-site' })).json()).toEqual({ ok: true, deliveryStatus: 'sent' })
+    expect(messages).toHaveLength(0)
+    expect(mocks.notifyOwner).not.toHaveBeenCalled()
+    expect(mocks.confirmVisitor).not.toHaveBeenCalled()
+  })
+  it('claims before persistence, then saves a receipt after at most two notifications', async () => {
+    expect((await submit({ slug: 'alpha-site' })).status).toBe(200)
+    expect(mocks.rpc.mock.calls.map(([name]) => name)).toEqual(['reserve_site_usage', 'finish_site_usage'])
+    expect(mocks.notifyOwner).toHaveBeenCalledTimes(1)
+    expect(mocks.confirmVisitor).toHaveBeenCalledTimes(1)
+    expect(mocks.rpc).toHaveBeenLastCalledWith('finish_site_usage', expect.objectContaining({ p_status: 200, p_body: { ok: true, deliveryStatus: 'sent' } }))
+  })
+  it('retains a reservation when message persistence has an unknown transport outcome', async () => {
+    insertFails = true
+    expect((await submit({ slug: 'alpha-site' })).status).toBe(500)
+    expect(mocks.rpc.mock.calls.map(([name]) => name)).toEqual(['reserve_site_usage'])
     expect(mocks.notifyOwner).not.toHaveBeenCalled()
   })
 })

@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { areSalesPaused } from '@/lib/sales-pause'
 import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { getStripeTrialDays } from '@/lib/platform-config'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 import { getPlan, isManagedPlan, normalizePlanKey } from '@/lib/plans'
@@ -14,23 +14,61 @@ import {
   sanitizeCustomerValues,
 } from '@/lib/site-deploy'
 import { getTemplateAtCatalogRevision } from '@/lib/templates/niche-registry'
-import { buildCheckoutTemplateState } from '@/lib/customer-site-state'
+import { buildCheckoutTemplateState, type PersistedTemplateCustomization } from '@/lib/customer-site-state'
 import { createStripeClient, stripeIntegrationIdentifier } from '@/lib/stripe-client'
 import { stripeCheckoutExperience } from '@/lib/stripe-checkout-experience'
 import { readBoundedJson } from '@/lib/bounded-json'
 import {
   TEMPLATE_CHECKOUT_TYPE,
   getTemplateFulfillmentConfigIssues,
+  configuredStripeLivemode,
 } from '@/lib/stripe-runtime'
 import { normalizeSiteSlug, validateSiteSlug } from '@/lib/site-slug'
 import { UPLOAD_SESSION_COOKIE, verifyUploadSessionValue } from '@/lib/upload-session'
 import { normalizeAccountEmail, omitAccountEmailFields } from '@/lib/account-email'
 import { isDefinitiveCheckoutRejection, uncertainCheckoutResponse } from '@/lib/checkout-creation-error'
+import { readProfileFields, reviewTemplateProfile } from '@/lib/template-profile-review'
+import { CHECKOUT_ATTEMPT_COOKIE, CHECKOUT_ATTEMPT_MAX_AGE, createCheckoutAttempt, verifyCheckoutAttempt, inspectCheckoutAttempt, type ExistingCheckoutIntent } from '@/lib/checkout-resume'
 
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const MAX_CHECKOUT_PAYLOAD_BYTES = 200_000
+const RECONCILE_OPTIONS = { timeout: 3_000, maxNetworkRetries: 0 } as const
+
+async function releaseExpiredAttempt(supabase: SupabaseClient, prior: ExistingCheckoutIntent) {
+  if (!['pending', 'session_created', 'checkout_failed'].includes(prior.status)) throw new Error('resume_expiry_state')
+  const { error: expiryError } = await supabase.from('checkout_intents').update({
+    status: 'checkout_failed', last_error: 'checkout_expired', updated_at: new Date().toISOString(),
+  }).eq('id', prior.id).in('status', ['pending', 'session_created'])
+  if (expiryError) throw new Error('resume_expiry_update')
+  const { data: settled, error: readError } = await supabase.from('checkout_intents')
+    .select('id,slug,status,stripe_session_id,last_error').eq('id', prior.id).maybeSingle()
+  if (readError || settled?.id !== prior.id || settled.slug !== prior.slug
+    || settled.stripe_session_id !== prior.stripe_session_id || settled.status !== 'checkout_failed'
+    || settled.last_error !== 'checkout_expired') throw new Error('resume_expiry_changed')
+  const { error: releaseError } = await supabase.from('site_slugs').delete()
+    .eq('slug', prior.slug).eq('reserved_for', prior.id).eq('status', 'checkout_pending')
+  if (releaseError) throw new Error('resume_expiry_release')
+}
+
+function rememberAttempt(response: NextResponse, intentId: string): NextResponse {
+  const value = createCheckoutAttempt(intentId)
+  if (value) response.cookies.set(CHECKOUT_ATTEMPT_COOKIE, value, {
+    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax',
+    path: '/', maxAge: CHECKOUT_ATTEMPT_MAX_AGE,
+  })
+  response.headers.set('Cache-Control', 'private, no-store')
+  return response
+}
+
+function forgetAttempt(response: NextResponse): NextResponse {
+  response.cookies.set(CHECKOUT_ATTEMPT_COOKIE, '', {
+    httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 0,
+  })
+  response.headers.set('Cache-Control', 'private, no-store')
+  return response
+}
 
 /** Resolve and verify the recurring Stripe price before accepting checkout. */
 async function resolvePriceId(stripe: Stripe, planKey: string): Promise<string | undefined> {
@@ -38,7 +76,7 @@ async function resolvePriceId(stripe: Stripe, planKey: string): Promise<string |
   if (!plan) return undefined
   const priceId = process.env[plan.stripePriceEnv]
   if (!priceId) return undefined
-  const price = await stripe.prices.retrieve(priceId)
+  const price = await stripe.prices.retrieve(priceId, {}, RECONCILE_OPTIONS)
   if (
     !price.active ||
     price.type !== 'recurring' ||
@@ -95,6 +133,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Checkout details are invalid.' }, { status: 400 })
     }
     const body = bodyValue as Record<string, unknown>
+    if (['resumePreviousCheckout', 'replacePreviousCheckout'].some(key =>
+      body[key] !== undefined && typeof body[key] !== 'boolean')
+      || (body.resumePreviousCheckout === true && body.replacePreviousCheckout === true)) {
+      return NextResponse.json({ error: 'Choose one valid checkout recovery action.' }, { status: 400 })
+    }
+    const origin = getTrustedSiteOrigin(req.url)
+    if (!origin) {
+      return NextResponse.json({ error: 'Checkout redirect configuration is missing.', retrySafe: true }, { status: 503 })
+    }
+    // SameSite cookies also accompany requests from customer-owned sibling
+    // subdomains. A cookie-selected recovery action must originate on this app.
+    if (body.replacePreviousCheckout === true || body.resumePreviousCheckout === true
+      || req.cookies.has(CHECKOUT_ATTEMPT_COOKIE)) {
+      const fetchSite = req.headers.get('sec-fetch-site')
+      if (req.headers.get('origin') !== origin || (fetchSite && fetchSite !== 'same-origin')
+        || req.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') {
+        return NextResponse.json({
+          error: 'Refresh this page before changing your checkout.', code: 'checkout_origin_invalid',
+        }, { status: 403, headers: { 'Cache-Control': 'private, no-store' } })
+      }
+    }
     const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customTheme, customerValues, inlineEdits, imageSwaps, catalogRevision: requestedCatalogRevision } = body
 
     const canonicalPlan = normalizePlanKey(typeof planKey === 'string' ? planKey : null)
@@ -163,6 +222,29 @@ export async function POST(req: NextRequest) {
             { status: 400 },
           )
     }
+    const attemptCookie = req.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.value
+    const priorIntentId = verifyCheckoutAttempt(attemptCookie)
+    if ((attemptCookie && !priorIntentId) || ((body.resumePreviousCheckout === true || body.replacePreviousCheckout === true) && !priorIntentId)) {
+      return forgetAttempt(NextResponse.json({
+        error: 'Your earlier checkout could not be identified. Check your account before starting again.',
+        code: 'checkout_resume_unavailable', recoveryUrl: '/dashboard',
+      }, { status: 409 }))
+    }
+    const profileFields = readProfileFields(selectedTemplate.fields)
+    if (!profileFields) return NextResponse.json({
+      error: 'This design’s website details are temporarily unavailable. Reload the preview before checkout.',
+      code: 'template_profile_unavailable', recoveryUrl: '/preview-your-business', retrySafe: true,
+    }, { status: 503 })
+    // A new purchase must be complete before any Stripe request. A returning
+    // attempt is reconciled first so already-completed purchases remain usable.
+    if (!priorIntentId) {
+      const issues = reviewTemplateProfile(profileFields, safeCustomerValues)
+      if (issues.length) return NextResponse.json({
+        error: 'Complete the details used by this design in your preview before checkout.',
+        code: 'template_profile_incomplete', fields: issues,
+        recoveryUrl: '/preview-your-business',
+      }, { status: 409 })
+    }
     const safeImageSwaps = sanitizeImageSwapMap(imageSwaps)
     const cookieImageOwner = verifyUploadSessionValue(
       req.cookies.get(UPLOAD_SESSION_COOKIE)?.value,
@@ -215,12 +297,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: generatedSlugError }, { status: 400 })
     }
 
-    const origin = getTrustedSiteOrigin(req.url)
-    if (!origin) {
-      return NextResponse.json({ error: 'Checkout redirect configuration is missing.', retrySafe: true }, { status: 503 })
-    }
-
-    checkoutIntentId = randomUUID()
     // The optional preview pin has already been resolved through a hash-checked
     // server catalogue. Snapshot only that verified server entry; never copy
     // client-provided design/preset identities into durable checkout state.
@@ -238,6 +314,98 @@ export async function POST(req: NextRequest) {
       imageOwner: imageSession.imageOwner,
     })
     const catalogRevision = checkoutPayload.catalogRevision
+    if (priorIntentId) {
+      // Reads only until Stripe independently confirms terminal expiration.
+      // Unknown state must never become permission to start another purchase.
+      try {
+        const { data, error } = await supabase.from('checkout_intents')
+          .select('id,slug,plan,email,payload,status,stripe_session_id')
+          .eq('id', priorIntentId).maybeSingle()
+        const prior = data as ExistingCheckoutIntent | null
+        if (error || !prior || prior.id !== priorIntentId || !prior.stripe_session_id) {
+          return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+        }
+        let previousSession = await stripe.checkout.sessions.retrieve(prior.stripe_session_id, {}, RECONCILE_OPTIONS)
+        const requested = body.resumePreviousCheckout === true || body.replacePreviousCheckout === true
+          ? { plan: prior.plan, accountEmail: prior.email, explicitSlug: prior.slug, payload: prior.payload }
+          : { plan: canonicalPlan, accountEmail, explicitSlug: explicitSlug && normalizeSiteSlug(slug as string) !== normalizeSiteSlug(templateSlug) ? normalizeSiteSlug(slug as string) : null, payload: checkoutPayload }
+        let state = inspectCheckoutAttempt(prior, previousSession, requested, configuredStripeLivemode(stripeSecretKey))
+        if (state === 'complete') {
+          return forgetAttempt(NextResponse.json({ url: `${origin}/success?session_id=${encodeURIComponent(previousSession.id)}` }))
+        }
+        if (body.replacePreviousCheckout === true) {
+          const issues = reviewTemplateProfile(profileFields, safeCustomerValues)
+          if (issues.length) return NextResponse.json({
+            error: 'Complete the details used by this design before closing your earlier checkout.',
+            code: 'template_profile_incomplete', fields: issues, recoveryUrl: '/preview-your-business',
+          }, { status: 409 })
+          if (state === 'open' && previousSession.payment_status === 'unpaid') {
+            // Check both records before expiring a session. An active, missing,
+            // or reassigned reservation is uncertainty, never cancellation authority.
+            const { data: reservation, error: reservationError } = await supabase.from('site_slugs')
+              .select('slug,reserved_for,status').eq('slug', prior.slug).maybeSingle()
+            if (reservationError || reservation?.slug !== prior.slug || reservation.reserved_for !== prior.id
+              || reservation.status !== 'checkout_pending') {
+              return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+            }
+            try {
+              await stripe.checkout.sessions.expire(prior.stripe_session_id, {}, {
+                ...RECONCILE_OPTIONS, idempotencyKey: `dailyclarity-checkout-expire-${prior.id}`,
+              })
+            } catch { /* A lost response still requires independent provider readback. */ }
+            previousSession = await stripe.checkout.sessions.retrieve(prior.stripe_session_id, {}, RECONCILE_OPTIONS)
+            state = inspectCheckoutAttempt(prior, previousSession, requested, configuredStripeLivemode(stripeSecretKey))
+          }
+          if (state === 'complete') return forgetAttempt(NextResponse.json({
+            url: `${origin}/success?session_id=${encodeURIComponent(previousSession.id)}`,
+          }))
+          if (state !== 'expired') return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+          await releaseExpiredAttempt(supabase, prior)
+          // A second explicit click starts the new purchase. This request can
+          // only close/reconcile the old one, including after partial cleanup.
+          return forgetAttempt(NextResponse.json({ code: 'checkout_replaced', retrySafe: true }))
+        }
+        if (state === 'open') {
+          const saved = prior.payload as Partial<PersistedTemplateCustomization> | null
+          if (!saved || typeof saved.template !== 'string' || typeof saved.niche !== 'string') {
+            return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+          }
+          const priorTemplate = await getTemplateAtCatalogRevision(saved.niche, saved.template, saved.catalogRevision)
+          const priorFields = priorTemplate && readProfileFields(priorTemplate.fields)
+          if (!priorFields) return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+          const issues = reviewTemplateProfile(priorFields, omitAccountEmailFields(sanitizeCustomerValues(saved.customerValues)))
+          if (issues.length) return NextResponse.json({
+            code: 'checkout_previous_profile_incomplete',
+            error: 'Your earlier checkout is missing details used by its design. Use your updated details to close it before continuing.',
+            previousBusinessName: String(saved.customerValues?.BUSINESS_NAME || '').slice(0, 200),
+            previousPlan: getPlan(prior.plan)?.name || 'Previous plan',
+          }, { status: 409, headers: { 'Cache-Control': 'private, no-store' } })
+          return NextResponse.json({ url: previousSession.url }, {
+            headers: { 'Cache-Control': 'private, no-store' },
+          })
+        }
+        if (state === 'changed') return NextResponse.json({
+          code: 'checkout_draft_changed',
+          error: 'Your earlier checkout is still open with different details. Resume it, or close it to use your updated details.',
+          previousBusinessName: String((prior.payload as { customerValues?: { BUSINESS_NAME?: unknown } })?.customerValues?.BUSINESS_NAME || '').slice(0, 200),
+          previousPlan: getPlan(prior.plan)?.name || 'Previous plan',
+        }, { status: 409, headers: { 'Cache-Control': 'private, no-store' } })
+        if (state === 'expired') {
+          await releaseExpiredAttempt(supabase, prior)
+          return forgetAttempt(NextResponse.json({
+            error: 'Your earlier checkout expired without a completed purchase. Choose your plan again to start a fresh checkout.',
+            code: 'checkout_expired', retrySafe: true,
+          }, { status: 409 }))
+        }
+        return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+      } catch {
+        return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+      }
+    }
+    checkoutIntentId = randomUUID()
+    if (!createCheckoutAttempt(checkoutIntentId)) {
+      return NextResponse.json({ error: 'Checkout is temporarily unavailable.', retrySafe: true }, { status: 503 })
+    }
     const { error: intentError } = await supabase.from('checkout_intents').insert({
       id: checkoutIntentId,
       slug: resolvedSlug,
@@ -331,7 +499,7 @@ export async function POST(req: NextRequest) {
       console.error('[stripe/checkout] intent session update failed:', sessionUpdateError)
     }
 
-    return NextResponse.json({ url: session.url })
+    return rememberAttempt(NextResponse.json({ url: session.url }), checkoutIntentId)
   } catch (error) {
     const message =
       error instanceof Error ? error.message : 'Unable to create checkout session.'
@@ -353,7 +521,8 @@ export async function POST(req: NextRequest) {
           console.error('[stripe/checkout] uncertain checkout recording failed')
         }
       }
-      return NextResponse.json(uncertainCheckoutResponse(checkoutIntentId), { status: 409 })
+      const response = NextResponse.json(uncertainCheckoutResponse(checkoutIntentId), { status: 409 })
+      return checkoutIntentId ? rememberAttempt(response, checkoutIntentId) : response
     }
     if (supabase && checkoutIntentId) {
       await supabase.from('checkout_intents').update({

@@ -51,6 +51,52 @@ test('contact page does not report success when the API rejects a submission', a
   await expect(page.locator('#contact-form-status')).toContainText('temporarily unavailable')
   await expect(page.getByRole('heading', { name: 'Message Received' })).toHaveCount(0)
   await expect(page.locator('form')).toBeVisible()
+  await expect(page.getByLabel('Name', { exact: true })).toHaveValue('Test Visitor')
+  await expect(page.getByLabel('Email', { exact: true })).toHaveValue('visitor@example.com')
+  await expect(page.getByLabel('Message', { exact: true })).toHaveValue('Please tell me more about DailyClarity.')
+  await expect(page.getByRole('link', { name: 'platformwizard@dailyclarity.org', exact: true })).toHaveAttribute('href', 'mailto:platformwizard@dailyclarity.org')
+})
+
+test('help links work without the chat API and preserve an unsent contact message', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  const chatRequests: string[] = []
+  await page.route('**/api/chat', async route => {
+    chatRequests.push(route.request().method())
+    await route.fulfill({ status: 503, json: { message: 'Unavailable' } })
+  })
+  await page.goto('/contact')
+  await page.getByLabel('Name', { exact: true }).fill('Test Visitor')
+  await page.getByLabel('Message', { exact: true }).fill('A question I have not sent.')
+  const launcher = page.getByRole('button', { name: 'Open help and support', exact: true })
+  await launcher.click()
+  const panel = page.getByRole('dialog', { name: 'How can we help?' })
+  await expect(panel).toBeVisible()
+  const guidance = panel.getByRole('link', { name: 'Website & account help', exact: true })
+  await expect(guidance).toHaveAttribute('href', '/help')
+  await expect(guidance).toBeFocused()
+  await expect(panel.getByRole('link', { name: 'Plans & pricing', exact: true })).toHaveAttribute('href', '/pricing')
+  await expect(panel.getByRole('link', { name: 'Contact DailyClarity', exact: true })).toHaveAttribute('href', '/contact')
+  await expect(panel.getByRole('link', { name: 'platformwizard@dailyclarity.org', exact: true })).toHaveAttribute('href', 'mailto:platformwizard@dailyclarity.org')
+  expect(await panel.locator('input, textarea').count()).toBe(0)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  await guidance.press('Escape')
+  await expect(panel).toHaveCount(0)
+  await expect(launcher).toBeFocused()
+  await launcher.click()
+  const persistentLauncher = page.locator('button[aria-controls="platform-help-dialog"]')
+  await persistentLauncher.focus()
+  await persistentLauncher.press('Escape')
+  await expect(panel).toHaveCount(0)
+  await expect(launcher).toBeFocused()
+  await expect(page.getByLabel('Name', { exact: true })).toHaveValue('Test Visitor')
+  await expect(page.getByLabel('Message', { exact: true })).toHaveValue('A question I have not sent.')
+  expect(chatRequests).toEqual([])
+})
+
+test('wellness enquiries keep their focused contact path without the website help launcher', async ({ page }) => {
+  await page.goto('/wellness-experiences')
+  await expect(page.getByRole('button', { name: 'Open help and support', exact: true })).toHaveCount(0)
+  await expect(page.getByRole('link', { name: 'Ask about an experience', exact: true })).toHaveAttribute('href', '/contact')
 })
 
 test('templates navigation disclosure works with click and keyboard', async ({ page }) => {
@@ -78,6 +124,15 @@ for (const [path, heading] of [
     await expect(page.getByRole('heading', { level: 1, name: heading })).toBeVisible()
   })
 }
+
+test('refunds alias redirects permanently to the public refund policy', async ({ page, request }) => {
+  const redirect = await request.get('/refunds', { maxRedirects: 0 })
+  expect(redirect.status()).toBe(308)
+  expect(redirect.headers().location).toBe('/refund-policy')
+  await page.goto('/refunds')
+  await expect(page).toHaveURL(/\/refund-policy$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Refund Policy' })).toBeVisible()
+})
 
 test('pricing page loads', async ({ page }) => {
   await page.goto('/pricing')

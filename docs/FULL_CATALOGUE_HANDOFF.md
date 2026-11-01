@@ -17,12 +17,14 @@ The retained original source identities are:
 | `expected_release_sha` | **The new final 40-character main SHA after all intended merges and successful push CI** |
 | `source_sha` | `2bc0bd7af293a1cf7de11821baa77ea11613506d` |
 | `source_run_id` | `38780575189` |
-| `source_artifact_id` | `11996673078` |
-| `source_provenance_id` | `11996458556` |
-| `source_artifact_digest` | `e5a6a145fe4913e01b283eb9c97e25c41053656fe4d63d0a95fd8edf047aee1a` |
+| `source_artifact_id` | `12927773329` |
+| `source_provenance_id` | `12927568682` |
+| `source_artifact_digest` | `3dc612b06cd2a8e938bf042c6cadb464fda34eeeb1fb9a63f4da243af4419466` |
 | `source_receipt_hash` | `82adc1b86d5322c1bb5740b329d3bc1e22b88f4d779ac06fc79b3b46af891f79` |
 
 Read back these exact artifact IDs and their unexpired state before dispatch. Expired/deleted artifacts, missing ancestry, failed CI or changed protected source inputs are concrete prerequisites to resolve, not reasons to weaken validation or substitute an unreviewed artifact.
+
+These current artifacts come from successful attempt 2 of the same original import run, which reverified the original unpublished transport without recompiling its templates. They expire November 12, 2026. The provenance ZIP SHA-256 is `fc75eb1033441b70b05c07c247a2b46b38a35bdd3b1c01fa9858859f5a7d2f9f`; its raw import report SHA-256 is `728eade0c0245cc263c63ed94650704e8fc0bc7b45269ef0ee4b56adb87c750f`. The original source commit, transport release `414033319`, manifest asset `644669334`, nine part identities, and original certificate remain bound by that report. This refresh does not claim new browser, payment, email, or customer evidence.
 
 The workflow checks provenance before downloading the large candidate. It verifies every original file and the unchanged promotion report, keeps the original certificate untouched, and moves the verified library/report into a new candidate directory on the same runner filesystem. This retains one expanded library rather than a second approximately 4.9 GB copy. It reruns the **current** customization verifier over all 5,486 templates, requiring exact catalogue/manifest hashes, complete page coverage and zero diagnostics. It then calls the normal certificate preparation and packer, requiring every evidence field except the new release SHA and every source content byte to match. Retained browser checks are explicitly reported as not repeated; current customization is reported as repeated.
 
@@ -33,6 +35,14 @@ Upload creates a new unpublished draft named `dc-transport-FULL_SHA-RUN_ID-ATTEM
 Download the small `catalogue-preparation-provenance-RUN_ID-ATTEMPT` artifact and review `catalogue-transport-report.json`. Its `workflowSha` and `transport.releaseSha` must equal the final main SHA. Record `transport.releaseId`, `canaryAssetId`, `manifestAssetId`, `manifestHash` and `certificationHash`. This is transport provenance, **not** an accepted candidate or connected-deployment pass.
 
 Next run the unchanged importer with `operation=check-transport`, the reported release ID and canary ID; require its own protected-token readback success. Then follow section 3 with `operation=import` and the reported manifest/certificate identities. Sections 4 onward, including fresh connected checks for the changed application and all production gates, still apply. The local Windows transfer instructions below remain the route for newly compiled output or unavailable retained artifacts.
+
+## Explicit V2 retention for the reviewed Next security patch
+
+The default `closure_version=1` retains the original strict dependency closure. It continues to reject changed manifests or lockfiles. For the reviewed Next 15.5.27 → 15.5.28 transition only, select `closure_version=2` explicitly in the same protected preparation workflow. This is a separately versioned retained-evidence migration, not new compiler/browser execution.
+
+V2 pins the original source commit and the exact old/new Git blobs for both application manifests and the lockfile. All other V1 factory, composer, data, configuration, resolution-union and certification-core checks remain in force. Unknown package changes, later Next versions and altered lock entries fail. The protected runner creates clean original/current worktrees, installs both frozen dependency sets with pnpm 11.19.0, compares all non-Next physical package bytes and resolution topology, and exercises the actual default composition loader. Probe/install children receive no provider secrets. The generated `catalogue-dependency-proof-v2.json` binds the workflow/run/attempt, exact source/final commit, verifier hashes and actual runner fingerprints. Current checkout dependencies are rechecked before and after preparation/upload.
+
+Original successful import, immutable artifact identities, original certificate and every library/browser-receipt byte remain the trust anchor. V2 does not recreate historical Windows runtime evidence or substitute the recovered Git-LF source. Full current customization, exact-main CI, actual connected staging/payment/delivery/recovery, protected approvals and production gates still apply. Provenance truthfully records `compilerExecuted:false`, `browserChecksRepeated:false`, and `customizationChecksRepeated:true`. A dependency proof or local sample is not publication approval. Restore the active demo-maintenance baseline before merging its changed dependency closure, as required by `DEMO_MAINTENANCE_RELEASE.md`.
 
 ## 1. Prove normal GitHub draft access first
 
