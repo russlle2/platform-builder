@@ -17,12 +17,14 @@ The retained original source identities are:
 | `expected_release_sha` | **The new final 40-character main SHA after all intended merges and successful push CI** |
 | `source_sha` | `2bc0bd7af293a1cf7de11821baa77ea11613506d` |
 | `source_run_id` | `38780575189` |
-| `source_artifact_id` | `11996673078` |
-| `source_provenance_id` | `11996458556` |
-| `source_artifact_digest` | `e5a6a145fe4913e01b283eb9c97e25c41053656fe4d63d0a95fd8edf047aee1a` |
+| `source_artifact_id` | `12927773329` |
+| `source_provenance_id` | `12927568682` |
+| `source_artifact_digest` | `3dc612b06cd2a8e938bf042c6cadb464fda34eeeb1fb9a63f4da243af4419466` |
 | `source_receipt_hash` | `82adc1b86d5322c1bb5740b329d3bc1e22b88f4d779ac06fc79b3b46af891f79` |
 
 Read back these exact artifact IDs and their unexpired state before dispatch. Expired/deleted artifacts, missing ancestry, failed CI or changed protected source inputs are concrete prerequisites to resolve, not reasons to weaken validation or substitute an unreviewed artifact.
+
+These current artifacts come from successful attempt 2 of the same original import run, which reverified the original unpublished transport without recompiling its templates. They expire November 12, 2026. The provenance ZIP SHA-256 is `fc75eb1033441b70b05c07c247a2b46b38a35bdd3b1c01fa9858859f5a7d2f9f`; its raw import report SHA-256 is `728eade0c0245cc263c63ed94650704e8fc0bc7b45269ef0ee4b56adb87c750f`. The original source commit, transport release `414033319`, manifest asset `644669334`, nine part identities, and original certificate remain bound by that report. This refresh does not claim new browser, payment, email, or customer evidence.
 
 The workflow checks provenance before downloading the large candidate. It verifies every original file and the unchanged promotion report, keeps the original certificate untouched, and moves the verified library/report into a new candidate directory on the same runner filesystem. This retains one expanded library rather than a second approximately 4.9 GB copy. It reruns the **current** customization verifier over all 5,486 templates, requiring exact catalogue/manifest hashes, complete page coverage and zero diagnostics. It then calls the normal certificate preparation and packer, requiring every evidence field except the new release SHA and every source content byte to match. Retained browser checks are explicitly reported as not repeated; current customization is reported as repeated.
 
