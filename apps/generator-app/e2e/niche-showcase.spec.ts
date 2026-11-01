@@ -106,3 +106,17 @@ test('closing during a request cannot populate the next selected design with sta
   await expect(page.frameLocator('iframe').getByRole('heading', { name: 'Second design' })).toBeVisible()
   await expect(page.locator('iframe')).toHaveCount(1)
 })
+
+test('an empty promotional selection explains sample availability without hiding the personal route', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  const reads: string[] = []
+  page.on('request', request => { if (request.url().includes('/api/templates/')) reads.push(request.url()) })
+  await page.goto(`${fixtureOrigin}/e2e/fixtures/showcase.html?empty=1`)
+  await expect(page.getByText('No sample is available for this practice yet.')).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Start your business details' })).toHaveAttribute('href', '/preview-your-business?niche=wellness_coach')
+  await expect(page.getByRole('button', { name: /Open homepage preview/ })).toHaveCount(0)
+  await expect(page.locator('iframe')).toHaveCount(0)
+  await expect(page.getByText(/A few starting points/)).toHaveCount(0)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  expect(reads).toEqual([])
+})

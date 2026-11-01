@@ -11,6 +11,8 @@ import { prepareCertification, reviewedHead } from './certified-catalog-release.
 import { REPOSITORY, MAX_PART_BYTES, TRANSPORT_CANARY, assertWorkflow, candidateInventory, createGithub, draftAssets, hash, packCandidate, validateManifest, verifyCandidate } from './catalogue-handoff.mjs'
 import { assertOriginalImport, verifyImportReport } from './rebind-catalogue.mjs'
 import { assertPreparationClosure } from './catalogue-prepare-closure.mjs'
+import { assertPreparationClosureV2 } from './catalogue-prepare-closure-v2.mjs'
+import { validateCurrentV2Proof } from './catalogue-prepare-proof-v2.mjs'
 import { assertReleaseCi } from './verify-release-ci.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
@@ -212,7 +214,13 @@ async function main() {
   const github = createPreparationGithub(env.GITHUB_TOKEN)
   await github.assertMain(head)
   const inputs = { sourceSha: env.SOURCE_SHA, runId: env.SOURCE_RUN_ID, artifactId: env.SOURCE_ARTIFACT_ID, provenanceId: env.SOURCE_PROVENANCE_ID, artifactDigest: env.SOURCE_ARTIFACT_DIGEST, receiptHash: env.SOURCE_RECEIPT_HASH }
-  const closure = assertPreparationClosure(ROOT, inputs.sourceSha, head)
+  const closureVersion = env.PREPARATION_CLOSURE_VERSION ?? '1'
+  requireThat(['1', '2'].includes(closureVersion), 'Unknown preparation closure version')
+  const assertClosure = closureVersion === '2' ? assertPreparationClosureV2 : assertPreparationClosure
+  const sourceClosure = assertClosure(ROOT, inputs.sourceSha, head)
+  const closure = closureVersion === '2'
+    ? { ...sourceClosure, dependencyProof: await validateCurrentV2Proof({ repository: ROOT, env, workflow, closure: sourceClosure }) }
+    : sourceClosure
   const source = await assertOriginalImport(github, inputs)
   if (mode === 'source-check') { console.log(JSON.stringify({ workflow, source, closure })); return }
   await artifactPaths(env)
@@ -229,7 +237,8 @@ async function main() {
     const transport = await uploadTransport({ github, output: env.TRANSPORT_OUTPUT, releaseSha: head, receiptHash: prepared.candidate.certificationHash, manifestHash: prepared.transport.manifestHash, runId: workflow.runId, runAttempt: workflow.runAttempt, readbackRoot: env.UPLOAD_READBACK_ROOT })
     result = { ...prepared, transport, providerPublicationPerformed: false }
   }
-  requireThat(same(source, await assertOriginalImport(github, inputs)) && same(closure, assertPreparationClosure(ROOT, inputs.sourceSha, head)), 'Source identity changed during preparation')
+  requireThat(same(source, await assertOriginalImport(github, inputs)) && same(sourceClosure, assertClosure(ROOT, inputs.sourceSha, head)), 'Source identity changed during preparation')
+  if (closureVersion === '2') requireThat(same(closure.dependencyProof, await validateCurrentV2Proof({ repository: ROOT, env, workflow, closure: sourceClosure })), 'Dependency proof changed during preparation')
   await github.assertMain(head)
   await writeFile(mode === 'prepare' ? env.PREPARATION_REPORT : env.HANDOFF_REPORT, `${JSON.stringify(result, null, 2)}\n`, { flag: 'wx', mode: 0o600 })
   console.log(JSON.stringify({ operation: mode, releaseSha: head, certificationHash: result.candidate.certificationHash, transport: result.transport, providerPublicationPerformed: false }))
