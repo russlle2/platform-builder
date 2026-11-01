@@ -1,0 +1,70 @@
+name: Reconcile the observed production app to its certified baseline
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        required: true
+        default: verify
+        options: [verify, restore]
+      expected_release_sha:
+        description: 'Exact reviewed current main controller SHA with passing push CI'
+        type: string
+        required: true
+      confirm:
+        description: 'RESTORE CERTIFIED BASELINE for the single reviewed app-only restoration'
+        type: string
+        required: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-production
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'russlle2/platform-builder' }}
+    environment: production
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Install the reviewed dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Exercise reconciliation failure paths without provider access
+        run: node --test apps/generator-app/scripts/production-baseline-reconcile.test.mjs
+      - name: Run the bounded production reconciliation
+        run: node apps/generator-app/scripts/production-baseline-reconcile.mjs
+        env:
+          OPERATION: ${{ inputs.operation }}
+          CONFIRMATION: ${{ inputs.confirm }}
+          EXPECTED_RELEASE_SHA: ${{ inputs.expected_release_sha }}
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          RECONCILIATION_JOURNAL: ${{ runner.temp }}/production-reconciliation.json
+      - name: Preserve the actual transition journal after success or interruption
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: production-reconciliation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/production-reconciliation.json
+          if-no-files-found: warn
+          retention-days: 30

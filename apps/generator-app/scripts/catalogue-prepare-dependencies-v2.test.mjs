@@ -77,6 +77,35 @@ test('complete installed comparison recognizes only the exact Next component par
   assert.equal(original.fingerprintHash, baseline.fingerprintHash)
   assert.notEqual(original.trackedLockHash, baseline.trackedLockHash)
   assert.equal(original.excludedComponents.length, 3)
+  await t.test('normalizes only pnpm omitted empty ignored-build metadata', async () => {
+    const oldFile = path.join(oldRoot, 'node_modules/.modules.yaml'), newFile = path.join(newRoot, 'node_modules/.modules.yaml')
+    const oldContent = await readFile(oldFile), newContent = await readFile(newFile)
+    const oldValue = JSON.parse(oldContent), newValue = JSON.parse(newContent)
+    const omitted = (value) => { const copy = { ...value }; delete copy.ignoredBuilds; return copy }
+    try {
+      await writeFile(oldFile, JSON.stringify(omitted(oldValue)))
+      assert.equal((await fingerprintInstalledDependencies(oldRoot, '15.5.27')).fingerprintHash, baseline.fingerprintHash)
+      await writeFile(newFile, JSON.stringify(omitted(newValue)))
+      assert.equal((await fingerprintInstalledDependencies(newRoot, '15.5.28')).fingerprintHash, baseline.fingerprintHash)
+      await writeFile(oldFile, oldContent)
+      assert.equal((await fingerprintInstalledDependencies(oldRoot, '15.5.27')).fingerprintHash, (await fingerprintInstalledDependencies(newRoot, '15.5.28')).fingerprintHash)
+      for (const ignoredBuilds of [null, false, '', {}, ['unbuilt-package@1.0.0']]) {
+        await writeFile(newFile, JSON.stringify({ ...newValue, ignoredBuilds }))
+        await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /unfinished installation/)
+      }
+      for (const pendingBuilds of [null, false, '', {}, ['pending-package@1.0.0']]) {
+        await writeFile(newFile, JSON.stringify({ ...omitted(newValue), pendingBuilds }))
+        await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /unfinished installation/)
+      }
+      const missingPending = omitted(newValue); delete missingPending.pendingBuilds
+      await writeFile(newFile, JSON.stringify(missingPending))
+      await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /unfinished installation/)
+      await writeFile(newFile, JSON.stringify({ ...omitted(newValue), unexpectedMetadata: true }))
+      assert.notEqual((await fingerprintInstalledDependencies(newRoot, '15.5.28')).fingerprintHash, baseline.fingerprintHash)
+    } finally {
+      await writeFile(oldFile, oldContent); await writeFile(newFile, newContent)
+    }
+  })
   await t.test('detects unrelated unimported package bytes and file mode changes', async () => {
     const file = path.join(newRoot, 'node_modules/.pnpm/stable@1.0.0/node_modules/stable/file-104.js'), content = await readFile(file), originalMode = (await stat(file)).mode & 0o777
     await writeFile(file, 'export default "changed"\n')

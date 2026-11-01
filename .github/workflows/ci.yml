@@ -31,6 +31,9 @@ jobs:
       - name: Protected production build and read-only observation guards
         run: node --test apps/generator-app/scripts/netlify-build-guard.test.mjs apps/generator-app/scripts/production-runtime-probe.test.mjs
 
+      - name: Bounded production baseline reconciliation guards
+        run: node --test apps/generator-app/scripts/production-baseline-reconcile.test.mjs
+
       - name: Audit production dependencies
         run: pnpm audit --prod --audit-level moderate
 
