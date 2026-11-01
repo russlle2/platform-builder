@@ -52,6 +52,9 @@ jobs:
       - name: Owned publication recovery guards
         run: node --test apps/generator-app/scripts/staging-publication-recovery.test.mjs
 
+      - name: Hosting entitlement and isolated control guards
+        run: node --test apps/generator-app/scripts/hosting-entitlements.pglite.test.mjs apps/generator-app/scripts/staging-hosting-control.test.mjs
+
       - name: Start dev server for e2e
         run: |
           pnpm --filter @platform-builder/generator-app dev > /tmp/server.log 2>&1 &
