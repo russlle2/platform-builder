@@ -201,6 +201,30 @@ test('a saved palette and custom colors survive reload, preview and checkout aft
   expect(checkout).toMatchObject({ colorScheme: 'ocean-breeze', customTheme: ownTheme })
 })
 
+test('keeps the homepage plan choice through the reviewed preview without starting payment', async ({ page }) => {
+  await seedRealDraft(page)
+  let checkoutRequests = 0
+  await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
+  await page.route('**/api/stripe/checkout', (route) => {
+    checkoutRequests++
+    expect(route.request().postDataJSON().planKey).toBe('security_ads')
+    return route.fulfill({ status: 409, json: { error: 'Checkout fixture captured.' } })
+  })
+  await page.goto('/preview-your-business?plan=security_ads')
+  await page.getByRole('button', { name: 'Resume preview' }).click()
+  await expect(page.frameLocator('iframe[title="Template preview"]').getByRole('heading', { name: 'Saved Studio' })).toBeVisible()
+  await page.getByRole('button', { name: 'Choose a launch plan' }).click()
+  await page.getByLabel('Account email', { exact: false }).fill('private@savedstudio.example')
+  await page.getByLabel('Public contact email').fill('hello@savedstudio.example')
+  await page.getByRole('button', { name: 'Continue to plans', exact: true }).click()
+  await expect(page).toHaveURL(/\/pricing\?/)
+  expect(new URL(page.url()).searchParams.get('plan')).toBe('security_ads')
+  await expect(page.getByRole('status').filter({ hasText: 'Your selected plan: Security + Ads' })).toBeVisible()
+  expect(checkoutRequests).toBe(0)
+  await page.getByRole('button', { name: 'Choose Plan', exact: true }).nth(1).click()
+  await expect.poll(() => checkoutRequests).toBe(1)
+})
+
 test('publishing the account address requires an explicit copy, and later account edits do not silently change public contact', async ({ page }) => {
   await page.goto('/preview-your-business?niche=aromatherapy')
   await openContactDetails(page)

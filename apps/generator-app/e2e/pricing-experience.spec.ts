@@ -16,6 +16,13 @@ test('unavailable trial configuration does not promise a trial or immediate bill
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /og-image\.png$/)
 })
 
+test('unknown URL plan choices do not imply a selected purchasable plan', async ({ page }) => {
+  await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
+  await page.goto('/pricing?plan=unrecognized-plan')
+  await expect(page.getByText('Your selected plan:', { exact: false })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toHaveCount(2)
+})
+
 test('sample browsing cannot start checkout with a previous real draft', async ({ page }) => {
   await page.addInitScript(() => {
     if (sessionStorage.getItem('pricing_sample_seeded')) return

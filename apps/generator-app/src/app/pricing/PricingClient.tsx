@@ -4,7 +4,7 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { track } from '@/lib/analytics'
-import { PLAN_LIST, AUTOMATED_FEATURES, MANAGED_FEATURES } from '@/lib/plans'
+import { PLAN_LIST, AUTOMATED_FEATURES, MANAGED_FEATURES, normalizePlanKey } from '@/lib/plans'
 import {
   CUSTOM_THEME_STORAGE_KEY,
   sanitizeCustomTheme,
@@ -43,6 +43,7 @@ export default function PricingClient() {
   const searchParams = useSearchParams()
   const bookingKitFunnel = searchParams.get('from') === 'booking-kit'
   const visiblePricingTiers = bookingKitFunnel ? pricingTiers.filter((tier) => tier.key === 'basic') : pricingTiers
+  const selectedPlan = visiblePricingTiers.find(tier => tier.key === normalizePlanKey(searchParams.get('plan')))
   const slug = useMemo(() => searchParams.get('slug'), [searchParams])
   const template = useMemo(() => searchParams.get('template'), [searchParams])
   const niche = useMemo(() => searchParams.get('niche'), [searchParams])
@@ -345,6 +346,7 @@ export default function PricingClient() {
 
         {/* Pricing Cards */}
         <section className="container-hvac pb-16">
+          {selectedPlan && <p role="status" className="mb-6 text-center dc-text-body">Your selected plan: <strong className="dc-text-heading">{selectedPlan.name}</strong>. Review the details below before continuing to checkout.</p>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {visiblePricingTiers.map((tier) => (
               <PricingCard

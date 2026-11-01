@@ -42,6 +42,7 @@ import {
   sanitizeCustomTheme,
 } from '@/lib/custom-theme'
 import { ClientReadinessPanel } from '@/components/preview/ClientReadinessPanel'
+import { normalizePlanKey } from '@/lib/plans'
 import { StyleDirectionPreview } from '@/components/preview/StyleDirectionPreview'
 import type { CustomTheme } from '@/lib/custom-theme'
 import {
@@ -303,6 +304,7 @@ export default function PreviewYourBusinessClient() {
   const demoRecord = searchParams.get('demoRecord') === '1'
   const nichePrefill = searchParams.get('niche')
   const templatePrefill = searchParams.get('template')
+  const selectedPlan = normalizePlanKey(searchParams.get('plan'))
   const appliedSelectionRef = useRef<string | null>(null)
 
   const {
@@ -1386,7 +1388,7 @@ export default function PreviewYourBusinessClient() {
             setCustomFonts={setCustomFonts}
             customThemeActive={!isSample && customThemeActive}
             setCustomThemeActive={setCustomThemeActive}
-            checkoutHref={`/pricing?template=${encodeURIComponent(matchedTemplate.templateSlug)}&niche=${encodeURIComponent(matchedTemplate.nicheSlug)}&color=${encodeURIComponent(resolveQuizColorScheme(stylePreferences.colorMood))}&font=${encodeURIComponent(resolveQuizFontVariation(stylePreferences.fontPreference))}&structure=${encodeURIComponent(resolveQuizStructureVariation(stylePreferences.layoutDensity))}${searchParams.get('from') === 'booking-kit' ? '&from=booking-kit' : ''}`}
+            checkoutHref={`/pricing?template=${encodeURIComponent(matchedTemplate.templateSlug)}&niche=${encodeURIComponent(matchedTemplate.nicheSlug)}&color=${encodeURIComponent(resolveQuizColorScheme(stylePreferences.colorMood))}&font=${encodeURIComponent(resolveQuizFontVariation(stylePreferences.fontPreference))}&structure=${encodeURIComponent(resolveQuizStructureVariation(stylePreferences.layoutDensity))}${selectedPlan ? `&plan=${selectedPlan}` : ''}${searchParams.get('from') === 'booking-kit' ? '&from=booking-kit' : ''}`}
           />
         )}
 
