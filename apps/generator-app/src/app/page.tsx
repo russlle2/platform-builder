@@ -1,9 +1,8 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import type { Metadata } from 'next'
-import { getNichesWithSampleAvailability } from '@/lib/templates/niche-registry'
+import { getNiches } from '@/lib/templates/niche-registry'
 import { DemoVideoPlayer } from '@/components/demo/DemoVideoPlayer'
-import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER, PLATFORM_DEMO_CAPTIONS, PLATFORM_DEMO_TRANSCRIPT, NICHE_DEMO_POSTER } from '@/lib/demo-videos'
+import { PLATFORM_DEMO_VIDEO, PLATFORM_DEMO_POSTER, PLATFORM_DEMO_CAPTIONS, PLATFORM_DEMO_TRANSCRIPT } from '@/lib/demo-videos'
 
 // The launch catalog lives in a site-wide Netlify Blobs store. Reading it at
 // request time prevents a credential-less CI build from permanently baking an
@@ -27,74 +26,69 @@ export const metadata: Metadata = {
 }
 
 const nicheAccentClasses: Record<string, { border: string; text: string; bg: string; glow: string }> = {
-  emerald: { border: 'border-emerald-400/30', text: 'dc-text-success', bg: 'bg-emerald-500/10', glow: 'hover:shadow-emerald-500/20' },
-  violet: { border: 'border-violet-400/30', text: 'dc-text-violet', bg: 'bg-violet-500/10', glow: 'hover:shadow-violet-500/20' },
-  cyan: { border: 'border-cyan-400/30', text: 'dc-text-accent', bg: 'dc-bg-accent-soft', glow: 'hover:shadow-cyan-500/20' },
-  amber: { border: 'border-amber-400/30', text: 'dc-text-warm', bg: 'bg-amber-500/10', glow: 'hover:shadow-amber-500/20' },
-  indigo: { border: 'border-indigo-400/30', text: 'dc-text-violet', bg: 'bg-indigo-500/10', glow: 'hover:shadow-indigo-500/20' },
-  rose: { border: 'border-rose-400/30', text: 'dc-text-rose', bg: 'bg-rose-500/10', glow: 'hover:shadow-rose-500/20' },
+  emerald: { border: 'border-emerald-400/30', text: 'text-emerald-300', bg: 'bg-emerald-500/10', glow: 'hover:shadow-emerald-500/20' },
+  violet: { border: 'border-violet-400/30', text: 'text-violet-300', bg: 'bg-violet-500/10', glow: 'hover:shadow-violet-500/20' },
+  cyan: { border: 'border-cyan-400/30', text: 'text-cyan-300', bg: 'bg-cyan-500/10', glow: 'hover:shadow-cyan-500/20' },
+  amber: { border: 'border-amber-400/30', text: 'text-amber-300', bg: 'bg-amber-500/10', glow: 'hover:shadow-amber-500/20' },
+  indigo: { border: 'border-indigo-400/30', text: 'text-indigo-300', bg: 'bg-indigo-500/10', glow: 'hover:shadow-indigo-500/20' },
+  rose: { border: 'border-rose-400/30', text: 'text-rose-300', bg: 'bg-rose-500/10', glow: 'hover:shadow-rose-500/20' },
 }
 
 export default async function HomePage() {
-  const niches = await getNichesWithSampleAvailability()
-  const sampleNiches = niches.filter((niche) => niche.sampleAvailable)
-  const defaultSampleNiche = sampleNiches.find((niche) => niche.slug === 'wellness_coach')?.slug || sampleNiches[0]?.slug
-  const sampleHref = defaultSampleNiche ? `/preview-your-business?sample=1&niche=${encodeURIComponent(defaultSampleNiche)}` : '/preview-your-business'
+  const niches = await getNiches()
   const totalTemplates = niches.reduce((sum, n) => sum + n.templateCount, 0)
   const hasTemplateCounts = totalTemplates > 0
 
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
-      <div className="dc-background-art pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Multi-industry gradient mesh */}
-        <div className="absolute inset-0" style={{
-          background: [
-            'radial-gradient(ellipse 900px 700px at 8% 8%, rgba(34,211,238,0.14), transparent)',
-            'radial-gradient(ellipse 700px 900px at 92% 15%, rgba(139,92,246,0.11), transparent)',
-            'radial-gradient(ellipse 800px 500px at 50% 90%, rgba(244,63,94,0.08), transparent)',
-            'radial-gradient(ellipse 500px 700px at 75% 55%, rgba(245,158,11,0.07), transparent)',
-            'radial-gradient(ellipse 600px 600px at 25% 50%, rgba(16,185,129,0.07), transparent)',
-          ].join(', '),
-        }} />
-        {/* Subtle dot grid */}
-        <div className="absolute inset-0 opacity-30" style={{
-          backgroundImage: 'radial-gradient(circle, rgba(148,163,184,0.1) 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
-        }} />
-        {/* Pentagon */}
-        <svg className="absolute -top-32 -left-24 w-[550px] h-[550px] text-cyan-400/[0.03]" viewBox="0 0 500 500" fill="none" stroke="currentColor" strokeWidth="1">
-          <polygon points="250,30 470,190 390,440 110,440 30,190" />
-          <polygon points="250,80 420,210 360,400 140,400 80,210" />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        {/* Warm sunrise & botanical sanctuary gradient mesh */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background: [
+              'radial-gradient(ellipse 920px 680px at 14% 8%, rgba(245,158,11,0.16), transparent 65%)',
+              'radial-gradient(ellipse 760px 860px at 88% 14%, rgba(16,185,129,0.13), transparent 65%)',
+              'radial-gradient(ellipse 840px 540px at 50% 88%, rgba(45,212,191,0.09), transparent 65%)',
+              'radial-gradient(ellipse 560px 680px at 76% 52%, rgba(251,191,36,0.08), transparent 65%)',
+              'radial-gradient(ellipse 640px 640px at 22% 52%, rgba(52,211,153,0.08), transparent 65%)',
+            ].join(', '),
+          }}
+        />
+        {/* Subtle organic linen dot texture */}
+        <div
+          className="absolute inset-0 opacity-25"
+          style={{
+            backgroundImage: 'radial-gradient(circle, rgba(253,230,138,0.12) 1px, transparent 1px)',
+            backgroundSize: '36px 36px',
+          }}
+        />
+        {/* Sound-bath harmonic rings */}
+        <svg className="absolute -top-24 -right-20 w-[480px] h-[480px] text-amber-300/[0.05]" viewBox="0 0 240 240" fill="none" stroke="currentColor" strokeWidth="0.75">
+          <circle cx="120" cy="120" r="108" />
+          <circle cx="120" cy="120" r="84" />
+          <circle cx="120" cy="120" r="60" />
+          <circle cx="120" cy="120" r="36" />
         </svg>
-        {/* Concentric circles */}
-        <svg className="absolute top-[30%] -right-24 w-[400px] h-[400px] text-violet-400/[0.04]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="0.8">
-          <circle cx="100" cy="100" r="90" /><circle cx="100" cy="100" r="70" /><circle cx="100" cy="100" r="50" /><circle cx="100" cy="100" r="30" />
-        </svg>
-        {/* Star */}
-        <svg className="absolute bottom-24 left-[18%] w-[280px] h-[280px] text-amber-400/[0.04]" viewBox="0 0 200 200" fill="currentColor">
-          <polygon points="100,10 118,72 185,78 132,118 150,185 100,148 50,185 68,118 15,78 82,72" />
-        </svg>
-        {/* Diamond */}
-        <svg className="absolute top-[60%] right-[18%] w-[200px] h-[200px] text-rose-400/[0.04]" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="45" y="45" width="110" height="110" rx="8" transform="rotate(45 100 100)" />
-        </svg>
-        {/* Leaf hint */}
-        <svg className="absolute bottom-[12%] right-[6%] w-[220px] h-[220px] text-emerald-400/[0.03]" viewBox="0 0 200 200" fill="currentColor">
-          <path d="M100 10 Q30 55 30 120 Q30 185 100 190 Q170 185 170 120 Q170 55 100 10Z"/>
+        {/* Botanical leaf silhouette */}
+        <svg className="absolute bottom-[10%] right-[5%] w-[260px] h-[260px] text-emerald-300/[0.04]" viewBox="0 0 200 200" fill="currentColor">
+          <path d="M100 10 Q30 55 30 120 Q30 185 100 190 Q170 185 170 120 Q170 55 100 10Z" />
         </svg>
       </div>
+
       <div className="relative z-10">
         {/* Hero */}
-        <section className="container-hvac py-12 md:py-20">
+        <section className="container-hvac py-12 md:py-20 pb-sunrays">
           <div className="hero-grid">
             <div className="space-y-8">
-              <span className="signal-chip">DailyClarity Platform Builder</span>
-              <h1 className="dc-hero-title text-4xl sm:text-5xl xl:text-6xl font-semibold leading-tight dc-text-heading">
-                A welcoming website for the work you care about.
+              <span className="signal-chip pb-steelplate">DailyClarity Platform Builder</span>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-bright-white pb-raytext--hero">
+                Turn your wellness offer into a client-booking website.
               </h1>
-              <p className="text-lg md:text-2xl dc-text-body max-w-2xl">
-                Start with a design for your practice. See your words and images in place before
-                you pay, then launch with hosting and an editing portal for your business.
+              <p className="text-lg md:text-2xl text-slate-200 max-w-2xl leading-relaxed">
+                Start with a grounded, sensory-informed design for your practice. See your words
+                and images in place before you pay, then launch with hosting and an editing portal
+                for your business.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link href="/preview-your-business" className="cta-button">
@@ -102,21 +96,30 @@ export default async function HomePage() {
                 </Link>
                 <Link
                   href="/demo/platform-builder"
-                  className="dc-button-secondary px-8 py-4 text-lg"
+                  className="px-8 py-4 text-lg font-bold text-white border border-amber-200/30 rounded-xl bg-white/[0.03] hover:bg-white/10 transition-all text-center"
                 >
                   Watch Demo
                 </Link>
               </div>
-              <div className="flex flex-wrap gap-6 text-sm dc-text-body">
-                <span>No card needed to preview.</span>
-                <Link href="/pricing" className="underline underline-offset-4 hover:dc-text-heading">Hosted plans from $20/month</Link>
+              <div className="flex flex-wrap items-center gap-6 text-sm text-slate-300">
+                <span className="inline-flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400" aria-hidden="true" />
+                  No card needed to preview.
+                </span>
+                <Link href="/pricing" className="font-semibold text-amber-200 underline underline-offset-4 hover:text-white">
+                  Hosted plans from $20/month
+                </Link>
+                <Link href="/custom-build" className="text-slate-300 underline underline-offset-4 hover:text-white">
+                  $500 custom build scope review
+                </Link>
               </div>
             </div>
-            <div id="customer-walkthrough" className="glass-panel overflow-hidden rounded-3xl border dc-border scroll-mt-28">
+
+            <div id="customer-walkthrough" className="glass-panel overflow-hidden rounded-3xl border border-amber-200/15 scroll-mt-28">
               <div className="space-y-2 px-6 py-5">
                 <span className="signal-chip">Full walkthrough · 3:47</span>
-                <h2 className="text-2xl font-bold dc-text-heading">From first preview to your published website.</h2>
-                <p className="text-sm leading-relaxed dc-text-body">
+                <h2 className="text-2xl font-bold text-white">From first preview to your published website.</h2>
+                <p className="text-sm leading-relaxed text-slate-300">
                   Follow an example business through setup, custom photos, publishing, enquiries, and its customer portal.
                 </p>
               </div>
@@ -127,40 +130,39 @@ export default async function HomePage() {
                 captionsSrc={PLATFORM_DEMO_CAPTIONS}
                 transcriptSrc={PLATFORM_DEMO_TRANSCRIPT}
               />
-              <p className="px-6 py-4 text-xs dc-text-muted">Example business and test checkout. No real charge in this demonstration.</p>
+              <p className="px-6 py-4 text-xs text-slate-400">Example business and test checkout. No real charge in this demonstration.</p>
             </div>
           </div>
         </section>
 
+        {/* Interactive Sample Selector */}
         <section className="container-hvac py-10 md:py-16" aria-labelledby="overview-heading">
           <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
             <div className="space-y-5">
               <span className="signal-chip">See it come together</span>
-              <h2 id="overview-heading" className="text-3xl md:text-4xl font-bold dc-text-heading">Your practice. Your style. Your website.</h2>
-              <p className="text-lg leading-relaxed dc-text-body">
+              <h2 id="overview-heading" className="text-3xl md:text-4xl font-bold text-white">Your practice. Your style. Your website.</h2>
+              <p className="text-lg leading-relaxed text-slate-300">
                 Explore a demo made for your type of practice, then try a sample website.
                 Add your own business details, services, and photos when you are ready.
               </p>
-              <Link href="/demo" className="inline-flex min-h-11 items-center font-semibold dc-text-accent underline underline-offset-4 hover:dc-text-heading">
+              <Link href="/demo" className="inline-flex min-h-11 items-center font-semibold text-amber-300 underline underline-offset-4 hover:text-white">
                 Explore all five practice demos →
               </Link>
             </div>
             <div className="glass-panel rounded-3xl p-8 space-y-6">
-              <span className="text-xs uppercase tracking-[0.2em] dc-text-accent">Explore before you commit</span>
-              <h2 className="text-3xl font-bold dc-text-heading">See a website for a practice like yours.</h2>
-              <p className="dc-text-body">{sampleNiches.length > 0 ? 'Open an available sample with clearly labeled example details. No account or contact information needed.' : 'No sample is available right now. You can still start with your own business details.'}</p>
-              {sampleNiches.length > 0 ? (
-                <form action="/preview-your-business" method="get" className="space-y-4">
-                  <input type="hidden" name="sample" value="1" />
-                  <label htmlFor="sample-practice" className="block text-sm font-semibold dc-text-body">Available sample practices</label>
-                  <select id="sample-practice" name="niche" defaultValue={defaultSampleNiche} className="w-full rounded-xl dc-field px-4 py-3">
-                    {sampleNiches.map((niche) => <option key={niche.slug} value={niche.slug}>{niche.label}</option>)}
-                  </select>
-                  <button type="submit" className="cta-button w-full">Try a sample website</button>
-                </form>
-              ) : <Link href="/preview-your-business" className="cta-button block text-center">Start with my business details</Link>}
-              <p className="text-sm dc-text-muted">Then use your own details when you are ready. Your existing preview stays separate.</p>
-              {hasTemplateCounts && <p className="border-t dc-border pt-4 text-xs dc-text-muted">{totalTemplates.toLocaleString('en-US')} published templates across {niches.length} practice types.</p>}
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">Explore before you commit</span>
+              <h2 className="text-3xl font-bold text-white">See a website for a practice like yours.</h2>
+              <p className="text-slate-300">Open a real template with clearly labeled example details. No account or contact information needed.</p>
+              <form action="/preview-your-business" method="get" className="space-y-4">
+                <input type="hidden" name="sample" value="1" />
+                <label htmlFor="sample-practice" className="block text-sm font-semibold text-slate-200">Your type of practice</label>
+                <select id="sample-practice" name="niche" defaultValue="wellness_coach" className="w-full rounded-xl border border-white/20 bg-slate-900 px-4 py-3 text-white">
+                  {niches.map((niche) => <option key={niche.slug} value={niche.slug}>{niche.label}</option>)}
+                </select>
+                <button type="submit" className="cta-button w-full">Try a sample website</button>
+              </form>
+              <p className="text-sm text-slate-400">Then use your own details when you are ready. Your existing preview stays separate.</p>
+              {hasTemplateCounts && <p className="border-t border-white/10 pt-4 text-xs text-slate-400">{totalTemplates.toLocaleString('en-US')} published templates across {niches.length} practice types.</p>}
             </div>
           </div>
         </section>
@@ -169,7 +171,7 @@ export default async function HomePage() {
         <section className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Why this is different</span>
-            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-white max-w-4xl mx-auto">
               Built around the questions your next client will ask.
             </h2>
           </div>
@@ -214,53 +216,78 @@ export default async function HomePage() {
             ].map((item) => (
               <div key={item.title} className="card-mahogany space-y-4">
                 <span className="feature-icon">{item.icon}</span>
-                <h3 className="text-2xl font-bold dc-text-heading">{item.title}</h3>
-                <p className="dc-text-body leading-relaxed">{item.copy}</p>
+                <h3 className="text-2xl font-bold text-bright-white">{item.title}</h3>
+                <p className="text-gray-300 leading-relaxed">{item.copy}</p>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Niche Cards — main CTA section */}
+        {/* Niche Cards — with curated visual previews for each practice */}
         <section id="niches" className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Built for real wellness businesses</span>
-            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
               Templates shaped around how your clients decide
             </h2>
-            <p className="text-lg dc-text-body max-w-2xl mx-auto">
-              See a real example from each practice walkthrough, then explore the designs
-              and details that can help your visitors take the next step.
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              Pick your practice to see conversion-focused templates designed for the way your
+              clients research, build trust, and book.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {niches.map((niche) => {
-              const accent = nicheAccentClasses[niche.accent] || nicheAccentClasses.cyan
+              const accent = nicheAccentClasses[niche.accent] || nicheAccentClasses.amber
               return (
                 <Link
                   key={niche.slug}
                   href={`/${niche.slug}`}
-                  className="card-mahogany space-y-4 transition-all duration-300 group"
+                  className={`card-mahogany flex flex-col justify-between space-y-5 hover:scale-[1.02] transition-all duration-300 group ${accent.glow} hover:shadow-2xl`}
                 >
-                  {NICHE_DEMO_POSTER[niche.slug] && (
-                    <div className="dc-practice-poster">
-                      <Image src={NICHE_DEMO_POSTER[niche.slug]} alt="" fill sizes="(min-width: 1024px) 380px, (min-width: 768px) 45vw, 90vw" />
+                  <div className="space-y-4">
+                    <div className="relative overflow-hidden rounded-xl border border-white/10 bg-slate-900/80 aspect-[16/10]">
+                      <img
+                        src={`/images/niche-examples/${niche.slug}/poster-hero.webp`}
+                        alt={`${niche.label} example studio visual`}
+                        loading="lazy"
+                        className="h-full w-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+                      <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-950/80 backdrop-blur-md border border-white/15 text-2xl">
+                          {niche.icon}
+                        </span>
+                        <span className={`text-xs font-bold px-3 py-1 rounded-full backdrop-blur-md ${accent.bg} ${accent.text} border ${accent.border}`}>
+                          {niche.templateCount > 0 ? `${niche.templateCount.toLocaleString('en-US')} templates` : 'Explore this practice'}
+                        </span>
+                      </div>
+                      <div className="absolute bottom-2.5 left-3 right-3 flex items-center gap-1.5">
+                        {(['earthy-warm', 'clinic-modern', 'bold-playful'] as const).map((styleSlug) => (
+                          <img
+                            key={styleSlug}
+                            src={`/images/niche-examples/${niche.slug}/${styleSlug}.webp`}
+                            alt=""
+                            aria-hidden="true"
+                            loading="lazy"
+                            className="h-7 w-11 rounded border border-white/25 object-cover shadow-sm"
+                          />
+                        ))}
+                        <span className="ml-auto text-[11px] font-medium text-slate-200 bg-slate-950/75 px-2 py-0.5 rounded">
+                          Multiple visual directions
+                        </span>
+                      </div>
                     </div>
-                  )}
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-xs dc-text-muted">From the practice walkthrough</span>
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full ${accent.bg} ${accent.text} border ${accent.border}`}>
-                      {niche.templateCount > 0 ? `${niche.templateCount.toLocaleString('en-US')} templates` : 'Explore this practice'}
-                    </span>
+
+                    <h3 className="text-2xl font-bold text-bright-white group-hover:scale-[1.01] transition-transform">
+                      {niche.label}
+                    </h3>
+                    <p className="text-gray-300 leading-relaxed text-sm">
+                      {niche.description}
+                    </p>
                   </div>
-                  <h3 className="text-2xl font-bold dc-text-heading group-hover:scale-[1.01] transition-transform">
-                    {niche.label}
-                  </h3>
-                  <p className="dc-text-body leading-relaxed text-sm">
-                    {niche.description}
-                  </p>
-                  <span className={`inline-flex items-center gap-1 text-sm font-semibold ${accent.text} group-hover:gap-2 transition-all`}>
-                    Explore this practice →
+
+                  <span className={`inline-flex items-center gap-1 text-sm font-semibold ${accent.text} group-hover:gap-2 transition-all pt-1`}>
+                    View example styles →
                   </span>
                 </Link>
               )
@@ -272,7 +299,7 @@ export default async function HomePage() {
         <section className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Your path to launch</span>
-            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
               From details to a live site, one step at a time
             </h2>
           </div>
@@ -285,13 +312,88 @@ export default async function HomePage() {
               { step: '05', title: 'Manage in portal', copy: 'Manage future edits through your customer portal.' },
             ].map((item) => (
               <div key={item.step} className="glass-panel rounded-2xl p-6 space-y-3">
-                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full dc-bg-accent-soft dc-text-accent font-bold border border-cyan-400/30">
+                <span className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-amber-500/15 text-amber-200 font-bold border border-amber-400/30">
                   {item.step}
                 </span>
-                <h3 className="text-xl font-bold dc-text-heading">{item.title}</h3>
-                <p className="dc-text-body text-sm leading-relaxed">{item.copy}</p>
+                <h3 className="text-xl font-bold text-white">{item.title}</h3>
+                <p className="text-slate-200 text-sm leading-relaxed">{item.copy}</p>
               </div>
             ))}
+          </div>
+        </section>
+
+        {/* Transparent Pricing & Scope Overview */}
+        <section className="container-hvac py-16" aria-labelledby="home-pricing-heading">
+          <div className="text-center mb-12 space-y-4">
+            <span className="signal-chip">Straightforward plans</span>
+            <h2 id="home-pricing-heading" className="text-4xl md:text-5xl font-bold text-white">
+              Clear pricing after you preview your website.
+            </h2>
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+              Generating and editing your preview is free. Choose a hosted monthly plan only when
+              you are ready to publish, or request a written scope review for a custom build.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="card-mahogany flex flex-col justify-between space-y-6">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Basic Plan</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-white">$20</span>
+                  <span className="text-sm text-slate-400">/month · billed monthly</span>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Hosted website on your DailyClarity subdomain or connected custom domain, with
+                  ongoing text, photo, and color edits in your customer portal.
+                </p>
+              </div>
+              <Link
+                href="/preview-your-business?plan=basic"
+                className="inline-flex items-center justify-center rounded-xl border border-emerald-300/35 bg-emerald-500/10 px-5 py-3 text-sm font-bold text-emerald-200 hover:bg-emerald-500/20 transition-all"
+              >
+                Preview with Basic →
+              </Link>
+            </div>
+
+            <div className="card-mahogany flex flex-col justify-between space-y-6 border-amber-300/40">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-300">Security + Ads Plan</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-white">$80</span>
+                  <span className="text-sm text-slate-400">/month · billed monthly</span>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Includes everything in Basic plus managed security reviews, uptime monitoring,
+                  and ad landing-page & campaign setup guidance (ad spend billed separately by your ad platform).
+                </p>
+              </div>
+              <Link
+                href="/preview-your-business?plan=security_ads"
+                className="cta-button w-full py-3 text-sm"
+              >
+                Preview with Security + Ads →
+              </Link>
+            </div>
+
+            <div className="card-mahogany flex flex-col justify-between space-y-6">
+              <div className="space-y-3">
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Custom Build Scope Review</span>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-4xl font-bold text-white">$500</span>
+                  <span className="text-sm text-slate-400">one-time · after written scope approval</span>
+                </div>
+                <p className="text-sm text-slate-300 leading-relaxed">
+                  Need bespoke layouts or custom workflow setup? Send your project scope first with
+                  no upfront card charge—payment is requested only after mutual written sign-off.
+                </p>
+              </div>
+              <Link
+                href="/custom-build"
+                className="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/5 px-5 py-3 text-sm font-bold text-white hover:bg-white/10 transition-all"
+              >
+                Request Scope Review →
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -299,24 +401,24 @@ export default async function HomePage() {
         <section className="container-hvac py-16">
           <div className="text-center mb-12 space-y-4">
             <span className="signal-chip">Early access</span>
-            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading">
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
               Take a closer look before you decide.
             </h2>
-            <p className="text-lg dc-text-body max-w-2xl mx-auto">
+            <p className="text-lg text-slate-300 max-w-2xl mx-auto">
               DailyClarity is in early access. Explore the working product, review the launch
               checklist, and check the plan details before making a commitment.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { title: 'Try the real preview', copy: defaultSampleNiche ? 'See a published template with example details, then bring your own content.' : 'Start with your business details and explore available designs.', href: sampleHref, action: defaultSampleNiche ? 'Open a sample website' : 'Start my preview' },
+              { title: 'Try the real preview', copy: 'See a published template with example details, then bring your own content.', href: '/preview-your-business?sample=1&niche=wellness_coach', action: 'Open a sample website' },
               { title: 'Check the client journey', copy: 'Review your offer, qualifications, first-visit information, and contact path.', href: '/wellness-website-checklist', action: 'Use the launch checklist' },
               { title: 'Know what you are buying', copy: 'Compare hosting, editing, optional managed services, and current billing terms.', href: '/pricing', action: 'Compare the plans' },
             ].map((item) => (
               <div key={item.title} className="card-mahogany space-y-3">
-                <h3 className="text-xl font-bold dc-text-heading">{item.title}</h3>
-                <p className="dc-text-body text-sm leading-relaxed">{item.copy}</p>
-                <Link href={item.href} className="inline-block text-sm font-semibold dc-text-accent underline underline-offset-4 hover:dc-text-heading">{item.action} →</Link>
+                <h3 className="text-xl font-bold text-bright-white">{item.title}</h3>
+                <p className="text-gray-300 text-sm leading-relaxed">{item.copy}</p>
+                <Link href={item.href} className="inline-block text-sm font-semibold text-amber-300 underline underline-offset-4 hover:text-white">{item.action} →</Link>
               </div>
             ))}
           </div>
@@ -325,10 +427,10 @@ export default async function HomePage() {
         {/* CTA */}
         <section className="container-hvac py-20">
           <div className="glass-panel rounded-3xl p-12 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold dc-text-heading mb-6">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Your website should do more than look good.
             </h2>
-            <p className="text-lg dc-text-body mb-8 max-w-2xl mx-auto">
+            <p className="text-lg text-slate-200 mb-8 max-w-2xl mx-auto">
               It should explain your offer, build trust, and move people toward the next step.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -337,7 +439,7 @@ export default async function HomePage() {
               </Link>
               <Link
                 href="/demo/platform-builder"
-                className="px-8 py-4 text-lg font-bold dc-text-heading border dc-border rounded-lg hover:dc-surface-soft transition-all"
+                className="px-8 py-4 text-lg font-bold text-white border border-white/20 rounded-xl hover:bg-white/10 transition-all"
               >
                 Watch Demo
               </Link>
@@ -357,12 +459,14 @@ export default async function HomePage() {
                 name: 'DailyClarity Platform Builder',
                 url: 'https://dailyclarity.org',
                 description:
-                  'Generate, preview, customize, and launch premium websites for wellness and professional service businesses.',
+                  'Generate, preview, customize, and launch websites for wellness and professional service businesses.',
                 applicationCategory: 'BusinessApplication',
                 operatingSystem: 'Web',
                 offers: {
-                  '@type': 'Offer',
-                  price: '20',
+                  '@type': 'AggregateOffer',
+                  lowPrice: '20',
+                  highPrice: '80',
+                  offerCount: 2,
                   priceCurrency: 'USD',
                 },
               },

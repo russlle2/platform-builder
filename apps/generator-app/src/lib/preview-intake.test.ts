@@ -18,12 +18,11 @@ describe('preview intake validation', () => {
     })
   })
 
-  it('allows a preview before email collection and validates addresses when supplied', () => {
-    expect(validatePreviewInfo({ ...info, accountEmail: '', email: '' })).toEqual({})
-    expect(validatePreviewInfo({ ...info, accountEmail: '' })).toEqual({})
+  it('requires email for a personalized preview while accepting surrounding whitespace', () => {
+    expect(validatePreviewInfo({ ...info, accountEmail: '' })).toHaveProperty('accountEmail')
     expect(validatePreviewInfo({ ...info, accountEmail: 'bad@' })).toHaveProperty('accountEmail')
     expect(validatePreviewInfo({ ...info, accountEmail: ' private@example.com ' })).toEqual({})
-    expect(validatePreviewInfo({ ...info, email: '   ' })).toEqual({})
+    expect(validatePreviewInfo({ ...info, email: '   ' })).toHaveProperty('email')
     expect(validatePreviewInfo({ ...info, email: 'bad@' })).toHaveProperty('email')
     expect(validatePreviewInfo({ ...info, email: ' hello@example.com ' })).toEqual({})
   })

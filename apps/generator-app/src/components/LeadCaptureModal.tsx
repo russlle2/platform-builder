@@ -36,8 +36,6 @@ export default function LeadCaptureModal() {
       '/dashboard',
       '/login',
       '/help',
-      '/contact',
-      '/wellness-experiences',
     ].some((path) => pathname?.startsWith(path))
 
     if (suppressOnHighIntentPath) {

@@ -8,15 +8,15 @@ export function isValidPreviewEmail(value: string): boolean {
   return normalizeAccountEmail(value) !== null
 }
 
-/** Preview needs a name and industry. Supplied emails are validated; checkout requires both separately. */
+/** Real business previews save an email-linked lead before purchase; samples bypass intake. */
 export function validatePreviewInfo(info: BusinessInfo): PreviewInfoErrors {
   const errors: PreviewInfoErrors = {}
   if (!info.businessName.trim()) errors.businessName = 'Enter your business name.'
   if (!getNicheSlugs().includes(info.niche)) errors.niche = 'Choose an available industry.'
-  if (info.accountEmail.trim() && !isValidPreviewEmail(info.accountEmail)) {
+  if (!isValidPreviewEmail(info.accountEmail)) {
     errors.accountEmail = 'Enter a valid account email address.'
   }
-  if (info.email.trim() && !isValidPreviewEmail(info.email)) {
+  if (!isValidPreviewEmail(info.email)) {
     errors.email = 'Enter a valid public contact email address.'
   }
   return errors

@@ -3,25 +3,12 @@
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import LeadCaptureModal from '@/components/LeadCaptureModal';
-import { getNicheNavLinks, NICHE_SLUGS } from '@/lib/templates/niche-meta';
+import { getNicheNavLinks } from '@/lib/templates/niche-meta';
 
 const nicheLinks = getNicheNavLinks();
-const daylightRoutes = new Set([
-  '/', '/pricing', '/contact', '/privacy', '/terms', '/refund-policy',
-  '/custom-build', '/wellness-experiences', '/wellness-website-checklist',
-  '/website-builder-for-therapists', '/website-builder-for-wellness-coaches',
-  '/aromatherapy-website-builder', '/sound-bath-website-template',
-  '/dailyclarity-vs-wix', '/proof', '/builds', '/archive',
-]);
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const daylight = daylightRoutes.has(pathname)
-    || pathname === '/demo' || pathname.startsWith('/demo/')
-    || pathname === '/help' || pathname.startsWith('/help/')
-    || NICHE_SLUGS.some((slug) => pathname === `/${slug}`);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const templatesMenuRef = useRef<HTMLDivElement>(null);
@@ -52,7 +39,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className={`site-shell${daylight ? ' public-daylight' : ''}`}>
       <a
         href="#main-content"
         className="skip-link"
@@ -66,7 +52,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Persistent Navigation */}
       <nav
         aria-label="Primary navigation"
-        className="fixed top-0 left-0 right-0 z-50 site-header backdrop-blur-xl border-b"
+        className="fixed top-0 left-0 right-0 z-50 bg-slate-950/85 backdrop-blur-xl border-b border-amber-200/10"
       >
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -81,11 +67,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   priority
                 />
                 <span className="flex flex-col">
-                  <span className="text-lg sm:text-xl font-semibold dc-text-heading tracking-tight">
-                    Daily<span className="dc-text-accent">Clarity</span>
+                  <span className="text-xl sm:text-2xl font-bold text-white tracking-[0.1em] sm:tracking-[0.15em] uppercase">
+                    Daily<span className="text-amber-300">Clarity</span>
                   </span>
-                  <span className="hidden sm:block text-[0.65rem] font-medium tracking-[0.04em] dc-text-muted">
-                    For a practice like yours
+                  <span className="hidden sm:block text-[0.6rem] font-semibold uppercase tracking-[0.35em] text-emerald-300/80">
+                    Wellness Website Studio
                   </span>
                 </span>
               </Link>
@@ -94,7 +80,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <div className="hidden xl:flex space-x-1 items-center">
               <Link
                 href="/"
-                className="site-nav-link px-3 py-2 rounded-lg text-xs font-semibold tracking-[0.02em] dc-text-body hover:dc-text-heading hover:dc-surface-soft transition-all duration-200"
+                className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200"
               >
                 Home
               </Link>
@@ -112,7 +98,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   aria-expanded={templatesOpen}
                   aria-controls="desktop-templates-menu"
                   onClick={() => setTemplatesOpen((open) => !open)}
-                  className="site-nav-link px-3 py-2 rounded-lg text-xs font-semibold tracking-[0.02em] dc-text-body hover:dc-text-heading hover:dc-surface-soft transition-all duration-200 flex items-center gap-1"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200 flex items-center gap-1"
                 >
                   Templates
                   <svg
@@ -131,14 +117,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                     id="desktop-templates-menu"
                     role="group"
                     aria-label="Website template categories"
-                    className="absolute top-full left-0 mt-1 w-56 dc-surface backdrop-blur-xl border dc-border rounded-xl shadow-2xl py-2 z-50"
+                    className="absolute top-full left-0 mt-1 w-56 bg-slate-900/95 backdrop-blur-xl border border-amber-200/15 rounded-xl shadow-2xl py-2 z-50"
                   >
                     {nicheLinks.map((item) => (
                       <Link
                         key={item.href}
                         href={item.href}
                         onClick={() => setTemplatesOpen(false)}
-                        className="block px-4 py-2.5 text-sm dc-text-body hover:dc-text-heading hover:dc-surface-soft transition-all"
+                        className="block px-4 py-2.5 text-sm text-slate-200 hover:text-white hover:bg-white/10 transition-all"
                       >
                         {item.label}
                       </Link>
@@ -148,7 +134,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               </div>
               <Link
                 href="/preview-your-business"
-                className="site-nav-link px-3 py-2 rounded-lg text-xs font-semibold tracking-[0.02em] dc-text-accent hover:dc-text-heading hover:dc-bg-accent-soft transition-all duration-200 border dc-border"
+                className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-amber-200 hover:text-white hover:bg-amber-500/20 transition-all duration-200 border border-amber-300/35"
               >
                 Preview Your Business
               </Link>
@@ -161,7 +147,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="site-nav-link px-3 py-2 rounded-lg text-xs font-semibold tracking-[0.02em] dc-text-body hover:dc-text-heading hover:dc-surface-soft transition-all duration-200"
+                  className="px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-[0.2em] text-slate-200 hover:text-white hover:bg-white/10 transition-all duration-200"
                 >
                   {item.label}
                 </Link>
@@ -174,7 +160,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileOpen}
               aria-controls="mobile-navigation-menu"
-              className="xl:hidden dc-text-heading p-2.5 rounded-lg hover:dc-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-700"
+              className="xl:hidden text-white p-2.5 rounded-lg hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
               onClick={() => setMobileOpen((open) => !open)}
               onKeyDown={handleMobileKeyDown}
             >
@@ -192,22 +178,22 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {mobileOpen && (
           <div
             id="mobile-navigation-menu"
-            className="xl:hidden max-h-[calc(100vh-4rem)] overflow-y-auto dc-surface backdrop-blur-xl border-t dc-border pb-4"
+            className="xl:hidden max-h-[calc(100vh-4rem)] overflow-y-auto bg-slate-950/95 backdrop-blur-xl border-t border-white/10 pb-4"
             onKeyDown={handleMobileKeyDown}
           >
             <div className="px-4 py-2 space-y-1">
-              <Link href="/" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm dc-text-body hover:dc-text-heading">Home</Link>
-              <div className="px-4 py-2 text-xs uppercase tracking-[0.2em] dc-text-muted font-semibold">Templates</div>
+              <Link href="/" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Home</Link>
+              <div className="px-4 py-2 text-xs uppercase tracking-[0.2em] text-slate-400 font-semibold">Templates</div>
               {nicheLinks.map((item) => (
-                <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className="block min-h-11 px-6 py-3 text-sm dc-text-body hover:dc-text-heading">
+                <Link key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className="block px-6 py-2 text-sm text-slate-200 hover:text-white">
                   {item.label}
                 </Link>
               ))}
-              <Link href="/demo/platform-builder" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm dc-text-body hover:dc-text-heading">Watch Demo</Link>
-              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm dc-text-body hover:dc-text-heading">Pricing</Link>
-              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm dc-text-body hover:dc-text-heading">My websites</Link>
-              <Link href="/contact" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm dc-text-body hover:dc-text-heading">Contact</Link>
-              <Link href="/preview-your-business" onClick={() => setMobileOpen(false)} className="block min-h-11 px-4 py-3 text-sm font-semibold dc-text-accent hover:dc-text-heading">Preview Your Business</Link>
+              <Link href="/demo/platform-builder" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Watch Demo</Link>
+              <Link href="/pricing" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Pricing</Link>
+              <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">My websites</Link>
+              <Link href="/contact" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm text-slate-200 hover:text-white">Contact</Link>
+              <Link href="/preview-your-business" onClick={() => setMobileOpen(false)} className="block px-4 py-2 text-sm font-semibold text-amber-300 hover:text-white">Preview Your Business</Link>
             </div>
           </div>
         )}
@@ -218,33 +204,31 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {children}
       </div>
 
-      <footer className="site-footer border-t">
+      <footer className="border-t border-amber-200/10 bg-slate-950/90">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
           <div>
-            <Link href="/" className="text-sm font-bold uppercase tracking-[0.18em] dc-text-heading">
-              Daily<span className="dc-text-accent">Clarity</span>
+            <Link href="/" className="text-sm font-bold uppercase tracking-[0.18em] text-white">
+              Daily<span className="text-amber-300">Clarity</span>
             </Link>
-            <p className="mt-2 max-w-md text-xs leading-5 dc-text-muted">
-              Websites for independent businesses and wellness experiences from Palatka, Florida.
+            <p className="mt-2 max-w-md text-xs leading-5 text-slate-400">
+              Grounded, sensory-informed websites and practical tools for wellness &amp; independent service practices.
             </p>
           </div>
           <nav aria-label="Footer navigation">
-            <ul className="flex flex-wrap gap-x-5 gap-y-3 text-sm dc-text-muted">
-              <li><Link href="/pricing" className="hover:dc-text-heading">Pricing</Link></li>
-              <li><Link href="/wellness-experiences" className="hover:dc-text-heading">Wellness experiences</Link></li>
-              <li><Link href="/help" className="hover:dc-text-heading">Help</Link></li>
-              <li><Link href="/contact" className="hover:dc-text-heading">Contact</Link></li>
-              <li><Link href="/privacy" className="hover:dc-text-heading">Privacy</Link></li>
-              <li><Link href="/terms" className="hover:dc-text-heading">Terms</Link></li>
-              <li><Link href="/refund-policy" className="hover:dc-text-heading">Refunds</Link></li>
+            <ul className="flex flex-wrap gap-x-5 gap-y-3 text-sm text-slate-400">
+              <li><Link href="/pricing" className="hover:text-white">Pricing</Link></li>
+              <li><Link href="/help" className="hover:text-white">Help</Link></li>
+              <li><Link href="/contact" className="hover:text-white">Contact</Link></li>
+              <li><Link href="/privacy" className="hover:text-white">Privacy</Link></li>
+              <li><Link href="/terms" className="hover:text-white">Terms</Link></li>
+              <li><Link href="/refund-policy" className="hover:text-white">Refunds</Link></li>
             </ul>
           </nav>
         </div>
-        <div className="border-t dc-border px-4 py-4 text-center text-xs dc-text-muted">
+        <div className="border-t border-white/5 px-4 py-4 text-center text-xs text-slate-400">
           &copy; {new Date().getFullYear()} DailyClarity. All rights reserved.
         </div>
       </footer>
-      </div>
       <LeadCaptureModal />
     </>
   );

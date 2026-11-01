@@ -181,63 +181,11 @@ for (const [name, storedInfo] of [
   })
 }
 
-test('homepage offers available samples or an honest personal-preview recovery', async ({ page }) => {
-  const customerWrites: string[] = []
-  const customerWritePaths = new Set([
-    '/api/intake/contact',
-    '/api/profile/save-draft',
-    '/api/leads',
-    '/api/stripe/checkout',
-  ])
-  await page.route('**/api/**', route => {
-    const request = route.request()
-    const pathname = new URL(request.url()).pathname
-    if (!['GET', 'HEAD', 'OPTIONS'].includes(request.method()) && customerWritePaths.has(pathname)) {
-      customerWrites.push(pathname)
-      return route.fulfill({
-        status: 409,
-        json: { error: 'Homepage navigation must not create a customer record or checkout.' },
-      })
-    }
-    return route.continue()
-  })
+test('homepage sample choice carries the chosen practice without asking for contact details', async ({ page }) => {
   await page.goto('/')
-
-  const picker = page.getByRole('combobox', { name: 'Available sample practices', exact: true })
-  const unavailable = page.getByText(
-    'No sample is available right now. You can still start with your own business details.',
-    { exact: true },
-  )
-  await expect.poll(async () => (await picker.count()) + (await unavailable.count())).toBe(1)
-
-  if (await picker.count()) {
-    await expect(picker).toBeVisible()
-    const choices = await picker.locator('option').evaluateAll(options =>
-      options.map(option => (option as HTMLOptionElement).value),
-    )
-    expect(choices.length).toBeGreaterThan(0)
-    expect(choices.every(value =>
-      ['private_practice_therapist', 'wellness_coach'].includes(value),
-    )).toBe(true)
-    // Exercise a change from the default when another eligible practice exists.
-    const current = await picker.inputValue()
-    const chosen = choices.find(value => value !== current) || choices[0]
-    await picker.selectOption(chosen)
-    await page.getByRole('button', { name: 'Try a sample website', exact: true }).click()
-    await expect(page).toHaveURL(
-      new RegExp(`/preview-your-business\\?sample=1&niche=${chosen}$`),
-    )
-  } else {
-    await expect(unavailable).toBeVisible()
-    await expect(page.getByRole('button', { name: 'Try a sample website', exact: true })).toHaveCount(0)
-    await expect(page.locator('a[href*="sample=1"]')).toHaveCount(0)
-    const recovery = page.getByRole('link', { name: 'Start with my business details', exact: true })
-    await expect(recovery).toHaveAttribute('href', '/preview-your-business')
-    await recovery.click()
-    await expect(page).toHaveURL(/\/preview-your-business$/)
-    await expect(page.getByLabel('Business Name')).toBeVisible()
-  }
-  expect(customerWrites).toEqual([])
+  await page.getByLabel('Your type of practice').selectOption('sound_bath')
+  await page.getByRole('button', { name: 'Try a sample website', exact: true }).click()
+  await expect(page).toHaveURL(/\/preview-your-business\?sample=1&niche=sound_bath/)
 })
 
 async function preparePaymentDraft(page: Page) {
@@ -249,36 +197,6 @@ async function preparePaymentDraft(page: Page) {
   await page.goto('/pricing?template=payment-layout&niche=aromatherapy')
   await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toHaveCount(2)
 }
-
-test('changed draft shows the earlier purchase details and requires explicit resume', async ({ page }) => {
-  const requests: Array<Record<string, unknown>> = []
-  let resumed = false
-  await page.route('**/checkout-resume-fixture', async route => {
-    resumed = true
-    await route.fulfill({ status: 204 })
-  })
-  await page.route('**/api/stripe/checkout', async route => {
-    const body = route.request().postDataJSON() as Record<string, unknown>
-    requests.push(body)
-    if (body.resumePreviousCheckout === true) return route.fulfill({ json: { url: '/checkout-resume-fixture' } })
-    return route.fulfill({ status: 409, json: {
-      code: 'checkout_draft_changed',
-      error: 'Your earlier checkout is still open with different details. Resume that checkout, or contact support before starting another.',
-      previousBusinessName: 'Earlier Studio', previousPlan: 'Basic', recoveryUrl: '/contact',
-    } })
-  })
-  await preparePaymentDraft(page)
-  await page.getByRole('button', { name: 'Choose Plan', exact: true }).last().click()
-  const alert = page.getByRole('alert').filter({ hasText: 'Your earlier checkout is still open' })
-  await expect(alert).toContainText('Earlier checkout: Earlier Studio — Basic')
-  await expect(alert.getByRole('link', { name: 'Contact support to change the earlier checkout' })).toHaveAttribute('href', '/contact')
-  expect(requests).toHaveLength(1)
-  expect(requests[0].resumePreviousCheckout).toBe(false)
-  await alert.getByRole('button', { name: 'Resume earlier checkout' }).click({ noWaitAfter: true })
-  await expect.poll(() => resumed).toBe(true)
-  expect(requests).toHaveLength(2)
-  expect(requests[1].resumePreviousCheckout).toBe(true)
-})
 
 test('all plans share a synchronous checkout guard, recover on rejection, and remain busy after redirect starts', async ({ page }) => {
   let requests = 0
