@@ -65,17 +65,17 @@ export default function CustomDomainHelpPage() {
       <div className="container-hvac max-w-3xl mx-auto space-y-10 px-4">
         <header className="space-y-4 text-center">
           <span className="signal-chip">Help</span>
-          <h1 className="text-4xl md:text-5xl font-bold text-white">
+          <h1 className="text-4xl md:text-5xl font-bold dc-text-heading">
             How to connect your custom domain to DailyClarity
           </h1>
-          <p className="text-slate-300 text-lg">
+          <p className="dc-text-body text-lg">
             Point your own domain at your DailyClarity site in a few steps.
           </p>
         </header>
 
         <section className="glass-panel rounded-2xl p-8 space-y-4">
-          <h2 className="text-2xl font-bold text-white">What you need</h2>
-          <ul className="text-slate-300 space-y-2 list-disc list-inside">
+          <h2 className="text-2xl font-bold dc-text-heading">What you need</h2>
+          <ul className="dc-text-body space-y-2 list-disc list-inside">
             <li>
               A custom domain purchased from a registrar (GoDaddy, Namecheap, Google Domains,
               Cloudflare, etc.)
@@ -86,8 +86,8 @@ export default function CustomDomainHelpPage() {
         </section>
 
         <section className="glass-panel rounded-2xl p-8 space-y-4">
-          <h2 className="text-2xl font-bold text-white">Step-by-step instructions</h2>
-          <ol className="text-slate-300 space-y-3 list-decimal list-inside">
+          <h2 className="text-2xl font-bold dc-text-heading">Step-by-step instructions</h2>
+          <ol className="dc-text-body space-y-3 list-decimal list-inside">
             <li>Go to your DailyClarity dashboard → Domain settings</li>
             <li>Enter your domain name</li>
             <li>Copy the DNS records shown</li>
@@ -95,44 +95,44 @@ export default function CustomDomainHelpPage() {
             <li>Add the DNS records</li>
             <li>Click &ldquo;Check Status&rdquo; — may take up to 48 hours</li>
           </ol>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm dc-text-muted">
             Open your portal:{' '}
-            <Link href="/portal" className="text-cyan-200 hover:text-cyan-100 underline">
+            <Link href="/portal" className="dc-text-accent hover:dc-text-accent underline">
               /portal
             </Link>
           </p>
         </section>
 
         <section className="glass-panel rounded-2xl p-8 space-y-4">
-          <h2 className="text-2xl font-bold text-white">Registrar-specific guides</h2>
+          <h2 className="text-2xl font-bold dc-text-heading">Registrar-specific guides</h2>
           <div className="space-y-4">
             {REGISTRAR_GUIDES.map((guide) => (
               <div
                 key={guide.name}
-                className="rounded-xl bg-white/5 border border-white/10 p-4"
+                className="rounded-xl dc-surface-soft border dc-border p-4"
               >
-                <h3 className="text-lg font-semibold text-white">{guide.name}</h3>
-                <p className="text-slate-300 text-sm mt-1">{guide.steps}</p>
+                <h3 className="text-lg font-semibold dc-text-heading">{guide.name}</h3>
+                <p className="dc-text-body text-sm mt-1">{guide.steps}</p>
               </div>
             ))}
           </div>
         </section>
 
         <section className="glass-panel rounded-2xl p-8 space-y-4">
-          <h2 className="text-2xl font-bold text-white">FAQ</h2>
+          <h2 className="text-2xl font-bold dc-text-heading">FAQ</h2>
           <dl className="space-y-4">
             {FAQ_ITEMS.map((item) => (
-              <div key={item.question} className="border-b border-white/10 pb-4 last:border-0">
-                <dt className="text-white font-semibold">{item.question}</dt>
-                <dd className="text-slate-300 text-sm mt-1">{item.answer}</dd>
+              <div key={item.question} className="border-b dc-border pb-4 last:border-0">
+                <dt className="dc-text-heading font-semibold">{item.question}</dt>
+                <dd className="dc-text-body text-sm mt-1">{item.answer}</dd>
               </div>
             ))}
           </dl>
         </section>
 
         <section className="glass-panel rounded-2xl p-8 text-center space-y-4 border border-cyan-400/20">
-          <h2 className="text-xl font-bold text-white">Still stuck?</h2>
-          <p className="text-slate-300">
+          <h2 className="text-xl font-bold dc-text-heading">Still stuck?</h2>
+          <p className="dc-text-body">
             Our team can walk you through DNS setup for your registrar.
           </p>
           <Link href="/contact" className="cta-button inline-block">

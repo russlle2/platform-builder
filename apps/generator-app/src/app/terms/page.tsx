@@ -84,7 +84,7 @@ export default function TermsPage() {
           support. Unless checkout states otherwise, access continues through the paid billing
           period. Cancel before a trial ends to avoid the first charge. Refund eligibility is
           described in our{' '}
-          <Link href="/refund-policy" className="text-cyan-300 underline underline-offset-4">
+          <Link href="/refund-policy" className="dc-text-accent underline underline-offset-4">
             Refund Policy
           </Link>
           , which is part of these Terms. Nothing here limits non-waivable consumer rights.

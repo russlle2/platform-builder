@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 export function SeoPageShell({ children }: { children: ReactNode }) {
   return (
     <main className="relative min-h-screen pt-24 pb-20 overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      <div className="dc-background-art absolute inset-0 pointer-events-none overflow-hidden">
         <div
           className="absolute inset-0"
           style={{

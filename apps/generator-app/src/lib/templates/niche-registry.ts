@@ -3,7 +3,7 @@ import path from 'path'
 import { createHash } from 'node:crypto'
 import { getStore } from '@netlify/blobs'
 import { NICHE_META, NICHE_SLUGS, getNicheSlugs } from './niche-meta'
-import { getReviewedShowcaseTemplates, isShowcaseEligible } from './showcase-curation'
+import { getReviewedShowcaseTemplates, hasShowcaseCuration, isShowcaseEligible } from './showcase-curation'
 import { inspectLaunchCatalog } from './launch-catalog-integrity'
 import launchCatalogContract from './launch-catalog-contract.json'
 import {
@@ -551,6 +551,20 @@ export async function getNiches(): Promise<NicheInfo[]> {
   }))
 }
 
+/** Homepage counts and sample availability from one validated gallery load. */
+export async function getNichesWithSampleAvailability(): Promise<Array<NicheInfo & { sampleAvailable: boolean }>> {
+  const { gallery } = await getCaches()
+  return Object.entries(NICHE_META).map(([slug, meta]) => {
+    const templates = gallery.get(slug) || []
+    return {
+      slug,
+      ...meta,
+      templateCount: templates.length,
+      sampleAvailable: selectShowcaseTemplates(templates, slug).length > 0,
+    }
+  })
+}
+
 /** Get all templates for a niche */
 export async function getTemplatesForNiche(nicheSlug: string): Promise<TemplateMeta[]> {
   const cache = (await getCaches()).gallery
@@ -558,8 +572,13 @@ export async function getTemplatesForNiche(nicheSlug: string): Promise<TemplateM
 }
 
 /** Choose a bounded showcase from the already validated, deduplicated gallery. */
-export function selectShowcaseTemplates(templates: TemplateMeta[]): TemplateMeta[] {
+export function selectShowcaseTemplates(templates: TemplateMeta[], niche = templates[0]?.nicheSlug || ''): TemplateMeta[] {
   const limit = 6
+  // An explicit curation policy takes priority over release metadata and must
+  // stay empty if none of its eligible choices exists in the active gallery.
+  if (hasShowcaseCuration(niche)) {
+    return getReviewedShowcaseTemplates(niche, templates).slice(0, limit)
+  }
   const rank = (value?: number) => typeof value === 'number' && Number.isFinite(value)
     ? value
     : Number.MAX_SAFE_INTEGER
@@ -570,8 +589,6 @@ export function selectShowcaseTemplates(templates: TemplateMeta[]): TemplateMeta
   )
   const featured = ordered.filter((template) => template.featured)
   if (featured.length) return featured.slice(0, limit)
-  const reviewed = getReviewedShowcaseTemplates(templates[0]?.nicheSlug || '', ordered)
-  if (reviewed.length) return reviewed.slice(0, limit)
 
   // Catalog releases do not all carry editorial flags. Show a few actual
   // published choices instead of silently removing the entire product gallery.
@@ -593,9 +610,9 @@ export function selectShowcaseTemplates(templates: TemplateMeta[]): TemplateMeta
   return selected
 }
 
-/** Featured or diverse fallback choices, always drawn from the publishable gallery. */
+/** Reviewed choices for curated niches; featured/diverse fallback only elsewhere. */
 export async function getFeaturedTemplatesForNiche(nicheSlug: string): Promise<TemplateMeta[]> {
-  return selectShowcaseTemplates(await getTemplatesForNiche(nicheSlug))
+  return selectShowcaseTemplates(await getTemplatesForNiche(nicheSlug), nicheSlug)
 }
 
 /** Get a single template by niche + slug */

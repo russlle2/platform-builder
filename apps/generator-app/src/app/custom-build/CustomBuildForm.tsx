@@ -141,7 +141,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
   }
 
   const inputClass =
-    'w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-cyan-400'
+    'w-full px-4 py-3 dc-field rounded-lg placeholder:dc-text-muted focus:outline-none focus:ring-2 focus:ring-teal-700'
 
   return (
     <main className="relative min-h-screen pt-24 pb-20">
@@ -150,10 +150,10 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
           <div className="lg:sticky lg:top-24 space-y-6">
             <div>
               <span className="signal-chip">One-time custom build</span>
-              <h1 className="text-4xl md:text-5xl font-bold text-bright-white mt-5">
+              <h1 className="text-4xl md:text-5xl font-bold dc-text-heading mt-5">
                 Tell us exactly what you want built.
               </h1>
-              <p className="text-lg text-slate-300 mt-5 leading-relaxed">
+              <p className="text-lg dc-text-body mt-5 leading-relaxed">
                 Describe the appearance, pages, interactions, and functionality you need. Your
                 brief goes to DailyClarity for a scope discussion before you decide to pay.
                 Agree the inclusions, hosting, revisions, and timing before starting a build.
@@ -162,25 +162,25 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
 
             <div className="glass-panel rounded-3xl p-8 space-y-5 border border-cyan-400/30">
               <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-cyan-300">Custom Website Build</p>
+                <p className="text-xs uppercase tracking-[0.3em] dc-text-accent">Custom Website Build</p>
                 <div className="flex items-end gap-2 mt-2">
-                  <span className="text-5xl font-bold text-white">$500</span>
-                  <span className="text-slate-300 pb-1">one time</span>
+                  <span className="text-5xl font-bold dc-text-heading">$500</span>
+                  <span className="dc-text-body pb-1">one time</span>
                 </div>
-                <p className="text-sm text-cyan-200 mt-2">Request a scope review first. No payment details needed.</p>
+                <p className="text-sm dc-text-accent mt-2">Request a scope review first. No payment details needed.</p>
               </div>
-              <ul className="space-y-3 text-sm text-slate-200">
+              <ul className="space-y-3 text-sm dc-text-body">
                 <li>✓ Detailed design and functionality brief</li>
                 <li>✓ Manual review by DailyClarity</li>
                 <li>✓ Responsive custom website build</li>
                 <li>✓ Scope and next steps discussed by email</li>
               </ul>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs dc-text-muted leading-relaxed">
                 The $500 covers the custom website build described in the accepted project scope.
                 Domains, paid plugins, third-party subscriptions, and materially expanded app
                 functionality are not included unless confirmed separately in writing.
               </p>
-              <div className="pt-4 border-t border-white/10 text-xs text-slate-300 space-y-2">
+              <div className="pt-4 border-t dc-border text-xs dc-text-body space-y-2">
                 <p>If you choose to proceed: $500 charged immediately through Stripe Checkout</p>
                 <p>Pay by card or an eligible wallet. Available methods are shown in Stripe Checkout.</p>
                 <p>No DailyClarity account required before payment</p>
@@ -190,7 +190,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
 
           <div className="glass-panel rounded-3xl p-6 md:p-10">
             {wasCanceled && hydrated && (
-              <div role="status" className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-400/30 text-amber-100">
+              <div role="status" className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-400/30 dc-text-warm">
                 {restoredDraft
                   ? 'You returned from checkout. Your project brief was restored from this tab. Review it before continuing.'
                   : 'You returned from checkout. No saved brief was found in this tab.'}
@@ -198,19 +198,19 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
             )}
 
             <div className="mb-8">
-              <h2 className="text-3xl font-bold text-white">Your project brief</h2>
-              <p className="text-slate-300 mt-2">
+              <h2 className="text-3xl font-bold dc-text-heading">Your project brief</h2>
+              <p className="dc-text-body mt-2">
                 Be specific—the more detail you provide, the more accurately we can scope and build your site.
               </p>
             </div>
 
             {saved ? (
-              <div role="status" className="rounded-xl border border-cyan-400/30 bg-cyan-400/10 p-6 space-y-4 text-slate-200">
-                <h3 className="text-xl font-semibold text-white">Brief saved for review. No payment taken.</h3>
+              <div role="status" className="rounded-xl border border-cyan-400/30 dc-bg-accent-soft p-6 space-y-4 dc-text-body">
+                <h3 className="text-xl font-semibold dc-text-heading">Brief saved for review. No payment taken.</h3>
                 <p>We’ll use your contact details to discuss the project. A submitted brief does not confirm the scope or a start date.</p>
                 {saved === 'stored_for_review' && <p>Your brief is stored, but we could not confirm delivery of the notification email. You do not need to submit it again.</p>}
-                <Link href="/contact" className="block text-cyan-200 underline underline-offset-4">Contact DailyClarity about your brief</Link>
-                <button type="button" className="text-sm text-cyan-200 underline underline-offset-4" onClick={() => setSaved(null)}>Return to my draft</button>
+                <Link href="/contact" className="block dc-text-accent underline underline-offset-4">Contact DailyClarity about your brief</Link>
+                <button type="button" className="text-sm dc-text-accent underline underline-offset-4" onClick={() => setSaved(null)}>Return to my draft</button>
               </div>
             ) : <form onSubmit={submit} className="space-y-7">
               <fieldset disabled={submitting} className="space-y-7 disabled:opacity-70">
@@ -328,7 +328,7 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 />
               </Field>
 
-              {mode === 'payment' && <label className="flex items-start gap-3 p-4 rounded-xl border border-white/15 bg-white/5 text-sm text-slate-200">
+              {mode === 'payment' && <label className="flex items-start gap-3 p-4 rounded-xl border dc-border dc-surface-soft text-sm dc-text-body">
                 <input
                   required
                   type="checkbox"
@@ -338,19 +338,19 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
                 />
                 <span>
                   I have discussed this scope with DailyClarity, confirm that my brief is accurate, authorize an immediate one-time $500 charge,
-                  and agree to the <Link href="/terms" className="text-cyan-300 underline">Terms of Service</Link>{' '}
-                  and <Link href="/privacy" className="text-cyan-300 underline">Privacy Policy</Link>.
+                  and agree to the <Link href="/terms" className="dc-text-accent underline">Terms of Service</Link>{' '}
+                  and <Link href="/privacy" className="dc-text-accent underline">Privacy Policy</Link>.
                 </span>
               </label>}
 
-              {mode === 'review' && <p className="text-sm text-slate-300">We’ll save your brief and use these details to discuss your project. See our <Link href="/privacy" className="text-cyan-200 underline">Privacy Policy</Link>.</p>}
+              {mode === 'review' && <p className="text-sm dc-text-body">We’ll save your brief and use these details to discuss your project. See our <Link href="/privacy" className="dc-text-accent underline">Privacy Policy</Link>.</p>}
 
               {error && (
-                <div role="alert" className="p-4 rounded-xl bg-red-500/10 border border-red-400/30 text-red-100 space-y-3">
+                <div role="alert" className="p-4 rounded-xl bg-red-500/10 border border-red-400/30 dc-text-error space-y-3">
                   <p>{error}</p>
                   {checkoutUncertain && <>
                     {checkoutReference && <p className="break-all text-sm">Reference: {checkoutReference}</p>}
-                    <p><Link href="/contact" className="text-cyan-200 underline">Contact support about this attempt</Link></p>
+                    <p><Link href="/contact" className="dc-text-accent underline">Contact support about this attempt</Link></p>
                   </>}
                 </div>
               )}
@@ -363,10 +363,10 @@ export default function CustomBuildForm({ wasCanceled }: { wasCanceled: boolean 
               >
                 {checkoutUncertain ? 'Checkout needs review' : submitting ? (mode === 'review' ? 'Saving your brief…' : 'Opening secure checkout…') : (mode === 'review' ? 'Request a scope review — no payment' : 'Continue to secure $500 payment')}
               </button>
-              <p className="text-center text-xs text-slate-400">
+              <p className="text-center text-xs dc-text-muted">
                 {mode === 'review' ? 'No card required. This request does not place a paid order.' : 'Your card details are entered on Stripe and never pass through DailyClarity.'}
               </p>
-              <button type="button" className="w-full text-center text-sm text-slate-300 underline underline-offset-4" onClick={() => {
+              <button type="button" className="w-full text-center text-sm dc-text-body underline underline-offset-4" onClick={() => {
                 setMode(mode === 'review' ? 'payment' : 'review')
                 update('acceptedTerms', false)
                 setError(null)
@@ -395,9 +395,9 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="flex items-center justify-between gap-3 mb-2 text-sm font-semibold text-slate-200">
-        <span>{label}{required ? <span className="text-red-300"> *</span> : null}</span>
-        {hint ? <span className="text-xs font-normal text-slate-500">{hint}</span> : null}
+      <span className="flex items-center justify-between gap-3 mb-2 text-sm font-semibold dc-text-body">
+        <span>{label}{required ? <span className="dc-text-error"> *</span> : null}</span>
+        {hint ? <span className="text-xs font-normal dc-text-muted">{hint}</span> : null}
       </span>
       {children}
     </label>

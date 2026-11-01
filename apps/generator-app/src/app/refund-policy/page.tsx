@@ -55,7 +55,7 @@ export default function RefundPolicyPage() {
       <LegalSection title="4. Requesting a refund">
         <p>
           Use our{' '}
-          <Link href="/contact" className="text-cyan-300 underline underline-offset-4 hover:text-cyan-200">
+          <Link href="/contact" className="dc-text-accent underline underline-offset-4 hover:dc-text-accent">
             contact form
           </Link>{' '}
           and enter the email address used for your purchase. Include the

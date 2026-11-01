@@ -1,0 +1,185 @@
+name: Prepare or restore the reviewed demo maintenance release
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        required: true
+        default: prepare
+        options: [prepare, verify-draft, promote, rollback]
+      record_source:
+        description: 'Exact JSON: runId, runAttempt, artifactId, artifactDigest, recordHash; empty for prepare'
+        required: false
+        type: string
+      qa_source:
+        description: 'Exact JSON: runId, runAttempt, artifactId, artifactDigest, qaHash; promotion only'
+        required: false
+        type: string
+      confirm:
+        description: 'PREPARE DEMO DRAFT, VERIFY DEMO DRAFT, PROMOTE DEMO DRAFT or ROLLBACK DEMO'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-production
+  cancel-in-progress: false
+
+jobs:
+  demo-maintenance:
+    if: ${{ github.ref == 'refs/heads/main' && github.repository == 'russlle2/platform-builder' }}
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+        working-directory: controller
+    env:
+      OPERATION: ${{ inputs.operation }}
+      CONFIRMATION: ${{ inputs.confirm }}
+      RECORD_SOURCE_JSON: ${{ inputs.record_source }}
+      QA_SOURCE_JSON: ${{ inputs.qa_source }}
+    steps:
+      - name: Check out the protected controller without retained credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: controller
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Require successful CI and the actual current main controller
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node apps/generator-app/scripts/verify-release-ci.mjs
+          node --input-type=module <<'NODE'
+          const { GITHUB_TOKEN: token, GITHUB_SHA: sha, GITHUB_REPOSITORY: repository } = process.env;
+          if (repository !== 'russlle2/platform-builder' || !/^[a-f0-9]{40}$/.test(sha)) throw new Error('Unexpected controller identity');
+          const response = await fetch(`https://api.github.com/repos/${repository}/git/ref/heads/main`, {
+            headers: { authorization: `Bearer ${token}`, accept: 'application/vnd.github+json' },
+            signal: AbortSignal.timeout(20_000),
+          });
+          if (!response.ok || (await response.json()).object?.sha !== sha) throw new Error('Controller is no longer current main');
+          NODE
+      - name: Set fixed checkout and external evidence locations
+        id: locations
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile, appendFile, mkdir } from 'node:fs/promises';
+          import path from 'node:path';
+          const manifest = JSON.parse(await readFile('apps/generator-app/scripts/demo-maintenance-release.json', 'utf8'));
+          if (!/^[a-f0-9]{40}$/.test(manifest.sourceSha)) throw new Error('The reviewed manifest must pin a full source SHA');
+          const output = path.join(process.env.RUNNER_TEMP, 'demo-maintenance');
+          await mkdir(output, { recursive: true });
+          await appendFile(process.env.GITHUB_OUTPUT, `source_sha=${manifest.sourceSha}\n`);
+          await appendFile(process.env.GITHUB_ENV, [
+            `SOURCE_CHECKOUT=${path.join(process.env.GITHUB_WORKSPACE, 'source')}`,
+            `RECORD_OUTPUT=${path.join(output, 'record.json')}`,
+            `QA_OUTPUT=${path.join(output, 'qa.json')}`,
+            `DEMO_EVIDENCE_DIRECTORY=${output}`,
+            '',
+          ].join('\n'));
+          NODE
+      - name: Check out only the manifest source without retained credentials
+        if: ${{ inputs.operation == 'prepare' }}
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: russlle2/platform-builder
+          ref: ${{ steps.locations.outputs.source_sha }}
+          path: source
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prove the exact source tree and every permitted change before running source code
+        if: ${{ inputs.operation == 'prepare' }}
+        run: node apps/generator-app/scripts/run-demo-maintenance.mjs validate-source
+      - name: Install frozen controller dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+      - name: Exercise maintenance guards
+        run: node --test apps/generator-app/scripts/demo-maintenance*.test.mjs
+      - name: Install Chromium for read-only runtime and media checks
+        run: pnpm --filter @platform-builder/generator-app exec playwright install --with-deps chromium
+      - name: Install frozen source dependencies without release credentials
+        if: ${{ inputs.operation == 'prepare' }}
+        working-directory: source
+        run: pnpm install --frozen-lockfile
+      - name: Lint the exact maintenance source
+        if: ${{ inputs.operation == 'prepare' }}
+        working-directory: source
+        run: pnpm lint
+      - name: Typecheck the exact maintenance source
+        if: ${{ inputs.operation == 'prepare' }}
+        working-directory: source
+        run: pnpm typecheck
+      - name: Run the exact maintenance source unit tests
+        if: ${{ inputs.operation == 'prepare' }}
+        working-directory: source
+        run: pnpm test
+      - name: Check public routes locally without checkout or customer writes
+        if: ${{ inputs.operation == 'prepare' }}
+        working-directory: source
+        env:
+          BASE_URL: http://127.0.0.1:3000
+          NEXT_PUBLIC_SITE_URL: http://127.0.0.1:3000
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          setsid pnpm --filter @platform-builder/generator-app dev > "$RUNNER_TEMP/demo-maintenance-dev.log" 2>&1 &
+          server_pid=$!
+          trap 'kill -- -"$server_pid" 2>/dev/null || true' EXIT
+          timeout 120 bash -c 'until curl --fail --silent http://127.0.0.1:3000/ > /dev/null; do sleep 2; done'
+          pnpm --filter @platform-builder/generator-app exec playwright test e2e/public-routes.spec.ts
+      - name: Verify the source build without release credentials
+        if: ${{ inputs.operation == 'prepare' }}
+        working-directory: source
+        env:
+          NEXT_PUBLIC_SITE_URL: https://dailyclarity.org
+          NEXT_PUBLIC_RELEASE_SHA: ${{ steps.locations.outputs.source_sha }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: pnpm generator:build
+      - name: Run the guarded maintenance operation
+        run: node apps/generator-app/scripts/run-demo-maintenance.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+          NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+          NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+          NETLIFY_EXPECTED_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+          INTERNAL_ADMIN_TOKEN: ${{ secrets.INTERNAL_ADMIN_TOKEN }}
+          DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          DAILYCLARITY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+          NEXT_PUBLIC_SITE_URL: https://dailyclarity.org
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          DAILYCLARITY_SUPABASE_PROJECT_REF: ${{ secrets.DAILYCLARITY_SUPABASE_PROJECT_REF }}
+      - name: Preserve the actual baseline and transition record after any interruption
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: demo-maintenance-record-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.DEMO_EVIDENCE_DIRECTORY }}/record.json
+            ${{ env.DEMO_EVIDENCE_DIRECTORY }}/baseline.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Preserve actual draft browser and media verification
+        if: ${{ always() && inputs.operation == 'verify-draft' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: demo-maintenance-qa-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.QA_OUTPUT }}
+          if-no-files-found: warn
+          retention-days: 14
