@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { usePreviewStore } from '@/store/previewStore'
 import { isValidPreviewEmail, validatePreviewInfo, type PreviewInfoErrors } from '@/lib/preview-intake'
-import { getFirstReviewedShowcaseTemplate } from '@/lib/templates/showcase-curation'
+import { getSampleTemplates } from '@/lib/templates/showcase-curation'
 import {
   type InlineEditMap,
   buildCustomizationScope,
@@ -42,6 +42,8 @@ import {
   sanitizeCustomTheme,
 } from '@/lib/custom-theme'
 import { ClientReadinessPanel } from '@/components/preview/ClientReadinessPanel'
+import { StyleDirectionPreview } from '@/components/preview/StyleDirectionPreview'
+import type { CustomTheme } from '@/lib/custom-theme'
 import {
   isSafePreviewImageUrl,
   isSafePreviewPage,
@@ -68,6 +70,7 @@ import {
 
 const NICHE_OPTIONS = getNicheOptions()
 const CHECKOUT_CATALOG_REVISION_KEY = 'pb_catalog_revision'
+const CATALOG_REQUEST_TIMEOUT_MS = 20000
 
 type NicheExample = {
   businessName: string
@@ -151,6 +154,7 @@ const PROSE_OPTIONS: { value: ProseStyle; label: string; desc: string }[] = [
 ]
 
 const COLOR_MOOD_OPTIONS: { value: ColorMood; label: string; preview: string }[] = [
+  { value: 'original', label: 'Original design colors', preview: '' },
   { value: 'dark-elegant', label: 'Dark & Elegant', preview: 'bg-gradient-to-r from-slate-900 to-slate-700' },
   { value: 'light-airy', label: 'Light & Airy', preview: 'bg-gradient-to-r from-sky-100 to-blue-50' },
   { value: 'rich-warm', label: 'Rich & Warm', preview: 'bg-gradient-to-r from-amber-700 to-orange-500' },
@@ -246,6 +250,7 @@ function scoreTemplate(
 
   // Color mood keyword matching
   const colorKeywords: Record<ColorMood, string[]> = {
+    original: [],
     'dark-elegant': ['dark', 'slate', 'charcoal', 'noir', 'midnight', 'deep'],
     'light-airy': ['light', 'soft', 'airy', 'pastel', 'white', 'cloud', 'clean'],
     'rich-warm': ['warm', 'amber', 'gold', 'terracotta', 'sunset', 'cozy'],
@@ -287,6 +292,7 @@ function scoreTemplate(
 /* ================================================================== */
 
 export default function PreviewYourBusinessClient() {
+  const samplePracticeId = useId()
   const searchParams = useSearchParams()
   const router = useRouter()
   const sampleFromUrl = searchParams.get('sample') === '1'
@@ -318,6 +324,7 @@ export default function PreviewYourBusinessClient() {
 
   // ---- template fetching ----
   const [templates, setTemplates] = useState<ApiTemplate[]>([])
+  const activeTemplatesRef = useRef(new Map<string, ApiTemplate[]>())
   const [templatesLoading, setTemplatesLoading] = useState(false)
   const [templatesError, setTemplatesError] = useState<string | null>(null)
 
@@ -369,6 +376,8 @@ export default function PreviewYourBusinessClient() {
   const [browseTotal, setBrowseTotal] = useState(0)
   const [browseHasMore, setBrowseHasMore] = useState(false)
   const [browseLoading, setBrowseLoading] = useState(false)
+  const [browseError, setBrowseError] = useState<string | null>(null)
+  const browseRequestIdRef = useRef(0)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [pendingPlansHref, setPendingPlansHref] = useState<string | null>(null)
   const [openingPlans, setOpeningPlans] = useState(false)
@@ -379,6 +388,37 @@ export default function PreviewYourBusinessClient() {
   const leadSaveControllersRef = useRef(new Set<AbortController>())
   const plansRequestRef = useRef(0)
   const plansInFlightRef = useRef(false)
+
+  useEffect(() => {
+    const unsubscribe = usePreviewStore.subscribe((state, previous) => {
+      if (state.isSample !== previous.isSample
+        || state.businessInfo !== previous.businessInfo
+        || (previous.step === 'browse' && state.step !== 'browse')) {
+        browseRequestIdRef.current += 1
+        setBrowseLoading(false)
+      }
+    })
+    return () => {
+      browseRequestIdRef.current += 1
+      unsubscribe()
+    }
+  }, [])
+
+  const beginBrowseRequest = useCallback(() => {
+    const requestId = ++browseRequestIdRef.current
+    const state = usePreviewStore.getState()
+    return {
+      state,
+      isCurrent: () => {
+        const current = usePreviewStore.getState()
+        return requestId === browseRequestIdRef.current
+          && current.step === 'browse'
+          && current.isSample === state.isSample
+          && current.businessInfo === state.businessInfo
+          && current.businessInfo.niche === state.businessInfo.niche
+      },
+    }
+  }, [])
 
   const cancelPlansHandoff = useCallback(() => {
     plansRequestRef.current += 1
@@ -403,7 +443,16 @@ export default function PreviewYourBusinessClient() {
 
   const persistBusinessDraft = useCallback((stage: string): Promise<boolean> => {
     const state = usePreviewStore.getState()
-    if (state.isSample || !isValidPreviewEmail(state.businessInfo.accountEmail)) return Promise.resolve(false)
+    if (state.isSample) return Promise.resolve(false)
+    if (!isValidPreviewEmail(state.businessInfo.accountEmail)) {
+      // Retire older remote saves when this version is intentionally local-only.
+      // Existing saved records remain untouched; late responses cannot label
+      // these newly edited details as remotely saved.
+      invalidateLeadSaves()
+      setSaveStatus('idle')
+      setPendingPlansHref(null)
+      return Promise.resolve(false)
+    }
     const email = state.businessInfo.accountEmail.trim().toLowerCase()
     const requestId = ++leadSaveRequestRef.current
     const flow = leadSaveFlowRef.current
@@ -416,7 +465,7 @@ export default function PreviewYourBusinessClient() {
       communicationPreferences: {
         marketingEmailOptIn: state.marketingEmailOptIn,
         recordedAt: new Date().toISOString(),
-        noticeVersion: 'preview-followup-2026-10-16',
+        noticeVersion: 'preview-followup-2026-10-24',
       },
     }
     setSaveStatus('saving')
@@ -458,7 +507,7 @@ export default function PreviewYourBusinessClient() {
     const saved = leadSaveQueueRef.current.then(save, save)
     leadSaveQueueRef.current = saved
     return saved
-  }, [])
+  }, [invalidateLeadSaves])
 
   const handleInfoStepNext = useCallback(() => {
     if (usePreviewStore.getState().isSample) { endSample(); return }
@@ -477,21 +526,25 @@ export default function PreviewYourBusinessClient() {
   const fetchTemplatesForNiche = useCallback(async (niche: string) => {
     setTemplatesLoading(true)
     setTemplatesError(null)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), CATALOG_REQUEST_TIMEOUT_MS)
     try {
-      const res = await fetch(`/api/templates/${niche}?all=true`)
+      const res = await fetch(`/api/templates/${niche}?all=true`, { signal: controller.signal })
       if (!res.ok) {
         throw new Error('The template gallery is temporarily unavailable. Your business details are kept in this browser. Please try again.')
       }
       const data = await res.json()
-      const withNiche = (data.templates || []).map((t: ApiTemplate) => ({
+      if (!Array.isArray(data.templates)) throw new Error('Templates could not be loaded. Your business details are kept in this browser. Please try again.')
+      const withNiche = data.templates.map((t: ApiTemplate) => ({
         ...t,
         nicheSlug: t.nicheSlug || niche,
       }))
+      activeTemplatesRef.current.set(niche, withNiche)
       setTemplates(withNiche)
       return withNiche
     } catch (error) {
-      setTemplatesError(error instanceof Error ? error.message : 'Templates could not be loaded. Please try again.')
-    } finally { setTemplatesLoading(false) }
+      setTemplatesError(controller.signal.aborted ? 'The template gallery took too long to respond. Your details are still in this tab. Please retry.' : error instanceof Error ? error.message : 'Templates could not be loaded. Please try again.')
+    } finally { clearTimeout(timeout); setTemplatesLoading(false) }
     return []
   }, [])
 
@@ -504,6 +557,12 @@ export default function PreviewYourBusinessClient() {
       const ts = templateSlug || matchedTemplate?.templateSlug
       if (!ns || !ts) {
         setPreviewError('Choose a template with a valid niche and layout before previewing.')
+        setPreviewHtml(null)
+        setPreviewLoading(false)
+        return
+      }
+      if (isSample && !getSampleTemplates(ns, activeTemplatesRef.current.get(ns) || []).some((template) => template.slug === ts)) {
+        setPreviewError('This sample is no longer available. Choose another sample or start with your own details.')
         setPreviewHtml(null)
         setPreviewLoading(false)
         return
@@ -640,20 +699,24 @@ export default function PreviewYourBusinessClient() {
     setAlternativeTemplates([])
     setTemplatesError(null)
     let tpls = templates.filter((template) => template.nicheSlug === businessInfo.niche)
-    if (tpls.length === 0 && businessInfo.niche) {
+    if ((isSample || tpls.length === 0) && businessInfo.niche) {
       tpls = await fetchTemplatesForNiche(businessInfo.niche)
     }
 
     if (requestId !== matchingRequestIdRef.current) return
 
-    if (tpls.length === 0) {
-      setTemplatesError((current) => current || 'No published templates are available for this industry right now. Your business details are kept in this browser. Try again or choose another industry.')
+    const candidates = isSample ? getSampleTemplates(businessInfo.niche, tpls) : tpls
+    if (candidates.length === 0) {
+      setTemplatesError((current) => current || (isSample
+        ? 'No sample is available for this practice yet. Choose another sample practice or start with your own details.'
+        : 'No published templates are available for this industry right now. Your business details are kept in this browser. Try again or choose another industry.'))
       setTemplatesLoading(false)
       return
     }
 
-    // Score all templates with businessInfo for brand matching
-    const scored = tpls.map((t: ApiTemplate) => {
+    // Personalized matching retains the full catalog. Every sample selection,
+    // including URL choices and alternatives, uses the same eligible pool.
+    const scored = candidates.map((t: ApiTemplate) => {
       const withNiche = { ...t, nicheSlug: t.nicheSlug || businessInfo.niche }
       return { ...withNiche, ...scoreTemplate(withNiche, stylePreferences, businessInfo.niche, businessInfo) }
     })
@@ -664,7 +727,7 @@ export default function PreviewYourBusinessClient() {
     const requestedTemplate = nichePrefill === businessInfo.niche && templatePrefill
       ? scored.find((template) => template.slug === templatePrefill)
       : undefined
-    const reviewedSample = isSample ? getFirstReviewedShowcaseTemplate(businessInfo.niche, scored) : null
+    const reviewedSample = isSample ? getSampleTemplates(businessInfo.niche, scored)[0] : null
     const best = requestedTemplate || reviewedSample || scored[0]
     const resolvedNiche = best.nicheSlug || businessInfo.niche
     setMatchedTemplate({
@@ -676,7 +739,7 @@ export default function PreviewYourBusinessClient() {
       reason: requestedTemplate
         ? 'selected from the template gallery'
         : reviewedSample
-          ? 'a sample design reviewed on desktop and mobile'
+          ? 'a sample design for this practice'
         : nichePrefill === businessInfo.niche && templatePrefill
           ? `The style from your link is no longer available. We matched an available style: ${best.reason}`
           : best.reason,
@@ -708,6 +771,9 @@ export default function PreviewYourBusinessClient() {
   }, [loadPreview, templates, nichePrefill, templatePrefill, setStep, setMatchedTemplate, fetchTemplatesForNiche, persistBusinessDraft])
 
   const handleStartSample = useCallback((requestedNiche?: string) => {
+    previewRequestIdRef.current += 1
+    setPreviewHtml(null)
+    setPreviewLoading(false)
     invalidateLeadSaves()
     setSaveStatus('idle')
     setPendingPlansHref(null)
@@ -962,33 +1028,59 @@ export default function PreviewYourBusinessClient() {
 
   /* ================ Open browse mode ================ */
   const openBrowse = useCallback(async () => {
-    markInfoSaved()
+    if (!usePreviewStore.getState().isSample) markInfoSaved()
     setStep('browse')
+    const { state: { isSample, businessInfo }, isCurrent } = beginBrowseRequest()
     setBrowseTemplates([])
+    setBrowseTotal(0)
+    setBrowseHasMore(false)
     setBrowsePage(1)
+    setBrowseError(null)
     setBrowseLoading(true)
+    if (isSample) {
+      const available = getSampleTemplates(businessInfo.niche, activeTemplatesRef.current.get(businessInfo.niche) || [])
+      setBrowseTemplates(available)
+      setBrowseTotal(available.length)
+      setBrowseLoading(false)
+      return
+    }
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), CATALOG_REQUEST_TIMEOUT_MS)
     try {
-      const res = await fetch(`/api/templates/${businessInfo.niche}?page=1&limit=12&seed=${sessionSeed}`)
-      if (res.ok) {
+      const res = await fetch(`/api/templates/${businessInfo.niche}?page=1&limit=12&seed=${sessionSeed}`, { signal: controller.signal })
+      if (!res.ok) throw new Error('Browse unavailable')
+      {
         const data = await res.json()
+        if (!Array.isArray(data.templates)) throw new Error('Invalid browse response')
+        if (!isCurrent()) return
         setBrowseTemplates(
           (data.templates || []).map((t: ApiTemplate) => ({ ...t, nicheSlug: t.nicheSlug || businessInfo.niche })),
         )
         setBrowseTotal(data.total || 0)
         setBrowseHasMore(data.hasMore || false)
       }
-    } catch { /* ignore */ }
-    setBrowseLoading(false)
-  }, [markInfoSaved, setStep, businessInfo.niche, sessionSeed])
+    } catch {
+      if (isCurrent()) setBrowseError('We could not load the templates. Your business details are still in this tab. Please retry.')
+    } finally { clearTimeout(timeout); if (isCurrent()) setBrowseLoading(false) }
+  }, [markInfoSaved, setStep, sessionSeed, beginBrowseRequest])
 
   /* ================ Load more browse templates ================ */
   const loadMoreBrowse = useCallback(async () => {
+    const current = usePreviewStore.getState()
+    if (current.isSample || current.step !== 'browse' || browseLoading || !browseHasMore) return
+    const { state: { businessInfo }, isCurrent } = beginBrowseRequest()
     const nextPage = browsePage + 1
+    setBrowseError(null)
     setBrowseLoading(true)
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), CATALOG_REQUEST_TIMEOUT_MS)
     try {
-      const res = await fetch(`/api/templates/${businessInfo.niche}?page=${nextPage}&limit=12&seed=${sessionSeed}`)
-      if (res.ok) {
+      const res = await fetch(`/api/templates/${businessInfo.niche}?page=${nextPage}&limit=12&seed=${sessionSeed}`, { signal: controller.signal })
+      if (!res.ok) throw new Error('Browse unavailable')
+      {
         const data = await res.json()
+        if (!Array.isArray(data.templates)) throw new Error('Invalid browse response')
+        if (!isCurrent()) return
         setBrowseTemplates((prev) => [
           ...prev,
           ...(data.templates || []).map((t: ApiTemplate) => ({ ...t, nicheSlug: t.nicheSlug || businessInfo.niche })),
@@ -996,20 +1088,22 @@ export default function PreviewYourBusinessClient() {
         setBrowseHasMore(data.hasMore || false)
         setBrowsePage(nextPage)
       }
-    } catch { /* ignore */ }
-    setBrowseLoading(false)
-  }, [browsePage, businessInfo.niche, sessionSeed])
+    } catch {
+      if (isCurrent()) setBrowseError('We could not load more templates. Your current choices are still available. Please retry.')
+    } finally { clearTimeout(timeout); if (isCurrent()) setBrowseLoading(false) }
+  }, [browsePage, browseLoading, browseHasMore, sessionSeed, beginBrowseRequest])
 
   /* ================ Select a template from browse ================ */
-  const selectBrowseTemplate = useCallback((t: ApiTemplate) => {
+  const selectBrowseTemplate = useCallback((t: ApiTemplate, reason = 'manually selected') => {
     const resolvedNiche = t.nicheSlug || businessInfo.niche
+    if (usePreviewStore.getState().isSample && !getSampleTemplates(resolvedNiche, activeTemplatesRef.current.get(resolvedNiche) || []).some((template) => template.slug === t.slug)) return
     setMatchedTemplate({
       nicheSlug: resolvedNiche,
       templateSlug: t.slug,
       templateName: t.name,
       pages: t.pages,
       matchScore: 0,
-      reason: 'manually selected',
+      reason,
     })
     setStep('editor')
     loadPreview(resolvedNiche, t.slug)
@@ -1115,9 +1209,16 @@ export default function PreviewYourBusinessClient() {
             <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-300/40 bg-amber-950/30 p-5">
               <div>
                 <p className="font-semibold text-amber-100">Sample preview · fictional business details</p>
-                <p className="mt-1 text-sm text-slate-300">Explore the pages below. Your own draft is kept separately; add your details to customize or launch.</p>
+                <p className="mt-1 text-sm text-slate-300">Your own draft is kept separately. Choose a sample to explore, or use your details to customize and launch.</p>
               </div>
               <button type="button" onClick={handleEndSample} className="rounded-lg bg-white px-4 py-3 text-sm font-semibold text-slate-900">Use my business details</button>
+              <div className="flex w-full flex-wrap items-center gap-3">
+                <label htmlFor={samplePracticeId} className="text-sm text-slate-200">Sample practice</label>
+                <select id={samplePracticeId} value={businessInfo.niche} onChange={(event) => handleStartSample(event.target.value)} className="max-w-full rounded-lg border border-white/20 bg-slate-900 p-2 text-white">
+                  {NICHE_OPTIONS.map((option) => <option key={option.slug} value={option.slug}>{option.label}</option>)}
+                </select>
+                {matchedTemplate && <button type="button" onClick={openBrowse} className="rounded-lg border border-white/20 px-4 py-2 text-sm font-semibold text-cyan-200">Choose another sample</button>}
+              </div>
             </div>
           </div>
         )}
@@ -1189,6 +1290,9 @@ export default function PreviewYourBusinessClient() {
         {step === 'style' && (
           <StyleStep
             prefs={stylePreferences}
+            info={businessInfo}
+            customTheme={customThemeActive ? sanitizeCustomTheme({ primary: customColors.primary, background: customColors.bg, text: customColors.text, headingFont: customFonts.heading, bodyFont: customFonts.body, fontImportUrl: customFonts.importUrl }) : null}
+            hasCustomTheme={customThemeActive}
             onChange={setStylePreferences}
             onBack={handleEditDetails}
             onNext={runMatching}
@@ -1198,6 +1302,7 @@ export default function PreviewYourBusinessClient() {
         {/* ============ STEP 3 — MATCHING ============ */}
         {step === 'matching' && (
           <MatchStep
+            isSample={isSample}
             matched={matchedTemplate}
             alternatives={alternativeTemplates}
             loading={templatesLoading}
@@ -1207,19 +1312,9 @@ export default function PreviewYourBusinessClient() {
             readiness={clientReadiness}
             onEdit={openEditor}
             onBrowse={openBrowse}
-            onSelectAlternative={(t) => {
-              const resolvedNiche = t.nicheSlug || businessInfo.niche
-              setMatchedTemplate({
-                nicheSlug: resolvedNiche,
-                templateSlug: t.slug,
-                templateName: t.name,
-                pages: t.pages,
-                matchScore: 0,
-                reason: 'alternative style selected',
-              })
-              markInfoSaved()
-              setStep('editor')
-              loadPreview(resolvedNiche, t.slug)
+            onSelectAlternative={(template) => {
+              if (!isSample) markInfoSaved()
+              selectBrowseTemplate(template, 'alternative style selected')
             }}
           />
         )}
@@ -1271,6 +1366,7 @@ export default function PreviewYourBusinessClient() {
         {/* ============ STEP 5 — BROWSE TEMPLATES ============ */}
         {step === 'browse' && (
           <BrowseStep
+            isSample={isSample}
             templates={browseTemplates}
             niche={businessInfo.niche}
             onSelect={selectBrowseTemplate}
@@ -1284,6 +1380,8 @@ export default function PreviewYourBusinessClient() {
             total={browseTotal}
             hasMore={browseHasMore}
             loading={browseLoading}
+            error={browseError}
+            onRetry={browseTemplates.length ? loadMoreBrowse : openBrowse}
             onLoadMore={loadMoreBrowse}
           />
         )}
@@ -1327,10 +1425,12 @@ function InfoStep({
   const nicheIsLocked = !showIndustries && !!(nicheFromUrl && info.niche === nicheFromUrl && NICHE_OPTIONS.some((n) => n.slug === nicheFromUrl))
   const [errors, setErrors] = useState<PreviewInfoErrors>({})
   const [showOptional, setShowOptional] = useState(false)
+  const [showContact, setShowContact] = useState(Boolean(info.accountEmail.trim() || info.email.trim()))
   const errorSummaryRef = useRef<HTMLDivElement>(null)
   const hasDraft = Object.entries(info).some(([key, value]) => key !== 'niche' && value.trim())
 
   useEffect(() => {
+    if (errors.accountEmail || errors.email) setShowContact(true)
     if (Object.keys(errors).length) errorSummaryRef.current?.focus()
   }, [errors])
 
@@ -1348,7 +1448,7 @@ function InfoStep({
       <div className="space-y-3 mb-8">
         <span className="signal-chip">Step 1 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">Start with your business name</h1>
-        <p className="text-lg text-slate-300">Add your business details and choose the email addresses for your account and website. Explore the sample first with no details or payment.</p>
+        <p className="text-lg text-slate-300">Choose your industry, name your business, and describe what you offer. Contact details can wait until you have explored your preview.</p>
         <div className="rounded-xl border border-cyan-300/25 bg-cyan-950/30 p-5">
           <p className="font-semibold text-white">Want to see a website first?</p>
           <p className="mt-1 text-sm text-slate-300">Try a fictional business in your selected industry. Your own draft stays separate.</p>
@@ -1400,15 +1500,30 @@ function InfoStep({
 
           <Field label="Business Name" required autoComplete="organization" value={info.businessName} error={errors.businessName}
             onChange={(v) => onChange({ businessName: v })} placeholder={ex.businessName} maxLength={200} />
-          <Field label="Account email" required type="email" autoComplete="email" value={info.accountEmail} error={errors.accountEmail}
+          <div>
+            <label htmlFor="preview-business-description" className="block text-sm font-semibold text-slate-200 mb-2">What do you offer? <span className="font-normal text-slate-400">Optional</span></label>
+            <textarea id="preview-business-description" value={info.description}
+              onChange={(e) => onChange({ description: e.target.value })} rows={3} maxLength={8000} placeholder="A sentence about your services and who you work with."
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-y" />
+          </div>
+          <div className="border-t border-white/15 pt-5">
+            <button type="button" onClick={() => setShowContact(!showContact)} aria-expanded={showContact} aria-controls="preview-contact-details"
+              className="flex w-full items-center justify-between gap-3 rounded-lg py-2 text-left font-semibold text-cyan-100">
+              Add contact details <span className="text-sm font-normal text-slate-300">Optional now {showContact ? '−' : '+'}</span>
+            </button>
+            <p className="mt-2 text-sm text-slate-400">You’ll confirm private account and public website email addresses before choosing a launch plan.</p>
+          </div>
+          <div id="preview-contact-details" hidden={!showContact} className="space-y-5">
+          <Field label="Account email" type="email" autoComplete="email" value={info.accountEmail} error={errors.accountEmail}
             onChange={(v) => onChange({ accountEmail: v })} placeholder="you@example.com" maxLength={320}
-            help="For sign-in, receipts and DailyClarity follow-up. This address is not added to your website." />
+            help="Optional now. Used for sign-in, receipts and DailyClarity follow-up; never added to your website." />
           <div className="space-y-3">
-            <Field label="Public contact email" required type="email" autoComplete="off" value={info.email} error={errors.email}
+            <Field label="Public contact email" type="email" autoComplete="off" value={info.email} error={errors.email}
               onChange={(v) => onChange({ email: v })} placeholder="hello@yourbusiness.com" maxLength={320}
               help="Published in your website’s supported contact fields. Choose an address you want visitors to see." />
             <button type="button" disabled={!isValidPreviewEmail(info.accountEmail)} onClick={() => onChange({ email: info.accountEmail.trim() })}
               className="rounded-lg px-2 py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4 disabled:cursor-not-allowed disabled:opacity-50">Use account email</button>
+          </div>
           </div>
 
           <div className="border-t border-white/15 pt-5">
@@ -1428,19 +1543,13 @@ function InfoStep({
                 onChange={(v) => onChange({ address: v })} placeholder="Denver, CO or online sessions" />
             </div>
             <Field label="Tagline" value={info.tagline} onChange={(v) => onChange({ tagline: v })} placeholder={ex.tagline} />
-            <div>
-              <label htmlFor="preview-business-description" className="block text-sm font-semibold text-slate-200 mb-2">Description</label>
-              <textarea id="preview-business-description" value={info.description}
-                onChange={(e) => onChange({ description: e.target.value })} rows={3} maxLength={8000} placeholder={ex.description}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 resize-y" />
-            </div>
             <Field label="Services (comma-separated)" value={info.services} onChange={(v) => onChange({ services: v })} placeholder={ex.services} />
             <Field label="Existing website for design reference (optional; never published)" autoComplete="url" value={info.website}
               onChange={(v) => onChange({ website: v })} placeholder="https://yourbusiness.com" />
           </div>
         </div>
         <div className="mt-5 space-y-3">
-          <p className="text-sm text-slate-400">We save your details to prepare your preview and follow up about DailyClarity, even if you do not buy. <Link href="/privacy" className="text-cyan-200 underline underline-offset-4">Privacy policy</Link></p>
+          <p className="text-sm text-slate-400">Your draft stays in this tab. If you add an account email, we also save submitted details to prepare your preview and follow up about DailyClarity, even if you do not buy. <Link href="/privacy" className="text-cyan-200 underline underline-offset-4">Privacy policy</Link></p>
           <label className="flex items-start gap-3 text-sm text-slate-200">
             <input type="checkbox" checked={marketingEmailOptIn} onChange={(event) => onMarketingEmailOptIn(event.target.checked)} className="mt-0.5 h-4 w-4 shrink-0 accent-cyan-400" />
             <span>Email me DailyClarity news and offers (optional).</span>
@@ -1448,7 +1557,7 @@ function InfoStep({
         </div>
         <p className="mt-4 text-sm text-slate-400">Unsaved edits stay in this browser tab when storage is available. Closing the tab may clear them. Your website is not published during preview.</p>
         <div className="flex justify-end mt-6">
-          <button type="submit" className="px-6 sm:px-8 py-4 text-base sm:text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl transition-all">Continue to Style Preferences →</button>
+          <button type="submit" className="px-6 sm:px-8 py-4 text-base sm:text-lg font-bold rounded-lg bg-teal-700 text-white hover:bg-teal-800 shadow-lg hover:shadow-xl transition-all">Continue to Style Preferences →</button>
         </div>
       </form>
     </section>
@@ -1461,11 +1570,17 @@ function InfoStep({
 
 function StyleStep({
   prefs,
+  info,
+  customTheme,
+  hasCustomTheme,
   onChange,
   onBack,
   onNext,
 }: {
   prefs: StylePreferences
+  info: BusinessInfo
+  customTheme: CustomTheme | null
+  hasCustomTheme: boolean
   onChange: (prefs: Partial<StylePreferences>) => void
   onBack: () => void
   onNext: () => void
@@ -1480,17 +1595,19 @@ function StyleStep({
   }
 
   return (
-    <section className="container-hvac py-8 max-w-3xl mx-auto">
+    <section className="container-hvac py-8 max-w-6xl mx-auto">
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 2 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
           What&apos;s your style?
         </h1>
         <p className="text-lg text-slate-300">
-          Pick the vibe, writing tone, and aesthetic you want your website to have. We&apos;ll match you to the perfect template.
+          Explore a design direction, then compare a template with your own details.
         </p>
       </div>
 
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <div className="min-w-0">
       {/* Vibes */}
       <div className="glass-panel rounded-2xl p-8 space-y-8">
         <div>
@@ -1504,6 +1621,7 @@ function StyleStep({
                   key={v.value}
                   type="button"
                   onClick={() => toggleVibe(v.value)}
+                  aria-pressed={selected}
                   className={`p-4 rounded-xl border text-left transition-all ${
                     selected
                       ? 'border-cyan-400 bg-cyan-500/15 text-white ring-2 ring-cyan-400/40'
@@ -1529,6 +1647,7 @@ function StyleStep({
                 key={p.value}
                 type="button"
                 onClick={() => onChange({ proseStyle: p.value })}
+                aria-pressed={prefs.proseStyle === p.value}
                 className={`w-full p-4 rounded-xl border text-left transition-all flex items-center gap-4 ${
                   prefs.proseStyle === p.value
                     ? 'border-cyan-400 bg-cyan-500/15 text-white ring-2 ring-cyan-400/40'
@@ -1549,21 +1668,25 @@ function StyleStep({
 
         {/* Color mood */}
         <div>
-          <h2 className="text-xl font-bold text-white mb-1">Color mood</h2>
-          <p className="text-sm text-slate-400 mb-4">What palette speaks to you?</p>
+          <h2 className="text-xl font-bold text-white mb-1">Starting colors</h2>
+          <p className="text-sm text-slate-400 mb-4">Start with the design&apos;s original colors, or choose another palette. Check text and buttons in desktop and mobile previews after changing colors.</p>
+          {hasCustomTheme && <p className="text-sm text-cyan-200 mb-4">Your saved custom colors will still apply in the editor.</p>}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {COLOR_MOOD_OPTIONS.map((c) => (
               <button
                 key={c.value}
                 type="button"
                 onClick={() => onChange({ colorMood: c.value })}
+                aria-pressed={prefs.colorMood === c.value}
                 className={`rounded-xl border overflow-hidden transition-all ${
                   prefs.colorMood === c.value
                     ? 'border-cyan-400 ring-2 ring-cyan-400/40'
                     : 'border-white/10 hover:border-white/20'
                 }`}
               >
-                <div className={`h-12 ${c.preview}`} />
+                {c.value === 'original' ? (
+                  <div className="h-12 bg-slate-800 flex items-center justify-center text-xs text-slate-300">From your chosen design</div>
+                ) : <div className={`h-12 ${c.preview}`} />}
                 <div className="p-3 bg-white/5">
                   <span className="text-sm font-semibold text-white">{c.label}</span>
                 </div>
@@ -1585,6 +1708,7 @@ function StyleStep({
                 key={f.value}
                 type="button"
                 onClick={() => onChange({ fontPreference: f.value })}
+                aria-pressed={prefs.fontPreference === f.value}
                 className={`p-4 rounded-xl border text-center transition-all ${
                   prefs.fontPreference === f.value
                     ? 'border-cyan-400 bg-cyan-500/15 ring-2 ring-cyan-400/40'
@@ -1611,6 +1735,7 @@ function StyleStep({
                 key={l.value}
                 type="button"
                 onClick={() => onChange({ layoutDensity: l.value })}
+                aria-pressed={prefs.layoutDensity === l.value}
                 className={`p-4 rounded-xl border text-center transition-all ${
                   prefs.layoutDensity === l.value
                     ? 'border-cyan-400 bg-cyan-500/15 ring-2 ring-cyan-400/40'
@@ -1625,6 +1750,7 @@ function StyleStep({
         </div>
       </div>
 
+      <a href="#style-direction-title" className="mt-5 inline-block rounded-lg py-2 text-sm font-semibold text-cyan-200 underline underline-offset-4 lg:hidden">View updated illustration ↑</a>
       <div className="flex justify-between mt-8">
         <button
           onClick={onBack}
@@ -1634,10 +1760,13 @@ function StyleStep({
         </button>
         <button
           onClick={onNext}
-          className="px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          className="px-8 py-4 text-lg font-bold rounded-lg bg-teal-700 text-white hover:bg-teal-800 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
         >
           Find My Perfect Template →
         </button>
+      </div>
+      </div>
+      <StyleDirectionPreview info={{ businessName: info.businessName, tagline: info.tagline, description: info.description }} prefs={prefs} customTheme={customTheme} />
       </div>
     </section>
   )
@@ -1648,6 +1777,7 @@ function StyleStep({
 /* ================================================================== */
 
 function MatchStep({
+  isSample,
   matched,
   alternatives,
   loading,
@@ -1659,6 +1789,7 @@ function MatchStep({
   onBrowse,
   onSelectAlternative,
 }: {
+  isSample: boolean
   matched: MatchedTemplate | null
   alternatives: ApiTemplate[]
   loading: boolean
@@ -1675,16 +1806,16 @@ function MatchStep({
       <div className="space-y-2 mb-8">
         <span className="signal-chip">Step 3 of 4</span>
         <h1 className="text-4xl md:text-5xl font-bold text-white">
-          {loading ? 'Finding your match...' : matched?.templateSlug ? 'We found your template' : 'Choose an available template'}
+          {isSample ? (loading ? 'Loading your sample...' : 'Choose a sample') : loading ? 'Finding your match...' : matched?.templateSlug ? 'We found your template' : 'Choose an available template'}
         </h1>
         <p className="text-lg text-slate-300">
-          Based on your style preferences and business type.
+          {isSample ? 'Explore a design with fictional business details.' : 'Based on your style preferences and business type.'}
         </p>
       </div>
 
-      <div className="mb-8">
+      {!isSample && <div className="mb-8">
         <ClientReadinessPanel result={readiness} niche={matched?.nicheSlug} />
-      </div>
+      </div>}
 
       {loading ? (
         <div className="glass-panel rounded-2xl p-12 flex flex-col items-center justify-center gap-4">
@@ -1728,7 +1859,7 @@ function MatchStep({
           <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={onEdit}
-              className="flex-1 px-8 py-4 text-lg font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:shadow-xl hover:scale-105 transition-all text-center"
+              className="flex-1 px-8 py-4 text-lg font-bold rounded-lg bg-teal-700 text-white hover:bg-teal-800 shadow-lg hover:shadow-xl hover:scale-105 transition-all text-center"
             >
               Customize This Template
             </button>
@@ -2003,7 +2134,7 @@ function EditorStep({
               if (isValidPreviewEmail(accountEmail) && isValidPreviewEmail(contactEmail)) onCheckoutEmail(accountEmail, contactEmail, checkoutHref)
               else setShowCheckoutEmail(true)
             }}
-            className="px-6 py-2 text-sm font-bold rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg hover:scale-105 transition-all"
+            className="px-6 py-2 text-sm font-bold rounded-lg bg-teal-700 text-white hover:bg-teal-800 shadow-lg hover:scale-105 transition-all"
           >
             {openingPlans ? 'Opening plans…' : 'Choose a launch plan'}
           </button> : <button type="button" disabled className="rounded-lg border border-white/20 px-4 py-2 text-sm text-slate-400 disabled:cursor-not-allowed">Preview required before purchase</button>}
@@ -2050,6 +2181,7 @@ function EditorStep({
       {!demoRecord && !isSample && showColorPanel && (
         <div className="glass-panel rounded-xl p-4 mb-4">
           <h3 className="text-sm font-bold text-white mb-3">Color Presets</h3>
+          <p className="text-sm text-slate-300 mb-3">After changing colors, check text, buttons and menus on each page in desktop and mobile previews.</p>
           <div className="flex flex-wrap gap-3">
             {COLOR_PRESETS.map((p) => (
               <button
@@ -2219,6 +2351,7 @@ function EditorStep({
 /* ================================================================== */
 
 function BrowseStep({
+  isSample,
   templates,
   niche,
   onSelect,
@@ -2227,7 +2360,10 @@ function BrowseStep({
   hasMore,
   loading,
   onLoadMore,
+  error,
+  onRetry,
 }: {
+  isSample: boolean
   templates: ApiTemplate[]
   niche: string
   onSelect: (t: ApiTemplate) => void
@@ -2236,6 +2372,8 @@ function BrowseStep({
   hasMore: boolean
   loading: boolean
   onLoadMore: () => void
+  error: string | null
+  onRetry: () => void
 }) {
   const nicheLabel = NICHE_OPTIONS.find((n) => n.slug === niche)?.label || niche
 
@@ -2243,33 +2381,39 @@ function BrowseStep({
     <section className="container-hvac py-8">
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <div>
-          <span className="signal-chip">Browse Templates</span>
+          <span className="signal-chip">{isSample ? 'Choose a Sample' : 'Browse Templates'}</span>
           <h1 className="text-3xl md:text-4xl font-bold text-white mt-2">
-            {nicheLabel} Templates
+            {nicheLabel} {isSample ? 'Samples' : 'Templates'}
           </h1>
           <p className="text-slate-300 mt-1">
-            {total > 0 ? `${total} templates available.` : ''} Supported business fields will populate on compatible templates you choose.
+            {isSample
+              ? `${total} sample${total === 1 ? '' : 's'} available. These previews use fictional business details.`
+              : `${total > 0 ? `${total} templates available. ` : ''}Supported business fields will populate on compatible templates you choose.`}
           </p>
         </div>
         <button
           onClick={onBack}
           className="px-6 py-3 text-sm font-bold text-white border border-white/20 rounded-lg hover:bg-white/10 transition-all"
         >
-          ← Back to Editor
+          {isSample ? '← Back to Sample' : '← Back to Editor'}
         </button>
       </div>
 
       {/* Info saved banner */}
-      <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4 mb-8 flex items-center gap-3">
+      {!isSample && <div className="bg-cyan-500/10 border border-cyan-400/30 rounded-xl p-4 mb-8 flex items-center gap-3">
         <span className="text-cyan-400 text-xl">💾</span>
         <p className="text-cyan-200 text-sm">
-          <strong>Your info is saved.</strong> Compatible templates will reuse it in their supported business fields.
+          <strong>Your info stays in this tab.</strong> Compatible templates will reuse it in their supported business fields.
         </p>
-      </div>
+      </div>}
 
-      {templates.length === 0 && !loading ? (
+      {error && <div className="mb-6 rounded-xl border border-amber-300/40 bg-amber-950/30 p-5">
+        <p role="alert" className="text-sm text-amber-100">{error}</p>
+        <button type="button" onClick={onRetry} disabled={loading} className="mt-3 rounded-lg border border-white/30 px-4 py-3 font-semibold text-white disabled:opacity-50">Retry loading templates</button>
+      </div>}
+      {templates.length === 0 && !loading && !error ? (
         <div className="glass-panel rounded-2xl p-12 text-center">
-          <p className="text-slate-300">No templates found for this niche.</p>
+          <p className="text-slate-300">{isSample ? 'No sample is available for this practice yet. Choose another sample practice or start with your own details.' : 'No templates found for this niche.'}</p>
         </div>
       ) : (
         <>
@@ -2294,7 +2438,7 @@ function BrowseStep({
                   <p className="text-sm text-slate-400 line-clamp-3">{t.snippet}</p>
                 )}
                 <span className="inline-flex items-center gap-1 text-sm font-semibold text-cyan-300 group-hover:gap-2 transition-all">
-                  Preview with your info <span aria-hidden="true">→</span>
+                  {isSample ? 'Open sample' : 'Preview with your info'} <span aria-hidden="true">→</span>
                 </span>
               </button>
             ))}
@@ -2322,7 +2466,7 @@ function BrowseStep({
 
           {!hasMore && templates.length > 0 && !loading && (
             <p className="text-center text-sm text-slate-500 mt-8">
-              Showing all {templates.length} templates for this niche.
+              {isSample ? `Showing all ${templates.length} available samples for this practice.` : `Showing all ${templates.length} templates for this niche.`}
             </p>
           )}
         </>
