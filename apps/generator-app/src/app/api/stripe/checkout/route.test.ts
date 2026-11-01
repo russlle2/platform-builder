@@ -39,6 +39,7 @@ function requestWithImages(owners: string[], overrides: Record<string, unknown> 
     method: 'POST',
     headers: {
       'content-type': 'application/json',
+      origin: 'https://dailyclarity.org',
       'x-nf-client-connection-ip': `198.51.100.${requestNumber++}`,
     },
     body: JSON.stringify({
@@ -64,7 +65,10 @@ function requestWithImages(owners: string[], overrides: Record<string, unknown> 
 function checkoutLifecycle() {
   const loadIntent = vi.fn().mockResolvedValue({ data: null, error: null })
   const insertIntent = vi.fn().mockResolvedValue({ error: null })
+  const loadCleanupIntent = vi.fn(async () => ({ data: { ...insertIntent.mock.calls[0]?.[0],
+    status: 'checkout_failed', last_error: 'checkout_expired', stripe_session_id: 'cs_lifecycle' }, error: null }))
   const insertSlug = vi.fn().mockResolvedValue({ error: null })
+  const loadReservation = vi.fn(async () => ({ data: insertSlug.mock.calls[0]?.[0], error: null }))
   const intentStatusFilter = vi.fn().mockResolvedValue({ error: null })
   const updateIntent = vi.fn((_values: Record<string, unknown>) => ({
     eq: vi.fn(() => ({
@@ -73,14 +77,16 @@ function checkoutLifecycle() {
     })),
   }))
   const deletedSlugFilters: Array<[string, unknown]> = []
+  const releaseResult = vi.fn().mockResolvedValue({ error: null })
   const slugDeletion = {
     eq: (field: string, value: unknown) => { deletedSlugFilters.push([field, value]); return slugDeletion },
-    then: (resolve: (result: { error: null }) => unknown) => Promise.resolve({ error: null }).then(resolve),
+    then: (resolve: (result: { error: null }) => unknown) => releaseResult().then(resolve),
   }
   const deleteSlug = vi.fn(() => slugDeletion)
   mocks.supabaseFrom.mockImplementation((table: string) => {
-    if (table === 'checkout_intents') return { insert: insertIntent, update: updateIntent, select: () => ({ eq: () => ({ maybeSingle: loadIntent }) }) }
-    if (table === 'site_slugs') return { insert: insertSlug, delete: deleteSlug }
+    if (table === 'checkout_intents') return { insert: insertIntent, update: updateIntent,
+      select: (fields: string) => ({ eq: () => ({ maybeSingle: fields === 'id,slug,status,stripe_session_id,last_error' ? loadCleanupIntent : loadIntent }) }) }
+    if (table === 'site_slugs') return { insert: insertSlug, delete: deleteSlug, select: () => ({ eq: () => ({ maybeSingle: loadReservation }) }) }
     throw new Error(`Unexpected table ${table}`)
   })
   const retrievePrice = vi.fn().mockResolvedValue({
@@ -89,10 +95,11 @@ function checkoutLifecycle() {
   })
   const createSession = vi.fn().mockResolvedValue({ id: 'cs_lifecycle', url: 'https://checkout.stripe.test/session' })
   const retrieveSession = vi.fn()
+  const expireSession = vi.fn().mockResolvedValue({})
   mocks.createStripeClient.mockReturnValue({
-    prices: { retrieve: retrievePrice }, checkout: { sessions: { create: createSession, retrieve: retrieveSession } },
+    prices: { retrieve: retrievePrice }, checkout: { sessions: { create: createSession, retrieve: retrieveSession, expire: expireSession } },
   })
-  return { insertIntent, insertSlug, updateIntent, intentStatusFilter, deleteSlug, deletedSlugFilters, retrievePrice, createSession, loadIntent, retrieveSession }
+  return { insertIntent, insertSlug, updateIntent, intentStatusFilter, deleteSlug, deletedSlugFilters, retrievePrice, createSession, loadIntent, retrieveSession, expireSession, loadReservation, releaseResult, loadCleanupIntent }
 }
 
 describe('template checkout draft-image gate', () => {
@@ -539,7 +546,7 @@ describe('template checkout draft-image gate', () => {
     const response = await checkoutPost(state.request())
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ url: state.session.url })
-    expect(state.retrieveSession).toHaveBeenCalledWith('cs_lifecycle')
+    expect(state.retrieveSession).toHaveBeenCalledWith('cs_lifecycle', {}, { timeout: 3_000, maxNetworkRetries: 0 })
     expect(state.insertIntent).toHaveBeenCalledTimes(1)
     expect(state.insertSlug).toHaveBeenCalledTimes(1)
     expect(state.createSession).toHaveBeenCalledTimes(1)
@@ -584,7 +591,7 @@ describe('template checkout draft-image gate', () => {
       BUSINESS_NAME: 'Example Wellness', EMAIL: 'owner@example.com', CITY: 'Albany',
     } }))
     expect(response.status).toBe(409)
-    expect(await response.json()).toMatchObject({ code: 'checkout_previous_profile_incomplete', recoveryUrl: '/contact' })
+    expect(await response.json()).toMatchObject({ code: 'checkout_previous_profile_incomplete', previousBusinessName: 'Example Wellness' })
     expect(state.createSession).toHaveBeenCalledTimes(1)
     expect(state.deleteSlug).not.toHaveBeenCalled()
   })
@@ -633,6 +640,179 @@ describe('template checkout draft-image gate', () => {
     expect(state.loadIntent).not.toHaveBeenCalled()
     expect(state.retrieveSession).not.toHaveBeenCalled()
     expect(state.createSession).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    { replacePreviousCheckout: 'true' }, { resumePreviousCheckout: 'false' },
+    { replacePreviousCheckout: true, resumePreviousCheckout: true },
+  ])('rejects ambiguous recovery controls before provider activity: %j', async controls => {
+    const state = checkoutLifecycle()
+    const response = await checkoutPost(requestWithImages([], controls))
+    expect(response.status).toBe(400)
+    expect(state.createSession).not.toHaveBeenCalled()
+    expect(state.expireSession).not.toHaveBeenCalled()
+  })
+
+  it.each([undefined, 'forged'])('rejects replacement without its signed capability: %s', async cookie => {
+    const state = checkoutLifecycle()
+    const req = requestWithImages([], { replacePreviousCheckout: true, intentId: 'foreign', sessionId: 'cs_foreign' })
+    if (cookie) req.cookies.set(CHECKOUT_ATTEMPT_COOKIE, cookie)
+    const response = await checkoutPost(req)
+    expect(response.status).toBe(409)
+    expect(state.loadIntent).not.toHaveBeenCalled()
+    expect(state.expireSession).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    { accountEmail: 'new-private@example.com' }, { template: 'another-template' },
+    { customerValues: { BUSINESS_NAME: 'Updated Practice', EMAIL: 'updated@example.com' } },
+  ])('closes an owned unpaid checkout for updated details without starting another: %j', async changes => {
+    const state = await preparedAttempt()
+    state.retrieveSession.mockResolvedValueOnce(state.session)
+      .mockResolvedValueOnce({ ...state.session, status: 'expired', url: null })
+    const response = await checkoutPost(state.request({ ...changes, replacePreviousCheckout: true }))
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ code: 'checkout_replaced', retrySafe: true })
+    expect(state.expireSession).toHaveBeenCalledExactlyOnceWith('cs_lifecycle', {}, {
+      timeout: 3_000, maxNetworkRetries: 0, idempotencyKey: `dailyclarity-checkout-expire-${state.intent.id}`,
+    })
+    expect(state.retrieveSession).toHaveBeenCalledTimes(2)
+    expect(state.deletedSlugFilters).toEqual([['slug', 'example-site'], ['reserved_for', state.intent.id], ['status', 'checkout_pending']])
+    expect(response.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.maxAge).toBe(0)
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+    expect(state.insertIntent).toHaveBeenCalledTimes(1)
+  })
+
+  it('validates a changed plan price before expiring the earlier checkout', async () => {
+    const state = await preparedAttempt()
+    vi.stubEnv('PLATFORM_OWNER_EMAIL', 'support@example.com')
+    vi.stubEnv('STRIPE_PRICE_GROWTH', 'price_managed')
+    try {
+      state.retrievePrice.mockResolvedValue({ id: 'price_managed', active: true, type: 'recurring',
+        recurring: { interval: 'month', interval_count: 1 }, unit_amount: 8_000, currency: 'usd' })
+      state.retrieveSession.mockResolvedValueOnce(state.session)
+        .mockResolvedValueOnce({ ...state.session, status: 'expired', url: null })
+      const response = await checkoutPost(state.request({ replacePreviousCheckout: true, planKey: 'security_ads' }))
+      expect(response.status).toBe(200)
+      expect(state.expireSession).toHaveBeenCalledTimes(1)
+      expect(state.createSession).toHaveBeenCalledTimes(1)
+    } finally { vi.unstubAllEnvs() }
+  })
+
+  it('does not cancel an earlier checkout when the updated profile is incomplete', async () => {
+    const state = await preparedAttempt()
+    mocks.getTemplate.mockResolvedValue({ slug: 'serene', fields: [{ name: 'CITY', required: true }] })
+    const response = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await response.json()).toMatchObject({ code: 'template_profile_incomplete' })
+    expect(state.expireSession).not.toHaveBeenCalled()
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it.each(['missing', 'foreign', 'active'])('preserves an inconsistent %s reservation without attempting expiration', async problem => {
+    const state = await preparedAttempt()
+    state.loadReservation.mockResolvedValue({ data: problem === 'missing' ? null : {
+      slug: state.intent.slug, reserved_for: problem === 'foreign' ? 'other-intent' : state.intent.id,
+      status: problem === 'active' ? 'active' : 'checkout_pending',
+    }, error: null })
+    const response = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await response.json()).toMatchObject({ code: 'checkout_creation_uncertain' })
+    expect(state.expireSession).not.toHaveBeenCalled()
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+    expect(response.cookies.get(CHECKOUT_ATTEMPT_COOKIE)).toBeUndefined()
+  })
+
+  it.each([
+    { client_reference_id: 'foreign' }, { livemode: true }, { mode: 'payment' },
+    { payment_status: 'paid' }, { metadata: null },
+  ])('never expires a mismatched session: %j', async mismatch => {
+    const state = await preparedAttempt()
+    state.retrieveSession.mockResolvedValue({ ...state.session, ...mismatch })
+    const response = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await response.json()).toMatchObject({ code: 'checkout_creation_uncertain' })
+    expect(state.expireSession).not.toHaveBeenCalled()
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it('routes a purchase completed during expiration to its original success page', async () => {
+    const state = await preparedAttempt()
+    state.expireSession.mockRejectedValue(new Error('Session already completed'))
+    state.retrieveSession.mockResolvedValueOnce(state.session)
+      .mockResolvedValueOnce({ ...state.session, status: 'complete', payment_status: 'paid', url: null })
+    const response = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await response.json()).toEqual({ url: 'https://dailyclarity.org/success?session_id=cs_lifecycle' })
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['expired', 'open', 'unreadable'])('reconciles a lost expiration response from independent %s state', async outcome => {
+    const state = await preparedAttempt()
+    state.expireSession.mockRejectedValue(new Error('Network response lost'))
+    state.retrieveSession.mockResolvedValueOnce(state.session)
+    if (outcome === 'unreadable') state.retrieveSession.mockRejectedValueOnce(new Error('Readback unavailable'))
+    else state.retrieveSession.mockResolvedValueOnce({ ...state.session, status: outcome })
+    const response = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await response.json()).toMatchObject({ code: outcome === 'expired' ? 'checkout_replaced' : 'checkout_creation_uncertain' })
+    expect(state.deleteSlug.mock.calls.length).toBe(outcome === 'expired' ? 1 : 0)
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+  })
+
+  it.each(['intent', 'reservation'])('retains the cookie after partial %s cleanup and safely reconciles a retry', async failure => {
+    const state = await preparedAttempt()
+    state.retrieveSession.mockResolvedValue({ ...state.session, status: 'expired', url: null })
+    if (failure === 'intent') state.intentStatusFilter.mockResolvedValueOnce({ error: { message: 'Unavailable' } })
+    else state.releaseResult.mockResolvedValueOnce({ error: { message: 'Unavailable' } })
+    const first = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await first.json()).toMatchObject({ code: 'checkout_creation_uncertain' })
+    expect(first.cookies.get(CHECKOUT_ATTEMPT_COOKIE)).toBeUndefined()
+    state.loadIntent.mockResolvedValue({ data: { ...state.intent, status: 'checkout_failed' }, error: null })
+    const second = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await second.json()).toMatchObject({ code: 'checkout_replaced', retrySafe: true })
+    expect(second.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.maxAge).toBe(0)
+    expect(state.expireSession).not.toHaveBeenCalled()
+    expect(state.createSession).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not clean up a completed intent even if provider metadata is inconsistent', async () => {
+    const state = await preparedAttempt()
+    state.loadIntent.mockResolvedValue({ data: { ...state.intent, status: 'completed' }, error: null })
+    state.retrieveSession.mockResolvedValue({ ...state.session, status: 'expired', url: null })
+    const response = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await response.json()).toMatchObject({ code: 'checkout_creation_uncertain' })
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+    expect(state.expireSession).not.toHaveBeenCalled()
+  })
+
+  it.each(['completed', 'fulfillment_failed'])('preserves an intent that advances to %s during cleanup', async status => {
+    const state = await preparedAttempt()
+    state.retrieveSession.mockResolvedValue({ ...state.session, status: 'expired', url: null })
+    state.loadCleanupIntent.mockResolvedValue({ data: { ...state.intent, status, last_error: 'checkout_expired' }, error: null })
+    const response = await checkoutPost(state.request({ replacePreviousCheckout: true }))
+    expect(await response.json()).toMatchObject({ code: 'checkout_creation_uncertain' })
+    expect(response.cookies.get(CHECKOUT_ATTEMPT_COOKIE)).toBeUndefined()
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    { origin: 'https://customer.dailyclarity.org', type: 'text/plain', site: 'same-site' },
+    { origin: 'https://attacker.example', type: 'text/plain', site: 'cross-site' },
+    { origin: 'null', type: 'application/json', site: 'cross-site' },
+    { origin: '', type: 'application/json', site: '' },
+    { origin: 'https://dailyclarity.org', type: 'application/json', site: 'same-site' },
+  ])('rejects cross-origin cookie-selected cancellation before provider reads: %j', async headers => {
+    const state = await preparedAttempt()
+    const request = state.request({ replacePreviousCheckout: true })
+    if (headers.origin) request.headers.set('origin', headers.origin)
+    else request.headers.delete('origin')
+    request.headers.set('content-type', headers.type)
+    if (headers.site) request.headers.set('sec-fetch-site', headers.site)
+    const response = await checkoutPost(request)
+    expect(response.status).toBe(403)
+    expect(await response.json()).toMatchObject({ code: 'checkout_origin_invalid' })
+    expect(state.loadIntent).not.toHaveBeenCalled()
+    expect(state.retrieveSession).not.toHaveBeenCalled()
+    expect(state.expireSession).not.toHaveBeenCalled()
+    expect(state.deleteSlug).not.toHaveBeenCalled()
+    expect(state.createSession).toHaveBeenCalledTimes(1)
   })
 
 })

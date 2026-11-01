@@ -35,7 +35,8 @@ export default function PricingClient() {
   const [checkoutRecoveryLabel, setCheckoutRecoveryLabel] = useState('Return to your preview')
   const [checkoutUncertain, setCheckoutUncertain] = useState(false)
   const [checkoutReference, setCheckoutReference] = useState<string | null>(null)
-  const [previousCheckout, setPreviousCheckout] = useState<{ planKey: string; businessName: string; plan: string } | null>(null)
+  const [previousCheckout, setPreviousCheckout] = useState<{ planKey: string; businessName: string; plan: string; resumable: boolean } | null>(null)
+  const [replacementPlan, setReplacementPlan] = useState<string | null>(null)
   const checkoutInFlightRef = useRef(false)
   const [trialDays, setTrialDays] = useState<number | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<string | null>(null)
@@ -69,7 +70,7 @@ export default function PricingClient() {
     }
   }, [slug, template, niche, searchParams])
 
-  const startCheckout = useCallback(async (planKey: string, resumePreviousCheckout = false) => {
+  const startCheckout = useCallback(async (planKey: string, resumePreviousCheckout = false, replacePreviousCheckout = false) => {
     // React state alone cannot stop two clicks in the same event turn.
     if (checkoutInFlightRef.current) return
     checkoutInFlightRef.current = true
@@ -83,6 +84,7 @@ export default function PricingClient() {
       setCheckoutUncertain(false)
       setCheckoutReference(null)
       setPreviousCheckout(null)
+      setReplacementPlan(null)
 
       // Retrieve saved customer values + inline edits from sessionStorage
       let customerValues: Record<string, string> = {}
@@ -141,6 +143,7 @@ export default function PricingClient() {
         body: JSON.stringify({
           planKey,
           resumePreviousCheckout,
+          replacePreviousCheckout,
           accountEmail,
           slug: ctx.slug,
           template: ctx.template,
@@ -157,14 +160,19 @@ export default function PricingClient() {
         }),
       })
       const data = await response.json().catch(() => null)
-      if (data?.code === 'checkout_draft_changed') {
+      if (response.ok && data?.code === 'checkout_replaced' && data.retrySafe === true) {
+        setReplacementPlan(planKey)
+        checkoutInFlightRef.current = false
+        setIsSubmitting(null)
+        return
+      }
+      if (data?.code === 'checkout_draft_changed' || data?.code === 'checkout_previous_profile_incomplete') {
         setPreviousCheckout({
           planKey, businessName: typeof data.previousBusinessName === 'string' ? data.previousBusinessName : '',
           plan: typeof data.previousPlan === 'string' ? data.previousPlan : 'Previous plan',
+          resumable: data.code === 'checkout_draft_changed',
         })
         setCheckoutError(data.error)
-        setCheckoutRecoveryUrl('/contact')
-        setCheckoutRecoveryLabel('Contact support to change the earlier checkout')
         checkoutInFlightRef.current = false
         setIsSubmitting(null)
         return
@@ -176,10 +184,6 @@ export default function PricingClient() {
       if (data?.code === 'template_profile_incomplete' || data?.code === 'template_profile_unavailable') {
         setCheckoutRecoveryUrl('/preview-your-business')
         setCheckoutRecoveryLabel('Review your website details')
-      }
-      if (data?.code === 'checkout_previous_profile_incomplete') {
-        setCheckoutRecoveryUrl('/contact')
-        setCheckoutRecoveryLabel('Contact support about the earlier checkout')
       }
       if (data?.code === 'checkout_creation_uncertain') {
         setCheckoutUncertain(true)
@@ -362,15 +366,28 @@ export default function PricingClient() {
               />
             ))}
           </div>
+          {replacementPlan && (
+            <div className="mt-6 text-center dc-text-body" role="status">
+              <p>Earlier checkout closed. Your updated details are ready.</p>
+              <button type="button" className="cta-button mt-3" disabled={isSubmitting !== null}
+                onClick={() => void startCheckout(replacementPlan)}>
+                Continue with updated details
+              </button>
+            </div>
+          )}
           {checkoutError && (
             <div className="text-center dc-text-error mt-6" role="alert">
               <p>{checkoutError}</p>
               {previousCheckout && (
                 <div className="mt-3 space-y-2">
                   <p>Earlier checkout: {previousCheckout.businessName} — {previousCheckout.plan}</p>
-                  <button type="button" className="cta-button" disabled={isSubmitting !== null}
+                  {previousCheckout.resumable && <button type="button" className="cta-button" disabled={isSubmitting !== null}
                     onClick={() => void startCheckout(previousCheckout.planKey, true)}>
                     Resume earlier checkout
+                  </button>}
+                  <button type="button" className="cta-button ml-2" disabled={isSubmitting !== null}
+                    onClick={() => void startCheckout(previousCheckout.planKey, false, true)}>
+                    Use updated details
                   </button>
                 </div>
               )}

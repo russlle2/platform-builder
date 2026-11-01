@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { areSalesPaused } from '@/lib/sales-pause'
 import Stripe from 'stripe'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 import { getStripeTrialDays } from '@/lib/platform-config'
 import { rateLimitByIp, jsonTooManyRequests } from '@/lib/server-auth'
 import { getPlan, isManagedPlan, normalizePlanKey } from '@/lib/plans'
@@ -34,6 +34,23 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 const MAX_CHECKOUT_PAYLOAD_BYTES = 200_000
+const RECONCILE_OPTIONS = { timeout: 3_000, maxNetworkRetries: 0 } as const
+
+async function releaseExpiredAttempt(supabase: SupabaseClient, prior: ExistingCheckoutIntent) {
+  if (!['pending', 'session_created', 'checkout_failed'].includes(prior.status)) throw new Error('resume_expiry_state')
+  const { error: expiryError } = await supabase.from('checkout_intents').update({
+    status: 'checkout_failed', last_error: 'checkout_expired', updated_at: new Date().toISOString(),
+  }).eq('id', prior.id).in('status', ['pending', 'session_created'])
+  if (expiryError) throw new Error('resume_expiry_update')
+  const { data: settled, error: readError } = await supabase.from('checkout_intents')
+    .select('id,slug,status,stripe_session_id,last_error').eq('id', prior.id).maybeSingle()
+  if (readError || settled?.id !== prior.id || settled.slug !== prior.slug
+    || settled.stripe_session_id !== prior.stripe_session_id || settled.status !== 'checkout_failed'
+    || settled.last_error !== 'checkout_expired') throw new Error('resume_expiry_changed')
+  const { error: releaseError } = await supabase.from('site_slugs').delete()
+    .eq('slug', prior.slug).eq('reserved_for', prior.id).eq('status', 'checkout_pending')
+  if (releaseError) throw new Error('resume_expiry_release')
+}
 
 function rememberAttempt(response: NextResponse, intentId: string): NextResponse {
   const value = createCheckoutAttempt(intentId)
@@ -59,7 +76,7 @@ async function resolvePriceId(stripe: Stripe, planKey: string): Promise<string |
   if (!plan) return undefined
   const priceId = process.env[plan.stripePriceEnv]
   if (!priceId) return undefined
-  const price = await stripe.prices.retrieve(priceId)
+  const price = await stripe.prices.retrieve(priceId, {}, RECONCILE_OPTIONS)
   if (
     !price.active ||
     price.type !== 'recurring' ||
@@ -116,6 +133,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Checkout details are invalid.' }, { status: 400 })
     }
     const body = bodyValue as Record<string, unknown>
+    if (['resumePreviousCheckout', 'replacePreviousCheckout'].some(key =>
+      body[key] !== undefined && typeof body[key] !== 'boolean')
+      || (body.resumePreviousCheckout === true && body.replacePreviousCheckout === true)) {
+      return NextResponse.json({ error: 'Choose one valid checkout recovery action.' }, { status: 400 })
+    }
+    const origin = getTrustedSiteOrigin(req.url)
+    if (!origin) {
+      return NextResponse.json({ error: 'Checkout redirect configuration is missing.', retrySafe: true }, { status: 503 })
+    }
+    // SameSite cookies also accompany requests from customer-owned sibling
+    // subdomains. A cookie-selected recovery action must originate on this app.
+    if (body.replacePreviousCheckout === true || body.resumePreviousCheckout === true
+      || req.cookies.has(CHECKOUT_ATTEMPT_COOKIE)) {
+      const fetchSite = req.headers.get('sec-fetch-site')
+      if (req.headers.get('origin') !== origin || (fetchSite && fetchSite !== 'same-origin')
+        || req.headers.get('content-type')?.split(';')[0].trim().toLowerCase() !== 'application/json') {
+        return NextResponse.json({
+          error: 'Refresh this page before changing your checkout.', code: 'checkout_origin_invalid',
+        }, { status: 403, headers: { 'Cache-Control': 'private, no-store' } })
+      }
+    }
     const { planKey, slug, template, niche, colorScheme, fontVariation, structureVariation, customTheme, customerValues, inlineEdits, imageSwaps, catalogRevision: requestedCatalogRevision } = body
 
     const canonicalPlan = normalizePlanKey(typeof planKey === 'string' ? planKey : null)
@@ -186,7 +224,7 @@ export async function POST(req: NextRequest) {
     }
     const attemptCookie = req.cookies.get(CHECKOUT_ATTEMPT_COOKIE)?.value
     const priorIntentId = verifyCheckoutAttempt(attemptCookie)
-    if ((attemptCookie && !priorIntentId) || (body.resumePreviousCheckout === true && !priorIntentId)) {
+    if ((attemptCookie && !priorIntentId) || ((body.resumePreviousCheckout === true || body.replacePreviousCheckout === true) && !priorIntentId)) {
       return forgetAttempt(NextResponse.json({
         error: 'Your earlier checkout could not be identified. Check your account before starting again.',
         code: 'checkout_resume_unavailable', recoveryUrl: '/dashboard',
@@ -259,11 +297,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: generatedSlugError }, { status: 400 })
     }
 
-    const origin = getTrustedSiteOrigin(req.url)
-    if (!origin) {
-      return NextResponse.json({ error: 'Checkout redirect configuration is missing.', retrySafe: true }, { status: 503 })
-    }
-
     // The optional preview pin has already been resolved through a hash-checked
     // server catalogue. Snapshot only that verified server entry; never copy
     // client-provided design/preset identities into durable checkout state.
@@ -292,13 +325,45 @@ export async function POST(req: NextRequest) {
         if (error || !prior || prior.id !== priorIntentId || !prior.stripe_session_id) {
           return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
         }
-        const previousSession = await stripe.checkout.sessions.retrieve(prior.stripe_session_id)
-        const requested = body.resumePreviousCheckout === true
+        let previousSession = await stripe.checkout.sessions.retrieve(prior.stripe_session_id, {}, RECONCILE_OPTIONS)
+        const requested = body.resumePreviousCheckout === true || body.replacePreviousCheckout === true
           ? { plan: prior.plan, accountEmail: prior.email, explicitSlug: prior.slug, payload: prior.payload }
           : { plan: canonicalPlan, accountEmail, explicitSlug: explicitSlug && normalizeSiteSlug(slug as string) !== normalizeSiteSlug(templateSlug) ? normalizeSiteSlug(slug as string) : null, payload: checkoutPayload }
-        const state = inspectCheckoutAttempt(prior, previousSession, requested, configuredStripeLivemode(stripeSecretKey))
+        let state = inspectCheckoutAttempt(prior, previousSession, requested, configuredStripeLivemode(stripeSecretKey))
         if (state === 'complete') {
           return forgetAttempt(NextResponse.json({ url: `${origin}/success?session_id=${encodeURIComponent(previousSession.id)}` }))
+        }
+        if (body.replacePreviousCheckout === true) {
+          const issues = reviewTemplateProfile(profileFields, safeCustomerValues)
+          if (issues.length) return NextResponse.json({
+            error: 'Complete the details used by this design before closing your earlier checkout.',
+            code: 'template_profile_incomplete', fields: issues, recoveryUrl: '/preview-your-business',
+          }, { status: 409 })
+          if (state === 'open' && previousSession.payment_status === 'unpaid') {
+            // Check both records before expiring a session. An active, missing,
+            // or reassigned reservation is uncertainty, never cancellation authority.
+            const { data: reservation, error: reservationError } = await supabase.from('site_slugs')
+              .select('slug,reserved_for,status').eq('slug', prior.slug).maybeSingle()
+            if (reservationError || reservation?.slug !== prior.slug || reservation.reserved_for !== prior.id
+              || reservation.status !== 'checkout_pending') {
+              return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+            }
+            try {
+              await stripe.checkout.sessions.expire(prior.stripe_session_id, {}, {
+                ...RECONCILE_OPTIONS, idempotencyKey: `dailyclarity-checkout-expire-${prior.id}`,
+              })
+            } catch { /* A lost response still requires independent provider readback. */ }
+            previousSession = await stripe.checkout.sessions.retrieve(prior.stripe_session_id, {}, RECONCILE_OPTIONS)
+            state = inspectCheckoutAttempt(prior, previousSession, requested, configuredStripeLivemode(stripeSecretKey))
+          }
+          if (state === 'complete') return forgetAttempt(NextResponse.json({
+            url: `${origin}/success?session_id=${encodeURIComponent(previousSession.id)}`,
+          }))
+          if (state !== 'expired') return NextResponse.json(uncertainCheckoutResponse(priorIntentId), { status: 409 })
+          await releaseExpiredAttempt(supabase, prior)
+          // A second explicit click starts the new purchase. This request can
+          // only close/reconcile the old one, including after partial cleanup.
+          return forgetAttempt(NextResponse.json({ code: 'checkout_replaced', retrySafe: true }))
         }
         if (state === 'open') {
           const saved = prior.payload as Partial<PersistedTemplateCustomization> | null
@@ -311,8 +376,9 @@ export async function POST(req: NextRequest) {
           const issues = reviewTemplateProfile(priorFields, omitAccountEmailFields(sanitizeCustomerValues(saved.customerValues)))
           if (issues.length) return NextResponse.json({
             code: 'checkout_previous_profile_incomplete',
-            error: 'Your earlier checkout is missing details used by its design. Contact support to close that checkout before starting again.',
-            recoveryUrl: '/contact',
+            error: 'Your earlier checkout is missing details used by its design. Use your updated details to close it before continuing.',
+            previousBusinessName: String(saved.customerValues?.BUSINESS_NAME || '').slice(0, 200),
+            previousPlan: getPlan(prior.plan)?.name || 'Previous plan',
           }, { status: 409, headers: { 'Cache-Control': 'private, no-store' } })
           return NextResponse.json({ url: previousSession.url }, {
             headers: { 'Cache-Control': 'private, no-store' },
@@ -320,19 +386,12 @@ export async function POST(req: NextRequest) {
         }
         if (state === 'changed') return NextResponse.json({
           code: 'checkout_draft_changed',
-          error: 'Your earlier checkout is still open with different details. Resume that checkout, or contact support before starting another.',
+          error: 'Your earlier checkout is still open with different details. Resume it, or close it to use your updated details.',
           previousBusinessName: String((prior.payload as { customerValues?: { BUSINESS_NAME?: unknown } })?.customerValues?.BUSINESS_NAME || '').slice(0, 200),
           previousPlan: getPlan(prior.plan)?.name || 'Previous plan',
-          recoveryUrl: '/contact',
         }, { status: 409, headers: { 'Cache-Control': 'private, no-store' } })
         if (state === 'expired') {
-          const { error: expiryError } = await supabase.from('checkout_intents').update({
-            status: 'checkout_failed', last_error: 'checkout_expired', updated_at: new Date().toISOString(),
-          }).eq('id', prior.id).in('status', ['pending', 'session_created'])
-          if (expiryError) throw new Error('resume_expiry_update')
-          const { error: releaseError } = await supabase.from('site_slugs').delete()
-            .eq('slug', prior.slug).eq('reserved_for', prior.id).eq('status', 'checkout_pending')
-          if (releaseError) throw new Error('resume_expiry_release')
+          await releaseExpiredAttempt(supabase, prior)
           return forgetAttempt(NextResponse.json({
             error: 'Your earlier checkout expired without a completed purchase. Choose your plan again to start a fresh checkout.',
             code: 'checkout_expired', retrySafe: true,

@@ -278,7 +278,7 @@ test('changed draft shows the earlier purchase details and requires explicit res
   await page.getByRole('button', { name: 'Choose Plan', exact: true }).last().click()
   const alert = page.getByRole('alert').filter({ hasText: 'Your earlier checkout is still open' })
   await expect(alert).toContainText('Earlier checkout: Earlier Studio — Basic')
-  await expect(alert.getByRole('link', { name: 'Contact support to change the earlier checkout' })).toHaveAttribute('href', '/contact')
+  await expect(alert.getByRole('button', { name: 'Use updated details' })).toBeVisible()
   expect(requests).toHaveLength(1)
   expect(requests[0].resumePreviousCheckout).toBe(false)
   await alert.getByRole('button', { name: 'Resume earlier checkout' }).click({ noWaitAfter: true })

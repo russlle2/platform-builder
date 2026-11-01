@@ -78,7 +78,7 @@ export function inspectCheckoutAttempt(
   // A completed zero-dollar trial is already a subscription, not another
   // opportunity to create one. Resolve it before comparing edited draft data.
   if (session.status === 'complete') return 'complete'
-  if (session.status === 'expired' && session.payment_status !== 'paid') return 'expired'
+  if (session.status === 'expired' && session.payment_status === 'unpaid') return 'expired'
   if (session.status !== 'open' || session.payment_status === 'paid'
     || !['pending', 'session_created'].includes(intent.status)) return 'uncertain'
   if (intent.plan !== requested.plan || intent.email !== requested.accountEmail
