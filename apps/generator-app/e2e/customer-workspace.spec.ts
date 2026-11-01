@@ -27,6 +27,7 @@ async function mockWorkspace(
     authenticated?: boolean
     status?: string
     publishFailure?: boolean
+    lostPublishResponse?: boolean
     inboxFailure?: boolean
   } = {},
 ) {
@@ -37,6 +38,7 @@ async function mockWorkspace(
     if (route.request().method() === 'POST') {
       const body = route.request().postDataJSON()
       requests.push(body)
+      if (options.lostPublishResponse) return route.abort('failed')
       return route.fulfill(
         options.publishFailure
           ? {
@@ -198,7 +200,8 @@ test('saved-but-unpublished changes show a warning and explicit publish retry', 
     page.getByText('Saved and published to your live site.', { exact: true }),
   ).toBeVisible()
   expect(state.requests).toHaveLength(2)
-  expect(state.requests[1]).toEqual(state.requests[0])
+  expect(state.requests[1]).toEqual({ ...state.requests[0], operationId: expect.any(String) })
+  expect(state.requests[1].operationId).not.toBe(state.requests[0].operationId)
 })
 
 test('owner form validates public email and preserves unsaved edits when leaving is cancelled', async ({
@@ -526,4 +529,75 @@ test('expired inbox access removes previously loaded private enquiries', async (
   await expect(
     inbox.getByText('Private enquiry details', { exact: true }),
   ).toHaveCount(0)
+})
+
+
+test('retry after a lost publication response retains the same operation reference', async ({ page }) => {
+  const options = { lostPublishResponse: true }
+  const state = await mockWorkspace(page, options)
+  await openWorkspace(page)
+  await page.getByLabel('Business name', { exact: true }).fill('Retry Practice')
+  await page.getByRole('button', { name: 'Save & publish', exact: true }).click()
+  await expect(page.getByRole('main').getByRole('alert')).toBeVisible()
+  options.lostPublishResponse = false
+  await page.getByRole('button', { name: 'Save & publish', exact: true }).click()
+  await expect(page.getByText('Saved and published to your live site.', { exact: true })).toBeVisible()
+  expect(state.requests).toHaveLength(2)
+  expect(state.requests[0].operationId).toMatch(/^[a-f0-9-]{36}$/)
+  expect(state.requests[1]).toEqual(state.requests[0])
+})
+
+test('an explicit visual-editor publish after confirmed success restores its content with a new attempt', async ({ page }) => {
+  await mockWorkspace(page)
+  const requests: Record<string, unknown>[] = []
+  const completed = new Set<string>()
+  let publishedName = 'Evening Practice'
+  await page.route('**/api/portal/customer**', async (route) => {
+    if (route.request().method() !== 'POST') return route.fallback()
+    const body = route.request().postDataJSON()
+    requests.push(body)
+    const operationId = String(body.operationId)
+    // The API replays completed receipts without repeating a provider deploy.
+    if (!completed.has(operationId)) {
+      completed.add(operationId)
+      publishedName = body.customerValues.BUSINESS_NAME
+    }
+    return route.fulfill({ json: { ok: true, republished: true } })
+  })
+  await page.route('**/api/templates/variations', (route) => route.fulfill({
+    json: { colorSchemes: [], fontVariations: [], structureVariations: [] },
+  }))
+  await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
+  await page.route('**/api/templates/wellness_coach/calm-practice', (route) => route.fulfill({ json: {
+    slug: 'calm-practice', name: 'Calm Practice', niche: 'wellness_coach', nicheSlug: 'wellness_coach',
+    pages: ['index.html'], snippet: '',
+    fields: [
+      { name: 'BUSINESS_NAME', label: 'Business name', type: 'text', default: 'Business placeholder' },
+      { name: 'EMAIL', label: 'Public contact email', type: 'email', default: 'Email placeholder' },
+    ],
+  } }))
+  await page.route('**/api/templates/wellness_coach/calm-practice/preview', (route) => {
+    const values = route.request().postDataJSON().values
+    return route.fulfill({ json: {
+      html: `<html><body><h1>${values.BUSINESS_NAME}</h1><p>${values.EMAIL}</p></body></html>`,
+      css: '', variationCSS: '',
+    } })
+  })
+  await openWorkspace(page)
+  await page.getByRole('link', { name: 'Open visual editor' }).click()
+  await page.getByPlaceholder('Business placeholder').fill('Restored Practice')
+  await page.getByRole('button', { name: 'Next', exact: true }).click()
+  await page.getByRole('button', { name: 'Generate Live Preview', exact: true }).click()
+  await page.getByRole('button', { name: 'Publish to live site', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Published ✓', exact: true })).toBeVisible()
+  expect(publishedName).toBe('Restored Practice')
+
+  // Another editor has since published different content. Reusing the old
+  // operation would return success while leaving that different version live.
+  publishedName = 'Another editor version'
+  await page.getByRole('button', { name: 'Published ✓', exact: true }).click()
+  await expect.poll(() => requests.length).toBe(2)
+  await expect(page.getByRole('button', { name: 'Published ✓', exact: true })).toBeVisible()
+  expect(requests[1].operationId).not.toBe(requests[0].operationId)
+  expect(publishedName).toBe('Restored Practice')
 })

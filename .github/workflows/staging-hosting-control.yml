@@ -1,0 +1,96 @@
+name: Owned hosting disable and restore rehearsal
+run-name: ${{ inputs.operation }} owned hosting fixture ${{ inputs.fixture_nonce }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Fresh rehearsal or read/restore its exact saved fixture
+        type: choice
+        options: [rehearse, inspect, restore]
+        required: true
+      release_sha:
+        description: Exact current main SHA with successful push CI
+        required: true
+        type: string
+      fixture_nonce:
+        description: Fresh 24 lowercase hex characters; reuse only for exact source inspection/restoration
+        required: true
+        type: string
+      source_run_id:
+        description: Original rehearse run ID, required for inspect/restore
+        type: string
+      source_artifact_id:
+        description: Exact immutable journal artifact ID from original rehearse run
+        type: string
+      source_journal_hash:
+        description: Reviewed canonical SHA256 printed for that journal
+        type: string
+      confirmation:
+        description: REHEARSE OWNED HOSTING FIXTURE or RESTORE OWNED HOSTING FIXTURE; empty for inspect
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: dailyclarity-staging
+  cancel-in-progress: false
+
+jobs:
+  rehearsal:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: staging
+    env:
+      DEPLOY_ENVIRONMENT: ${{ vars.DEPLOY_ENVIRONMENT }}
+      NETLIFY_EXPECTED_SITE_ID: ${{ vars.NETLIFY_EXPECTED_SITE_ID }}
+      NETLIFY_EXPECTED_SITE_HOSTNAME: ${{ vars.NETLIFY_EXPECTED_SITE_HOSTNAME }}
+      NETLIFY_EXPECTED_ACCOUNT_SLUG: ${{ vars.NETLIFY_EXPECTED_ACCOUNT_SLUG }}
+      OPERATION: ${{ inputs.operation }}
+      RELEASE_SHA: ${{ inputs.release_sha }}
+      FIXTURE_NONCE: ${{ inputs.fixture_nonce }}
+      SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+      SOURCE_ARTIFACT_ID: ${{ inputs.source_artifact_id }}
+      SOURCE_JOURNAL_HASH: ${{ inputs.source_journal_hash }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+      - name: Verify mock control and journal tests
+        run: node --test apps/generator-app/scripts/staging-hosting-control.test.mjs
+      - name: Verify exact source artifact before download
+        if: inputs.operation != 'rehearse'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: node apps/generator-app/scripts/staging-hosting-control.mjs check-source
+      - name: Download exact reviewed source journal
+        if: inputs.operation != 'rehearse'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          artifact-ids: ${{ inputs.source_artifact_id }}
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+          path: ${{ runner.temp }}/staging-hosting-input
+          merge-multiple: true
+      - name: Rehearse or restore only the nonce-owned hosting fixture
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+        run: node apps/generator-app/scripts/staging-hosting-control.mjs
+      - name: Preserve sanitized hosting observations and mutation journal
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: staging-hosting-journal-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/staging-hosting-output/*.json
+          if-no-files-found: warn
+          retention-days: 30

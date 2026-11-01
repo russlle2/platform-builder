@@ -351,3 +351,21 @@ for (const [code, label] of [
     if (code === 'catalog_revision_unavailable') expect(await page.evaluate(() => sessionStorage.getItem('pb_catalog_revision'))).toBeNull()
   })
 }
+
+test('visual editor retains the publish reference after a lost response', async ({ page }) => {
+  await prepareStandaloneEditor(page, true)
+  const requests: Record<string, unknown>[] = []
+  await page.route('**/api/portal/customer', async (route) => {
+    requests.push(route.request().postDataJSON())
+    if (requests.length === 1) return route.abort('failed')
+    return route.fulfill({ json: { ok: true, republished: true } })
+  })
+  await page.getByRole('button', { name: 'Generate Live Preview', exact: true }).click()
+  await page.getByRole('button', { name: 'Publish to live site', exact: true }).click()
+  await expect(page.getByRole('main').getByRole('alert')).toBeVisible()
+  await page.getByRole('button', { name: 'Publish to live site', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Published ✓', exact: true })).toBeVisible()
+  expect(requests).toHaveLength(2)
+  expect(requests[0].operationId).toMatch(/^[a-f0-9-]{36}$/)
+  expect(requests[1]).toEqual(requests[0])
+})

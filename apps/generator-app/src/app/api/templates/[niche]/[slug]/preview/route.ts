@@ -90,6 +90,7 @@ export async function POST(
       customTheme,
     }),
     catalogRevision: resolvedCatalogRevision,
+    fields: template.fields,
   })
   // Personalized HTML can contain contact details and must never enter a shared cache.
   res.headers.set('Cache-Control', 'private, no-store')

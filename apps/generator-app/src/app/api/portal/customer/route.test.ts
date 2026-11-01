@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   rpc: vi.fn(),
   buildDeployFiles: vi.fn(),
   deploySiteFiles: vi.fn(),
+  authorized: vi.fn(),
 }))
 
 vi.mock('@supabase/supabase-js', () => ({
@@ -19,7 +20,7 @@ vi.mock('@/lib/site-deploy', async (importOriginal) => ({
 
 vi.mock('@/lib/netlify', () => ({ deploySiteFiles: mocks.deploySiteFiles }))
 vi.mock('@/lib/portal-owner-auth', () => ({
-  isAuthenticatedPortalOwnerForSlug: vi.fn().mockResolvedValue(true),
+  isAuthenticatedPortalOwnerForSlug: mocks.authorized,
 }))
 vi.mock('@/lib/server-auth', () => ({
   rateLimitByIp: () => true,
@@ -29,7 +30,7 @@ vi.mock('@/lib/server-auth', () => ({
 }))
 vi.mock('@/lib/portal-auth', () => ({
   getPortalTokenFromRequest: () => 'valid-token',
-  verifyPortalTokenHash: () => true,
+  verifyPortalTokenHash: () => false,
   toAuthenticatedPortalSite: vi.fn(),
   toPublicPortalSite: vi.fn(),
 }))
@@ -46,7 +47,8 @@ describe('customer portal catalogue revision persistence', () => {
   afterAll(() => vi.unstubAllEnvs())
 
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
+    mocks.authorized.mockResolvedValue(true)
     vi.stubEnv('NETLIFY_ACCESS_TOKEN', 'netlify-token')
   })
 
@@ -81,7 +83,10 @@ describe('customer portal catalogue revision persistence', () => {
         }),
       }),
     })
-    mocks.rpc.mockResolvedValue({
+    mocks.rpc.mockImplementation(async (name: string) => name === 'reserve_site_usage'
+      ? { data: { state: 'reserved', limit: 30, used: 1, resetAt: '2099-01-01T00:00:00Z' }, error: null }
+      : name === 'finish_site_usage' ? { data: true, error: null }
+      : name === 'site_usage_status' ? { data: null, error: null } : {
       data: {
         ...existingData,
         customerValues: { BUSINESS_NAME: 'After' },
@@ -130,7 +135,10 @@ describe('customer portal catalogue revision persistence', () => {
     mocks.rpc.mockImplementation(async (_name: string, args: {
       p_customer_values: Record<string, string>
       p_data_patch: Record<string, unknown>
-    }) => ({
+    }) => _name === 'reserve_site_usage'
+      ? { data: { state: 'reserved', limit: 30, used: 1, resetAt: '2099-01-01T00:00:00Z' }, error: null }
+      : _name === 'finish_site_usage' ? { data: true, error: null }
+      : _name === 'site_usage_status' ? { data: null, error: null } : ({
       data: {
         ...existingData,
         customerValues: { ...existingData.customerValues, ...args.p_customer_values },
@@ -151,14 +159,78 @@ describe('customer portal catalogue revision persistence', () => {
       }),
     }))
     expect(response.status).toBe(200)
-    expect(mocks.rpc).toHaveBeenCalledExactlyOnceWith('merge_portal_site_data', {
+    expect(mocks.rpc.mock.calls.filter(([name]) => name === 'merge_portal_site_data')).toEqual([['merge_portal_site_data', {
       p_slug: 'customer-site', p_customer_values: { EMAIL: 'new-public@example.com' },
       p_data_patch: { imageOwner: 'customer-site' },
-    })
+    }]])
     expect(mocks.buildDeployFiles).toHaveBeenCalledWith(expect.objectContaining({
       customerValues: { BUSINESS_NAME: 'Customer Business', EMAIL: 'new-public@example.com' },
     }))
     expect(JSON.stringify(mocks.buildDeployFiles.mock.calls)).not.toContain('private-owner@example.com')
     expect(JSON.stringify(mocks.buildDeployFiles.mock.calls)).not.toContain('changed-owner@example.com')
   })
+
+  describe('publication allowance side-effect boundaries', () => {
+    const operationId = '00000000-0000-4000-8000-000000000001'
+    const existingData = {
+      niche: 'wellness', template: 'serene', customerValues: { BUSINESS_NAME: 'Before' },
+      netlify_site_id: 'netlify-site', site_url: 'https://customer-site.netlify.app',
+    }
+    const submit = () => post(new NextRequest('https://dailyclarity.org/api/portal/customer', {
+      method: 'POST', headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ slug: 'customer-site', customerValues: { BUSINESS_NAME: 'After' }, operationId }),
+    }))
+    beforeEach(() => {
+      mocks.from.mockReturnValue({ select: () => ({ eq: () => ({ maybeSingle: async () => ({
+        data: { slug: 'customer-site', data: existingData, status: 'active' }, error: null,
+      }) }) }) })
+      mocks.rpc.mockImplementation(async (name: string) => ({ error: null, data:
+        name === 'reserve_site_usage' ? { state: 'reserved', limit: 30, used: 1, resetAt: '2099-01-01T00:00:00Z' }
+          : name === 'merge_portal_site_data' ? existingData : name === 'site_usage_status' ? null : true,
+      }))
+      mocks.buildDeployFiles.mockResolvedValue({ 'index.html': '<html></html>' })
+      mocks.deploySiteFiles.mockResolvedValue({ deployId: 'deploy-1' })
+    })
+    it.each([
+      [{ state: 'limited', resetAt: '2099-01-01T00:00:00Z' }, 429],
+      [{ state: 'ineligible' }, 402], [{ state: 'pending' }, 409], [{ state: 'bad' }, 503],
+    ])('does not save or publish when the claim is %j', async (claim, status) => {
+      mocks.rpc.mockResolvedValueOnce({ data: claim, error: null })
+      expect((await submit()).status).toBe(status)
+      expect(mocks.rpc.mock.calls.map(([name]) => name)).toEqual(['reserve_site_usage'])
+      expect(mocks.buildDeployFiles).not.toHaveBeenCalled()
+      expect(mocks.deploySiteFiles).not.toHaveBeenCalled()
+    })
+    it('replays the exact receipt without saving or publishing again', async () => {
+      mocks.rpc.mockResolvedValueOnce({ data: { state: 'completed', status: 200, body: { ok: true, republished: true } }, error: null })
+      const response = await submit()
+      expect(await response.json()).toEqual({ ok: true, republished: true })
+      expect(mocks.rpc.mock.calls.map(([name]) => name)).toEqual(['reserve_site_usage'])
+      expect(mocks.deploySiteFiles).not.toHaveBeenCalled()
+    })
+    it('authorizes the owner before consuming any allowance', async () => {
+      mocks.authorized.mockResolvedValue(false)
+      expect((await submit()).status).toBe(403)
+      expect(mocks.rpc).not.toHaveBeenCalled()
+    })
+    it('keeps the publication slot occupied after an uncertain provider outcome', async () => {
+      mocks.deploySiteFiles.mockRejectedValue(new Error('connection lost after submit'))
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      const response = await submit()
+      expect(response.status).toBe(502)
+      expect(await response.json()).toMatchObject({ code: 'publish_pending', saved: true })
+      expect(mocks.rpc.mock.calls.map(([name]) => name)).not.toContain('finish_site_usage')
+      expect(mocks.rpc.mock.calls.map(([name]) => name)).not.toContain('release_site_usage')
+      vi.restoreAllMocks()
+    })
+    it('releases the allowance when saving fails before any publication', async () => {
+      mocks.rpc.mockImplementation(async (name: string) => name === 'reserve_site_usage'
+        ? { data: { state: 'reserved', limit: 30, used: 1, resetAt: '2099-01-01T00:00:00Z' }, error: null }
+        : name === 'merge_portal_site_data' ? { data: null, error: { message: 'save failed' } } : { data: true, error: null })
+      expect((await submit()).status).toBe(500)
+      expect(mocks.rpc).toHaveBeenCalledWith('release_site_usage', expect.objectContaining({ p_operation_id: operationId }))
+      expect(mocks.deploySiteFiles).not.toHaveBeenCalled()
+    })
+  })
+
 })

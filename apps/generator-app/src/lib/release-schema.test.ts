@@ -4,10 +4,14 @@ import { inspectReleaseSchema } from './release-schema'
 afterEach(() => vi.unstubAllGlobals())
 describe('combined deployment schema gate', () => {
   it('requires website and durable payment-evidence schemas even with kit sales disabled', async () => {
-    const fetch = vi.fn().mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('launch_schema_readiness') ? { ready: true, schemaVersion: '20260903.4' } : '20260925.2' }))
+    const fetch = vi.fn().mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('launch_schema_readiness') ? { ready: true, schemaVersion: '20260903.4' } : url.endsWith('booking_kit_schema_version') ? '20260925.2' : { ready: true, schemaVersion: '20261029.1' } }))
     vi.stubGlobal('fetch', fetch)
     expect((await inspectReleaseSchema('https://project.supabase.co', 'private', 'project')).ready).toBe(true)
-    fetch.mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('launch_schema_readiness') ? { ready: true, schemaVersion: '20260903.4' } : '20260925.1' }))
+    fetch.mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('launch_schema_readiness') ? { ready: true, schemaVersion: '20260903.4' } : url.endsWith('booking_kit_schema_version') ? '20260925.1' : { ready: true, schemaVersion: '20261029.1' } }))
+    expect((await inspectReleaseSchema('https://project.supabase.co', 'private', 'project')).ready).toBe(false)
+  })
+  it.each(['billing_lifecycle_schema_readiness', 'site_usage_schema_readiness'])('requires additive %s migration', async (missing) => {
+    vi.stubGlobal('fetch', vi.fn(async (url: string) => ({ ok: !url.endsWith(missing), json: async () => url.endsWith('launch_schema_readiness') ? { ready: true, schemaVersion: '20260903.4' } : url.endsWith('booking_kit_schema_version') ? '20260925.2' : { ready: true, schemaVersion: '20261029.1' } })))
     expect((await inspectReleaseSchema('https://project.supabase.co', 'private', 'project')).ready).toBe(false)
   })
   it.each(['http://project.supabase.co', 'https://other.supabase.co', 'https://project.supabase.co/path', 'https://user@project.supabase.co', 'https://project.supabase.co?other=1'])('never sends a credential to an unpinned origin %s', async (url) => {
@@ -17,7 +21,7 @@ describe('combined deployment schema gate', () => {
     expect(fetch).not.toHaveBeenCalled()
   })
   it('rejects the earlier sentinel that did not attest filtered fixture cleanup', async () => {
-    const fetch = vi.fn().mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('launch_schema_readiness') ? { ready: true, schemaVersion: '20260903.3' } : '20260925.2' }))
+    const fetch = vi.fn().mockImplementation(async (url: string) => ({ ok: true, json: async () => url.endsWith('launch_schema_readiness') ? { ready: true, schemaVersion: '20260903.3' } : url.endsWith('booking_kit_schema_version') ? '20260925.2' : { ready: true, schemaVersion: '20261029.1' } }))
     vi.stubGlobal('fetch', fetch)
     expect((await inspectReleaseSchema('https://project.supabase.co', 'private', 'project')).ready).toBe(false)
   })

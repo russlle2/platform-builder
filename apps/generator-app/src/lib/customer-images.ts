@@ -9,8 +9,10 @@ import { writeFile, mkdir, readdir, stat, unlink } from 'fs/promises'
 import { existsSync } from 'fs'
 import path from 'path'
 import sharp from 'sharp'
+import { randomUUID } from 'node:crypto'
 import { isDraftImageOwner } from './image-owner'
 import type { ImageSwap } from './image-swaps'
+import { reserveCustomerImage, confirmCustomerImage, assertCustomerServiceEntitled } from './site-usage'
 
 export const CUSTOMER_IMAGES_BUCKET = 'customer-images'
 
@@ -129,7 +131,11 @@ async function uploadToSupabase(
 
   const safeOwner = normalizeImageOwner(owner)
   const baseName = originalName.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9-]/g, '_').slice(0, 40)
-  const storagePath = `${safeOwner}/${Date.now()}-${baseName}.webp`
+  const storagePath = `${safeOwner}/${randomUUID()}-${baseName}.webp`
+
+  // Reserve actual optimized bytes before Storage accepts anything. The SQL
+  // function serializes concurrent uploads and reads authoritative object sizes.
+  await reserveCustomerImage(supabase, safeOwner, storagePath, buffer.length)
 
   const { error } = await supabase.storage
     .from(CUSTOMER_IMAGES_BUCKET)
@@ -140,8 +146,11 @@ async function uploadToSupabase(
     })
 
   if (error) {
+    // A transport error does not prove that Storage rejected the object.
+    // Retain the reservation; reconciliation counts an existing object once.
     throw new Error(error.message)
   }
+  await confirmCustomerImage(supabase, safeOwner, storagePath)
 
   return {
     url: getPublicStorageUrl(storagePath),
@@ -187,9 +196,15 @@ export async function storeCustomerImage(
     throw new Error('File too large. Maximum size is 4MB.')
   }
 
+  const admin = getSupabaseAdmin()
+  if (admin && !isDraftImageOwner(owner)) await assertCustomerServiceEntitled(admin, owner)
+
   const bytes = await file.arrayBuffer()
   const inputBuffer = Buffer.from(bytes)
   const webpBuffer = await optimizeToWebp(inputBuffer)
+  if (webpBuffer.length > MAX_FILE_SIZE) {
+    throw new Error('The processed image is too large. Use a smaller image.')
+  }
 
   if (getSupabaseAdmin()) {
     return uploadToSupabase(owner, webpBuffer, 'image/webp', file.name)
@@ -258,6 +273,10 @@ export async function deleteCustomerImage(owner: string, storagePath: string): P
     const normalized = normalizeOwnedStoragePath(safeOwner, storagePath)
     const { error } = await supabase.storage.from(CUSTOMER_IMAGES_BUCKET).remove([normalized])
     if (error) throw new Error(error.message)
+    const { error: reservationError } = await supabase.rpc('release_deleted_customer_image', {
+      p_owner: safeOwner, p_path: normalized,
+    })
+    if (reservationError) console.error('[customer-images] deleted image reservation needs reconciliation')
     return
   }
 
