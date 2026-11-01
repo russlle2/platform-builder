@@ -20,7 +20,7 @@ test('unknown URL plan choices do not imply a selected purchasable plan', async 
   await page.route('**/api/platform/config', (route) => route.fulfill({ json: { trialDays: 0 } }))
   await page.goto('/pricing?plan=unrecognized-plan')
   await expect(page.getByText('Your selected plan:', { exact: false })).toHaveCount(0)
-  await expect(page.getByRole('button', { name: 'Choose Plan', exact: true })).toHaveCount(2)
+  await expect(page.getByRole('button', { name: 'Build preview to choose plan', exact: true })).toHaveCount(2)
 })
 
 test('sample browsing cannot start checkout with a previous real draft', async ({ page }) => {
