@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { canonicalDigest } from '../src/lib/templates/certified-catalog-contract.mjs'
-import { proofChildEnvironment, validateV2ProofRecord } from './catalogue-prepare-proof-v2.mjs'
+import { proofChildEnvironment, validateV2ProofRecord, withV2ProofStage, v2ProofFailureDetails, retainV2ProofCleanupFailure } from './catalogue-prepare-proof-v2.mjs'
 import { V2_SOURCE_SHA } from './catalogue-prepare-closure-v2.mjs'
 
 function fixture() {
@@ -52,4 +52,35 @@ test('ambient package and loader overrides cannot silently alter the paired proo
   for (const name of ['NODE_OPTIONS', 'NODE_PATH', 'TSX_TSCONFIG_PATH', 'TSX_DISABLE_CACHE', 'ESBUILD_BINARY_PATH', 'PLAYWRIGHT_BROWSERS_PATH', 'PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH', 'NODE_PRESERVE_SYMLINKS', 'PNPM_HOME', 'npm_config_node_options']) await t.test(name, () => {
     assert.throws(() => proofChildEnvironment({ [name]: '' }), /Unexpected ambient dependency loader setting/)
   })
+})
+
+test('failure diagnostics expose only fixed phases and known reasons, never child or provider data', async () => {
+  const secret = 'private-token-and-provider-url'
+  const raw = Object.assign(new Error(secret), { stdout: secret, stderr: secret, env: { TOKEN: secret }, phase: secret, reason: secret })
+  for (const error of [raw, null, secret, { message: secret, stdout: secret }]) {
+    await assert.rejects(withV2ProofStage('source-install', () => { throw error }), (failure) => {
+      assert.deepEqual(v2ProofFailureDetails(failure), { phase: 'source-install', reason: 'unclassified' })
+      assert.equal(JSON.stringify(v2ProofFailureDetails(failure)).includes(secret), false)
+      return true
+    })
+  }
+  await assert.rejects(withV2ProofStage('paired-dependencies', () => { throw new Error('Retained dependency proof: unfinished installation') }), (failure) => {
+    assert.deepEqual(v2ProofFailureDetails(failure), { phase: 'paired-dependencies', reason: 'unfinished_installation' })
+    return true
+  })
+  assert.deepEqual(v2ProofFailureDetails(Object.assign(raw, { status: 1 })), { phase: 'preflight', reason: 'command_failed' })
+  assert.deepEqual(v2ProofFailureDetails({ code: 'ETIMEDOUT', message: secret }), { phase: 'preflight', reason: 'operation_timeout' })
+  assert.deepEqual(v2ProofFailureDetails({ code: 'ENOENT', message: secret }), { phase: 'preflight', reason: 'missing_file_or_command' })
+  await assert.rejects(withV2ProofStage(secret, () => {}), /Unknown V2 proof phase/)
+})
+
+test('cleanup diagnostics preserve the primary failure without exporting either raw exception', async () => {
+  let primary, cleanup
+  try { await withV2ProofStage('paired-dependencies', () => { throw new Error('Retained dependency proof: non-Next installed bytes or resolution topology changed') }) } catch (error) { primary = error }
+  try { await withV2ProofStage('paired-cleanup', () => { throw Object.assign(new Error('private cleanup stderr'), { status: 128 }) }) } catch (error) { cleanup = error }
+  assert.deepEqual(v2ProofFailureDetails(retainV2ProofCleanupFailure(primary, cleanup)), {
+    phase: 'paired-dependencies', reason: 'installed_pair_differs',
+    cleanup: { phase: 'paired-cleanup', reason: 'command_failed' },
+  })
+  assert.equal(await withV2ProofStage('proof-validation', () => 'verified'), 'verified')
 })

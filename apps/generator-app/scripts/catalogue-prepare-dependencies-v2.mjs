@@ -39,6 +39,14 @@ function transformKeys(value, keyTransform) {
   return result
 }
 
+function assertFinishedInstallation(modules) {
+  // pnpm 11.19.0 omits its optional ignoredBuilds field when there are none.
+  // Only that absent/empty representation is equivalent: malformed, ignored,
+  // or pending build states still cannot establish a completed installation.
+  requireThat(Array.isArray(modules.pendingBuilds) && modules.pendingBuilds.length === 0
+    && (!Object.hasOwn(modules, 'ignoredBuilds') || Array.isArray(modules.ignoredBuilds) && modules.ignoredBuilds.length === 0), 'unfinished installation')
+}
+
 /** This verifier is bound by its caller to the exact reviewed Git blob pair. */
 export async function fingerprintInstalledDependencies(repository, version) {
   assertDependencyProofEnvironment()
@@ -52,7 +60,7 @@ export async function fingerprintInstalledDependencies(repository, version) {
   const packageMap = await json('node_modules/.package-map.json')
   const state = await json('node_modules/.pnpm-workspace-state-v1.json')
   requireThat(modules.packageManager === 'pnpm@11.19.0' && modules.layoutVersion === 5 && modules.nodeLinker === 'isolated' && modules.virtualStoreDir === '.pnpm' && modules.virtualStoreDirMaxLength === 40, 'unexpected pnpm layout')
-  requireThat(Array.isArray(modules.pendingBuilds) && modules.pendingBuilds.length === 0 && Array.isArray(modules.ignoredBuilds) && modules.ignoredBuilds.length === 0, 'unfinished installation')
+  assertFinishedInstallation(modules)
   requireThat(state.filteredInstall === false && state.settings?.enableGlobalVirtualStore === false && Array.isArray(state.pnpmfiles) && state.pnpmfiles.length === 0, 'unexpected installation scope or hook')
   requireThat(packageMap && Object.keys(packageMap).length === 1 && packageMap.packages && typeof packageMap.packages === 'object', 'invalid package map')
   for (const app of ['apps/client-template', 'apps/generator-app']) requireThat((await json(`${app}/package.json`)).dependencies?.next === version, 'application Next version differs')
@@ -100,8 +108,9 @@ export async function fingerprintInstalledDependencies(repository, version) {
   }
   const metadata = (relative, value) => {
     if (relative === 'node_modules/.modules.yaml') {
+      assertFinishedInstallation(value)
       requireThat(typeof value.prunedAt === 'string' && Number.isFinite(Date.parse(value.prunedAt)), 'invalid pnpm prune timestamp')
-      return { ...value, prunedAt: '<timestamp>', hoistedDependencies: transformKeys(value.hoistedDependencies, normalizeId), skipped: value.skipped.map(normalizeId) }
+      return { ...value, ignoredBuilds: [], prunedAt: '<timestamp>', hoistedDependencies: transformKeys(value.hoistedDependencies, normalizeId), skipped: value.skipped.map(normalizeId) }
     }
     if (relative === 'node_modules/.package-map.json') {
       const packages = transformKeys(value.packages, normalizeId)

@@ -15,6 +15,52 @@ const HELPERS = ['catalogue-prepare-closure.mjs', 'catalogue-prepare-closure-v2.
 const same = (a, b) => canonicalDigest(a) === canonicalDigest(b)
 function requireThat(value, message) { if (!value) throw new Error(message) }
 const digest = (value) => createHash('sha256').update(value).digest('hex')
+const PROOF_PHASES = new Set(['preflight', 'environment', 'proof-path', 'source-closure', 'package-manager', 'workspace-create', 'source-checkout', 'source-install', 'source-cleanliness', 'target-checkout', 'target-install', 'target-cleanliness', 'paired-dependencies', 'paired-cleanliness', 'paired-cleanup', 'current-dependencies', 'proof-validation', 'proof-write'])
+const KNOWN_FAILURES = new Map([
+  ['Retained dependency proof: unfinished installation', 'unfinished_installation'],
+  ['Retained dependency proof: unexpected installation scope or hook', 'installation_scope'],
+  ['Retained dependency proof: ambient module/loader override is present', 'ambient_loader_override'],
+  ['Retained dependency proof: installed lock differs from tracked lock', 'installed_lock_mismatch'],
+  ['Retained dependency proof: non-Next installed bytes or resolution topology changed', 'installed_pair_differs'],
+  ['Retained dependency proof: protected runtime resolution or outputs changed', 'runtime_pair_differs'],
+  ['Retained dependency proof: installed pair changed during runtime proof', 'installation_changed'],
+  ['Current installed dependencies differ from the independently paired proof', 'current_installation_differs'],
+  ['V2 proof runtime differs from the current runner', 'runtime_mismatch'],
+  ['V2 requires the exact reviewed package manager', 'package_manager_mismatch'],
+  ['Installation changed tracked or untracked source inputs', 'installation_source_changed'],
+  ['Paired source inputs changed during proof', 'installation_source_changed'],
+  ['V2 source closure changed before dependency preparation', 'source_closure_changed'],
+  ['Source closure changed during dependency preparation', 'source_closure_changed'],
+])
+class V2ProofStageError extends Error {
+  constructor(details) {
+    super('V2 dependency proof operation failed')
+    Object.defineProperty(this, 'details', { value: Object.freeze(details) })
+  }
+}
+
+/** Only fixed phase/reason identifiers may reach Actions logs; never child output. */
+export function v2ProofFailureDetails(error) {
+  if (error instanceof V2ProofStageError) return error.details
+  const reason = KNOWN_FAILURES.get(error?.message)
+    ?? (error?.code === 'ENOENT' ? 'missing_file_or_command'
+      : error?.code === 'ETIMEDOUT' ? 'operation_timeout'
+        : Number.isInteger(error?.status) && error.status !== 0 ? 'command_failed' : 'unclassified')
+  return Object.freeze({ phase: 'preflight', reason })
+}
+
+export async function withV2ProofStage(phase, operation) {
+  requireThat(PROOF_PHASES.has(phase), 'Unknown V2 proof phase')
+  try { return await operation() }
+  catch (error) {
+    if (error instanceof V2ProofStageError) throw error
+    throw new V2ProofStageError({ phase, reason: v2ProofFailureDetails(error).reason })
+  }
+}
+
+export function retainV2ProofCleanupFailure(primary, cleanup) {
+  return new V2ProofStageError({ ...v2ProofFailureDetails(primary), cleanup: v2ProofFailureDetails(cleanup) })
+}
 
 export function proofChildEnvironment(env) {
   // Dependency installers and historical source probes never receive provider
@@ -65,32 +111,42 @@ export async function validateCurrentV2Proof({ repository = ROOT, env = process.
 }
 
 export async function createV2Proof({ repository = ROOT, env = process.env, workflow, closure }) {
-  const childEnv = proofChildEnvironment(env)
-  requireThat(process.platform === 'linux' && process.arch === 'x64', 'This reviewed V2 migration is limited to the Linux x64 preparation runner')
-  const file = await proofPath(env, repository), parent = path.dirname(file)
-  requireThat(reviewedHead(repository) === workflow.workflowSha && same(closure, assertPreparationClosureV2(repository, V2_SOURCE_SHA, workflow.workflowSha)), 'V2 source closure changed before dependency preparation')
+  const childEnv = await withV2ProofStage('environment', () => {
+    requireThat(process.platform === 'linux' && process.arch === 'x64', 'This reviewed V2 migration is limited to the Linux x64 preparation runner')
+    return proofChildEnvironment(env)
+  })
+  const file = await withV2ProofStage('proof-path', () => proofPath(env, repository)), parent = path.dirname(file)
+  await withV2ProofStage('source-closure', () => requireThat(reviewedHead(repository) === workflow.workflowSha && same(closure, assertPreparationClosureV2(repository, V2_SOURCE_SHA, workflow.workflowSha)), 'V2 source closure changed before dependency preparation'))
   const execute = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, env: childEnv, encoding: 'utf8', maxBuffer: 4 * 1024 ** 2, timeout: 600_000, stdio: ['ignore', 'pipe', 'pipe'] })
-  requireThat(execute('corepack', ['pnpm', '--version'], repository).trim() === '11.19.0', 'V2 requires the exact reviewed package manager')
-  const temporary = await mkdtemp(path.join(parent, 'catalogue-v2-paired-'))
+  await withV2ProofStage('package-manager', () => requireThat(execute('corepack', ['pnpm', '--version'], repository).trim() === '11.19.0', 'V2 requires the exact reviewed package manager'))
+  const temporary = await withV2ProofStage('workspace-create', () => mkdtemp(path.join(parent, 'catalogue-v2-paired-')))
   const roots = [path.join(temporary, 'source'), path.join(temporary, 'target')]
   const added = []
-  let dependencies
+  let dependencies, primaryFailure
   try {
     for (const [index, sha] of [V2_SOURCE_SHA, workflow.workflowSha].entries()) {
-      execute('git', ['worktree', 'add', '--detach', roots[index], sha], repository)
+      const side = index === 0 ? 'source' : 'target'
+      await withV2ProofStage(`${side}-checkout`, () => execute('git', ['worktree', 'add', '--detach', roots[index], sha], repository))
       added.push(roots[index])
-      execute('corepack', ['pnpm', 'install', '--frozen-lockfile'], roots[index])
-      requireThat(reviewedHead(roots[index]) === sha, 'Installation changed tracked or untracked source inputs')
+      await withV2ProofStage(`${side}-install`, () => execute('corepack', ['pnpm', 'install', '--frozen-lockfile'], roots[index]))
+      await withV2ProofStage(`${side}-cleanliness`, () => requireThat(reviewedHead(roots[index]) === sha, 'Installation changed tracked or untracked source inputs'))
     }
-    dependencies = await proveInstalledPair(roots[0], roots[1])
-    requireThat(reviewedHead(roots[0]) === V2_SOURCE_SHA && reviewedHead(roots[1]) === workflow.workflowSha, 'Paired source inputs changed during proof')
+    dependencies = await withV2ProofStage('paired-dependencies', () => proveInstalledPair(roots[0], roots[1]))
+    await withV2ProofStage('paired-cleanliness', () => requireThat(reviewedHead(roots[0]) === V2_SOURCE_SHA && reviewedHead(roots[1]) === workflow.workflowSha, 'Paired source inputs changed during proof'))
+  } catch (error) {
+    primaryFailure = error
   } finally {
     // These are task-created ephemeral checkouts only; retain their paths if a
     // normal clean removal fails. Never force-remove an unexpected dirty tree.
-    for (const root of added.reverse()) execute('git', ['worktree', 'remove', root], repository)
-    await rmdir(temporary)
+    try {
+      await withV2ProofStage('paired-cleanup', async () => {
+        for (const root of added.reverse()) execute('git', ['worktree', 'remove', root], repository)
+        await rmdir(temporary)
+      })
+    } catch (error) { throw primaryFailure ? retainV2ProofCleanupFailure(primaryFailure, error) : error }
   }
-  const current = await fingerprintInstalledDependencies(repository, '15.5.28')
+  if (primaryFailure) throw primaryFailure
+  const current = await withV2ProofStage('current-dependencies', () => fingerprintInstalledDependencies(repository, '15.5.28'))
   const proof = {
     version: 2, kind: 'reviewed-retained-catalogue-dependency-proof', workflow,
     sourceSha: V2_SOURCE_SHA, releaseSha: workflow.workflowSha,
@@ -99,9 +155,11 @@ export async function createV2Proof({ repository = ROOT, env = process.env, work
     freshPairedInstall: true, compilerExecuted: false, browserChecksRepeated: false, providerMutations: false,
     dependencies,
   }
-  validateV2ProofRecord(proof, { workflow, closure, verifierHash: proof.verifierHash, fingerprintHash: current.fingerprintHash, nodeVersion: process.version })
-  requireThat(same(closure, assertPreparationClosureV2(repository, V2_SOURCE_SHA, workflow.workflowSha)), 'Source closure changed during dependency preparation')
-  await writeFile(file, `${JSON.stringify(proof, null, 2)}\n`, { flag: 'wx', mode: 0o600 })
+  await withV2ProofStage('proof-validation', () => {
+    validateV2ProofRecord(proof, { workflow, closure, verifierHash: proof.verifierHash, fingerprintHash: current.fingerprintHash, nodeVersion: process.version })
+    requireThat(same(closure, assertPreparationClosureV2(repository, V2_SOURCE_SHA, workflow.workflowSha)), 'Source closure changed during dependency preparation')
+  })
+  await withV2ProofStage('proof-write', () => writeFile(file, `${JSON.stringify(proof, null, 2)}\n`, { flag: 'wx', mode: 0o600 }))
   return { fileHash: digest(await readFile(file)), proof }
 }
 
@@ -115,5 +173,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
     const closure = assertPreparationClosureV2(ROOT, process.env.SOURCE_SHA, workflow.workflowSha)
     const result = await createV2Proof({ workflow, closure })
     console.log(JSON.stringify({ version: 2, releaseSha: workflow.workflowSha, proofHash: result.fileHash, compilerExecuted: false, browserChecksRepeated: false, providerMutations: false }))
-  }).catch(() => { console.error('V2 dependency preparation failed; no candidate evidence or provider publication was changed.'); process.exitCode = 1 })
+  }).catch((error) => { console.error(`V2 dependency preparation failed ${JSON.stringify(v2ProofFailureDetails(error))}; no candidate evidence or provider publication was changed.`); process.exitCode = 1 })
 }
