@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { fingerprintInstalledDependencies, assertDependencyProofEnvironment, assertRuntimeProofCompleteness } from './catalogue-prepare-dependencies-v2.mjs'
+import { installProofDependencies, fingerprintInstalledDependencies, assertDependencyProofEnvironment, assertRuntimeProofCompleteness } from './catalogue-prepare-dependencies-v2.mjs'
 
 const FAMILIES = ['next', '@next/env', '@next/swc-darwin-arm64', '@next/swc-darwin-x64', '@next/swc-linux-arm64-gnu', '@next/swc-linux-arm64-musl', '@next/swc-linux-x64-gnu', '@next/swc-linux-x64-musl', '@next/swc-win32-arm64-msvc', '@next/swc-win32-x64-msvc']
 const PROJECTS = ['', 'apps/client-template', 'apps/generator-app', 'packages/image-optimizer', 'packages/scripts', 'packages/template-factory', 'packages/ui-components', 'packages/utils']
@@ -61,6 +61,22 @@ async function fixture(base, version) {
   execFileSync('git', ['-c', 'user.name=Proof fixture', '-c', 'user.email=proof@example.invalid', 'commit', '-qm', 'lock'], { cwd: root })
   return root
 }
+
+test('checkout and paired installs use the same frozen install and exclude ambient registry settings and credentials', async (t) => {
+  const cwd = await mkdtemp(path.join(tmpdir(), 'dc-v2-install-'))
+  t.after(() => rm(cwd, { recursive: true, force: true }))
+  const stub = path.join(cwd, 'corepack')
+  await writeFile(stub, `#!/bin/sh
+printf '%s\\n' "$@" > args
+printf '%s\\n' "$CI" "$npm_config_userconfig" "$npm_config_globalconfig" > config
+test -z "$GITHUB_TOKEN" && test -z "$npm_config_registry" && test -z "$GITHUB_ACTIONS"
+`, { mode: 0o700 })
+  const env = { PATH: cwd, GITHUB_TOKEN: 'fixture-only', npm_config_registry: 'fixture', GITHUB_ACTIONS: 'true' }
+  installProofDependencies(cwd, env)
+  assert.equal(await readFile(path.join(cwd, 'args'), 'utf8'), 'pnpm\ninstall\n--frozen-lockfile\n--no-side-effects-cache\n')
+  assert.equal(await readFile(path.join(cwd, 'config'), 'utf8'), 'true\n/dev/null\n/dev/null\n')
+  assert.throws(() => installProofDependencies(cwd, { ...env, NODE_OPTIONS: '' }), /Unexpected ambient dependency loader setting/)
+})
 
 test('installed proof rejects ambient resolution and loader overrides including empty values', () => {
   for (const key of BLOCKED) assert.throws(() => assertDependencyProofEnvironment({ [key]: '' }), /ambient module\/loader override/)
@@ -151,6 +167,51 @@ test('complete installed comparison recognizes only the exact Next component par
     await writeFile(file, content.replace('export NODE_PATH=\"', 'export NODE_PATH=\"$(echo injected)'))
     await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /unsafe generated wrapper path/)
     await writeFile(file, content)
+  })
+  await t.test('only the complete reviewed nested esbuild wrapper can omit NODE_PATH', async () => {
+    const template = await readFile(new URL('./fixtures/pnpm-11.19.0-esbuild-0.28.1-shim.sh', import.meta.url), 'utf8')
+    const scope = 'node_modules/.pnpm/esbuild@0.28.1/node_modules/esbuild'
+    const shim = `${scope}/node_modules/.bin/esbuild`, binary = `${scope}/bin/esbuild`
+    const wrapper = (root) => template.replace('<checkout>', root)
+    const file = path.join(newRoot, shim), target = path.join(newRoot, binary)
+    try {
+      for (const root of [oldRoot, newRoot]) {
+        await put(root, binary, 'fixture binary')
+        await chmod(path.join(root, binary), 0o755)
+        await put(root, shim, wrapper(root))
+        await chmod(path.join(root, shim), 0o755)
+      }
+      const withWrapper = await fingerprintInstalledDependencies(oldRoot, '15.5.27')
+      assert.equal((await fingerprintInstalledDependencies(newRoot, '15.5.28')).fingerprintHash, withWrapper.fingerprintHash)
+      assert.notEqual(withWrapper.fingerprintHash, baseline.fingerprintHash)
+      for (const text of [
+        wrapper(newRoot).replace('exec node ', 'exec echo '),
+        wrapper(newRoot).replace(newRoot + '/' + binary, newRoot + '/package.json'),
+        wrapper(newRoot).replaceAll('../../bin/esbuild', '../../bin/other'),
+        wrapper(newRoot) + 'exit 0\n',
+      ]) {
+        await writeFile(file, text)
+        await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /unreviewed esbuild install shim/)
+      }
+      await writeFile(file, wrapper(oldRoot))
+      await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /unsafe generated wrapper path/)
+      await writeFile(file, wrapper(newRoot))
+      await chmod(file, 0o644)
+      await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /invalid esbuild install shim type or mode/)
+      await chmod(file, 0o755)
+      const extra = path.join(newRoot, scope, 'node_modules/.bin/unreviewed')
+      await writeFile(extra, wrapper(newRoot))
+      await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /generated wrapper fields are incomplete/)
+      await rm(extra)
+      await rm(target)
+      await symlink(path.join(newRoot, 'package.json'), target)
+      await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /invalid esbuild install shim target/)
+      await rm(file)
+      await symlink(path.join(newRoot, 'package.json'), file)
+      await assert.rejects(fingerprintInstalledDependencies(newRoot, '15.5.28'), /invalid esbuild install shim type or mode/)
+    } finally {
+      for (const root of [oldRoot, newRoot]) await rm(path.join(root, 'node_modules/.pnpm/esbuild@0.28.1'), { recursive: true, force: true })
+    }
   })
   await t.test('rejects forged changed-component manifest and unreviewed version', async () => {
     const entry = JSON.parse(await readFile(path.join(newRoot, 'node_modules/.package-map.json'))).packages['@next/env@15.5.28']

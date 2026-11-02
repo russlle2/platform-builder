@@ -7,7 +7,9 @@ import { fileURLToPath } from 'node:url'
 import { canonicalDigest } from '../src/lib/templates/certified-catalog-contract.mjs'
 import { reviewedHead } from './certified-catalog-release.mjs'
 import { assertPreparationClosureV2, V2_SOURCE_SHA } from './catalogue-prepare-closure-v2.mjs'
-import { fingerprintInstalledDependencies, proveInstalledPair } from './catalogue-prepare-dependencies-v2.mjs'
+import { fingerprintInstalledDependencies, proveInstalledPair, proofChildEnvironment, installProofDependencies } from './catalogue-prepare-dependencies-v2.mjs'
+
+export { proofChildEnvironment }
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
 const HASH = /^[a-f0-9]{64}$/
@@ -17,6 +19,18 @@ function requireThat(value, message) { if (!value) throw new Error(message) }
 const digest = (value) => createHash('sha256').update(value).digest('hex')
 const PROOF_PHASES = new Set(['preflight', 'environment', 'proof-path', 'source-closure', 'package-manager', 'workspace-create', 'source-checkout', 'source-install', 'source-cleanliness', 'target-checkout', 'target-install', 'target-cleanliness', 'paired-dependencies', 'paired-cleanliness', 'paired-cleanup', 'current-dependencies', 'proof-validation', 'proof-write'])
 const KNOWN_FAILURES = new Map([
+  ['Retained dependency proof: invalid esbuild install shim type or mode', 'esbuild_shim_type_or_mode'],
+  ['Retained dependency proof: unreviewed esbuild install shim', 'esbuild_shim_changed'],
+  ['Retained dependency proof: invalid esbuild install shim target', 'esbuild_shim_target'],
+  ['Retained dependency proof: checkout path must not be a symlink', 'symlink_checkout'],
+  ['Retained dependency proof: unexpected pnpm layout', 'pnpm_layout'],
+  ['Retained dependency proof: unexpected workspace project set', 'project_set'],
+  ['Retained dependency proof: workspace metadata path escapes the checkout', 'workspace_path'],
+  ['Retained dependency proof: unreviewed native platform was installed', 'additional_native_platform'],
+  ['Retained dependency proof: installed link resolves outside checkout', 'external_link'],
+  ['Retained dependency proof: unsafe generated wrapper path', 'unsafe_wrapper_path'],
+  ['Retained dependency proof: generated wrapper embeds paths outside known fields', 'unknown_wrapper_path'],
+  ['Retained dependency proof: installed path changed during fingerprint', 'installation_race'],
   ['Retained dependency proof: unfinished installation', 'unfinished_installation'],
   ['Retained dependency proof: unexpected installation scope or hook', 'installation_scope'],
   ['Retained dependency proof: ambient module/loader override is present', 'ambient_loader_override'],
@@ -43,7 +57,9 @@ class V2ProofStageError extends Error {
 export function v2ProofFailureDetails(error) {
   if (error instanceof V2ProofStageError) return error.details
   const reason = KNOWN_FAILURES.get(error?.message)
-    ?? (error?.code === 'ENOENT' ? 'missing_file_or_command'
+    ?? (typeof error?.message === 'string' && error.message.startsWith('Retained dependency proof: generated wrapper fields are incomplete: ') ? 'wrapper_fields_incomplete'
+      : error instanceof SyntaxError ? 'invalid_metadata_syntax'
+      : error?.code === 'ENOENT' ? 'missing_file_or_command'
       : error?.code === 'ETIMEDOUT' ? 'operation_timeout'
         : Number.isInteger(error?.status) && error.status !== 0 ? 'command_failed' : 'unclassified')
   return Object.freeze({ phase: 'preflight', reason })
@@ -60,16 +76,6 @@ export async function withV2ProofStage(phase, operation) {
 
 export function retainV2ProofCleanupFailure(primary, cleanup) {
   return new V2ProofStageError({ ...v2ProofFailureDetails(primary), cleanup: v2ProofFailureDetails(cleanup) })
-}
-
-export function proofChildEnvironment(env) {
-  // Dependency installers and historical source probes never receive provider
-  // credentials. Proxy/CA configuration is preserved for normal network access.
-  for (const name of ['NODE_OPTIONS', 'NODE_PATH', 'TSX_TSCONFIG_PATH', 'TSX_DISABLE_CACHE', 'ESBUILD_BINARY_PATH', 'PLAYWRIGHT_BROWSERS_PATH', 'PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH', 'NODE_PRESERVE_SYMLINKS', 'PNPM_HOME', 'npm_config_node_options']) {
-    requireThat(!Object.hasOwn(env, name), `Unexpected ambient dependency loader setting: ${name}`)
-  }
-  const names = ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'COREPACK_HOME', 'XDG_CACHE_HOME', 'XDG_DATA_HOME', 'XDG_CONFIG_HOME', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'SYSTEMROOT', 'WINDIR']
-  return { ...Object.fromEntries(names.filter((name) => Object.hasOwn(env, name)).map((name) => [name, env[name]])), CI: 'true', npm_config_userconfig: '/dev/null', npm_config_globalconfig: '/dev/null' }
 }
 
 export async function proofVerifierHash(repository) {
@@ -128,7 +134,7 @@ export async function createV2Proof({ repository = ROOT, env = process.env, work
       const side = index === 0 ? 'source' : 'target'
       await withV2ProofStage(`${side}-checkout`, () => execute('git', ['worktree', 'add', '--detach', roots[index], sha], repository))
       added.push(roots[index])
-      await withV2ProofStage(`${side}-install`, () => execute('corepack', ['pnpm', 'install', '--frozen-lockfile'], roots[index]))
+      await withV2ProofStage(`${side}-install`, () => installProofDependencies(roots[index], env))
       await withV2ProofStage(`${side}-cleanliness`, () => requireThat(reviewedHead(roots[index]) === sha, 'Installation changed tracked or untracked source inputs'))
     }
     dependencies = await withV2ProofStage('paired-dependencies', () => proveInstalledPair(roots[0], roots[1]))

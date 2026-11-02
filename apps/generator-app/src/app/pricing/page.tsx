@@ -38,7 +38,14 @@ export default function PricingPage() {
           ]),
         ]}
       />
-      <Suspense fallback={<div className="min-h-screen pt-24 pb-20" />}>
+      <Suspense fallback={
+        <main className="public-daylight min-h-screen pt-28 pb-20">
+          <div className="container-hvac space-y-3">
+            <h1 className="text-4xl dc-text-heading">Pricing</h1>
+            <p role="status" className="dc-text-body">Loading plan details…</p>
+          </div>
+        </main>
+      }>
         <PricingClient />
       </Suspense>
     </>

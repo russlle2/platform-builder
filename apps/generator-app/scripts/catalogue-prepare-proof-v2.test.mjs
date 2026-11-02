@@ -68,6 +68,8 @@ test('failure diagnostics expose only fixed phases and known reasons, never chil
     assert.deepEqual(v2ProofFailureDetails(failure), { phase: 'paired-dependencies', reason: 'unfinished_installation' })
     return true
   })
+  assert.deepEqual(v2ProofFailureDetails(new Error(`Retained dependency proof: generated wrapper fields are incomplete: ${secret} (1,0)`)), { phase: 'preflight', reason: 'wrapper_fields_incomplete' })
+  assert.deepEqual(v2ProofFailureDetails(new SyntaxError(secret)), { phase: 'preflight', reason: 'invalid_metadata_syntax' })
   assert.deepEqual(v2ProofFailureDetails(Object.assign(raw, { status: 1 })), { phase: 'preflight', reason: 'command_failed' })
   assert.deepEqual(v2ProofFailureDetails({ code: 'ETIMEDOUT', message: secret }), { phase: 'preflight', reason: 'operation_timeout' })
   assert.deepEqual(v2ProofFailureDetails({ code: 'ENOENT', message: secret }), { phase: 'preflight', reason: 'missing_file_or_command' })

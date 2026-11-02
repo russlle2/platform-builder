@@ -1,7 +1,7 @@
 import { readFile, readdir, lstat, readlink, realpath } from 'node:fs/promises'
 import path from 'node:path'
 import { createHash } from 'node:crypto'
-import { execFile } from 'node:child_process'
+import { execFile, execFileSync } from 'node:child_process'
 import { promisify } from 'node:util'
 import { fileURLToPath } from 'node:url'
 
@@ -16,7 +16,32 @@ const PHYSICAL = ['next', '@next/env', '@next/swc-linux-x64-gnu']
 const BLOCKED_ENV = ['NODE_OPTIONS', 'NODE_PATH', 'TSX_TSCONFIG_PATH', 'TSX_DISABLE_CACHE', 'ESBUILD_BINARY_PATH', 'PLAYWRIGHT_BROWSERS_PATH', 'PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH', 'NODE_PRESERVE_SYMLINKS', 'PNPM_HOME', 'npm_config_node_options']
 const SAFE_ENV = ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'LANG', 'LC_ALL', 'USER', 'LOGNAME', 'SHELL', 'CI', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'REQUESTS_CA_BUNDLE', 'NODE_USE_ENV_PROXY']
 const ROOTS = ['node_modules', 'apps/client-template/node_modules', 'apps/generator-app/node_modules', 'packages/image-optimizer/node_modules', 'packages/scripts/node_modules', 'packages/template-factory/node_modules', 'packages/ui-components/node_modules', 'packages/utils/node_modules']
+// pnpm 11.19.0's own install-time esbuild shim has no NODE_PATH prelude.
+// Bind its complete shell program, including relative exec commands and the
+// exact real in-checkout target. Every other executable retains the normal checks.
+const ESBUILD_PACKAGE = 'node_modules/.pnpm/esbuild@0.28.1/node_modules/esbuild'
+const ESBUILD_INSTALL_SHIM = `${ESBUILD_PACKAGE}/node_modules/.bin/esbuild`
+const ESBUILD_INSTALL_SHIM_HASH = '574f7ba2e92ef6dd52a41260402121691840ea2abd6bcdb9dc5e4b86326a14ce'
 const METADATA = new Set(['node_modules/.modules.yaml', 'node_modules/.package-map.json', 'node_modules/.pnpm-workspace-state-v1.json'])
+
+export function proofChildEnvironment(env) {
+  // Dependency installers and historical source probes never receive provider
+  // credentials. Proxy/CA configuration is preserved for normal network access.
+  for (const name of BLOCKED_ENV) {
+    if (Object.hasOwn(env, name)) throw new Error(`Unexpected ambient dependency loader setting: ${name}`)
+  }
+  const names = ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'COREPACK_HOME', 'XDG_CACHE_HOME', 'XDG_DATA_HOME', 'XDG_CONFIG_HOME', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'SYSTEMROOT', 'WINDIR']
+  return { ...Object.fromEntries(names.filter((name) => Object.hasOwn(env, name)).map((name) => [name, env[name]])), CI: 'true', npm_config_userconfig: '/dev/null', npm_config_globalconfig: '/dev/null' }
+}
+
+// The checkout that consumes the proof must use the same frozen install as its
+// two witnesses. GitHub's ambient npm settings and credentials are not inputs.
+export function installProofDependencies(repository, env = process.env) {
+  execFileSync('corepack', ['pnpm', 'install', '--frozen-lockfile', '--no-side-effects-cache'], {
+    cwd: repository, env: proofChildEnvironment(env), timeout: 600_000,
+    maxBuffer: 4 * 1024 ** 2, stdio: ['ignore', 'pipe', 'pipe'],
+  })
+}
 
 export function assertDependencyProofEnvironment(env = process.env) {
   requireThat(BLOCKED_ENV.every((key) => !Object.hasOwn(env, key)), 'ambient module/loader override is present')
@@ -135,6 +160,9 @@ export async function fingerprintInstalledDependencies(repository, version) {
     requireThat(!seen.has(normalized), 'normalized installed path collision')
     seen.add(normalized)
     const mode = before.mode & 0o777
+    if (relative === ESBUILD_INSTALL_SHIM) {
+      requireThat(before.isFile() && (before.mode & 0o7777) === 0o755, 'invalid esbuild install shim type or mode')
+    }
     if (before.isSymbolicLink()) {
       const target = await readlink(absolute), resolved = await realpath(absolute)
       requireThat(resolved.startsWith(`${root}/`) && path.isAbsolute(resolved), 'installed link resolves outside checkout')
@@ -174,8 +202,15 @@ export async function fingerprintInstalledDependencies(repository, version) {
           requireThat(!line.includes(root) && ![...pathMappings.keys()].some((segment) => line.includes(segment)), 'generated wrapper embeds paths outside known fields')
           return line
         })
-        requireThat(nodePathLines === 2 && targetLines === 1, `generated wrapper fields are incomplete: ${relative} (${nodePathLines},${targetLines})`)
         compared = Buffer.from(lines.join('\n'))
+        if (relative === ESBUILD_INSTALL_SHIM) {
+          requireThat(nodePathLines === 0 && targetLines === 1 && HASH(compared) === ESBUILD_INSTALL_SHIM_HASH, 'unreviewed esbuild install shim')
+          const target = path.join(root, ESBUILD_PACKAGE, 'bin/esbuild')
+          const stat = await lstat(target)
+          requireThat(stat.isFile() && (stat.mode & 0o111) !== 0 && await realpath(target) === target, 'invalid esbuild install shim target')
+        } else {
+          requireThat(nodePathLines === 2 && targetLines === 1, `generated wrapper fields are incomplete: ${relative} (${nodePathLines},${targetLines})`)
+        }
       }
       records.push({ path: normalized, kind: 'file', mode, bytes: compared.length, sha256: HASH(compared) })
     }
@@ -234,4 +269,14 @@ export async function proveInstalledPair(sourceRoot, targetRoot) {
   const targetAfter = await fingerprintInstalledDependencies(targetRoot, '15.5.28')
   requireThat(canonical(source) === canonical(sourceAfter) && canonical(target) === canonical(targetAfter), 'installed pair changed during runtime proof')
   return { version: 2, source, target, runtime: { equal: true, hash: digest(oldRuntime), ...oldRuntime }, compilerExecuted: false, browserChecksRepeated: false, providerMutations: false }
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  if (process.argv.length !== 3 || process.argv[2] !== 'install-checkout') {
+    console.error('Expected install-checkout')
+    process.exitCode = 1
+  } else {
+    try { installProofDependencies(process.cwd()) }
+    catch { console.error('Frozen V2 checkout installation failed'); process.exitCode = 1 }
+  }
 }

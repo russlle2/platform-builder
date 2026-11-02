@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef, useMemo, useId } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { usePreviewStore } from '@/store/previewStore'
+import { defaultBusinessInfo, usePreviewStore } from '@/store/previewStore'
 import { isValidPreviewEmail, validatePreviewInfo, type PreviewInfoErrors } from '@/lib/preview-intake'
 import { getSampleTemplates } from '@/lib/templates/showcase-curation'
 import {
@@ -1217,11 +1217,7 @@ export default function PreviewYourBusinessClient() {
   // before exposing interactive controls, so server markup cannot show stale
   // niche fields or accept a click before React has attached their handlers.
   if (!customThemeReady) {
-    return (
-      <main className="min-h-screen pt-24 pb-20" aria-busy="true">
-        <p className="container-hvac py-8 text-slate-300" role="status">Loading your preview…</p>
-      </main>
-    )
+    return <PreviewIntakeShell />
   }
 
   return (
@@ -1447,6 +1443,38 @@ export default function PreviewYourBusinessClient() {
 /* ================================================================== */
 /* STEP 1 — Info collection                                            */
 /* ================================================================== */
+
+// The first HTML response and the pre-hydration client render use the same
+// blank intake. Do not read tab storage or allow edits until the draft is ready.
+const ignorePendingInput = () => {}
+
+export function PreviewIntakeShell() {
+  return (
+    <main className="min-h-screen pt-24 pb-20">
+      <p className="container-hvac max-w-3xl text-sm text-slate-300" role="status">
+        Preparing your preview and checking this tab for a saved draft…
+      </p>
+      <noscript>
+        <p className="container-hvac max-w-3xl py-4 text-slate-200">
+          Enable JavaScript to build and edit a personal preview. You can also{' '}
+          <Link href="/pricing" className="underline">compare plans</Link> or{' '}
+          <Link href="/help" className="underline">read the publishing guide</Link>.
+        </p>
+      </noscript>
+      <fieldset disabled aria-label="Preview setup" aria-busy="true" className="min-w-0">
+        <InfoStep
+          info={defaultBusinessInfo}
+          onChange={ignorePendingInput}
+          onNext={ignorePendingInput}
+          onSample={ignorePendingInput}
+          onReset={ignorePendingInput}
+          marketingEmailOptIn={false}
+          onMarketingEmailOptIn={ignorePendingInput}
+        />
+      </fieldset>
+    </main>
+  )
+}
 
 function InfoStep({
   info,

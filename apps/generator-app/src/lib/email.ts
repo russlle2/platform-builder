@@ -9,6 +9,8 @@
  *   EMAIL_FROM_ADDRESS     – the verified sender, e.g. hello@yourdomain.com
  */
 
+import { buildCustomerPortalLink, getCustomerSiteOrigin } from './site-origin'
+
 const POSTMARK_API = 'https://api.postmarkapp.com/email'
 
 /** Accept a single plain mailbox, never a masked value or header/list syntax. */
@@ -117,21 +119,15 @@ export async function sendOrderConfirmationEmail(
   portalAccessToken?: string,
   niche?: string,
 ) {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    'https://dailyclarity.org'
-  const baseClean = base.replace(/\/$/, '')
-  const portalUrl = portalAccessToken
-    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}#token=${encodeURIComponent(portalAccessToken)}`
-    : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
+  const origin = getCustomerSiteOrigin()
+  const portalUrl = buildCustomerPortalLink(origin, slug, portalAccessToken)
   const nicheLabel = niche ? ` ${escapeHtml(niche)}` : ''
 
   return sendEmail({
     to,
     subject: 'Your DailyClarity order and account access',
     disableTracking: true,
-    textBody: `Your DailyClarity order and account access\n\n${businessName}\n\nYour selected website and saved business details are linked to your account. Check your dashboard for the current website status.\n\nSign in with your DailyClarity account email: ${baseClean}/dashboard\n\nYour private website portal: ${portalUrl}\nKeep this link private; it provides editing access.\n\nWebsite delivery details arrive in a separate email. Monthly-plan invoices and payment-method updates are available through Manage billing in your dashboard.\n\nDomain help: ${baseClean}/help#domains\nSupport: ${baseClean}/contact`,
+    textBody: `Your DailyClarity order and account access\n\n${businessName}\n\nYour selected website and saved business details are linked to your account. Check your dashboard for the current website status.\n\nSign in with your DailyClarity account email: ${origin}/dashboard\n\nYour private website portal: ${portalUrl}\nKeep this link private; it provides editing access.\n\nWebsite delivery details arrive in a separate email. Monthly-plan invoices and payment-method updates are available through Manage billing in your dashboard.\n\nDomain help: ${origin}/help#domains\nSupport: ${origin}/contact`,
     htmlBody: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -196,7 +192,7 @@ export async function sendOrderConfirmationEmail(
       <!-- CTA -->
       <tr>
         <td style="padding:36px 40px;text-align:center;background:#ffffff;">
-          <a href="${baseClean}/dashboard" style="display:inline-block;padding:14px 36px;background:#10b981;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;">Go to My Dashboard</a>
+          <a href="${origin}/dashboard" style="display:inline-block;padding:14px 36px;background:#10b981;color:#ffffff;text-decoration:none;font-size:15px;font-weight:700;border-radius:8px;">Go to My Dashboard</a>
           <p style="margin:20px 0 0;font-size:13px;color:#94a3b8;">Or use your private portal link. Keep it private; it provides editing access.<br>
             <a href="${portalUrl}" style="color:#10b981;text-decoration:underline;word-break:break-all;">Access My Site Portal &rarr;</a>
           </p>
@@ -208,7 +204,7 @@ export async function sendOrderConfirmationEmail(
         <td style="padding:20px 40px;background:#f0fdf4;border-top:1px solid #d1fae5;border-bottom:1px solid #d1fae5;">
           <p style="margin:0;font-size:13px;color:#065f46;line-height:1.6;">
             <strong>Want a custom domain?</strong> Point your DNS and get a professional address.&nbsp;
-            <a href="${baseClean}/help#domains" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
+            <a href="${origin}/help#domains" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
           </p>
         </td>
       </tr>
@@ -239,14 +235,8 @@ export async function sendWebsiteLiveEmail(
   portalAccessToken?: string,
   siteUrlOverride?: string,
 ) {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    'https://dailyclarity.org'
-  const baseClean = base.replace(/\/$/, '')
-  const portalUrl = portalAccessToken
-    ? `${baseClean}/portal?slug=${encodeURIComponent(slug)}#token=${encodeURIComponent(portalAccessToken)}`
-    : `${baseClean}/portal?slug=${encodeURIComponent(slug)}`
+  const origin = getCustomerSiteOrigin()
+  const portalUrl = buildCustomerPortalLink(origin, slug, portalAccessToken)
   const platformDomain =
     process.env.PLATFORM_DOMAIN ||
     process.env.NEXT_PUBLIC_PLATFORM_DOMAIN ||
@@ -257,7 +247,7 @@ export async function sendWebsiteLiveEmail(
     to,
     subject: `🎉 Your website is live!`,
     disableTracking: true,
-    textBody: `Your DailyClarity website is live!\n\n${businessName}\n\nVisit your website: ${siteUrl}\n\nEdit through your private portal: ${portalUrl}\nKeep this link private; it provides editing access.\n\nSign in with your DailyClarity account email: ${baseClean}/dashboard\n\nDomain help: ${baseClean}/help#domains\nSupport: ${baseClean}/contact`,
+    textBody: `Your DailyClarity website is live!\n\n${businessName}\n\nVisit your website: ${siteUrl}\n\nEdit through your private portal: ${portalUrl}\nKeep this link private; it provides editing access.\n\nSign in with your DailyClarity account email: ${origin}/dashboard\n\nDomain help: ${origin}/help#domains\nSupport: ${origin}/contact`,
     htmlBody: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
@@ -312,7 +302,7 @@ export async function sendWebsiteLiveEmail(
         <td style="padding:20px 40px;background:#f0fdf4;border-top:1px solid #d1fae5;border-bottom:1px solid #d1fae5;">
           <p style="margin:0;font-size:13px;color:#065f46;line-height:1.6;">
             <strong>Want a custom domain?</strong> Point your DNS and get a professional address.&nbsp;
-            <a href="${baseClean}/help#domains" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
+            <a href="${origin}/help#domains" style="color:#059669;text-decoration:underline;">Learn how &rarr;</a>
           </p>
         </td>
       </tr>
@@ -357,11 +347,7 @@ export async function sendManualServiceAlert(options: {
   customerEmail: string
   plan: string
 }) {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    'https://dailyclarity.org'
-  const portalDeepLink = `${base.replace(/\/$/, '')}/portal?slug=${encodeURIComponent(options.slug)}`
+  const portalDeepLink = buildCustomerPortalLink(getCustomerSiteOrigin(), options.slug)
 
   return sendEmail({
     to: options.ownerEmail,

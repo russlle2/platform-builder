@@ -185,3 +185,59 @@ test('niche page links to matching demo route', async ({ page }) => {
   const demo = page.getByRole('link', { name: /Watch Aromatherapy Demo/i })
   await expect(demo.first()).toHaveAttribute('href', '/demo/aromatherapy')
 })
+
+test('homepage signup works inline, keeps failed input and never opens a dialog', async ({ page }) => {
+  let requests = 0
+  await page.route('**/api/leads', async route => {
+    expect(route.request().postDataJSON()).toEqual({ email: 'visitor@example.com', phone: '', source: 'homepage' })
+    requests += 1
+    return route.fulfill(requests === 1
+      ? { status: 503, json: { error: 'Temporarily unavailable' } }
+      : { status: 200, json: { ok: true } })
+  })
+  await page.goto('/')
+  const signup = page.getByRole('region', { name: 'Get DailyClarity updates' })
+  const email = signup.getByLabel('Email address')
+  await expect(email).toBeEnabled()
+  await page.evaluate(() => window.dispatchEvent(new MouseEvent('mouseout', { clientY: 0 })))
+  await expect(page.getByRole('dialog', { name: /DailyClarity.*updates/i })).toHaveCount(0)
+  await email.fill('visitor@example.com')
+  await email.press('Enter')
+  await expect(signup.getByRole('alert')).toBeVisible()
+  await expect(email).toHaveValue('visitor@example.com')
+  await signup.getByRole('button', { name: 'Join the update list' }).click()
+  await expect(signup.getByRole('status')).toContainText('on the updates list')
+  expect(requests).toBe(2)
+})
+
+test.describe('the first preview response', () => {
+  test.use({ javaScriptEnabled: false })
+  test('shows the intake before hydration and provides working help without scripts', async ({ page }) => {
+    await page.goto('/preview-your-business')
+    await expect(page.getByRole('heading', { name: 'Start with your business name' })).toBeVisible()
+    await expect(page.getByRole('textbox', { name: /Business Name/ })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Sound Bath', exact: true })).toBeDisabled()
+    await page.getByRole('link', { name: 'read the publishing guide' }).click()
+    await expect(page).toHaveURL(/\/help$/)
+  })
+})
+
+test('320px homepage shows a finished sample and reaches the walkthrough and prices', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 })
+  await page.goto('/')
+  const hero = page.getByRole('region', { name: /client-booking website/i })
+  const sample = hero.getByRole('img', { name: /Willow and Coast Wellness/i })
+  await expect(sample).toBeVisible()
+  await expect.poll(() => sample.evaluate(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0)).toBe(true)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  const preview = hero.getByRole('link', { name: /build.*preview/i })
+  await expect(preview).toHaveAttribute('href', '/preview-your-business')
+  await preview.click({ trial: true })
+
+  await hero.getByRole('link', { name: /watch demo/i }).click()
+  await expect(page).toHaveURL(/\/demo\/platform-builder$/)
+  await expect(page.locator('main video')).toBeVisible()
+  await page.getByRole('main').locator('a[href="/pricing"]').click()
+  await expect(page).toHaveURL(/\/pricing$/)
+  await expect(page.getByRole('heading', { name: 'Basic', exact: true })).toBeVisible()
+})

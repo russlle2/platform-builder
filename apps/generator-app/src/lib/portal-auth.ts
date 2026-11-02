@@ -4,6 +4,7 @@
 import crypto from 'crypto'
 import { NextRequest } from 'next/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { buildCustomerPortalLink, getCustomerSiteOrigin } from './site-origin'
 
 export interface PortalSiteRow {
   slug: string
@@ -149,16 +150,5 @@ export async function validatePortalTokenForSlug(
 }
 
 export function buildPortalMagicLink(slug: string, token: string): string {
-  const base =
-    process.env.NEXT_PUBLIC_SITE_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    process.env.NEXT_PUBLIC_PLATFORM_URL ||
-    'https://dailyclarity.org'
-  const url = new URL('/portal', base.replace(/\/$/, ''))
-  url.searchParams.set('slug', slug)
-  // URL fragments are not sent to the origin/CDN or included in HTTP referrer
-  // headers. The portal consumes this once, stores it for the tab, and removes
-  // it from the visible URL. Query tokens remain accepted for legacy links.
-  url.hash = new URLSearchParams({ token }).toString()
-  return url.toString()
+  return buildCustomerPortalLink(getCustomerSiteOrigin(), slug, token)
 }
