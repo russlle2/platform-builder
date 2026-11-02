@@ -19,6 +19,9 @@ function requireThat(value, message) { if (!value) throw new Error(message) }
 const digest = (value) => createHash('sha256').update(value).digest('hex')
 const PROOF_PHASES = new Set(['preflight', 'environment', 'proof-path', 'source-closure', 'package-manager', 'workspace-create', 'source-checkout', 'source-install', 'source-cleanliness', 'target-checkout', 'target-install', 'target-cleanliness', 'paired-dependencies', 'paired-cleanliness', 'paired-cleanup', 'current-dependencies', 'proof-validation', 'proof-write'])
 const KNOWN_FAILURES = new Map([
+  ['Retained dependency proof: invalid esbuild install shim type or mode', 'esbuild_shim_type_or_mode'],
+  ['Retained dependency proof: unreviewed esbuild install shim', 'esbuild_shim_changed'],
+  ['Retained dependency proof: invalid esbuild install shim target', 'esbuild_shim_target'],
   ['Retained dependency proof: checkout path must not be a symlink', 'symlink_checkout'],
   ['Retained dependency proof: unexpected pnpm layout', 'pnpm_layout'],
   ['Retained dependency proof: unexpected workspace project set', 'project_set'],

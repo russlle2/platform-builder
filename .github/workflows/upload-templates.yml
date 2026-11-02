@@ -67,7 +67,7 @@ jobs:
           NETLIFY_EXPECTED_SUPABASE_PROJECT_REF: ${{ vars.STAGING_SUPABASE_PROJECT_REF }}
   curated-catalog:
     if: ${{ !inputs.verification_only && (inputs.target_environment != 'production' || github.ref == 'refs/heads/main') }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment: ${{ inputs.target_environment }}
     steps:
       - name: Require certified release tooling for production publication

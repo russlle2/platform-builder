@@ -377,30 +377,44 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Proof / trust — honest, no fabricated claims */}
-        <section className="container-hvac py-16">
-          <div className="text-center mb-12 space-y-4">
-            <span className="signal-chip">Early access</span>
-            <h2 className="text-4xl md:text-5xl font-bold dc-text-heading">
-              Take a closer look before you decide.
-            </h2>
-            <p className="text-lg dc-text-body max-w-2xl mx-auto">
-              DailyClarity is in early access. Explore the working product, review the launch
-              checklist, and check the plan details before making a commitment.
-            </p>
+        <section className="container-hvac py-16" aria-labelledby="design-studies-heading">
+          <div className="mb-8 max-w-3xl space-y-4">
+            <span className="signal-chip">Featured design studies</span>
+            <h2 id="design-studies-heading" className="text-4xl md:text-5xl dc-text-heading">Two different ways to introduce a practice.</h2>
+            <p className="text-lg dc-text-body">See how a retreat and a therapist use photography, copy, and a clear invitation to help a visitor take the next step.</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { title: 'Try the real preview', copy: 'Explore available designs, then bring your own content.', href: sampleHref, action: defaultSampleNiche ? 'Open a sample website' : 'Start with my business details' },
-              { title: 'Check the client journey', copy: 'Review your offer, qualifications, first-visit information, and contact path.', href: '/wellness-website-checklist', action: 'Use the launch checklist' },
-              { title: 'Know what you are buying', copy: 'Compare hosting, editing, optional managed services, and current billing terms.', href: '/pricing', action: 'Compare the plans' },
-            ].map((item) => (
-              <div key={item.title} className="card-mahogany space-y-3">
-                <h3 className="text-xl font-bold dc-text-heading">{item.title}</h3>
-                <p className="dc-text-body text-sm leading-relaxed">{item.copy}</p>
-                <Link href={item.href} className="inline-block text-sm font-semibold dc-text-warm underline underline-offset-4">{item.action} →</Link>
-              </div>
-            ))}
+          <div className="grid gap-6 md:grid-cols-2">
+            <figure className="glass-panel overflow-hidden rounded-2xl">
+              <video controls playsInline loop preload="none" width={800} height={428}
+                poster="/images/examples/the-reminder-experience.webp"
+                aria-label="The Reminder Experience, five-second silent design study showing the retreat photo gallery"
+                aria-describedby="retreat-study-caption"
+                className="block h-auto w-full bg-slate-950">
+                <source src="/demo-videos/the-reminder-experience.webm" type="video/webm" />
+                <source src="/demo-videos/the-reminder-experience.mp4" type="video/mp4" />
+              </video>
+              <figcaption id="retreat-study-caption" className="space-y-2 p-5">
+                <h3 className="text-2xl dc-text-heading">The Reminder Experience</h3>
+                <p className="dc-text-body">Play the five-second silent loop to see the retreat gallery change while the event details and reservation buttons stay in place.</p>
+              </figcaption>
+            </figure>
+            <figure className="glass-panel overflow-hidden rounded-2xl">
+              <a href="/images/examples/michael-ansley.webp" className="block" aria-label="Open Michael Ansley’s website screenshot at full size">
+                <Image src="/images/examples/michael-ansley.webp" width={1200} height={643}
+                  sizes="(min-width: 1280px) 570px, (min-width: 768px) 46vw, 94vw"
+                  alt="Therapy website with a trauma-informed headline, a consultation button, and a portrait of Michael Ansley."
+                  className="block h-auto w-full" />
+              </a>
+              <figcaption className="space-y-2 p-5">
+                <h3 className="text-2xl dc-text-heading">Michael Ansley’s therapy practice</h3>
+                <p className="dc-text-body">A portrait sits beside the practice introduction, with a consultation button directly below the offer.</p>
+              </figcaption>
+            </figure>
+          </div>
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm font-semibold dc-text-accent">
+            <Link href={sampleHref} className="inline-flex min-h-11 items-center underline underline-offset-4">{defaultSampleNiche ? 'Open a sample website' : 'Start with my business details'}</Link>
+            <Link href="/wellness-website-checklist" className="inline-flex min-h-11 items-center underline underline-offset-4">Use the launch checklist</Link>
+            <Link href="/pricing" className="inline-flex min-h-11 items-center underline underline-offset-4">Compare the plans</Link>
           </div>
         </section>
 
