@@ -1,7 +1,7 @@
 import { readFile, readdir, lstat, readlink, realpath } from 'node:fs/promises'
 import path from 'node:path'
 import { createHash } from 'node:crypto'
-import { execFile } from 'node:child_process'
+import { execFile, execFileSync } from 'node:child_process'
 import { promisify } from 'node:util'
 import { fileURLToPath } from 'node:url'
 
@@ -17,6 +17,25 @@ const BLOCKED_ENV = ['NODE_OPTIONS', 'NODE_PATH', 'TSX_TSCONFIG_PATH', 'TSX_DISA
 const SAFE_ENV = ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'LANG', 'LC_ALL', 'USER', 'LOGNAME', 'SHELL', 'CI', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'NODE_EXTRA_CA_CERTS', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'REQUESTS_CA_BUNDLE', 'NODE_USE_ENV_PROXY']
 const ROOTS = ['node_modules', 'apps/client-template/node_modules', 'apps/generator-app/node_modules', 'packages/image-optimizer/node_modules', 'packages/scripts/node_modules', 'packages/template-factory/node_modules', 'packages/ui-components/node_modules', 'packages/utils/node_modules']
 const METADATA = new Set(['node_modules/.modules.yaml', 'node_modules/.package-map.json', 'node_modules/.pnpm-workspace-state-v1.json'])
+
+export function proofChildEnvironment(env) {
+  // Dependency installers and historical source probes never receive provider
+  // credentials. Proxy/CA configuration is preserved for normal network access.
+  for (const name of BLOCKED_ENV) {
+    if (Object.hasOwn(env, name)) throw new Error(`Unexpected ambient dependency loader setting: ${name}`)
+  }
+  const names = ['PATH', 'HOME', 'TMPDIR', 'TMP', 'TEMP', 'COREPACK_HOME', 'XDG_CACHE_HOME', 'XDG_DATA_HOME', 'XDG_CONFIG_HOME', 'HTTP_PROXY', 'HTTPS_PROXY', 'ALL_PROXY', 'NO_PROXY', 'http_proxy', 'https_proxy', 'all_proxy', 'no_proxy', 'SSL_CERT_FILE', 'SSL_CERT_DIR', 'NODE_EXTRA_CA_CERTS', 'NODE_USE_ENV_PROXY', 'SYSTEMROOT', 'WINDIR']
+  return { ...Object.fromEntries(names.filter((name) => Object.hasOwn(env, name)).map((name) => [name, env[name]])), CI: 'true', npm_config_userconfig: '/dev/null', npm_config_globalconfig: '/dev/null' }
+}
+
+// The checkout that consumes the proof must use the same frozen install as its
+// two witnesses. GitHub's ambient npm settings and credentials are not inputs.
+export function installProofDependencies(repository, env = process.env) {
+  execFileSync('corepack', ['pnpm', 'install', '--frozen-lockfile'], {
+    cwd: repository, env: proofChildEnvironment(env), timeout: 600_000,
+    maxBuffer: 4 * 1024 ** 2, stdio: ['ignore', 'pipe', 'pipe'],
+  })
+}
 
 export function assertDependencyProofEnvironment(env = process.env) {
   requireThat(BLOCKED_ENV.every((key) => !Object.hasOwn(env, key)), 'ambient module/loader override is present')
@@ -234,4 +253,14 @@ export async function proveInstalledPair(sourceRoot, targetRoot) {
   const targetAfter = await fingerprintInstalledDependencies(targetRoot, '15.5.28')
   requireThat(canonical(source) === canonical(sourceAfter) && canonical(target) === canonical(targetAfter), 'installed pair changed during runtime proof')
   return { version: 2, source, target, runtime: { equal: true, hash: digest(oldRuntime), ...oldRuntime }, compilerExecuted: false, browserChecksRepeated: false, providerMutations: false }
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  if (process.argv.length !== 3 || process.argv[2] !== 'install-checkout') {
+    console.error('Expected install-checkout')
+    process.exitCode = 1
+  } else {
+    try { installProofDependencies(process.cwd()) }
+    catch { console.error('Frozen V2 checkout installation failed'); process.exitCode = 1 }
+  }
 }

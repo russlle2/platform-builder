@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { getTrustedSiteOrigin } from './site-origin'
+import { getCustomerSiteOrigin, getTrustedSiteOrigin } from './site-origin'
 
 describe('getTrustedSiteOrigin', () => {
   afterEach(() => {
@@ -22,5 +22,21 @@ describe('getTrustedSiteOrigin', () => {
     vi.stubEnv('NODE_ENV', 'test')
     vi.stubEnv('NEXT_PUBLIC_SITE_URL', '')
     expect(getTrustedSiteOrigin('http://localhost:3000/api/checkout')).toBe('http://localhost:3000')
+  })
+})
+
+describe('getCustomerSiteOrigin', () => {
+  afterEach(() => vi.unstubAllEnvs())
+
+  it('preserves the legacy API and portal URL fallbacks for non-production deployments', () => {
+    vi.stubEnv('DAILYCLARITY_ENVIRONMENT', 'staging')
+    vi.stubEnv('NEXT_PUBLIC_SITE_URL', '')
+    vi.stubEnv('NEXT_PUBLIC_API_URL', 'https://api.example.test/')
+    vi.stubEnv('NEXT_PUBLIC_PLATFORM_URL', 'https://platform.example.test/')
+    expect(getCustomerSiteOrigin()).toBe('https://api.example.test')
+    vi.stubEnv('NEXT_PUBLIC_API_URL', '')
+    expect(getCustomerSiteOrigin()).toBe('https://platform.example.test')
+    vi.stubEnv('NEXT_PUBLIC_PLATFORM_URL', '')
+    expect(() => getCustomerSiteOrigin()).toThrow('valid site origin')
   })
 })

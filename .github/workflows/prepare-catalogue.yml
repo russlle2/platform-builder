@@ -87,7 +87,11 @@ jobs:
         run: |
           corepack enable
           corepack install
-          pnpm install --frozen-lockfile
+          if [ "$PREPARATION_CLOSURE_VERSION" = "2" ]; then
+            node apps/generator-app/scripts/catalogue-prepare-dependencies-v2.mjs install-checkout
+          else
+            pnpm install --frozen-lockfile
+          fi
       - name: Prove the explicitly reviewed V2 dependency migration using fresh isolated installations
         if: ${{ inputs.closure_version == '2' }}
         run: node apps/generator-app/scripts/catalogue-prepare-proof-v2.mjs prove

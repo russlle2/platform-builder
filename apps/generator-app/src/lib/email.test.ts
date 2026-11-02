@@ -3,10 +3,15 @@ import { sendContactConfirmation, sendEmail, sendOrderConfirmationEmail, sendWeb
 
 afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
-it('delivers private account links without tracking redirects and includes usable plain-text links', async () => {
+it.each([
+  ['production', 'https://dailyclarity.org'],
+  ['staging', 'https://dailyclarity-staging.netlify.app'],
+])('delivers private account links on the correct host without tracking (%s)', async (deployment, origin) => {
+  vi.stubEnv('NODE_ENV', 'production')
+  vi.stubEnv('DAILYCLARITY_ENVIRONMENT', deployment)
   vi.stubEnv('POSTMARK_SERVER_TOKEN', 'local-fixture')
   vi.stubEnv('EMAIL_FROM_ADDRESS', 'sender@example.test')
-  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://platform.example.test')
+  vi.stubEnv('NEXT_PUBLIC_SITE_URL', 'https://dailyclarity-staging.netlify.app/')
   const fetch = vi.fn().mockImplementation(async () => Response.json({ ErrorCode: 0 }))
   vi.stubGlobal('fetch', fetch)
   await sendOrderConfirmationEmail('owner@example.test', 'A & B <Practice>', 'practice', 'private-fixture-token', 'wellness')
@@ -15,10 +20,13 @@ it('delivers private account links without tracking redirects and includes usabl
     const message = JSON.parse(request.body)
     expect(message).toMatchObject({ To: 'owner@example.test', TrackOpens: false, TrackLinks: 'None' })
     expect(message.HtmlBody).toContain('A &amp; B &lt;Practice&gt;')
-    expect(message.HtmlBody).toContain('https://platform.example.test/help#domains')
+    for (const body of [message.HtmlBody, message.TextBody]) {
+      expect(body).toContain(`${origin}/help#domains`)
+      expect(body).toContain(`${origin}/portal?slug=practice#token=private-fixture-token`)
+      if (deployment === 'production') expect(body).not.toContain('dailyclarity-staging.netlify.app')
+    }
     expect(message.HtmlBody).not.toContain('/help/custom-domain')
-    expect(message.TextBody).toContain('https://platform.example.test/portal?slug=practice#token=private-fixture-token')
-    expect(message.TextBody).toContain('https://platform.example.test/dashboard')
+    expect(message.TextBody).toContain(`${origin}/dashboard`)
     expect(message.TextBody).toContain('Keep this link private')
   }
   const order = JSON.parse(fetch.mock.calls[0][1].body)

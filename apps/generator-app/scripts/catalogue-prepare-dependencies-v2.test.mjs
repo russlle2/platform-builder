@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { fingerprintInstalledDependencies, assertDependencyProofEnvironment, assertRuntimeProofCompleteness } from './catalogue-prepare-dependencies-v2.mjs'
+import { installProofDependencies, fingerprintInstalledDependencies, assertDependencyProofEnvironment, assertRuntimeProofCompleteness } from './catalogue-prepare-dependencies-v2.mjs'
 
 const FAMILIES = ['next', '@next/env', '@next/swc-darwin-arm64', '@next/swc-darwin-x64', '@next/swc-linux-arm64-gnu', '@next/swc-linux-arm64-musl', '@next/swc-linux-x64-gnu', '@next/swc-linux-x64-musl', '@next/swc-win32-arm64-msvc', '@next/swc-win32-x64-msvc']
 const PROJECTS = ['', 'apps/client-template', 'apps/generator-app', 'packages/image-optimizer', 'packages/scripts', 'packages/template-factory', 'packages/ui-components', 'packages/utils']
@@ -61,6 +61,22 @@ async function fixture(base, version) {
   execFileSync('git', ['-c', 'user.name=Proof fixture', '-c', 'user.email=proof@example.invalid', 'commit', '-qm', 'lock'], { cwd: root })
   return root
 }
+
+test('checkout and paired installs use the same frozen install and exclude ambient registry settings and credentials', async (t) => {
+  const cwd = await mkdtemp(path.join(tmpdir(), 'dc-v2-install-'))
+  t.after(() => rm(cwd, { recursive: true, force: true }))
+  const stub = path.join(cwd, 'corepack')
+  await writeFile(stub, `#!/bin/sh
+printf '%s\\n' "$@" > args
+printf '%s\\n' "$CI" "$npm_config_userconfig" "$npm_config_globalconfig" > config
+test -z "$GITHUB_TOKEN" && test -z "$npm_config_registry" && test -z "$GITHUB_ACTIONS"
+`, { mode: 0o700 })
+  const env = { PATH: cwd, GITHUB_TOKEN: 'fixture-only', npm_config_registry: 'fixture', GITHUB_ACTIONS: 'true' }
+  installProofDependencies(cwd, env)
+  assert.equal(await readFile(path.join(cwd, 'args'), 'utf8'), 'pnpm\ninstall\n--frozen-lockfile\n')
+  assert.equal(await readFile(path.join(cwd, 'config'), 'utf8'), 'true\n/dev/null\n/dev/null\n')
+  assert.throws(() => installProofDependencies(cwd, { ...env, NODE_OPTIONS: '' }), /Unexpected ambient dependency loader setting/)
+})
 
 test('installed proof rejects ambient resolution and loader overrides including empty values', () => {
   for (const key of BLOCKED) assert.throws(() => assertDependencyProofEnvironment({ [key]: '' }), /ambient module\/loader override/)
