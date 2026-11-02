@@ -6,7 +6,7 @@ import { normalizeLeadInput, validateLeadContact } from '@/lib/lead-validation'
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-const ALLOWED_SOURCES = new Set(['modal'])
+const ALLOWED_SOURCES = new Set(['modal', 'homepage'])
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (character) => ({

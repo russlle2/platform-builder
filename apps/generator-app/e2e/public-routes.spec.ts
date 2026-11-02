@@ -185,3 +185,39 @@ test('niche page links to matching demo route', async ({ page }) => {
   const demo = page.getByRole('link', { name: /Watch Aromatherapy Demo/i })
   await expect(demo.first()).toHaveAttribute('href', '/demo/aromatherapy')
 })
+
+test('homepage signup works inline, keeps failed input and never opens a dialog', async ({ page }) => {
+  let requests = 0
+  await page.route('**/api/leads', async route => {
+    expect(route.request().postDataJSON()).toEqual({ email: 'visitor@example.com', phone: '', source: 'homepage' })
+    requests += 1
+    return route.fulfill(requests === 1
+      ? { status: 503, json: { error: 'Temporarily unavailable' } }
+      : { status: 200, json: { ok: true } })
+  })
+  await page.goto('/')
+  const signup = page.getByRole('region', { name: 'Get DailyClarity updates' })
+  const email = signup.getByLabel('Email address')
+  await expect(email).toBeEnabled()
+  await page.evaluate(() => window.dispatchEvent(new MouseEvent('mouseout', { clientY: 0 })))
+  await expect(page.getByRole('dialog', { name: /DailyClarity.*updates/i })).toHaveCount(0)
+  await email.fill('visitor@example.com')
+  await email.press('Enter')
+  await expect(signup.getByRole('alert')).toBeVisible()
+  await expect(email).toHaveValue('visitor@example.com')
+  await signup.getByRole('button', { name: 'Join the update list' }).click()
+  await expect(signup.getByRole('status')).toContainText('on the updates list')
+  expect(requests).toBe(2)
+})
+
+test.describe('the first preview response', () => {
+  test.use({ javaScriptEnabled: false })
+  test('shows the intake before hydration and provides working help without scripts', async ({ page }) => {
+    await page.goto('/preview-your-business')
+    await expect(page.getByRole('heading', { name: 'Start with your business name' })).toBeVisible()
+    await expect(page.getByRole('textbox', { name: /Business Name/ })).toBeDisabled()
+    await expect(page.getByRole('button', { name: 'Sound Bath', exact: true })).toBeDisabled()
+    await page.getByRole('link', { name: 'read the publishing guide' }).click()
+    await expect(page).toHaveURL(/\/help$/)
+  })
+})

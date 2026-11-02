@@ -9,7 +9,7 @@ import { reviewedHead } from './certified-catalog-release.mjs'
 import { assertPreparationClosureV2, V2_SOURCE_SHA } from './catalogue-prepare-closure-v2.mjs'
 import { fingerprintInstalledDependencies, proveInstalledPair, proofChildEnvironment, installProofDependencies } from './catalogue-prepare-dependencies-v2.mjs'
 
-export { proofChildEnvironment } from './catalogue-prepare-dependencies-v2.mjs'
+export { proofChildEnvironment }
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..')
 const HASH = /^[a-f0-9]{64}$/
@@ -54,7 +54,8 @@ class V2ProofStageError extends Error {
 export function v2ProofFailureDetails(error) {
   if (error instanceof V2ProofStageError) return error.details
   const reason = KNOWN_FAILURES.get(error?.message)
-    ?? (error instanceof SyntaxError ? 'invalid_metadata_syntax'
+    ?? (typeof error?.message === 'string' && error.message.startsWith('Retained dependency proof: generated wrapper fields are incomplete: ') ? 'wrapper_fields_incomplete'
+      : error instanceof SyntaxError ? 'invalid_metadata_syntax'
       : error?.code === 'ENOENT' ? 'missing_file_or_command'
       : error?.code === 'ETIMEDOUT' ? 'operation_timeout'
         : Number.isInteger(error?.status) && error.status !== 0 ? 'command_failed' : 'unclassified')

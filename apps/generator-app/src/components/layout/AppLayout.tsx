@@ -3,7 +3,6 @@
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import LeadCaptureModal from '@/components/LeadCaptureModal';
 import { getNicheNavLinks } from '@/lib/templates/niche-meta';
 
 const nicheLinks = getNicheNavLinks();
@@ -38,8 +37,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <>
-      <div className="site-shell">
+    <div className="site-shell">
       <a
         href="#main-content"
         className="skip-link"
@@ -231,8 +229,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           &copy; {new Date().getFullYear()} DailyClarity. All rights reserved.
         </div>
       </footer>
-      </div>
-      <LeadCaptureModal />
-    </>
+    </div>
   );
 }

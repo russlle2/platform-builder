@@ -22,8 +22,18 @@ jobs:
       - name: Install the repository pnpm version
         run: corepack install
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Install dependencies and verify the release checkout
+        run: |
+          if [ "$(node -p "require('./apps/generator-app/package.json').dependencies.next")" = "15.5.28" ]; then
+            node apps/generator-app/scripts/catalogue-prepare-dependencies-v2.mjs install-checkout
+            node --input-type=module <<'NODE'
+          import { fingerprintInstalledDependencies } from './apps/generator-app/scripts/catalogue-prepare-dependencies-v2.mjs'
+          const result = await fingerprintInstalledDependencies(process.cwd(), '15.5.28')
+          console.log(`Verified ${result.entries} dependency entries in the release checkout.`)
+          NODE
+          else
+            pnpm install --frozen-lockfile
+          fi
 
       - name: Retained catalogue V2 dependency and provenance guards
         run: node --test apps/generator-app/scripts/catalogue-prepare-*-v2.test.mjs

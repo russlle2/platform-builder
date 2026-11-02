@@ -98,7 +98,7 @@ interface PreviewState {
 /* Defaults                                                            */
 /* ------------------------------------------------------------------ */
 
-const defaultBusinessInfo: BusinessInfo = {
+export const defaultBusinessInfo: BusinessInfo = {
   businessName: '',
   ownerName: '',
   accountEmail: '',
