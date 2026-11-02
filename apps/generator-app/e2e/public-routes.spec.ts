@@ -221,3 +221,23 @@ test.describe('the first preview response', () => {
     await expect(page).toHaveURL(/\/help$/)
   })
 })
+
+test('320px homepage shows a finished sample and reaches the walkthrough and prices', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 720 })
+  await page.goto('/')
+  const hero = page.getByRole('region', { name: /client-booking website/i })
+  const sample = hero.getByRole('img', { name: /Willow and Coast Wellness/i })
+  await expect(sample).toBeVisible()
+  await expect.poll(() => sample.evaluate(image => image instanceof HTMLImageElement && image.complete && image.naturalWidth > 0)).toBe(true)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
+  const preview = hero.getByRole('link', { name: /build.*preview/i })
+  await expect(preview).toHaveAttribute('href', '/preview-your-business')
+  await preview.click({ trial: true })
+
+  await hero.getByRole('link', { name: /watch demo/i }).click()
+  await expect(page).toHaveURL(/\/demo\/platform-builder$/)
+  await expect(page.locator('main video')).toBeVisible()
+  await page.getByRole('main').locator('a[href="/pricing"]').click()
+  await expect(page).toHaveURL(/\/pricing$/)
+  await expect(page.getByRole('heading', { name: 'Basic', exact: true })).toBeVisible()
+})

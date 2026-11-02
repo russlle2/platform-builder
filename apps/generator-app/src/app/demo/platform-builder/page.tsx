@@ -20,10 +20,10 @@ export const metadata: Metadata = {
 
 export default function PlatformBuilderDemoPage() {
   return (
-    <main className="relative min-h-screen pt-24 pb-20">
-      <div className="container-hvac max-w-4xl space-y-8">
+    <main className="public-daylight relative min-h-screen pt-24 pb-20">
+      <div className="mx-auto max-w-4xl space-y-8 px-4 sm:px-6 lg:px-8">
         <div className="space-y-4">
-          <Link href="/demo" className="text-sm dc-text-muted hover:dc-text-heading transition-colors">
+          <Link href="/demo" className="inline-flex min-h-11 items-center text-sm dc-text-accent underline underline-offset-4">
             ← All demos
           </Link>
           <span className="signal-chip block w-fit">Full customer journey · 3:47</span>
@@ -50,13 +50,13 @@ export default function PlatformBuilderDemoPage() {
         <div className="flex flex-col sm:flex-row gap-4">
           <Link
             href="/preview-your-business"
-            className="px-8 py-4 text-lg font-bold rounded-lg dc-button-primary shadow-lg hover:shadow-xl hover:scale-105 transition-all border border-cyan-200/40 text-center"
+            className="cta-button text-center"
           >
             Build My Preview
           </Link>
           <Link
             href="/pricing"
-            className="px-8 py-4 text-lg font-bold dc-text-heading border dc-border rounded-lg hover:dc-surface-soft transition-all text-center"
+            className="dc-button-secondary text-center"
           >
             See Pricing
           </Link>

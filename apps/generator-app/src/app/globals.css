@@ -444,15 +444,16 @@ body::before {
   font-display: swap;
 }
 
-/* The public homepage has a paper-and-forest palette. The customer workspace
+/* Opted-in marketing pages share the paper-and-forest palette. The customer workspace
    and the video player's dark controls keep their independent surfaces. */
-.wellness-home {
+.public-daylight {
   --dc-ink: #182f28;
   --dc-body: #354c42;
   --dc-muted: #4e6157;
   --dc-accent: #155b46;
   --dc-success: #225f43;
   --dc-warm: #794319;
+  --dc-error: #9c2c35;
   --dc-line: #c7cec1;
   --dc-control-line: #778575;
   --dc-card: #fffdf7;
@@ -465,7 +466,7 @@ body::before {
   background-blend-mode: multiply;
 }
 
-.wellness-home :is(h1, h2, h3) {
+.public-daylight :is(h1, h2, h3) {
   font-family: 'Instrument Serif', Georgia, 'Times New Roman', serif;
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -563,21 +564,21 @@ body::before {
   .home-walkthrough { grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.35fr); }
 }
 
-.wellness-home :is(.glass-panel, .card-mahogany) {
+.public-daylight :is(.glass-panel, .card-mahogany, .stat-card) {
   border: 1px solid var(--dc-line);
   background: var(--dc-card);
   box-shadow: 0 16px 40px -30px rgb(35 59 44 / 0.44);
   backdrop-filter: none;
 }
 
-.wellness-home .signal-chip,
-.wellness-home .feature-icon {
+.public-daylight .signal-chip,
+.public-daylight .feature-icon {
   color: #24523d;
   border-color: #b7c9b6;
   background: #e7eddd;
 }
 
-.wellness-home .signal-chip {
+.public-daylight .signal-chip {
   letter-spacing: 0.13em;
   line-height: 1.45;
 }
@@ -590,22 +591,25 @@ body::before {
   box-shadow: inset 0 1px 0 #fffefa;
 }
 
-.wellness-home .cta-button {
+.public-daylight :is(.cta-button, .dc-button-primary) {
   color: #fffefa;
   background: linear-gradient(170deg, #2a6044, #174830);
   border-color: #214b39;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.2), 0 9px 18px -12px #214b39;
 }
 
-.wellness-home .cta-button:hover { background: #173f2e; }
-.wellness-home .dc-button-secondary { border-color: var(--dc-control-line); }
+.public-daylight :is(.cta-button, .dc-button-primary):hover { background: #173f2e; }
+.public-daylight .dc-button-secondary { border-color: var(--dc-control-line); }
+.public-daylight .dc-plan-badge { background: #e7eddd; }
+.public-daylight .dc-pricing-highlight { background: linear-gradient(115deg, #fff5df, var(--dc-card) 58%, #ecf1e5); }
+.public-daylight .stat-card:hover { transform: none; }
 
 .wellness-home .home-image-caption {
   color: #fff;
   background: #233d33;
 }
 
-.wellness-home :where(a, button, input, select, [tabindex]):focus-visible {
+.public-daylight :where(a, button, input, select, [tabindex]):focus-visible {
   outline: 3px solid #175d45;
   outline-offset: 3px;
 }

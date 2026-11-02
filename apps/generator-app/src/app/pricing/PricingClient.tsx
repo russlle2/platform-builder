@@ -287,7 +287,7 @@ export default function PricingClient() {
   }, [template, niche, slug, colorScheme, fontVariation, structureVariation, readCheckoutContext])
 
   return (
-    <main className="relative min-h-screen pt-24 pb-20">
+    <main className="public-daylight relative min-h-screen pt-24 pb-20">
       <div className="relative z-10">
         {/* Header */}
         <section className="container-hvac py-16">
@@ -467,7 +467,7 @@ export default function PricingClient() {
               <strong className="dc-text-heading"> Security + Ads</strong> plan adds one done-for-you
               service bundle managed by our team. SSL and managed hosting are included in both plans.
             </p>
-            <div className="grid grid-cols-[1.6fr_repeat(2,1fr)] gap-x-6 gap-y-3 text-sm dc-text-body">
+            <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))] gap-x-2 sm:gap-x-6 gap-y-3 text-sm dc-text-body">
               <p className="dc-text-muted uppercase tracking-[0.3em] text-xs">Feature</p>
               <p className="dc-text-accent uppercase tracking-[0.3em] text-xs">Basic · $20</p>
               <p className="dc-text-warm uppercase tracking-[0.3em] text-xs">Security + Ads · $80</p>
@@ -487,7 +487,7 @@ export default function PricingClient() {
         </section>}
 
         <section className="container-hvac pb-20">
-          <div className="glass-panel rounded-3xl p-10">
+          <div className="glass-panel rounded-3xl p-5 sm:p-10">
             <div className="max-w-3xl">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] dc-text-accent">
                 Explore the product
@@ -588,7 +588,7 @@ export default function PricingClient() {
 
         {/* Final CTA */}
         <section className="container-hvac py-20">
-          <div className="glass-panel rounded-3xl p-12 text-center">
+          <div className="glass-panel rounded-3xl px-5 py-10 sm:p-12 text-center">
             <h2 className="text-4xl md:text-5xl font-bold dc-text-heading mb-6">
               See your business in the product before you choose
             </h2>
@@ -641,7 +641,7 @@ function PricingCard({
   return (
     <div
       className={`card-mahogany relative ${
-        tier.highlight ? 'ring-2 ring-cyan-400/80' : ''
+        tier.highlight ? 'ring-2 ring-emerald-700' : ''
       } transition-all`}
     >
       {/* Badge */}
