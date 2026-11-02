@@ -412,7 +412,7 @@ export default async function HomePage() {
             </figure>
           </div>
           <div className="mt-6 flex flex-wrap gap-x-6 gap-y-1 text-sm font-semibold dc-text-accent">
-            <Link href={sampleHref} className="inline-flex min-h-11 items-center underline underline-offset-4">{defaultSampleNiche ? 'Open a sample website' : 'Start with my business details'}</Link>
+            <Link href={sampleHref} className="inline-flex min-h-11 items-center underline underline-offset-4">{defaultSampleNiche ? 'Open a sample website' : 'Create a preview for my practice'}</Link>
             <Link href="/wellness-website-checklist" className="inline-flex min-h-11 items-center underline underline-offset-4">Use the launch checklist</Link>
             <Link href="/pricing" className="inline-flex min-h-11 items-center underline underline-offset-4">Compare the plans</Link>
           </div>
